@@ -97,6 +97,7 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
 
         // setup toolbar
         setupToolbar();
+        showHideDefaultToolbarDivider(true);
 
         updateActionBarTitleAndHomeButtonByString(getString(R.string.drawer_item_notifications));
 

@@ -70,6 +70,8 @@ open class FolderPickerActivity :
     private var mSyncBroadcastReceiver: SyncBroadcastReceiver? = null
     private var mSyncInProgress = false
     private var mSearchOnlyFolders = false
+    private var mShowOnlyFolder = false
+    private var mHideEncryptedFolder = false
     var isDoNotEnterEncryptedFolder = false
         private set
     private var mCancelBtn: MaterialButton? = null
@@ -100,6 +102,10 @@ open class FolderPickerActivity :
             View.VISIBLE
         findViewById<View>(R.id.switch_grid_view_button).visibility =
             View.GONE
+
+        mShowOnlyFolder = intent.getBooleanExtra(EXTRA_SHOW_ONLY_FOLDER, false)
+        mHideEncryptedFolder = intent.getBooleanExtra(EXTRA_HIDE_ENCRYPTED_FOLDER, false)
+
         mAction = intent.getStringExtra(EXTRA_ACTION)
         if (mAction != null) {
             when (mAction) {
@@ -117,6 +123,7 @@ open class FolderPickerActivity :
                     caption = resources.getText(R.string.choose_location).toString()
                     mSearchOnlyFolders = true
                     isDoNotEnterEncryptedFolder = true
+                    mShowOnlyFolder = true
                     mChooseBtn!!.text = resources.getString(R.string.common_select)
                 }
                 else -> caption = themeUtils.getDefaultDisplayNameForRootFolder(this)
@@ -316,7 +323,7 @@ open class FolderPickerActivity :
 
     private fun refreshListOfFilesFragment(fromSearch: Boolean) {
         val fileListFragment = listOfFilesFragment
-        fileListFragment?.listDirectory(false, fromSearch)
+        fileListFragment?.listDirectoryFolder(false, fromSearch, mShowOnlyFolder, mHideEncryptedFolder)
     }
 
     fun browseToRoot() {
@@ -591,6 +598,12 @@ open class FolderPickerActivity :
 
         @JvmField
         val EXTRA_ACTION = FolderPickerActivity::class.java.canonicalName?.plus(".EXTRA_ACTION")
+
+        @JvmField
+        val EXTRA_SHOW_ONLY_FOLDER = FolderPickerActivity::class.java.canonicalName?.plus(".EXTRA_SHOW_ONLY_FOLDER")
+
+        @JvmField
+        val EXTRA_HIDE_ENCRYPTED_FOLDER = FolderPickerActivity::class.java.canonicalName?.plus(".EXTRA_HIDE_ENCRYPTED_FOLDER")
 
         const val MOVE = "MOVE"
         const val COPY = "COPY"
