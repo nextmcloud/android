@@ -48,3 +48,7 @@ fun OCFile.mediaSize(defaultThumbnailSize: Float): Pair<Int, Int> {
     val height = (imageDimension?.height?.toInt() ?: defaultThumbnailSize.toInt())
     return width to height
 }
+
+// NMC method to filter only folders with/without e2ee folders
+fun List<OCFile>.filterByFolder(hideEncryptedFolder: Boolean = false): List<OCFile> =
+    filter { it.isFolder && (!hideEncryptedFolder || !it.isEncrypted) }
