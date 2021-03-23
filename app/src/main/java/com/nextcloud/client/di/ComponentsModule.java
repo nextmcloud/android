@@ -35,6 +35,8 @@ import com.nextcloud.ui.composeActivity.ComposeActivity;
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet;
 import com.nextcloud.ui.trashbinFileActions.TrashbinFileActionsBottomSheet;
 import com.nmc.android.ui.LauncherActivity;
+import com.nmc.android.scans.SaveScannedDocumentFragment;
+import com.nmc.android.scans.ScanActivity;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.authentication.AuthenticatorActivity;
 import com.owncloud.android.authentication.DeepLinkLoginActivity;
@@ -461,6 +463,12 @@ abstract class ComponentsModule {
 
     @ContributesAndroidInjector
     abstract FileUploadHelper fileUploadHelper();
+
+    @ContributesAndroidInjector
+    abstract ScanActivity scanActivity();
+
+    @ContributesAndroidInjector
+    abstract SaveScannedDocumentFragment saveScannedDocumentFragment();
 
     @ContributesAndroidInjector
     abstract SslUntrustedCertDialog sslUntrustedCertDialog();
