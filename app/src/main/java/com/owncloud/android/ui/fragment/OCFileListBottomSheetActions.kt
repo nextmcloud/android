@@ -22,6 +22,11 @@ interface OCFileListBottomSheetActions {
     fun uploadFiles()
 
     /**
+     * offers a file scanner
+     */
+    fun scanDocument()
+
+    /**
      * opens template selection for documents
      */
     fun newDocument()
