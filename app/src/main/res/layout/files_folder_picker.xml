@@ -59,6 +59,7 @@
             app:cornerRadius="@dimen/button_corner_radius" />
 
         <View
+            android:id="@+id/folder_picker_divider"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1"/>
