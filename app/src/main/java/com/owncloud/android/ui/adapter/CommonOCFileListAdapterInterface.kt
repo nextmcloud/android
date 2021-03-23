@@ -22,7 +22,9 @@ interface CommonOCFileListAdapterInterface {
         directory: OCFile,
         storageManager: FileDataStorageManager,
         onlyOnDevice: Boolean,
-        mLimitToMimeType: String
+        mLimitToMimeType: String,
+        showOnlyFolder: Boolean,
+        hideEncryptedFolder: Boolean
     )
 
     fun setHighlightedItem(file: OCFile)
