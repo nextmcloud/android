@@ -84,6 +84,7 @@ import com.nextcloud.utils.extensions.lastFragment
 import com.nextcloud.utils.extensions.logFileSize
 import com.nextcloud.utils.fileNameValidator.FileNameValidator.checkFolderPath
 import com.nextcloud.utils.view.FastScrollUtils
+import com.nmc.android.scans.SaveScannedDocumentFragment
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FilesBinding
@@ -1040,6 +1041,22 @@ class FileDisplayActivity :
             ).execute()
         } else if (requestCode == REQUEST_CODE__MOVE_OR_COPY_FILES && resultCode == RESULT_OK) {
             exitSelectionMode()
+        } else if (requestCode == REQUEST_CODE__SCAN_DOCUMENT && resultCode == RESULT_OK) {
+            var remoteFilePath =
+                data?.getParcelableExtra<OCFile>(SaveScannedDocumentFragment.EXTRA_SCAN_DOC_REMOTE_PATH)
+            if (remoteFilePath == null) {
+                remoteFilePath = getCurrentDir()
+            }
+
+            Log_OC.d(this, "Scan Document save remote path: " + remoteFilePath?.remotePath)
+
+            // NMC-2418 fix
+            if (remoteFilePath?.remotePath.equals(getCurrentDir().remotePath)) {
+                Log_OC.d(this, "Both current and scan paths are same. Skipping redirection.")
+                return
+            }
+
+            fileListFragment?.onItemClicked(remoteFilePath)
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
@@ -3033,6 +3050,9 @@ class FileDisplayActivity :
 
         @JvmField
         val REQUEST_CODE__UPLOAD_FROM_VIDEO_CAMERA: Int = REQUEST_CODE__LAST_SHARED + 6
+
+        @JvmField
+        val REQUEST_CODE__SCAN_DOCUMENT: Int = REQUEST_CODE__LAST_SHARED + 9
 
         protected val DELAY_TO_REQUEST_REFRESH_OPERATION_LATER: Long = DELAY_TO_REQUEST_OPERATIONS_LATER + 350
 
