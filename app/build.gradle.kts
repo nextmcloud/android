@@ -37,6 +37,8 @@ plugins {
     id("checkstyle")
     id("pmd")
 }
+// apply scanbot SDK for NMC
+apply (from = "${rootProject.projectDir}/nmc_scan-dependencies.gradle")
 apply(from = "${rootProject.projectDir}/jacoco.gradle.kts")
 
 println("Gradle uses Java ${Jvm.current()}")
@@ -192,7 +194,7 @@ android {
     // adapt structure from Eclipse to Gradle/Android Studio expectations;
     // see http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Configuring-the-Structure
     packaging.resources {
-        excludes.addAll(listOf("META-INF/LICENSE*", "META-INF/versions/9/OSGI-INF/MANIFEST*"))
+        excludes.addAll(listOf("META-INF/LICENSE*", "META-INF/versions/9/OSGI-INF/MANIFEST*", "META-INF/DEPENDENCIES"))
         pickFirsts.add("MANIFEST.MF") // workaround for duplicated manifest on some dependencies
     }
 
@@ -427,10 +429,11 @@ dependencies {
     implementation(libs.emoji.google)
     // endregion
 
+    // NextCloud scan is not required in NMC
     // region AppScan, document scanner not available on FDroid (generic) due to OpenCV binaries
-    "gplayImplementation"(project(":appscan"))
-    "huaweiImplementation"(project(":appscan"))
-    "qaImplementation"(project(":appscan"))
+    // "gplayImplementation"(project(":appscan"))
+    // "huaweiImplementation"(project(":appscan"))
+    // "qaImplementation"(project(":appscan"))
     // endregion
 
     // region SpotBugs
