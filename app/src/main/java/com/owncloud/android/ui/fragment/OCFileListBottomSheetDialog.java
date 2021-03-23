@@ -202,6 +202,11 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
             binding.menuScanDocUpload.setVisibility(View.GONE);
         }
 
+        binding.menuScanDocument.setOnClickListener(v -> {
+            actions.scanDocument();
+            dismiss();
+        });
+
         binding.menuUploadFiles.setOnClickListener(v -> {
             actions.uploadFiles();
             dismiss();
