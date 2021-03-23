@@ -37,6 +37,9 @@ dependencyResolutionManagement {
         }
         mavenCentral()
         maven("https://jitpack.io")
+        // Scanbot SDK maven repos:
+        maven("https://nexus.scanbot.io/nexus/content/repositories/releases/")
+        maven("https://nexus.scanbot.io/nexus/content/repositories/snapshots/")
     }
 }
 //includeBuild("../android-common") {
@@ -51,4 +54,5 @@ dependencyResolutionManagement {
 //    }
 //}
 
-include(":app", ":appscan")
+// Not required this module in NMC
+include(":app")

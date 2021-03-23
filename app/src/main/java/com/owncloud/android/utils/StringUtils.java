@@ -15,6 +15,9 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Helper class for handling and manipulating strings.
  */
@@ -22,6 +25,10 @@ public final class StringUtils {
 
     private StringUtils() {
         // prevent class from being constructed
+    }
+
+    public static List<String> convertStringToList(String input) {
+        return Arrays.asList(input.split("\\s*,\\s*"));
     }
 
     public static @NonNull
