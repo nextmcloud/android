@@ -36,6 +36,7 @@ import com.nextcloud.client.jobs.upload.FileUploadWorker
 import com.nextcloud.client.logger.Logger
 import com.nextcloud.client.network.ConnectivityService
 import com.nextcloud.client.preferences.AppPreferences
+import com.nmc.android.jobs.ScanDocUploadWorker
 import com.owncloud.android.datamodel.ArbitraryDataProvider
 import com.owncloud.android.datamodel.SyncedFolderProvider
 import com.owncloud.android.datamodel.UploadsStorageManager
@@ -105,6 +106,7 @@ class BackgroundJobFactory @Inject constructor(
                 AlbumFileUploadWorker::class -> createAlbumsFilesUploadWorker(context, workerParameters)
                 FileDownloadWorker::class -> createFilesDownloadWorker(context, workerParameters)
                 GeneratePdfFromImagesWork::class -> createPDFGenerateWork(context, workerParameters)
+                ScanDocUploadWorker::class -> createScanDocUploadWork(context, workerParameters)
                 HealthStatusWork::class -> createHealthStatusWork(context, workerParameters)
                 TestJob::class -> createTestJob(context, workerParameters)
                 OfflineOperationsWorker::class -> createOfflineOperationsWorker(context, workerParameters)
@@ -291,6 +293,15 @@ class BackgroundJobFactory @Inject constructor(
             logger = logger,
             params = params
         )
+
+    private fun createScanDocUploadWork(context: Context, params: WorkerParameters): ScanDocUploadWorker {
+        return ScanDocUploadWorker(
+            context = context,
+            params = params,
+            notificationManager,
+            accountManager
+        )
+    }
 
     private fun createHealthStatusWork(context: Context, params: WorkerParameters): HealthStatusWork = HealthStatusWork(
         context,
