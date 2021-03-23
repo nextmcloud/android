@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2024 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<resources>
+    <string name="upload_scan_document">Dokument scannen</string>
+    <string name="result_scan_doc_dont_move">Nicht bewegen</string>
+    <string name="result_scan_doc_move_closer">Näher heranbewegen</string>
+    <string name="result_scan_doc_perspective">Perspektive</string>
+    <string name="result_scan_doc_no_doc">Kein Dokument</string>
+    <string name="result_scan_doc_bg_noisy">Hintergrund zu unruhig</string>
+    <string name="result_scan_doc_aspect_ratio">Falsches Bildformat.\nDrehen Sie Ihr Gerät.</string>
+    <string name="result_scan_doc_poor_light">Schwaches Licht</string>
+    <string name="scanned_doc_count">%d von %d</string>
+    <string name="title_edit_scan">Scan bearbeiten</string>
+    <string name="title_crop_scan">Scan beschneiden</string>
+    <string name="crop_btn_reset_crop_text">Rahmen zurücksetzen</string>
+    <string name="crop_btn_detect_doc_text">Dokument erkennen</string>
+    <string name="edit_scan_filter_dialog_title">Filter anwenden</string>
+    <string name="edit_scan_filter_none">Kein Filter</string>
+    <string name="edit_scan_filter_pure_binarized">Whiteboard</string>
+    <string name="edit_scan_filter_color_enhanced">Foto Filter</string>
+    <string name="edit_scan_filter_b_n_w">Schwarz-Weiß</string>
+    <string name="edit_scan_filter_color_document">Dokument Filter</string>
+    <string name="edit_scan_filter_grey">Grau</string>
+    <string name="automatic">Automatisch</string>
+    <string name="flash">Blitz</string>
+    <string name="title_save_as">Speichern unter</string>
+    <string name="scan_save_filename">Dateiname</string>
+    <string name="scan_save_location">Speicherort</string>
+    <string name="scan_save_location_root">/Hauptverzeichnis</string>
+    <string name="scan_save_file_type">Dateityp</string>
+    <string name="scan_save_without_text_recognition">Speichern ohne Texterkennung</string>
+    <string name="scan_save_with_text_recognition">Speichern mit Texterkennung</string>
+    <string name="scan_save_file_type_txt">Textdokument (txt)</string>
+    <string name="scan_save_pdf_password">PDF-Passwort</string>
+    <string name="scan_save_set_password_hint">Passwort setzen</string>
+    <string name="scan_save_no_file_select_toast">Bitten wählen sie mindestens einen Dateityp zum Speichern aus.</string>
+    <string name="save_scan_empty_pdf_password">Bitte geben Sie ein Passwort für das zu erstellende PDF ein oder deaktivieren Sie die Funktion.</string>
+    <string name="scan_save_file_type_text">Sie können die gescannten Dokumente mit oder ohne Texterkennung abspeichern. Sie können auch mehrere Dateiformate auswählen.</string>
+    <string name="camera_permission_denied">Sie können keine Dokumente scannen ohne die Erlaubnis die Kamera zu verwenden.</string>
+    <string name="description_add_more_scan">Weiteres Dokument hinzufügen</string>
+    <string name="description_crop_scan">Gescanntes Dokument zuschneiden</string>
+    <string name="description_filter_scan">Gescanntes Dokument filtern</string>
+    <string name="description_rotate_scan">Gescanntes Dokument drehen</string>
+    <string name="description_delete_scan">Gescanntes Dokument löschen</string>
+    <string name="description_edit_filename">Scan-Dateinamen bearbeiten</string>
+    <string name="description_edit_location">Scan-Speicherort bearbeiten</string>
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_save_scan_message">Das Speichern kann einige Minuten in Anspruch nehmen, insbesondere wenn Sie mehrere Seiten und Dateiformate ausgewählt haben.</string>
+    <string name="foreground_service_save">Dateien werden gespeichert…</string>
+    <string name="notification_channel_image_save">Benachrichtigungskanal zum Speichern von Bildern</string>
+    <string name="notification_channel_image_save_description">Zeigt den Fortschritt der Bildspeicherung an</string>
+</resources>
