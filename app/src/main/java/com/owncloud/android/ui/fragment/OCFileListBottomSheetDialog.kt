@@ -20,7 +20,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.isEmpty
 import androidx.core.view.isNotEmpty
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.gson.Gson
@@ -31,7 +30,6 @@ import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.documentscan.AppScanOptionalFeature
 import com.nextcloud.utils.BuildHelper.isFlavourGPlay
 import com.nextcloud.utils.EditorUtils
-import com.nextcloud.utils.extensions.isNetworkAndServerAvailableSuspended
 import com.nextcloud.utils.extensions.isTemplateAvailable
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.owncloud.android.MainApp
@@ -46,9 +44,7 @@ import com.owncloud.android.utils.MimeTypeUtil
 import com.owncloud.android.utils.PermissionUtil
 import com.owncloud.android.utils.theme.ThemeUtils
 import com.owncloud.android.utils.theme.ViewThemeUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.nmc.android.utils.ScanBotSdkUtils
 
 @Suppress("LongParameterList")
 class OCFileListBottomSheetDialog(
@@ -118,6 +114,13 @@ class OCFileListBottomSheetDialog(
 
         if (!deviceInfo.hasCamera(context)) {
             binding.menuDirectCameraUpload.visibility = View.GONE
+            binding.menuScanDocument.visibility = View.GONE
+        }
+
+        // check if scanbot sdk license is valid or not
+        // hide the view if license is not valid
+        if (!ScanBotSdkUtils.isScanBotLicenseValid(fileActivity)) {
+            binding.menuScanDocument.visibility = View.GONE
         }
 
         createRichWorkspace()
@@ -425,24 +428,29 @@ class OCFileListBottomSheetDialog(
                 // Invert animation
                 bottomSheetViewSwitcher.showPrevious()
             }
+
+            menuScanDocument.setOnClickListener{
+                actions.scanDocument()
+                dismiss()
+            }
         }
     }
 
     private fun filterActionsForOfflineOperations() {
-        lifecycleScope.launch {
-            val available = fileActivity.connectivityService.isNetworkAndServerAvailableSuspended()
-            if (available && (!file.isOfflineOperation || file.isRootDirectory)) {
-                return@launch
+        fileActivity.connectivityService.isNetworkAndServerAvailable { result: Boolean? ->
+            if (file.isRootDirectory) {
+                return@isNetworkAndServerAvailable
             }
-            hideCreationOptions()
-        }
-    }
 
-    private suspend fun hideCreationOptions() = withContext(Dispatchers.Main) {
-        binding.run {
-            menuCreateRichWorkspace.visibility = View.GONE
-            creatorsOverviewContainer.visibility = View.GONE
-            menuEncryptedMkdir.visibility = View.GONE
+            if (!result!! || file.isOfflineOperation) {
+                binding.run {
+                    menuCreateRichWorkspace.visibility = View.GONE
+                    menuUploadFromApp.visibility = View.GONE
+                    menuDirectCameraUpload.visibility = View.GONE
+                    menuScanDocUpload.visibility = View.GONE
+                    creatorsOverviewContainer.visibility = View.GONE
+                }
+            }
         }
     }
 
