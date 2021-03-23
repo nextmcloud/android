@@ -7,7 +7,6 @@
  */
 package com.nextcloud.client.di
 
-import com.nextcloud.appscan.ScanPageContract
 import com.nextcloud.client.documentscan.AppScanOptionalFeature
 import dagger.Module
 import dagger.Provides
@@ -18,8 +17,6 @@ internal class VariantModule {
     @Provides
     @Reusable
     fun scanOptionalFeature(): AppScanOptionalFeature {
-        return object : AppScanOptionalFeature() {
-            override fun getScanContract() = ScanPageContract()
-        }
+        return AppScanOptionalFeature.Stub
     }
 }
