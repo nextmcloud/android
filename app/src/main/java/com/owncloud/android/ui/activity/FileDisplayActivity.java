@@ -80,6 +80,7 @@ import com.owncloud.android.datamodel.MediaFolderType;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.datamodel.SyncedFolder;
 import com.owncloud.android.datamodel.SyncedFolderProvider;
+import com.nmc.android.scans.SaveScannedDocumentFragment;
 import com.owncloud.android.datamodel.VirtualFolderType;
 import com.owncloud.android.files.services.NameCollisionPolicy;
 import com.owncloud.android.lib.common.OwnCloudClient;
@@ -212,6 +213,7 @@ public class FileDisplayActivity extends FileActivity
     public static final int REQUEST_CODE__MOVE_OR_COPY_FILES = REQUEST_CODE__LAST_SHARED + 3;
     public static final int REQUEST_CODE__UPLOAD_FROM_CAMERA = REQUEST_CODE__LAST_SHARED + 5;
     public static final int REQUEST_CODE__UPLOAD_FROM_VIDEO_CAMERA = REQUEST_CODE__LAST_SHARED + 6;
+    public static final int REQUEST_CODE__SCAN_DOCUMENT = REQUEST_CODE__LAST_SHARED + 9;
 
     protected static final long DELAY_TO_REQUEST_REFRESH_OPERATION_LATER = DELAY_TO_REQUEST_OPERATIONS_LATER + 350;
 
@@ -917,6 +919,26 @@ public class FileDisplayActivity extends FileActivity
             exitSelectionMode();
         } else if (requestCode == PermissionUtil.REQUEST_CODE_MANAGE_ALL_FILES) {
             syncAndUpdateFolder(true);
+        } else if (requestCode == REQUEST_CODE__SCAN_DOCUMENT && resultCode == RESULT_OK) {
+
+            OCFile remoteFilePath = data.getParcelableExtra(SaveScannedDocumentFragment.EXTRA_SCAN_DOC_REMOTE_PATH);
+            if (remoteFilePath == null) {
+                remoteFilePath = getCurrentDir();
+            }
+
+            Log_OC.d(this, "Scan Document save remote path: " + remoteFilePath.getRemotePath());
+
+            // NMC-2418 fix
+            if (remoteFilePath.getRemotePath().equals(getCurrentDir().getRemotePath())) {
+                Log_OC.d(this, "Both current and scan paths are same. Skipping redirection.");
+                return;
+            }
+
+            OCFileListFragment fileListFragment = getListOfFilesFragment();
+            if (fileListFragment != null) {
+                fileListFragment.onItemClicked(remoteFilePath);
+            }
+
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
