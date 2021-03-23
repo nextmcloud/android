@@ -92,7 +92,9 @@ class FileListAdapterHelperTest {
             onlyOnDevice = false,
             limitToMimeType = mime,
             preferences = preferences,
-            userId = userId
+            userId = userId,
+            showOnlyFolder = false,
+            hideEncryptedFolder = false
         )
     }
 

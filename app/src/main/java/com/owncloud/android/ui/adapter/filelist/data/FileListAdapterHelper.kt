@@ -31,6 +31,8 @@ class FileListAdapterHelper {
         dataProvider: FileListAdapterDataProvider,
         onlyOnDevice: Boolean,
         limitToMimeType: String,
+        showOnlyFolder: Boolean,
+        hideEncryptedFolder: Boolean,
         preferences: AppPreferences,
         userId: String,
         onComplete: (List<OCFile>, FileSortOrder) -> Unit
@@ -44,6 +46,8 @@ class FileListAdapterHelper {
                 dataProvider,
                 onlyOnDevice,
                 limitToMimeType,
+                showOnlyFolder,
+                hideEncryptedFolder,
                 preferences,
                 userId
             )
@@ -59,6 +63,8 @@ class FileListAdapterHelper {
         dataProvider: FileListAdapterDataProvider,
         onlyOnDevice: Boolean,
         limitToMimeType: String,
+        showOnlyFolder: Boolean,
+        hideEncryptedFolder: Boolean,
         preferences: AppPreferences,
         userId: String
     ): Pair<List<OCFile>, FileSortOrder> {
@@ -70,6 +76,11 @@ class FileListAdapterHelper {
         val filtered = ArrayList<OCFile>(rawResult.size)
 
         for (file in rawResult) {
+            // NMC filter condition to show only folder with or without encrypted folders
+            if ((showOnlyFolder && !file.isFolder) || (hideEncryptedFolder && file.isEncrypted)) {
+                continue
+            }
+
             if (!showHiddenFiles && file.isHidden) {
                 continue
             }

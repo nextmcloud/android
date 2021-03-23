@@ -729,6 +729,23 @@ class FileOperationsHelper(
         queueOperationAndShowWaitDialog(intent)
     }
 
+    /**
+     * NMC
+     * create folder in remote if it doesn't exist if exist then we will ignore creating
+     *
+     * @param remotePath                 to be created
+     * @param isCheckOnlyFolderExistence to check only folder exists or not and will not create folder if flag is true
+     */
+    fun createFolderIfNotExist(remotePath: String, isCheckOnlyFolderExistence: Boolean) {
+        val intent = operationIntent(OperationsService.ACTION_CREATE_FOLDER_NOT_EXIST).apply {
+            putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.account)
+            putExtra(OperationsService.EXTRA_REMOTE_PATH, remotePath)
+            putExtra(OperationsService.EXTRA_CHECK_ONLY_FOLDER_EXISTENCE, isCheckOnlyFolderExistence)
+        }
+
+        queueOperationAndShowWaitDialog(intent)
+    }
+
     fun restoreFileVersion(fileVersion: FileVersion?) {
         if (fileVersion == null) {
             Log_OC.e(TAG, "Trying to restore a NULL FileVersion")
