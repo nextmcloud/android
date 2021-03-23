@@ -33,6 +33,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.res.ResourcesCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nextcloud.client.di.Injectable
 import com.owncloud.android.R
@@ -72,6 +73,8 @@ open class FolderPickerActivity :
     private var mSyncBroadcastReceiver: SyncBroadcastReceiver? = null
     private var mSyncInProgress = false
     private var mSearchOnlyFolders = false
+    private var mShowOnlyFolder = false
+    private var mHideEncryptedFolder = false
     var isDoNotEnterEncryptedFolder = false
         private set
 
@@ -125,12 +128,27 @@ open class FolderPickerActivity :
     }
 
     private fun setupAction() {
+        mShowOnlyFolder = intent.getBooleanExtra(EXTRA_SHOW_ONLY_FOLDER, false)
+        mHideEncryptedFolder = intent.getBooleanExtra(EXTRA_HIDE_ENCRYPTED_FOLDER, false)
+
         action = intent.getStringExtra(EXTRA_ACTION)
 
-        if (action != null && action == CHOOSE_LOCATION) {
-            setupUIForChooseButton()
+        if (action != null) {
+            when (action) {
+                MOVE_OR_COPY -> {
+                    captionText = resources.getText(R.string.folder_picker_choose_caption_text).toString()
+                    mSearchOnlyFolders = true
+                    isDoNotEnterEncryptedFolder = true
+                }
+
+                CHOOSE_LOCATION -> {
+                    setupUIForChooseButton()
+                }
+
+                else -> configureDefaultCase()
+            }
         } else {
-            captionText = themeUtils.getDefaultDisplayNameForRootFolder(this)
+            configureDefaultCase()
         }
     }
 
@@ -139,9 +157,10 @@ open class FolderPickerActivity :
     }
 
     private fun setupUIForChooseButton() {
-        captionText = resources.getText(R.string.folder_picker_choose_caption_text).toString()
+        captionText = resources.getText(R.string.choose_location).toString()
         mSearchOnlyFolders = true
         isDoNotEnterEncryptedFolder = true
+        mShowOnlyFolder = true
 
         if (this is FilePickerActivity) {
             return
@@ -152,6 +171,15 @@ open class FolderPickerActivity :
             folderPickerBinding.chooseButtonSpacer.visibility = View.VISIBLE
             folderPickerBinding.moveOrCopyButtonSpacer.visibility = View.GONE
         }
+    }
+
+    private fun configureDefaultCase() {
+        // NMC Customization
+        folderPickerBinding.folderPickerBtnCopy.text = resources.getString(R.string.folder_picker_choose_button_text)
+        folderPickerBinding.folderPickerBtnMove.visibility = View.GONE
+        folderPickerBinding.moveOrCopyButtonSpacer.visibility = View.GONE
+
+        captionText = themeUtils.getDefaultDisplayNameForRootFolder(this)
     }
 
     private fun handleOnBackPressed() {
@@ -370,7 +398,7 @@ open class FolderPickerActivity :
         }
 
     private fun refreshListOfFilesFragment(fromSearch: Boolean) {
-        listOfFilesFragment?.listDirectory(false, fromSearch)
+        listOfFilesFragment?.listDirectoryFolder(false, fromSearch)
     }
 
     fun browseToRoot() {
@@ -428,23 +456,18 @@ open class FolderPickerActivity :
 
     private fun initControls() {
         if (this is FilePickerActivity) {
-            viewThemeUtils.material.colorMaterialButtonPrimaryFilled(filesPickerBinding.folderPickerBtnCancel)
             filesPickerBinding.folderPickerBtnCancel.setOnClickListener { finish() }
         } else {
-            viewThemeUtils.material.colorMaterialButtonText(folderPickerBinding.folderPickerBtnCancel)
             folderPickerBinding.folderPickerBtnCancel.setOnClickListener { finish() }
 
-            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(folderPickerBinding.folderPickerBtnChoose)
             folderPickerBinding.folderPickerBtnChoose.setOnClickListener { processOperation(null) }
 
-            viewThemeUtils.material.colorMaterialButtonPrimaryFilled(folderPickerBinding.folderPickerBtnCopy)
             folderPickerBinding.folderPickerBtnCopy.setOnClickListener {
                 processOperation(
                     OperationsService.ACTION_COPY_FILE
                 )
             }
 
-            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(folderPickerBinding.folderPickerBtnMove)
             folderPickerBinding.folderPickerBtnMove.setOnClickListener {
                 processOperation(
                     OperationsService.ACTION_MOVE_FILE
@@ -671,6 +694,12 @@ open class FolderPickerActivity :
 
         @JvmField
         val EXTRA_ACTION = FolderPickerActivity::class.java.canonicalName?.plus(".EXTRA_ACTION")
+
+        @JvmField
+        val EXTRA_SHOW_ONLY_FOLDER = FolderPickerActivity::class.java.canonicalName?.plus(".EXTRA_SHOW_ONLY_FOLDER")
+
+        @JvmField
+        val EXTRA_HIDE_ENCRYPTED_FOLDER = FolderPickerActivity::class.java.canonicalName?.plus(".EXTRA_HIDE_ENCRYPTED_FOLDER")
 
         const val MOVE_OR_COPY = "MOVE_OR_COPY"
         const val CHOOSE_LOCATION = "CHOOSE_LOCATION"
