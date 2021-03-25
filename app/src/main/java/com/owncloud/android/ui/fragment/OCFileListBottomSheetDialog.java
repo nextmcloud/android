@@ -43,6 +43,7 @@ import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.utils.MimeTypeUtil;
 import com.owncloud.android.utils.theme.ThemeUtils;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
+import com.nmc.android.utils.ScanBotSdkUtils;
 
 /**
  * FAB menu {@link android.app.Dialog} styled as a bottom sheet for main actions.
@@ -147,6 +148,13 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
 
         if (!deviceInfo.hasCamera(getContext())) {
             binding.menuDirectCameraUpload.setVisibility(View.GONE);
+            binding.menuScanDocument.setVisibility(View.GONE);
+        }
+
+        //check if scanbot sdk licence is valid or not
+        //hide the view if license is not valid
+        if(!ScanBotSdkUtils.isScanBotLicenseValid(fileActivity)){
+           // binding.menuScanDocument.setVisibility(View.GONE);
         }
 
         // create rich workspace
