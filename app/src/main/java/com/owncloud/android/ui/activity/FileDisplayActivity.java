@@ -67,6 +67,7 @@ import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.client.utils.IntentUtil;
 import com.nextcloud.java.util.Optional;
 import com.nextcloud.utils.view.FastScrollUtils;
+import com.nmc.android.ui.ScanDocumentActivity;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FilesBinding;
@@ -197,6 +198,7 @@ public class FileDisplayActivity extends FileActivity
     public static final int REQUEST_CODE__COPY_FILES = REQUEST_CODE__LAST_SHARED + 4;
     public static final int REQUEST_CODE__UPLOAD_FROM_CAMERA = REQUEST_CODE__LAST_SHARED + 5;
     public static final int REQUEST_CODE__UPLOAD_SCAN_DOC_FROM_CAMERA = REQUEST_CODE__LAST_SHARED + 6;
+    public static final int REQUEST_CODE__SCAN_DOCUMENT = REQUEST_CODE__LAST_SHARED + 6;
 
     protected static final long DELAY_TO_REQUEST_REFRESH_OPERATION_LATER = DELAY_TO_REQUEST_OPERATIONS_LATER + 350;
 
@@ -879,6 +881,36 @@ public class FileDisplayActivity extends FileActivity
                                     );
         } else if (requestCode == PermissionUtil.REQUEST_CODE_MANAGE_ALL_FILES) {
             syncAndUpdateFolder(true);
+        } else if (requestCode == REQUEST_CODE__SCAN_DOCUMENT && resultCode == RESULT_OK) {
+
+            String path = data.getStringExtra(ScanDocumentActivity.getEXTRA_SCAN_DOCUMENT_PATH());
+
+            Log_OC.d(this,"Scan Document path: "+path);
+
+            new CheckAvailableSpaceTask(new CheckAvailableSpaceTask.CheckAvailableSpaceListener() {
+                @Override
+                public void onCheckAvailableSpaceStart() {
+                    Log_OC.d(this, "onCheckAvailableSpaceStart");
+                }
+
+                @Override
+                public void onCheckAvailableSpaceFinish(boolean hasEnoughSpaceAvailable, String... filesToUpload) {
+                    Log_OC.d(this, "onCheckAvailableSpaceFinish");
+
+                    if (hasEnoughSpaceAvailable) {
+                       /* File file = new File(filesToUpload[0]);
+                        File renamedFile = new File(file.getParent() + PATH_SEPARATOR + FileOperationsHelper.getCapturedImageName());
+
+                        if (!file.renameTo(renamedFile)) {
+                            DisplayUtils.showSnackMessage(getActivity(), "Fail to upload taken image!");
+                            return;
+                        }*/
+
+                       // requestUploadOfFilesFromFileSystem(new String[]{path},
+                         //                                  FileUploader.LOCAL_BEHAVIOUR_DELETE);
+                    }
+                }
+            }, new String[]{path}).execute();
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
