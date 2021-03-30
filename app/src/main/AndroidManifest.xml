@@ -73,6 +73,7 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <!-- largeHeap true required for Scanbot OCR   -->
     <application
         android:name=".MainApp"
         android:allowBackup="false"
@@ -81,6 +82,7 @@
         android:icon="@mipmap/ic_launcher"
         android:installLocation="internalOnly"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:manageSpaceActivity="com.owncloud.android.ui.activity.ManageSpaceActivity"
         android:networkSecurityConfig="@xml/network_security_config"
         android:requestLegacyExternalStorage="true"
@@ -99,13 +101,9 @@
             android:name=".ui.activity.FileDisplayActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
+            android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.ownCloud.Launcher">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:theme="@style/Theme.ownCloud.Toolbar.Drawer">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -223,7 +221,19 @@
             android:exported="false"
             android:theme="@style/Theme.ownCloud.Overlay" />
 
-        <activity android:name="com.nmc.android.ui.ScanDocumentActivity"
+        <activity
+            android:name="com.nmc.android.ui.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ownCloud.Splash" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.nmc.android.ui.ScanDocumentActivity"
             android:screenOrientation="portrait"
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden"/>
@@ -496,6 +506,7 @@
             android:name="com.nextcloud.client.documentscan.DocumentScanActivity"
             android:exported="false"
             android:theme="@style/Theme.ownCloud.Toolbar" />
+
     </application>
 
     <queries>

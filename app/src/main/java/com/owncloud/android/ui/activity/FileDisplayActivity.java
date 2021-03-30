@@ -248,7 +248,7 @@ public class FileDisplayActivity extends FileActivity
     protected void onCreate(Bundle savedInstanceState) {
         Log_OC.v(TAG, "onCreate() start");
         // Set the default theme to replace the launch screen theme.
-        setTheme(R.style.Theme_ownCloud_Toolbar_Drawer);
+        //setTheme(R.style.Theme_ownCloud_Toolbar_Drawer);
 
         super.onCreate(savedInstanceState);
         loadSavedInstanceState(savedInstanceState);
