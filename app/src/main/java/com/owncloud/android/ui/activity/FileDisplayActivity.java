@@ -67,7 +67,7 @@ import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.client.utils.IntentUtil;
 import com.nextcloud.java.util.Optional;
 import com.nextcloud.utils.view.FastScrollUtils;
-import com.nmc.android.ui.ScanDocumentActivity;
+import com.nmc.android.ui.ScanDocumentFragment;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FilesBinding;
@@ -883,7 +883,7 @@ public class FileDisplayActivity extends FileActivity
             syncAndUpdateFolder(true);
         } else if (requestCode == REQUEST_CODE__SCAN_DOCUMENT && resultCode == RESULT_OK) {
 
-            String path = data.getStringExtra(ScanDocumentActivity.getEXTRA_SCAN_DOCUMENT_PATH());
+            String path = data.getStringExtra(ScanDocumentFragment.getEXTRA_SCAN_DOCUMENT_PATH());
 
             Log_OC.d(this,"Scan Document path: "+path);
 

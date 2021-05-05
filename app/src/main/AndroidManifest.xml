@@ -233,7 +233,7 @@
         </activity>
 
         <activity
-            android:name="com.nmc.android.ui.ScanDocumentActivity"
+            android:name="com.nmc.android.ui.ScanActivity"
             android:screenOrientation="portrait"
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden"/>

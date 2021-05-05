@@ -176,6 +176,10 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
         }
     }
 
+    public void showHideToolbar(boolean isShow){
+        mDefaultToolbar.setVisibility(isShow  ? View.VISIBLE : View.GONE);
+    }
+
     /**
      * Updates title bar and home buttons (state and icon).
      */

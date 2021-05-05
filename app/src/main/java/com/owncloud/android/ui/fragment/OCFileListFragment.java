@@ -62,6 +62,7 @@ import com.nextcloud.ui.fileactions.FileActionsBottomSheet;
 import com.nextcloud.utils.EditorUtils;
 import com.nextcloud.utils.ShortcutUtil;
 import com.nextcloud.utils.view.FastScrollUtils;
+import com.nmc.android.ui.ScanActivity;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -81,7 +82,7 @@ import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.ui.activity.FileDisplayActivity;
 import com.owncloud.android.ui.activity.FolderPickerActivity;
 import com.owncloud.android.ui.activity.OnEnforceableRefreshListener;
-import com.nmc.android.ui.ScanDocumentActivity;
+import com.nmc.android.ui.ScanDocumentFragment;
 import com.owncloud.android.ui.activity.ToolbarActivity;
 import com.owncloud.android.ui.activity.UploadFilesActivity;
 import com.owncloud.android.ui.adapter.CommonOCFileListAdapterInterface;
@@ -547,9 +548,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Override
     public void scanDocument() {
-        ScanDocumentActivity.startScanDocumentActivityForResult(
+        ScanActivity.openScanActivity(getActivity());
+   /*     ScanDocumentFragment.startScanDocumentActivityForResult(
             getActivity(),
-            FileDisplayActivity.REQUEST_CODE__SCAN_DOCUMENT);
+            FileDisplayActivity.REQUEST_CODE__SCAN_DOCUMENT);*/
     }
 
     @Override
