@@ -1003,7 +1003,7 @@
     <string name="title_save_as">Save as</string>
     <string name="scan_save_filename">Filename</string>
     <string name="scan_save_location">Location</string>
-    <string name="scan_save_location_root">Root folder</string>
+    <string name="scan_save_location_root">/Root folder</string>
     <string name="scan_save_file_type">File type</string>
     <string name="scan_save_without_text_recognition">Save without text recognition</string>
     <string name="scan_save_with_text_recognition">Save with text recognition</string>

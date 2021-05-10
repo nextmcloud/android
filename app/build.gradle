@@ -380,6 +380,8 @@ dependencies {
 
     //scanbot sdk
     implementation "io.scanbot:sdk-package-1:$scanbotSdkVersion"
+
+    implementation files('src\\main\\libs\\itextpdf-5.5.6.jar')
 }
 
 configurations.all {
