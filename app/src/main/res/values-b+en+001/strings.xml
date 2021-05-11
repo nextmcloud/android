@@ -392,6 +392,7 @@
     <string name="forbidden_permissions_rename">to rename this file</string>
     <string name="foreground_service_download">Downloading files…</string>
     <string name="foreground_service_upload">Uploading files…</string>
+    <string name="foreground_service_save">Saving files…</string>
     <string name="foreign_files_fail">Some files could not be moved</string>
     <string name="foreign_files_local_text">Local: %1$s</string>
     <string name="foreign_files_move">Move all</string>
@@ -507,6 +508,9 @@
     <string name="notification_channel_push_name">Push notifications</string>
     <string name="notification_channel_upload_description">Shows upload progress</string>
     <string name="notification_channel_upload_name_short">Uploads</string>
+    <string name="notification_channel_upload_name">Upload notification channel</string>
+    <string name="notification_channel_scan_doc_save">Save scanned documents notification channel</string>
+    <string name="notification_channel_scan_doc_save_description">Shows save progress</string>
     <string name="notification_icon">Notification icon</string>
     <string name="notifications_no_results_headline">No notifications</string>
     <string name="notifications_no_results_message">Please check back later.</string>

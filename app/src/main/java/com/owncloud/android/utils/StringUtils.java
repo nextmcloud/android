@@ -21,6 +21,13 @@
 package com.owncloud.android.utils;
 
 
+import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,5 +83,9 @@ public final class StringUtils {
             return s.substring(prefix.length());
         }
         return s;
+    }
+
+    public static List<String> convertStringToList(String input) {
+        return Arrays.asList(input.split("\\s*,\\s*"));
     }
 }
