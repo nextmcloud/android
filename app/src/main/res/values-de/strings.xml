@@ -10,11 +10,12 @@
     <string name="action_clear_failed_uploads">Fehlgeschlagene Uploads entfernen</string>
     <string name="action_edit">Bearbeiten</string>
     <string name="action_empty_notifications">Alle Benachrichtigungen löschen</string>
-    <string name="action_empty_trashbin">Papierkorb leeren</string>
+    <string name="action_empty_trashbin">Dateien endgültig löschen</string>
     <string name="action_send_share">Senden/Teilen</string>
     <string name="action_switch_grid_view">Rasteransicht</string>
     <string name="action_switch_list_view">Listenansicht</string>
-    <string name="actionbar_calendar_contacts_restore">Kontakte &amp; Kalender wiederherstellen</string>
+    <string name="actionbar_contacts">Kontakte sichern</string>
+    <string name="actionbar_contacts_restore">Adressen wiederherstellen</string>
     <string name="actionbar_copy">Kopieren</string>
     <string name="actionbar_mkdir">Neuer Ordner</string>
     <string name="actionbar_move">Verschieben</string>
@@ -92,7 +93,6 @@
     <string name="check_back_later_or_reload">Schauen Sie später noch einmal vorbei oder laden Sie neu.</string>
     <string name="checkbox">Checkbox</string>
     <string name="choose_local_folder">Wähle einen lokalen Ordner…</string>
-    <string name="choose_location">Ort wählen</string>
     <string name="choose_remote_folder">Wähle einen entfernten Ordner …</string>
     <string name="choose_template_helper_text">Bitte eine Vorlage auswählen und einen Dateinamen eingeben.</string>
     <string name="choose_which_file">Wählen Sie, welche Datei behalten werden soll!</string>
@@ -122,7 +122,6 @@
     <string name="common_remove">Löschen</string>
     <string name="common_rename">Umbenennen</string>
     <string name="common_save">Speichern</string>
-    <string name="common_select">Auswählen</string>
     <string name="common_send">Senden</string>
     <string name="common_share">Teilen</string>
     <string name="common_skip">Überspringen</string>
@@ -392,7 +391,7 @@
     <string name="forbidden_permissions_rename">diese Datei umzubenennen</string>
     <string name="foreground_service_download">Dateien werden heruntergeladen…</string>
     <string name="foreground_service_upload">Dateien werden hochgeladen…</string>
-    <string name="foreground_service_save">Saving files…</string>
+    <string name="foreground_service_save">Dateien werden gespeichert...</string>
     <string name="foreign_files_fail">Einige Dateien konnten nicht verschoben werden</string>
     <string name="foreign_files_local_text">Lokal: %1$s</string>
     <string name="foreign_files_move">Alle verschieben</string>
@@ -984,12 +983,12 @@
     </plurals>
 
     <string name="result_scan_doc_dont_move">Nicht bewegen</string>
-    <string name="result_scan_doc_move_closer">Move closer</string>
-    <string name="result_scan_doc_perspective">Perspective</string>
+    <string name="result_scan_doc_move_closer">Näher heranbewegen</string>
+    <string name="result_scan_doc_perspective">Perspektive</string>
     <string name="result_scan_doc_no_doc">Kein Dokument</string>
-    <string name="result_scan_doc_bg_noisy">Background too noisy</string>
-    <string name="result_scan_doc_aspect_ratio">Wrong aspect ratio.\nRotate your device.</string>
-    <string name="result_scan_doc_poor_light">Poor light</string>
+    <string name="result_scan_doc_bg_noisy">Hintergrund zu unruhig</string>
+    <string name="result_scan_doc_aspect_ratio">Falsches Bildformat.\nDrehen Sie Ihr Gerät.</string>
+    <string name="result_scan_doc_poor_light">Schwaches Licht</string>
     <string name="scanned_doc_count">%d von %d</string>
     <string name="title_edit_scan">Scam Bearbeiten</string>
     <string name="title_crop_scan">Scan beschneiden</string>
@@ -1009,11 +1008,13 @@
     <string name="scan_save_location">Speicherort</string>
     <string name="scan_save_location_root">/Hauptverzeichnis</string>
     <string name="scan_save_file_type">Dateityp</string>
-    <string name="scan_save_without_text_recognition">Save without text recognition</string>
-    <string name="scan_save_with_text_recognition">Save with text recognition</string>
+    <string name="scan_save_without_text_recognition">Speichern ohne Texterkennung</string>
+    <string name="scan_save_with_text_recognition">Speichern mit Texterkennung</string>
     <string name="scan_save_file_type_txt">Textdokument (txt)</string>
     <string name="scan_save_pdf_password">PDF-Passwort</string>
     <string name="scan_save_set_password_hint">Passwort setzen</string>
     <string name="scan_save_no_file_select_toast">Selectieren Sie mindestens einen Dateityp</string>
     <string name="scan_save_file_type_text">Sie kÃ¶nnen die Datei mit oder ohne Texterkennung abspeichern. Mehrfachauswahl ist erlaubt.</string>
+    <string name="choose_location">Speicherort wählen</string>
+    <string name="common_select">Auswählen</string>
 </resources>
