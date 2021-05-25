@@ -11,7 +11,7 @@
  *   Copyright (C) 2016 ownCloud Inc.
  *   Copyright (C) 2018 Andy Scherzinger
  *   Copyright (C) 2019 Chris Narkiewicz <hello@ezaquarii.com>
- *   Copyright (C) 2021 TSI-mc
+ *   Copyright (C) 2023 TSI-mc
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License version 2,
@@ -282,7 +282,8 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
                 R.id.action_copy,
                 R.id.action_stream_media,
                 R.id.action_send_share_file,
-                R.id.action_select_all_action_menu));
+                R.id.action_select_all_action_menu,
+                R.id.action_rotate_image));
         if (getFile().isFolder()) {
             additionalFilter.add(R.id.action_send_file);
             additionalFilter.add(R.id.action_sync_file);

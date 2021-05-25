@@ -639,6 +639,12 @@ public class FileDisplayActivity extends FileActivity
 
     public void updateListOfFilesFragment(boolean fromSearch) {
         OCFileListFragment fileListFragment = getListOfFilesFragment();
+        // notify the adapter when rotate image upload is success
+        // by updating this will refresh the gallery and will avoid creating conflict via etagInConflict
+        if (fileListFragment instanceof GalleryFragment) {
+            ((GalleryFragment) fileListFragment).showAllGalleryItems();
+        }
+
         if (fileListFragment != null) {
             fileListFragment.listDirectory(MainApp.isOnlyOnDevice(), fromSearch);
         }
@@ -957,7 +963,8 @@ public class FileDisplayActivity extends FileActivity
                 UploadFileOperation.CREATED_BY_USER,
                 false,
                 false,
-                NameCollisionPolicy.ASK_USER
+                NameCollisionPolicy.ASK_USER,
+                false
                                       );
 
         } else {

@@ -627,6 +627,7 @@
 
     <string name="foreground_service_upload">Uploading files…</string>
     <string name="foreground_service_download">Downloading files…</string>
+    <string name="foreground_service_save">Saving files…</string>
 
     <string name="prefs_sourcecode">Get source code</string>
     <string name="prefs_license">License</string>
@@ -687,6 +688,8 @@
     <string name="notification_channel_media_description">Music player progress</string>
     <string name="notification_channel_file_sync_name">File sync</string>
     <string name="notification_channel_file_sync_description">Shows file sync progress and results</string>
+    <string name="notification_channel_image_save">Image save notification channel</string>
+    <string name="notification_channel_image_save_description">Shows image save progress</string>
 
     <string name="account_not_found">Account not found!</string>
 
@@ -906,6 +909,7 @@
     <string name="share_internal_link_to_file_text">Internal share link only works for users with access to this file</string>
     <string name="share_internal_link">Share internal link</string>
     <string name="action_edit">Edit</string>
+    <string name="action_rotate">Rotate</string>
     <string name="failed_to_start_editor">Failed to start editor</string>
     <string name="create_rich_workspace">Add folder info</string>
     <string name="creates_rich_workspace">creates folder info</string>

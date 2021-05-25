@@ -2,8 +2,10 @@
  * Nextcloud Android client application
  *
  *  @author Álvaro Brey
+ *  @author TSI-mc
  *  Copyright (C) 2022 Álvaro Brey
  *  Copyright (C) 2022 Nextcloud GmbH
+ *  Copyright (C) 2023 TSI-mc
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE
@@ -68,7 +70,10 @@ enum class FileAction(@IdRes val id: Int, @StringRes val title: Int, @DrawableRe
     LOCK_FILE(R.id.action_lock_file, R.string.lock_file, R.drawable.ic_lock),
 
     // Shortcuts
-    PIN_TO_HOMESCREEN(R.id.action_pin_to_homescreen, R.string.pin_home, R.drawable.add_to_home_screen);
+    PIN_TO_HOMESCREEN(R.id.action_pin_to_homescreen, R.string.pin_home, R.drawable.add_to_home_screen),
+
+    // Rotate
+    ROTATE_IMAGE(R.id.action_rotate_image, R.string.action_rotate, R.drawable.ic_rotate_right);
 
     companion object {
         /**
@@ -85,6 +90,7 @@ enum class FileAction(@IdRes val id: Int, @StringRes val title: Int, @DrawableRe
             RENAME_FILE,
             MOVE,
             COPY,
+            ROTATE_IMAGE,
             DOWNLOAD_FILE,
             EXPORT_FILE,
             STREAM_MEDIA,

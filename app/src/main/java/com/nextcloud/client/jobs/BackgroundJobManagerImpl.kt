@@ -2,7 +2,9 @@
  * Nextcloud Android client application
  *
  * @author Chris Narkiewicz
+ * @author TSI-mc
  * Copyright (C) 2020 Chris Narkiewicz <hello@ezaquarii.com>
+ * Copyright (C) 2023 TSI-mc
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -82,6 +84,7 @@ internal class BackgroundJobManagerImpl(
         const val JOB_ACCOUNT_REMOVAL = "account_removal"
         const val JOB_FILES_UPLOAD = "files_upload"
         const val JOB_PDF_GENERATION = "pdf_generation"
+        const val JOB_IMAGE_FILES_UPLOAD = "immediate_image_files_upload"
         const val JOB_IMMEDIATE_CALENDAR_BACKUP = "immediate_calendar_backup"
         const val JOB_IMMEDIATE_FILES_EXPORT = "immediate_files_export"
 
@@ -462,6 +465,14 @@ internal class BackgroundJobManagerImpl(
     override fun getFileUploads(user: User): LiveData<List<JobInfo>> {
         val workInfo = workManager.getWorkInfosByTagLiveData(formatNameTag(JOB_FILES_UPLOAD, user))
         return workInfo.map { it -> it.map { fromWorkInfo(it) ?: JobInfo() } }
+    }
+
+    override fun scheduleImmediateUploadImagesJob(): LiveData<JobInfo?> {
+        val request = oneTimeRequestBuilder(UploadImagesWorker::class, JOB_IMAGE_FILES_UPLOAD)
+            .build()
+
+        workManager.enqueueUniqueWork(JOB_IMAGE_FILES_UPLOAD, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+        return workManager.getJobInfo(request.id)
     }
 
     override fun startPdfGenerateAndUploadWork(

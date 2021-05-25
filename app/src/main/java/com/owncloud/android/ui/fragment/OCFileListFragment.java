@@ -609,8 +609,11 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     public void openActionsMenu(final int filesCount, final Set<OCFile> checkedFiles, final boolean isOverflow) {
         throttler.run("overflowClick", () -> {
+            final List<Integer> additionalFilter = new ArrayList<>();
+            //hide the rotate menu for overflow menu
+            additionalFilter.add(R.id.action_rotate_image);
             final FragmentManager childFragmentManager = getChildFragmentManager();
-            FileActionsBottomSheet.newInstance(filesCount, checkedFiles, isOverflow)
+            FileActionsBottomSheet.newInstance(filesCount, checkedFiles, isOverflow, additionalFilter)
                 .setResultListener(childFragmentManager, this, (id) -> {
                     onFileActionChosen(id, checkedFiles);
                 })
@@ -1378,6 +1381,13 @@ public class OCFileListFragment extends ExtendedListFragment implements
         } else if (isSearchEventSet(searchEvent)) {
             handleSearchEvent(searchEvent);
             mRefreshListLayout.setRefreshing(false);
+        }
+
+        //this method will also be called when uploading of the any file (rotated image) is finished
+        //even though we are updating gallery adapter from FileDisplayActivity.updateListOfFilesFragment we need to update here too
+        //to show the updated thumbnail after user comes back to gallery view from preview page
+        if (searchEvent != null && searchEvent.getSearchType() == SearchRemoteOperation.SearchType.PHOTO_SEARCH && getRecyclerView().getAdapter() != null){
+             getRecyclerView().getAdapter().notifyDataSetChanged();
         }
     }
 

@@ -3,9 +3,11 @@
  *
  *   @author David A. Velasco
  *   @author Chris Narkiewicz
+ *   @author TSI-mc
  *
  *   Copyright (C) 2016  ownCloud Inc.
  *   Copyright (C) 2019 Chris Narkiewicz <hello@ezaquarii.com>
+ *   Copyright (C) 2023 TSI-mc
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License version 2,
@@ -29,7 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.graphics.Color;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.MenuItem;
@@ -37,6 +39,7 @@ import android.view.View;
 
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.di.Injectable;
+import com.nextcloud.client.jobs.BackgroundJobManager;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.java.util.Optional;
 import com.owncloud.android.MainApp;
@@ -61,6 +64,8 @@ import com.owncloud.android.utils.MimeTypeUtil;
 
 import java.io.Serializable;
 
+import java.util.HashMap;
+
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
@@ -79,12 +84,14 @@ public class PreviewImageActivity extends FileActivity implements
         FileFragment.ContainerActivity,
         ViewPager.OnPageChangeListener,
         OnRemoteOperationListener,
+        PreviewImageFragment.OnImageLoadListener,
         Injectable {
 
     public static final String TAG = PreviewImageActivity.class.getSimpleName();
     public static final String EXTRA_VIRTUAL_TYPE = "EXTRA_VIRTUAL_TYPE";
     private static final String KEY_WAITING_FOR_BINDER = "WAITING_FOR_BINDER";
     private static final String KEY_SYSTEM_VISIBLE = "TRUE";
+    private static final String KEY_ROTATED_IMAGES_SIZE = "ROTATED_IMAGES_MAP_SIZE";
 
     private ViewPager mViewPager;
     private PreviewImagePagerAdapter mPreviewImagePagerAdapter;
@@ -95,6 +102,15 @@ public class PreviewImageActivity extends FileActivity implements
     private View mFullScreenAnchorView;
     @Inject AppPreferences preferences;
     @Inject LocalBroadcastManager localBroadcastManager;
+    @Inject BackgroundJobManager backgroundJobManager;
+
+    //bitmap hash map to hold the rotated images bitmap
+    //LoadImage use is used because it will hold bitmap and OCFile which will later use for uploading
+    public static final HashMap<Integer, PreviewImageFragment.LoadImage> bitmapHashMap = new HashMap<>();
+
+    //this hashmap will hold the rotated image bitmap so that when device rotated we can show the
+    //rotated bitmap
+    private static final HashMap<Integer, PreviewImageFragment.LoadImage> localBitmapHashMap = new HashMap<>();
 
     public static Intent previewFileIntent(Context context, User user, OCFile file) {
         final Intent intent = new Intent(context, PreviewImageActivity.class);
@@ -116,6 +132,13 @@ public class PreviewImageActivity extends FileActivity implements
 
         setContentView(R.layout.preview_image_activity);
 
+        //clear the static bitmap hashmap on every on create to clear old data
+        //if saved instance is not null that means device is rotated and hashmap may have some data so no need to
+        // reset it
+        if (savedInstanceState == null || !savedInstanceState.containsKey(KEY_ROTATED_IMAGES_SIZE)) {
+            bitmapHashMap.clear();
+            localBitmapHashMap.clear();
+        }
         // Navigation Drawer
         setupDrawer();
 
@@ -171,7 +194,7 @@ public class PreviewImageActivity extends FileActivity implements
         mViewPager = findViewById(R.id.fragmentPager);
 
         int position = mHasSavedPosition ? mSavedPosition : mPreviewImagePagerAdapter.getFilePosition(getFile());
-        position = position >= 0 ? position : 0;
+        position = Math.max(position, 0);
 
         mViewPager.setAdapter(mPreviewImagePagerAdapter);
         mViewPager.addOnPageChangeListener(this);
@@ -223,6 +246,8 @@ public class PreviewImageActivity extends FileActivity implements
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_WAITING_FOR_BINDER, mRequestWaitingForBinder);
         outState.putBoolean(KEY_SYSTEM_VISIBLE, isSystemUIVisible());
+        //set hashmap size when config changes to maintain the hashmap
+        outState.putInt(KEY_ROTATED_IMAGES_SIZE, bitmapHashMap.size());
     }
 
     @Override
@@ -247,7 +272,14 @@ public class PreviewImageActivity extends FileActivity implements
         return new PreviewImageServiceConnection();
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
+    @Override
+    public void onImageLoadCompleted() {
+        if (mViewPager != null) {
+            mViewPager.setBackgroundColor(getResources().getColor(R.color.background_color_inverse));
+        }
+    }
+
+    /*** Defines callbacks for service binding, passed to bindService() */
     private class PreviewImageServiceConnection implements ServiceConnection {
 
         @Override
@@ -288,6 +320,10 @@ public class PreviewImageActivity extends FileActivity implements
 
     @Override
     public void onStop() {
+        //start the image upload worker when activity goes to onStop state
+        if (bitmapHashMap.size() > 0) {
+            backgroundJobManager.scheduleImmediateUploadImagesJob();
+        }
         super.onStop();
     }
 
@@ -529,5 +565,22 @@ public class PreviewImageActivity extends FileActivity implements
             |   View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN       // draw full window;     Android >= 4.1
             |   View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // draw full window;     Android >= 4.
         );
+    }
+
+    //add the rotated bitmap to hash map
+    protected void addBitmap(PreviewImageFragment.LoadImage loadImage) {
+        bitmapHashMap.put(mSavedPosition, loadImage);
+        localBitmapHashMap.put(mSavedPosition, loadImage);
+    }
+
+    //get bitmap for passed index
+    protected Bitmap getCurrentBitmap(int index) {
+        if (localBitmapHashMap.size() > 0) {
+            PreviewImageFragment.LoadImage loadImage = localBitmapHashMap.get(index);
+            if (loadImage != null) {
+                return loadImage.bitmap;
+            }
+        }
+        return null;
     }
 }

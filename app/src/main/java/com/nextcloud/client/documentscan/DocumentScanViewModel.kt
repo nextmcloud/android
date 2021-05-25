@@ -2,8 +2,10 @@
  * Nextcloud Android client application
  *
  *  @author Álvaro Brey
+ *  @author TSI-mc
  *  Copyright (C) 2022 Álvaro Brey
  *  Copyright (C) 2022 Nextcloud GmbH
+ *  Copyright (C) 2023 TSI-mc
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE
@@ -199,7 +201,8 @@ class DocumentScanViewModel @Inject constructor(
             UploadFileOperation.CREATED_BY_USER,
             false,
             false,
-            NameCollisionPolicy.ASK_USER
+            NameCollisionPolicy.ASK_USER,
+            false
         )
     }
 

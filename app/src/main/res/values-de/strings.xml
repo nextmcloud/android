@@ -9,6 +9,7 @@
     <string name="account_not_found">Kein Konto gefunden</string>
     <string name="action_clear_failed_uploads">Fehlgeschlagene Uploads entfernen</string>
     <string name="action_edit">Bearbeiten</string>
+    <string name="action_rotate">Drehen</string>
     <string name="action_empty_notifications">Alle Benachrichtigungen löschen</string>
     <string name="action_empty_trashbin">Papierkorb leeren</string>
     <string name="action_send_share">Senden/Teilen</string>
@@ -392,6 +393,7 @@
     <string name="forbidden_permissions_rename">diese Datei umzubenennen</string>
     <string name="foreground_service_download">Dateien werden heruntergeladen…</string>
     <string name="foreground_service_upload">Dateien werden hochgeladen…</string>
+    <string name="foreground_service_save">Dateien werden gespeichert...</string>
     <string name="foreign_files_fail">Einige Dateien konnten nicht verschoben werden</string>
     <string name="foreign_files_local_text">Lokal: %1$s</string>
     <string name="foreign_files_move">Alle verschieben</string>
@@ -507,6 +509,8 @@
     <string name="notification_channel_push_name">Push-Benachrichtigungen</string>
     <string name="notification_channel_upload_description">Zeigt den Hochlade-Fortschritt an</string>
     <string name="notification_channel_upload_name_short">Uploads</string>
+    <string name="notification_channel_image_save">Benachrichtigungskanal zum Speichern von Bildern</string>
+    <string name="notification_channel_image_save_description">Zeigt den Fortschritt der Bildspeicherung an</string>
     <string name="notification_icon">Benachrichtigungssymbol</string>
     <string name="notifications_no_results_headline">Keine Benachrichtigungen</string>
     <string name="notifications_no_results_message">Bitte später noch einmal nachsehen.</string>
