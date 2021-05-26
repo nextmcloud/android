@@ -432,6 +432,19 @@
         <item name="android:background">?android:attr/colorBackground</item>
     </style>
 
+    <!-- NMC Customization -->
+    <style name="PositiveButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/dialog_positive_btn_color</item>
+    </style>
+
+    <style name="NegativeButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/alert_txt_color</item>
+    </style>
+
+    <style name="NeutralButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/alert_txt_color</item>
+    </style>
+
     <style name="PreferenceTheme" parent="FallbackThemingTheme">
         <item name="android:colorBackground">@color/bg_default</item>
         <item name="android:listDivider">@null</item>
