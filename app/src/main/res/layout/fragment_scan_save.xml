@@ -54,6 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/standard_padding"
+                android:contentDescription="@string/description_edit_filename"
                 android:src="@drawable/ic_pencil_edit"
                 android:tint="@color/secondary_text_color"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -105,6 +106,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/standard_padding"
+                android:contentDescription="@string/description_edit_location"
                 android:src="@drawable/ic_pencil_edit"
                 android:tint="@color/secondary_text_color"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -191,7 +193,7 @@
 
             <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/scan_save_without_txt_recognition_pdf_checkbox"
-                android:layout_width="32dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/standard_double_margin"
                 android:layout_marginRight="@dimen/standard_margin"
@@ -215,7 +217,7 @@
 
             <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/scan_save_without_txt_recognition_jpg_checkbox"
-                android:layout_width="32dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/standard_margin"
                 android:layout_marginRight="@dimen/standard_margin"
@@ -239,10 +241,10 @@
 
             <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/scan_save_without_txt_recognition_png_checkbox"
-                android:layout_width="32dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/standard_margin"
-                android:layout_marginRight="@dimen/standard_double_margin"
+                android:layout_marginRight="@dimen/standard_margin"
                 android:layout_marginBottom="@dimen/standard_margin"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scan_save_without_txt_recognition_png_check_label" />
@@ -289,13 +291,13 @@
 
             <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/scan_save_with_txt_recognition_pdf_checkbox"
-                android:layout_width="32dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/standard_double_margin"
                 android:layout_marginRight="@dimen/standard_margin"
                 android:layout_marginBottom="@dimen/standard_margin"
                 app:layout_constraintEnd_toEndOf="@+id/scan_save_with_txt_recognition_pdf_check_label"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/scan_save_with_txt_recognition_pdf_check_label"
                 app:layout_constraintTop_toBottomOf="@+id/scan_save_with_txt_recognition_pdf_check_label" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -314,13 +316,13 @@
 
             <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/scan_save_with_txt_recognition_txt_checkbox"
-                android:layout_width="32dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/standard_margin"
                 android:layout_marginRight="@dimen/standard_margin"
                 android:layout_marginBottom="@dimen/standard_margin"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/scan_save_with_txt_recognition_txt_check_label"
+                app:layout_constraintStart_toStartOf="@+id/scan_save_with_txt_recognition_txt_check_label"
                 app:layout_constraintTop_toBottomOf="@+id/scan_save_with_txt_recognition_txt_check_label" />
 
             <View
