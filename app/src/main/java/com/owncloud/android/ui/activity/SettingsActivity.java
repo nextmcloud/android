@@ -45,11 +45,13 @@ import com.nextcloud.client.etm.EtmActivity;
 import com.nextcloud.client.logger.ui.LogsActivity;
 import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.client.network.ConnectivityService;
+import com.nmc.android.ui.PrivacySettingsInterface;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.client.preferences.AppPreferencesImpl;
 import com.nextcloud.client.preferences.DarkMode;
 import com.owncloud.android.BuildConfig;
 import com.owncloud.android.MainApp;
+import com.nmc.android.ui.PrivacySettingsInterfaceImpl;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.AuthenticatorActivity;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -139,6 +141,16 @@ public class SettingsActivity extends PreferenceActivity
     @Inject ViewThemeUtils viewThemeUtils;
     @Inject ConnectivityService connectivityService;
 
+    /**
+     * Things to note about both the branches.
+     * 1. nmc/1921-settings branch:
+     *    --> interface won't be initialised
+     *    -->  calling of interface method will be done here
+     * 2. nmc/1878-privacy
+     *    --> interface will be initialised
+     *    --> calling of interface method won't be done here
+     */
+    private PrivacySettingsInterface privacySettingsInterface;
 
     @SuppressWarnings("deprecation")
     @Override
@@ -150,6 +162,9 @@ public class SettingsActivity extends PreferenceActivity
         addPreferencesFromResource(R.xml.preferences);
 
         setupActionBar();
+
+        //NMC customization will be initialised in nmc/1878-privacy
+        privacySettingsInterface = new PrivacySettingsInterfaceImpl();
 
         // Register context menu for list of preferences.
         registerForContextMenu(getListView());
