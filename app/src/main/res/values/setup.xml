@@ -85,7 +85,7 @@
     <bool name="recommend_enabled">true</bool>
     <bool name="logger_enabled">false</bool>
     <bool name="sourcecode_enabled">true</bool>
-    <string name="sourcecode_url" translatable="false">https://github.com/nextcloud/android</string>
+    <string name="sourcecode_url" translatable="false">https://static.magentacloud.de/licences/android.html</string>
     <bool name="license_enabled">true</bool>
     <string name="license_url" translatable="false">https://www.gnu.org/licenses/gpl-2.0.html</string>
     <string name="url_imprint"></string>
