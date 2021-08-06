@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.os.HandlerCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -116,6 +117,7 @@ public class ScanPagerFragment extends Fragment {
             public void run() {
                 originalBitmap = onDocScanListener.getScannedDocs().get(index);
                 previewBitmap = ScanBotSdkUtils.resizeForPreview(originalBitmap);
+                selectedFilter = ScanActivity.scannedImagesFilterIndex.get(index);
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -158,7 +160,7 @@ public class ScanPagerFragment extends Fragment {
             public void run() {
                 Bitmap rotatedBitmap = scanbotSDK.imageProcessor().process(originalBitmap,
                                                                            new ArrayList<>(Collections.singletonList(new RotateOperation(rotationDegrees))), false);
-                onDocScanListener.replaceScannedDoc(index, rotatedBitmap);
+                onDocScanListener.replaceScannedDoc(index, rotatedBitmap, false);
             }
         });
     }
@@ -171,6 +173,7 @@ public class ScanPagerFragment extends Fragment {
                                   selectedFilter,
                                   (dialog, which) -> {
                                       selectedFilter = which;
+                                      onDocScanListener.replaceFilterIndex(index, selectedFilter);
                                       if (filterArray[which].equalsIgnoreCase(getResources().getString(R.string.edit_scan_filter_none))) {
                                           applyFilter(ImageFilterType.NONE);
                                       } else if (filterArray[which].equalsIgnoreCase(getResources().getString(R.string.edit_scan_filter_pure_binarized))) {
@@ -199,12 +202,16 @@ public class ScanPagerFragment extends Fragment {
     private void applyFilter(ImageFilterType... imageFilterType) {
         progressBar.setVisibility(View.VISIBLE);
         executorService.execute(() -> {
-            List<FilterOperation> filterOperationList = new ArrayList<>();
-            for (ImageFilterType filters : imageFilterType) {
-                filterOperationList.add(new FilterOperation(filters));
+            if (imageFilterType[0] != ImageFilterType.NONE){
+                List<FilterOperation> filterOperationList = new ArrayList<>();
+                for (ImageFilterType filters : imageFilterType) {
+                    filterOperationList.add(new FilterOperation(filters));
+                }
+                previewBitmap = scanbotSDK.imageProcessor().process(originalBitmap, filterOperationList, false);
+            }else{
+                previewBitmap = ScanActivity.originalScannedImages.get(index);
             }
-            previewBitmap = scanbotSDK.imageProcessor().process(originalBitmap, filterOperationList, false);
-            onDocScanListener.replaceScannedDoc(index, previewBitmap);
+            onDocScanListener.replaceScannedDoc(index, previewBitmap, true);
             handler.post(() -> {
                 progressBar.setVisibility(View.GONE);
                 loadImage();

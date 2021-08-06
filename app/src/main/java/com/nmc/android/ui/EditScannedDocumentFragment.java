@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -161,7 +162,7 @@ public class EditScannedDocumentFragment extends Fragment {
                 }
                 break;
             case R.id.deleteDocButton:
-                boolean isRemoved = onDocScanListener.removedScannedDoc(selectedScannedDocFile);
+                boolean isRemoved = onDocScanListener.removedScannedDoc(selectedScannedDocFile, currentSelectedItemIndex);
                 if (isRemoved) {
                     setUpViewPager();
                 }
