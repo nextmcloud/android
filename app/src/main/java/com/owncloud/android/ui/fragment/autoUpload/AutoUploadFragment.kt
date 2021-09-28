@@ -229,6 +229,9 @@ class AutoUploadFragment :
             adapter = this@AutoUploadFragment.adapter
         }
 
+        // NMC customization
+        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_list_empty_synced_folders)
+
         binding.swipeRefreshLayout.setOnRefreshListener {
             load(activity)
             stopSwipeRefreshAfterTimeout()
