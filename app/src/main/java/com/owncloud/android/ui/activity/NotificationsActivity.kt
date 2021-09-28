@@ -220,7 +220,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsContract.View, I
      * sets up the UI elements and loads all notification items.
      */
     private fun setupContent() {
-        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_notification)
+        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_list_empty_notification)
         setLoadingMessageEmpty()
         val layoutManager = LinearLayoutManager(this)
         binding.list.layoutManager = layoutManager
@@ -335,7 +335,7 @@ class NotificationsActivity : AppCompatActivity(), NotificationsContract.View, I
         binding.emptyList.emptyListView.visibility = View.VISIBLE
         binding.emptyList.emptyListViewHeadline.text = headline
         binding.emptyList.emptyListViewText.text = message
-        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_notification)
+        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_list_empty_notification)
         binding.emptyList.emptyListViewText.visibility = View.VISIBLE
         binding.emptyList.emptyListIcon.visibility = View.VISIBLE
     }
