@@ -193,9 +193,8 @@ class UploadListFragment :
             root.visibility = View.GONE
 
             emptyListIcon.run {
-                setImageResource(R.drawable.uploads)
-                drawable.mutate()
-                alpha = EMPTY_LIST_ICON_ALPHA
+                // NMC Customization
+                setImageResource(R.drawable.ic_list_empty_uploads)
                 visibility = View.VISIBLE
             }
 
