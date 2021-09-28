@@ -277,6 +277,8 @@ class SyncedFoldersActivity :
         binding.list.addItemDecoration(MediaGridItemDecoration(spacing))
         binding.list.layoutManager = lm
         binding.list.adapter = adapter
+        // NMC customization
+        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_list_empty_synced_folders)
     }
 
     private fun showHiddenItems() {
