@@ -585,14 +585,8 @@ open class ExtendedListFragment :
             mEmptyListHeadline?.setText(headline)
             mEmptyListMessage?.setText(message)
 
-            if (tintIcon) {
-                context?.let {
-                    val drawable = viewThemeUtils.platform.tintDrawable(it, icon, ColorRole.PRIMARY)
-                    mEmptyListIcon?.setImageDrawable(drawable)
-                }
-            } else {
-                mEmptyListIcon?.setImageResource(icon)
-            }
+            // tinting is not required in NMC
+            mEmptyListIcon?.setImageResource(icon)
 
             mEmptyListIcon?.setVisibility(View.VISIBLE)
             mEmptyListMessage?.visibility = View.VISIBLE
