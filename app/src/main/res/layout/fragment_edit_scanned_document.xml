@@ -61,7 +61,7 @@
             android:tint="@color/text_color"
             android:layout_weight="1"
             android:padding="@dimen/standard_half_padding"
-            android:src="@drawable/ic_plus" />
+            android:src="@drawable/ic_scan_add" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/cropDocButton"
