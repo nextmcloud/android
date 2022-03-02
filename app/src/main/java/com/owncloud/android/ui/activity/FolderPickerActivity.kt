@@ -69,6 +69,7 @@ open class FolderPickerActivity :
     private var mSyncBroadcastReceiver: SyncBroadcastReceiver? = null
     private var mSyncInProgress = false
     private var mSearchOnlyFolders = false
+    private var mShowOnlyFolder = false
     var isDoNotEnterEncryptedFolder = false
         private set
     private var mCancelBtn: MaterialButton? = null
@@ -116,6 +117,7 @@ open class FolderPickerActivity :
                     caption = resources.getText(R.string.choose_location).toString()
                     mSearchOnlyFolders = true
                     isDoNotEnterEncryptedFolder = true
+                    mShowOnlyFolder = true;
                     mChooseBtn!!.text = resources.getString(R.string.common_select)
                 }
                 else -> caption = themeUtils.getDefaultDisplayNameForRootFolder(this)
@@ -315,7 +317,7 @@ open class FolderPickerActivity :
 
     private fun refreshListOfFilesFragment(fromSearch: Boolean) {
         val fileListFragment = listOfFilesFragment
-        fileListFragment?.listDirectory(false, fromSearch)
+        fileListFragment?.listDirectoryFolder(false, fromSearch, mShowOnlyFolder)
     }
 
     fun browseToRoot() {

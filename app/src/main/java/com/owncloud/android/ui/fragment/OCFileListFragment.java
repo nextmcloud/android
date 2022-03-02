@@ -228,6 +228,12 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Inject DeviceInfo deviceInfo;
 
+    private boolean mShowOnlyFolder ;
+
+    //this variable will help us to provide number of span count for grid view
+    //the width for single item is approx to 360
+    private static final int GRID_ITEM_DEFAULT_WIDTH = 360;
+
     protected enum MenuItemAddRemove {
         DO_NOTHING,
         REMOVE_SORT,
@@ -1280,6 +1286,11 @@ public class OCFileListFragment extends ExtendedListFragment implements
         listDirectory(null, onlyOnDevice, fromSearch);
     }
 
+    public void listDirectoryFolder(boolean onlyOnDevice, boolean fromSearch, boolean showOnlyFolder) {
+        mShowOnlyFolder = showOnlyFolder;
+        listDirectory(null, onlyOnDevice, fromSearch);
+    }
+
     public void refreshDirectory() {
         searchFragment = false;
 
@@ -1339,13 +1350,22 @@ public class OCFileListFragment extends ExtendedListFragment implements
                     });
                 }
 
-                mAdapter.swapDirectory(
-                    accountManager.getUser(),
-                    directory,
-                    storageManager,
-                    onlyOnDevice,
-                    mLimitToMimeType
-                                      );
+                if(mShowOnlyFolder) {
+                    mAdapter.swapDirectoryFolder(
+                        accountManager.getUser(),
+                        directory,
+                        storageManager,
+                        onlyOnDevice,
+                        mLimitToMimeType);
+                }
+                else {
+                    mAdapter.swapDirectory(
+                        accountManager.getUser(),
+                        directory,
+                        storageManager,
+                        onlyOnDevice,
+                        mLimitToMimeType);
+                }
 
                 OCFile previousDirectory = mFile;
                 mFile = directory;
