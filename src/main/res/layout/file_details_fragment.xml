@@ -179,8 +179,25 @@
         android:layout_height="1dp"
         android:background="@color/list_divider_background" />
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_default"
+        app:tabGravity="center"
+        app:tabMode="fixed"
+        app:tabTextAppearance="@style/AppTabTextAppearance"
+        app:tabTextColor="@color/text_color"
+        app:tabInlineLabel="true" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <FrameLayout
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:id="@+id/sharing_frame_container"
         android:layout_height="match_parent"/>
 

@@ -37,6 +37,7 @@ import com.owncloud.android.lib.resources.shares.OCShare
 import com.owncloud.android.lib.resources.shares.SharePermissionsBuilder
 import com.owncloud.android.lib.resources.shares.ShareType
 import com.owncloud.android.ui.activity.FileActivity
+import com.owncloud.android.ui.activity.ShareActivity
 import com.owncloud.android.ui.activity.ToolbarActivity
 import com.owncloud.android.ui.dialog.ExpirationDatePickerDialogFragment
 import com.owncloud.android.ui.fragment.util.SharingMenuHelper
@@ -523,8 +524,17 @@ class FileDetailsSharingProcessFragment : Fragment(), ExpirationDatePickerDialog
      * remove the fragment and pop it from backstack because we are adding it to backstack
      */
     private fun removeCurrentFragment() {
-        requireActivity().supportFragmentManager.beginTransaction().remove(this).commit()
-        requireActivity().supportFragmentManager.popBackStack()
+        onEditShareListener.onShareProcessClosed()
+
+        fileActivity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
+
+        //if user comes to this fragment from the ShareActivity ie. via Preview Media Fragment
+        //so on cancel/back press we have to show the share fragment again
+        if (fileActivity is ShareActivity){
+            //only pop the fragment when user comes from ShareActivity because the fragment is replaced via addToBackStack
+            fileActivity?.supportFragmentManager?.popBackStack()
+            (fileActivity as ShareActivity).replaceShareFragment()
+        }
     }
 
     private fun getResharePermission(): Int {
