@@ -46,6 +46,7 @@ import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.activities.GetActivitiesRemoteOperation;
+import com.owncloud.android.lib.resources.activities.model.Activity;
 import com.owncloud.android.lib.resources.activities.model.RichObject;
 import com.owncloud.android.lib.resources.comments.MarkCommentsAsReadRemoteOperation;
 import com.owncloud.android.lib.resources.files.ReadFileVersionsRemoteOperation;
@@ -319,7 +320,16 @@ public class FileDetailActivitiesFragment extends Fragment implements
 
                 if (result.isSuccess() && result.getData() != null) {
                     final List<Object> data = result.getData();
-                    final List<Object> activitiesAndVersions = (ArrayList) data.get(0);
+                    final List<Object> activitiesAndVersions =  (ArrayList) data.get(0);
+                    final List<Object> activitiesAndVersionsOnlyComments = new ArrayList<>();
+
+                    for (Object c : activitiesAndVersions) {
+                        if (c instanceof Activity) {
+                            if (((Activity) c).getApp().contains("comments")) {
+                                activitiesAndVersionsOnlyComments.add((Activity) c);
+                            }
+                        }
+                    }
 
                     this.lastGiven = (int) data.get(1);
 
@@ -333,7 +343,7 @@ public class FileDetailActivitiesFragment extends Fragment implements
 
                     activity.runOnUiThread(() -> {
                         if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
-                            populateList(activitiesAndVersions, lastGiven == -1);
+                            populateList(activitiesAndVersionsOnlyComments, lastGiven == -1);
                         }
                     });
                 } else {
