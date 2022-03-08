@@ -218,7 +218,7 @@ public abstract class FileActivity extends DrawerActivity
             User user = getIntent().getParcelableExtra(FileActivity.EXTRA_USER);
             mFile = getIntent().getParcelableExtra(FileActivity.EXTRA_FILE);
             mFromNotification = getIntent().getBooleanExtra(FileActivity.EXTRA_FROM_NOTIFICATION,
-                    false);
+                                                            false);
             if (user != null) {
                 setUser(user);
             }
@@ -959,7 +959,7 @@ public abstract class FileActivity extends DrawerActivity
             ((FileDetailFragment) fragment).onLinkShareDownloadLimitFetched(downloadLimit);
         } else {
             //if user editing from Preview Image Fragment
-             fragment = getSupportFragmentManager().findFragmentByTag(ShareActivity.TAG_SHARE_FRAGMENT);
+            fragment = getSupportFragmentManager().findFragmentByTag(ShareActivity.TAG_SHARE_FRAGMENT);
             if (fragment != null) {
                 ((FileDetailSharingFragment) fragment).onLinkShareDownloadLimitFetched(downloadLimit);
             }
