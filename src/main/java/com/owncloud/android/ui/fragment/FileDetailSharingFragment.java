@@ -405,7 +405,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
      * will be called when download limit from api is fetched
      * @param downloadLimit
      */
-    public void onLinkShareDownloadLimitFetched(int downloadLimit) {
+    public void onLinkShareDownloadLimitFetched(long downloadLimit) {
         Fragment fragment =
             requireActivity().getSupportFragmentManager().findFragmentByTag(FileDetailsSharingProcessFragment.TAG);
         if (fragment!=null){
