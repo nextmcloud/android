@@ -953,10 +953,16 @@ public abstract class FileActivity extends DrawerActivity
     }
 
     @Override
-    public void onLinkShareDownloadLimitFetched(long downloadLimit) {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FileDisplayActivity.TAG_LIST_OF_FILES);
+    public void onLinkShareDownloadLimitFetched(int downloadLimit) {
+        Fragment fragment = getFileDetailFragment();
         if (fragment != null) {
             ((FileDetailFragment) fragment).onLinkShareDownloadLimitFetched(downloadLimit);
+        } else {
+            //if user editing from Preview Image Fragment
+             fragment = getSupportFragmentManager().findFragmentByTag(ShareActivity.TAG_SHARE_FRAGMENT);
+            if (fragment != null) {
+                ((FileDetailSharingFragment) fragment).onLinkShareDownloadLimitFetched(downloadLimit);
+            }
         }
     }
 
@@ -965,9 +971,9 @@ public abstract class FileActivity extends DrawerActivity
      */
     @Override
     public void onShareProcessClosed() {
-        FileDetailFragment fragment = getFileDetailFragment();
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FileDisplayActivity.TAG_LIST_OF_FILES);
         if (fragment != null) {
-            //do something
+            ((FileDetailFragment) fragment).showHideFragmentView(false);
         }
     }
 

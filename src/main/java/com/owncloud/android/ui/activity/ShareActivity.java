@@ -65,6 +65,8 @@ public class ShareActivity extends FileActivity {
 
     private SyncedFolderProvider syncedFolderProvider;
 
+    private Optional<User> optionalUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +76,7 @@ public class ShareActivity extends FileActivity {
         syncedFolderProvider = new SyncedFolderProvider(getContentResolver(), appPreferences, clock);
 
         OCFile file = getFile();
-        Optional<User> optionalUser = getUser();
+         optionalUser = getUser();
         if (!optionalUser.isPresent()) {
             finish();
             return;
@@ -129,10 +131,7 @@ public class ShareActivity extends FileActivity {
 
         if (savedInstanceState == null) {
             // Add Share fragment on first creation
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            Fragment fragment = FileDetailSharingFragment.newInstance(getFile(), optionalUser.get());
-            ft.replace(R.id.share_fragment_container, fragment, TAG_SHARE_FRAGMENT);
-            ft.commit();
+            replaceShareFragment();
         }
     }
 
@@ -186,5 +185,12 @@ public class ShareActivity extends FileActivity {
      */
     private FileDetailSharingFragment getShareFileFragment() {
         return (FileDetailSharingFragment) getSupportFragmentManager().findFragmentByTag(TAG_SHARE_FRAGMENT);
+    }
+
+    public void replaceShareFragment(){
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment fragment = FileDetailSharingFragment.newInstance(getFile(), optionalUser.get());
+        ft.replace(R.id.share_fragment_container, fragment, TAG_SHARE_FRAGMENT);
+        ft.commit();
     }
 }

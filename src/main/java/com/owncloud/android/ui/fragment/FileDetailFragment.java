@@ -190,7 +190,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
         if (binding == null) {
             return null;
         }
-        return (FileDetailSharingFragment)requireActivity().getSupportFragmentManager().findFragmentByTag(FTAG_SHARING);
+        return ((FileDetailTabAdapter) binding.pager.getAdapter()).getFileDetailSharingFragment();
     }
 
     /**
@@ -199,8 +199,10 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
      * @return reference to the {@link FileDetailActivitiesFragment}
      */
     public FileDetailActivitiesFragment getFileDetailActivitiesFragment() {
-        //return ((FileDetailTabAdapter) binding.pager.getAdapter()).getFileDetailActivitiesFragment();
-        return null;
+        if (binding == null) {
+            return null;
+        }
+        return ((FileDetailTabAdapter) binding.pager.getAdapter()).getFileDetailActivitiesFragment();
     }
 
     @Override
@@ -239,7 +241,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
         }
 
         FloatingActionButton fabMain = requireActivity().findViewById(R.id.fab_main);
-        fabMain.setVisibility(View.GONE);
+        fabMain.hide();
 
         return view;
     }
@@ -272,6 +274,52 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
 
         popup.setOnMenuItemClickListener(this::optionsItemSelected);
         popup.show();
+    }
+
+    private void setupViewPager() {
+        binding.tabLayout.removeAllTabs();
+
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.drawer_item_activities).setIcon(R.drawable.ic_activity));
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.share_dialog_title).setIcon(R.drawable.shared_via_users));
+
+        ThemeLayoutUtils.colorTabLayout(getContext().getApplicationContext(), binding.tabLayout);
+
+        final FileDetailTabAdapter adapter = new FileDetailTabAdapter(getFragmentManager(), getFile(), user);
+        binding.pager.setAdapter(adapter);
+        binding.pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(binding.tabLayout) {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                final FileDetailActivitiesFragment fragment = getFileDetailActivitiesFragment();
+                if (activeTab == 0 && fragment != null) {
+                    fragment.markCommentsAsRead();
+                }
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+        });
+        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                binding.pager.setCurrentItem(tab.getPosition());
+                if (tab.getPosition() == 0) {
+                    final FileDetailActivitiesFragment fragment = getFileDetailActivitiesFragment();
+                    if (fragment != null) {
+                        fragment.markCommentsAsRead();
+                    }
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                // unused at the moment
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                // unused at the moment
+            }
+        });
+
+        binding.tabLayout.getTabAt(activeTab).select();
     }
 
     @Override
@@ -504,7 +552,9 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
                 setButtonsForRemote();
             }
         }
-        replaceSharingFragment();
+
+        setupViewPager();
+
         getView().invalidate();
     }
 
@@ -753,8 +803,19 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
                                                                                                                            shareeName,
                                                                                                                            shareType, SharingMenuHelper.isFileWithNoTextFile(getFile())),
                                                                              FileDetailsSharingProcessFragment.TAG)
-            .addToBackStack(null)
             .commit();
+
+        showHideFragmentView(true);
+    }
+
+    /**
+     * method will handle the views need to be hidden when sharing process fragment shows
+     * @param isFragmentReplaced
+     */
+    public void showHideFragmentView(boolean isFragmentReplaced) {
+        binding.tabLayout.setVisibility(isFragmentReplaced ? View.GONE : View.VISIBLE);
+        binding.pager.setVisibility(isFragmentReplaced ? View.GONE : View.VISIBLE);
+        binding.sharingFrameContainer.setVisibility(isFragmentReplaced ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -770,8 +831,8 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
                                                                              FileDetailsSharingProcessFragment.newInstance(share, screenTypePermission, isReshareShown,
                                                                                                                            isExpiryDateShown, SharingMenuHelper.isFileWithNoTextFile(getFile())),
                                                                              FileDetailsSharingProcessFragment.TAG)
-            .addToBackStack(null)
             .commit();
+        showHideFragmentView(true);
     }
 
     /**

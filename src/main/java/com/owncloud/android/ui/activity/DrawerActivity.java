@@ -1010,7 +1010,7 @@ public abstract class DrawerActivity extends ToolbarActivity
         }
         Fragment fileDetailsSharingProcessFragment =
             getSupportFragmentManager().findFragmentByTag(FileDetailsSharingProcessFragment.TAG);
-        if (fileDetailsSharingProcessFragment != null) {
+        if (fileDetailsSharingProcessFragment != null && fileDetailsSharingProcessFragment.isVisible()) {
             ((FileDetailsSharingProcessFragment) fileDetailsSharingProcessFragment).onBackPressed();
         } else {
             super.onBackPressed();
