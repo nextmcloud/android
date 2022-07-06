@@ -136,6 +136,7 @@ class FilesUploadWorker(
             upload.isUseWifiOnly,
             upload.isWhileChargingOnly,
             true,
+            false,
             FileDataStorageManager(user, context.contentResolver)
         ).apply {
             addDataTransferProgressListener(this@FilesUploadWorker)

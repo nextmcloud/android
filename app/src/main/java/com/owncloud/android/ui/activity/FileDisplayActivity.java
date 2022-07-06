@@ -76,7 +76,6 @@ import com.owncloud.android.datamodel.VirtualFolderType;
 import com.owncloud.android.files.services.FileDownloader;
 import com.owncloud.android.files.services.FileDownloader.FileDownloaderBinder;
 import com.owncloud.android.files.services.FileUploader;
-import com.owncloud.android.files.services.FileUploader.FileUploaderBinder;
 import com.owncloud.android.files.services.NameCollisionPolicy;
 import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
@@ -940,7 +939,8 @@ public class FileDisplayActivity extends FileActivity
                 UploadFileOperation.CREATED_BY_USER,
                 false,
                 false,
-                NameCollisionPolicy.ASK_USER
+                NameCollisionPolicy.ASK_USER,
+                false
                                       );
 
         } else {
@@ -1638,7 +1638,7 @@ public class FileDisplayActivity extends FileActivity
             } else if (component.equals(new ComponentName(FileDisplayActivity.this,
                                                           FileUploader.class))) {
                 Log_OC.d(TAG, "Upload service connected");
-                mUploaderBinder = (FileUploaderBinder) service;
+                mUploaderBinder = (FileUploader.FileUploaderBinder) service;
             } else {
                 return;
             }
