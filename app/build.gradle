@@ -261,7 +261,7 @@ dependencies {
     implementation "androidx.work:work-runtime:$workRuntime"
     implementation "androidx.work:work-runtime-ktx:$workRuntime"
     implementation "androidx.fragment:fragment-ktx:1.4.1"
-    implementation 'com.github.albfernandez:juniversalchardet:2.0.3' // need this version for Android <7
+    implementation 'com.github.albfernandez:juniversalchardet:2.4.0' // need this version for Android <7
     compileOnly 'com.google.code.findbugs:annotations:3.0.1u2'
     //Note: Do not change the commons-io:commons-io version from 2.4 to any other
     //this is required for ScanBot SDK to work on low end devices ie. 6 & 7 Api levels
