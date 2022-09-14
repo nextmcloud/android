@@ -227,9 +227,9 @@ class FileDetailsSharingProcessFragment : Fragment(), ExpirationDatePickerDialog
             showShareProcessSecond()
         }
         //Set default value to 0 for download count
-         if(!isDownloadCountFetched) {
-                binding.shareProcessRemainingDownloadCountTv.text = getString(R.string.download_text) + "0"
-            }
+        if (!isDownloadCountFetched) {
+            binding.shareProcessRemainingDownloadCountTv.text = getString(R.string.download_text) + "0"
+        }
         //  ThemeCheckableUtils.tintSwitch(binding.shareProcessHideDownloadCheckbox, 0)
         binding.shareProcessPermissionRadioGroup.setOnCheckedChangeListener(this)
         ThemeButtonUtils.colorPrimaryButton(binding.shareProcessBtnNext, requireContext())
@@ -256,7 +256,7 @@ class FileDetailsSharingProcessFragment : Fragment(), ExpirationDatePickerDialog
     private fun showShareProcessFirst() {
         scrollTopShowToolbar()
         binding.shareProcessGroupOne.visibility = View.VISIBLE
-      //  binding.shareProcessEditShareLink.visibility = View.VISIBLE
+        //  binding.shareProcessEditShareLink.visibility = View.VISIBLE
         binding.shareProcessGroupTwo.visibility = View.GONE
         binding.tvSetPasswordEmailWarning.visibility = View.GONE
 
@@ -462,7 +462,7 @@ class FileDetailsSharingProcessFragment : Fragment(), ExpirationDatePickerDialog
     private fun showShareProcessSecond() {
         scrollTopShowToolbar()
         binding.shareProcessGroupOne.visibility = View.GONE
-       // binding.shareProcessEditShareLink.visibility = View.GONE
+        // binding.shareProcessEditShareLink.visibility = View.GONE
         binding.shareProcessGroupTwo.visibility = View.VISIBLE
         if (share != null) {
             binding.shareProcessBtnNext.text = requireContext().resources.getString(R.string.send_email)
@@ -547,7 +547,7 @@ class FileDetailsSharingProcessFragment : Fragment(), ExpirationDatePickerDialog
         binding.shareProcessRemainingDownloadCountTv.visibility = if (isChecked) View.VISIBLE else View.GONE
         if (!isChecked) {
             binding.shareProcessDownloadLimitEt.setText("")
-            if(!isDownloadCountFetched) {
+            if (!isDownloadCountFetched) {
                 binding.shareProcessRemainingDownloadCountTv.text = getString(R.string.download_text) + "0"
             }
             //hide keyboard when user unchecks
@@ -610,6 +610,7 @@ class FileDetailsSharingProcessFragment : Fragment(), ExpirationDatePickerDialog
      * remove the fragment and pop it from backstack because we are adding it to backstack
      */
     private fun removeCurrentFragment() {
+        onEditShareListener.onShareProcessClosed()
         requireActivity().supportFragmentManager.beginTransaction().remove(this).commit()
         requireActivity().supportFragmentManager.popBackStack()
     }
