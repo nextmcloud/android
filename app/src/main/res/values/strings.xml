@@ -1129,4 +1129,6 @@
     <string name="description_delete_scan">Delete scanned document</string>
     <string name="description_edit_filename">Edit scan filename</string>
     <string name="description_edit_location">Edit scan location</string>
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_save_scan_message">Saving will take some time, especially if you have selected several pages and file formats.</string>
 </resources>

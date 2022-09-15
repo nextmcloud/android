@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.account.UserAccountManagerImpl;
+import com.nmc.android.ui.ScanActivity;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -98,6 +99,8 @@ public final class AppPreferencesImpl implements AppPreferences {
     private static final String PREF__PDF_ZOOM_TIP_SHOWN = "pdf_zoom_tip_shown";
 
     private static final String PREF__STORAGE_PERMISSION_REQUESTED = "storage_permission_requested";
+
+    private static final String PREF__UPLOAD_SCANS_LAST_PATH = "upload_scans_last_path";
 
     private final Context context;
     private final SharedPreferences preferences;
@@ -710,5 +713,15 @@ public final class AppPreferencesImpl implements AppPreferences {
     @VisibleForTesting
     public int computeBruteForceDelay(int count) {
         return (int) Math.min(count / 3d, 10);
+    }
+
+    @Override
+    public void setUploadScansLastPath(String path) {
+        preferences.edit().putString(PREF__UPLOAD_SCANS_LAST_PATH, path).apply();
+    }
+
+    @Override
+    public String getUploadScansLastPath() {
+        return preferences.getString(PREF__UPLOAD_SCANS_LAST_PATH, ScanActivity.DEFAULT_UPLOAD_SCAN_PATH);
     }
 }

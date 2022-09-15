@@ -4,16 +4,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.MenuItem;
 
+import com.nextcloud.client.preferences.AppPreferences;
 import com.nmc.android.interfaces.OnDocScanListener;
 import com.nmc.android.interfaces.OnFragmentChangeListener;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.ActivityScanBinding;
-import com.owncloud.android.ui.activity.ToolbarActivity;
+import com.owncloud.android.datamodel.OCFile;
+import com.owncloud.android.lib.common.operations.RemoteOperation;
+import com.owncloud.android.lib.common.operations.RemoteOperationResult;
+import com.owncloud.android.operations.CreateFolderIfNotExistOperation;
+import com.owncloud.android.ui.activity.FileActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,14 +30,19 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import io.scanbot.sdk.ScanbotSDK;
 
-public class ScanActivity extends ToolbarActivity implements OnFragmentChangeListener, OnDocScanListener {
+public class ScanActivity extends FileActivity implements OnFragmentChangeListener, OnDocScanListener {
 
     protected static final String FRAGMENT_SCAN_TAG = "SCAN_FRAGMENT_TAG";
     protected static final String FRAGMENT_EDIT_SCAN_TAG = "EDIT_SCAN_FRAGMENT_TAG";
     protected static final String FRAGMENT_CROP_SCAN_TAG = "CROP_SCAN_FRAGMENT_TAG";
     protected static final String FRAGMENT_SAVE_SCAN_TAG = "SAVE_SCAN_FRAGMENT_TAG";
 
+    //default path to upload the scanned document
+    //if user doesn't select any location then this will be the default location
+    public static final String DEFAULT_UPLOAD_SCAN_PATH = OCFile.ROOT_PATH + "Scans" + OCFile.PATH_SEPARATOR;
+
     protected static final String TAG = "ScanActivity";
+    private static final String EXTRA_REMOTE_PATH = "com.nmc.android.ui.scan_activity.extras.remote_path";
 
     private ActivityScanBinding binding;
     private ScanbotSDK scanbotSDK;
@@ -39,9 +52,17 @@ public class ScanActivity extends ToolbarActivity implements OnFragmentChangeLis
     public static final List<Integer> scannedImagesFilterIndex = new ArrayList<>();//list to maintain the state of
     // applied filter index when device rotated
 
-    public static void openScanActivity(Context context, int requestCode) {
+    @Inject AppPreferences appPreferences;
+
+    private String remotePath;
+    //flag to avoid checking folder existence whenever user goes to save fragment
+    //we will make it true when the operation finishes first time
+    private boolean isFolderCheckOperationFinished;
+
+    public static void openScanActivity(Context context, String remotePath, int requestCode) {
         Intent intent = new Intent(context, ScanActivity.class);
-        ((AppCompatActivity)context).startActivityForResult(intent, requestCode);
+        intent.putExtra(EXTRA_REMOTE_PATH, remotePath);
+        ((AppCompatActivity) context).startActivityForResult(intent, requestCode);
     }
 
     @Override
@@ -50,15 +71,17 @@ public class ScanActivity extends ToolbarActivity implements OnFragmentChangeLis
         // Inflate and set the layout view
         binding = ActivityScanBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        remotePath = getIntent().getStringExtra(EXTRA_REMOTE_PATH);
         originalScannedImages.clear();
         filteredImages.clear();
         scannedImagesFilterIndex.clear();
         initScanbotSDK();
         setupToolbar();
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
-        }
+        setActionBarBackIcon();
+    }
+
+    public String getRemotePath() {
+        return remotePath;
     }
 
     @Override
@@ -78,6 +101,11 @@ public class ScanActivity extends ToolbarActivity implements OnFragmentChangeLis
 
     @Override
     public void onReplaceFragment(Fragment fragment, String tag, boolean addToBackStack) {
+        //only during replacing save scan fragment
+        if (tag.equalsIgnoreCase(FRAGMENT_SAVE_SCAN_TAG)) {
+            checkAndCreateFolderIfRequired();
+        }
+
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.scan_frame_container, fragment, tag);
         if (addToBackStack) {
@@ -88,10 +116,8 @@ public class ScanActivity extends ToolbarActivity implements OnFragmentChangeLis
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressHandle();
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressHandle();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -107,8 +133,8 @@ public class ScanActivity extends ToolbarActivity implements OnFragmentChangeLis
         Fragment saveScanFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_SAVE_SCAN_TAG);
         if (cropScanFragment != null || saveScanFragment != null) {
             int index = 0;
-            if (cropScanFragment instanceof CropScannedDocumentFragment){
-                index = ((CropScannedDocumentFragment)cropScanFragment).getScannedDocIndex();
+            if (cropScanFragment instanceof CropScannedDocumentFragment) {
+                index = ((CropScannedDocumentFragment) cropScanFragment).getScannedDocIndex();
             }
             onReplaceFragment(EditScannedDocumentFragment.newInstance(index), FRAGMENT_EDIT_SCAN_TAG, false);
         } else if (editScanFragment != null) {
@@ -150,7 +176,8 @@ public class ScanActivity extends ToolbarActivity implements OnFragmentChangeLis
             originalScannedImages.remove(index);
         }
         if (filteredImages.size() > 0 && file != null) {
-            return filteredImages.remove(file);
+            filteredImages.remove(index);
+            return true;
         }
         return false;
     }
@@ -171,6 +198,60 @@ public class ScanActivity extends ToolbarActivity implements OnFragmentChangeLis
     public void replaceFilterIndex(int index, int filterIndex) {
         if (scannedImagesFilterIndex.size() > 0 && scannedImagesFilterIndex.size() > index) {
             scannedImagesFilterIndex.set(index, filterIndex);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+        for (Fragment fragment : fragmentList) {
+            fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    protected void checkAndCreateFolderIfRequired() {
+        //if user is coming from sub-folder then we should not check for existence as folder will be available
+        if (!TextUtils.isEmpty(remotePath) && !remotePath.equals(OCFile.ROOT_PATH)) {
+            return;
+        }
+
+        //no need to do any operation if its already finished earlier
+        if (isFolderCheckOperationFinished) {
+            return;
+        }
+
+        String lastRemotePath = appPreferences.getUploadScansLastPath();
+
+        //create the default scan folder if it doesn't exist or if user has not selected any other folder
+        if (lastRemotePath.equalsIgnoreCase(ScanActivity.DEFAULT_UPLOAD_SCAN_PATH)) {
+            getFileOperationsHelper().createFolderIfNotExist(lastRemotePath, false);
+            return;
+        }
+
+        //if last saved remote path is not root path then we have to check if the folder exist or not
+        if (!lastRemotePath.equals(OCFile.ROOT_PATH)) {
+            getFileOperationsHelper().createFolderIfNotExist(lastRemotePath, true);
+        }
+    }
+
+    @Override
+    public void onRemoteOperationFinish(RemoteOperation operation, RemoteOperationResult result) {
+        super.onRemoteOperationFinish(operation, result);
+        if (operation instanceof CreateFolderIfNotExistOperation) {
+            //we are only handling callback when we are checking if folder exist or not to update the UI
+            //in case the folder doesn't exist (user has deleted)
+            if (!result.isSuccess() && result.getCode() == RemoteOperationResult.ResultCode.FILE_NOT_FOUND) {
+                Fragment saveScanFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_SAVE_SCAN_TAG);
+                if (saveScanFragment != null && saveScanFragment.isVisible()) {
+                    //update the root path in preferences as well
+                    //so that next time folder issue won't come
+                    appPreferences.setUploadScansLastPath(OCFile.ROOT_PATH);
+                    //if folder doesn't exist then we have to set the remote path as root i.e. fallback mechanism
+                    ((SaveScannedDocumentFragment) saveScanFragment).setRemoteFilePath(OCFile.ROOT_PATH);
+                }
+            }
+            isFolderCheckOperationFinished = true;
         }
     }
 }

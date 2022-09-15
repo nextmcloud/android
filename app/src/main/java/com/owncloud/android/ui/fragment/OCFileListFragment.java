@@ -555,7 +555,14 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Override
     public void scanDocument() {
-        ScanActivity.openScanActivity(getActivity(), FileDisplayActivity.REQUEST_CODE__SCAN_DOCUMENT);
+        //remote path to store the scans in the selected path
+        String remotePath = "";
+        if (getActivity() != null && ((FileActivity) getActivity()).getCurrentDir() != null){
+            remotePath = ((FileActivity) getActivity()).getCurrentDir().getRemotePath();
+        }
+
+        //remote path used so that user can directly save at the selected sub folder location
+        ScanActivity.openScanActivity(getActivity(), remotePath, FileDisplayActivity.REQUEST_CODE__SCAN_DOCUMENT);
     }
 
     @Override

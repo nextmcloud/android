@@ -377,4 +377,12 @@ public interface AppPreferences {
     boolean isStoragePermissionRequested();
 
     void setStoragePermissionRequested(boolean value);
+
+    /**
+     * Saves the previously selected storage path to save scanned document
+     * default value will be Scan folder which will be automatically created first time
+     * @param path of the folder previously selected
+     */
+    void setUploadScansLastPath(String path);
+    String getUploadScansLastPath();
 }

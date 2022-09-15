@@ -1028,5 +1028,6 @@
     <string name="description_delete_scan">Gescanntes Dokument löschen</string>
     <string name="description_edit_filename">Scan-Dateinamen bearbeiten</string>
     <string name="description_edit_location">Scan-Speicherort bearbeiten</string>
-
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_save_scan_message">Das Speichern kann einige Minuten in Anspruch nehmen, insbesondere wenn Sie mehrere Seiten und Dateiformate ausgewählt haben.</string>
 </resources>
