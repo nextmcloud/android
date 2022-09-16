@@ -202,6 +202,6 @@ public class ShareActivity extends FileActivity {
 
     @Override
     public void onShareProcessClosed() {
-        finish();
+        //nothing to do here
     }
 }

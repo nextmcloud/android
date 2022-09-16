@@ -204,6 +204,9 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
      * @return reference to the {@link FileDetailActivitiesFragment}
      */
     public FileDetailActivitiesFragment getFileDetailActivitiesFragment() {
+        if (binding == null) {
+            return null;
+        }
         return ((FileDetailTabAdapter) binding.pager.getAdapter()).getFileDetailActivitiesFragment();
     }
 
@@ -263,12 +266,6 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
         }
     }
 
-//    private void replaceSharingFragment() {
-//        requireActivity().getSupportFragmentManager().beginTransaction()
-//            .replace(R.id.sharing_frame_container,
-//                     FileDetailSharingFragment.newInstance(getFile(), user),
-//                     FTAG_SHARING).commit();
-//    }
 
     private void onOverflowIconClicked(View view) {
         PopupMenu popup = new PopupMenu(getActivity(), view);
@@ -826,12 +823,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
         binding.tabLayout.setVisibility(isFragmentReplaced ? View.GONE : View.VISIBLE);
         binding.pager.setVisibility(isFragmentReplaced ? View.GONE : View.VISIBLE);
         binding.sharingFrameContainer.setVisibility(isFragmentReplaced ? View.VISIBLE : View.GONE);
-        FloatingActionButton mFabMain = requireActivity().findViewById(R.id.fab_main);
-        if (isFragmentReplaced) {
-            mFabMain.hide();
-        } else {
-            mFabMain.show();
-        }
+
     }
 
     /**
