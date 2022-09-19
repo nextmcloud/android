@@ -73,7 +73,7 @@
 
     <item
         android:id="@+id/action_see_details"
-        android:title="@string/share"
+        android:title="@string/comments_tab_title"
         app:showAsAction="never"
         android:showAsAction="never" />
 

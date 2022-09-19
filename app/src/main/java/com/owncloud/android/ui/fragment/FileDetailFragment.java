@@ -279,12 +279,13 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     private void setupViewPager() {
         binding.tabLayout.removeAllTabs();
 
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.comments_tab_title).setIcon(R.drawable.ic_activity));
+        if (!getFile().isEncrypted()) {
+            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.share_dialog_title));
+        }
+
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.comments_tab_title));
         ThemeLayoutUtils.colorTabLayout(getContext().getApplicationContext(), binding.tabLayout);
 
-        if (!getFile().isEncrypted()) {
-            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.share_dialog_title).setIcon(R.drawable.shared_via_users));
-        }
 
         final FileDetailTabAdapter adapter = new FileDetailTabAdapter(getFragmentManager(), getFile(), user);
         binding.pager.setAdapter(adapter);

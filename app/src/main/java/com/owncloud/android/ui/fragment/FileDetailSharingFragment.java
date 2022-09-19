@@ -37,6 +37,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.nextcloud.client.account.User;
@@ -192,6 +193,8 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
         setupView();
 
+        hideSharingTitle();
+
         return view;
     }
 
@@ -290,6 +293,17 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
             if (appBarLayout != null) {
                 appBarLayout.setExpanded(false, true);
             }
+        }
+    }
+
+    // if FileDetailSharingFragment is launched from OCFileListFragment(FileDisplayActivity)
+    // i.e by clicking on 3 dot menu item -> Comments
+    // then we have to hide the title
+    private void hideSharingTitle() {
+        if (requireActivity() instanceof FileDisplayActivity) {
+            TextView textView = binding.sharingTitle;
+            textView.setVisibility(View.GONE);
+
         }
     }
 
