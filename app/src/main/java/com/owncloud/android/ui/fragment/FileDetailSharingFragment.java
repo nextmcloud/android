@@ -193,7 +193,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
         setupView();
 
-        hideSharingTitle();
+        showHideSharingTitle();
 
         return view;
     }
@@ -299,10 +299,9 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     // if FileDetailSharingFragment is launched from OCFileListFragment(FileDisplayActivity)
     // i.e by clicking on 3 dot menu item -> Comments
     // then we have to hide the title
-    private void hideSharingTitle() {
+    private void showHideSharingTitle() {
         if (requireActivity() instanceof FileDisplayActivity) {
-            TextView textView = binding.sharingTitle;
-            textView.setVisibility(View.GONE);
+            binding.sharingTitle.setVisibility(View.GONE);
 
         }
     }

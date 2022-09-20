@@ -274,7 +274,7 @@ public class SendShareDialog extends BottomSheetDialogFragment {
         dismiss();
 
         if (getActivity() instanceof FileDisplayActivity) {
-            ((FileDisplayActivity) getActivity()).showDetails(file, 1);
+            ((FileDisplayActivity) getActivity()).showDetails(file, 0);
         } else {
             fileOperationsHelper.showShareFile(file);
         }

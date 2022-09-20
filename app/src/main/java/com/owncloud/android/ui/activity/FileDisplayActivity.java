@@ -1583,7 +1583,7 @@ public class FileDisplayActivity extends FileActivity
      */
     @Override
     public void showDetails(OCFile file) {
-        showDetails(file, 0);
+        showDetails(file, 1);
     }
 
     /**
