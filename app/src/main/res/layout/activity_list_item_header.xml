@@ -17,19 +17,44 @@
   You should have received a copy of the GNU Affero General Public
   License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/bg_default">
 
     <TextView
         android:id="@+id/header"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginStart="@dimen/standard_list_item_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:background="@drawable/activity_list_item_header_background"
         android:text="@string/placeholder_filename"
-        android:textSize="@dimen/activity_list_item_title_header_text_size" />
+        android:textColor="@color/text_color"
+        android:padding="@dimen/standard_half_padding"
+        android:textSize="@dimen/activity_list_item_title_header_text_size"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:orientation="vertical"-->
+<!--    android:background="@color/bg_default">-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/header"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:layout_marginStart="@dimen/standard_list_item_size"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:text="@string/placeholder_filename"-->
+<!--        android:textSize="@dimen/activity_list_item_title_header_text_size" />-->
+
+<!--</LinearLayout>-->

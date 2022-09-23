@@ -40,7 +40,8 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="@dimen/standard_half_margin"
             android:contentDescription="@null"
-            tools:src="@drawable/ic_user" />
+            tools:src="@drawable/ic_user"
+            android:visibility="gone"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/commentInputField_container"
@@ -48,6 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:paddingTop="@dimen/standard_padding"
+            android:paddingBottom="@dimen/standard_margin"
             android:hint="@string/new_comment">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -55,6 +57,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textNoSuggestions|textCapSentences"
+                android:textSize="@dimen/txt_size_17sp"
+                android:textColor="@color/grey_30"
+                android:textStyle="normal"
+                android:background="@drawable/share_search_background"
                 android:scrollbars="vertical">
 
             </com.google.android.material.textfield.TextInputEditText>
