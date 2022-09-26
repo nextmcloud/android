@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.nmc.android.ui.FileDetailActivitiesFragmentBottomSheetMenu">
+    tools:context="com.nmc.android.ui.FileDetailActivitiesFragmentBottomSheetMenu"
+    android:padding="@dimen/standard_padding">
 
 
     <TextView
@@ -17,7 +18,8 @@
         app:layout_constraintBottom_toTopOf="@id/deleteComment"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="@dimen/txt_size_17sp"/>
+        android:textSize="@dimen/txt_size_20sp"
+        android:padding="@dimen/standard_padding"/>
 
     <TextView
         android:id="@+id/deleteComment"
@@ -30,7 +32,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="@dimen/txt_size_17sp"/>
+        android:textSize="@dimen/txt_size_20sp"
+        android:padding="@dimen/standard_padding"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
