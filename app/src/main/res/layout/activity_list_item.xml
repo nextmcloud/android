@@ -24,8 +24,8 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/bg_default"
-    android:paddingLeft="@dimen/standard_padding"
-    android:paddingRight="@dimen/standard_padding"
+    android:paddingLeft="@dimen/standard_half_padding"
+    android:paddingRight="@dimen/standard_half_padding"
     android:paddingBottom="@dimen/standard_padding">
 
 
@@ -60,6 +60,18 @@
         app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <ImageButton
+        android:id="@+id/overflowMenu"
+        android:layout_width="48dp"
+        android:layout_height="17dp"
+        android:src="@drawable/ic_dots_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/subject"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="4dp"
+        android:paddingStart="2dp"/>
+
         <TextView
             android:id="@+id/datetime"
             android:layout_width="0dp"
@@ -76,21 +88,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/message"/>
 
-        <TextView
-            android:id="@+id/message"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:paddingStart="@dimen/activity_icon_layout_right_end_margin"
-            android:paddingEnd="@dimen/zero"
-            android:textAppearance="?android:attr/textAppearanceListItem"
-            android:textSize="@dimen/txt_size_17sp"
-            android:textColor="@color/text_color"
-            tools:text="@string/placeholder_sentence"
-            app:layout_constraintTop_toBottomOf="@id/datetime"
-            app:layout_constraintStart_toEndOf="@id/icon"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/list"/>
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="392dp"
+        android:layout_height="29dp"
+        android:ellipsize="end"
+        android:paddingStart="@dimen/activity_icon_layout_right_end_margin"
+        android:paddingEnd="@dimen/zero"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/txt_size_17sp"
+        app:layout_constraintBottom_toTopOf="@id/list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/icon"
+        app:layout_constraintTop_toBottomOf="@id/datetime"
+        tools:text="@string/placeholder_sentence" />
 
         <GridLayout
             android:id="@+id/list"

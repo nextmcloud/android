@@ -194,6 +194,11 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 downloadIcon(activity, activityViewHolder.binding.icon);
             }
 
+            //3-dot click listener to open bottom sheet fragment
+            activityViewHolder.binding.overflowMenu.setOnClickListener(v -> activityListInterface.onOverflowMenuClicked() );
+
+            }
+
             int nightModeFlag = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
 
             if (!"file_created".equalsIgnoreCase(activity.getType()) &&

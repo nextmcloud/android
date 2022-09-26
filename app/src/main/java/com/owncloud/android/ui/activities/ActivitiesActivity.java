@@ -177,6 +177,7 @@ public class ActivitiesActivity extends DrawerActivity implements ActivityListIn
         actionListener.openActivity(path, this);
     }
 
+
     @Override
     public void showActivities(List<Object> activities, NextcloudClient client, int lastGiven) {
         boolean clear = false;
