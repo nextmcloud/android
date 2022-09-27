@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:background="@drawable/activity_list_item_header_background"
-        android:text="@string/placeholder_filename"
+        android:text="Today"
         android:textColor="@color/text_color"
         android:padding="@dimen/standard_half_padding"
         android:textSize="@dimen/activity_list_item_title_header_text_size"

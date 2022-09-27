@@ -148,8 +148,15 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == ACTIVITY_TYPE) {
+            ActivityListItemBinding view = ActivityListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+            view.overflowMenu.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    activityListInterface.onOverflowMenuClicked(0);
+                }
+            });
             return new ActivityViewHolder(
-                ActivityListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
+                view
             );
         } else {
             return new ActivityViewHeaderHolder(

@@ -25,12 +25,12 @@ class FileDetailActivitiesFragmentBottomSheetMenu() : BottomSheetDialogFragment(
         binding = FragmentFileDetailActivitiesBottomSheetMenuBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        binding.editComment.setOnClickListener {
+        binding.menuEditComment.setOnClickListener {
             dismissAllowingStateLoss()
             //todo
         }
 
-        binding.deleteComment.setOnClickListener {
+        binding.menuDeleteComment.setOnClickListener {
             dismissAllowingStateLoss()
             //todo
         }

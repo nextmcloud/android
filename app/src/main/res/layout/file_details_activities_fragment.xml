@@ -72,7 +72,7 @@
             android:layout_height="@dimen/minimum_size_for_touchable_area"
             android:contentDescription="@string/common_send"
             app:cornerRadius="24dp"
-            app:icon="@drawable/ic_send"
+            app:icon="@drawable/ic_send_comment"
             app:iconTint="@color/grey_60" />
 
     </LinearLayout>

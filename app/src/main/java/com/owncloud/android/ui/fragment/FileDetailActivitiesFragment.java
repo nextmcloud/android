@@ -162,6 +162,7 @@ public class FileDetailActivitiesFragment extends Fragment implements
             fetchAndSetData(-1);
         });
 
+
         callback = new VersionListInterface.CommentCallback() {
 
             @Override
@@ -189,6 +190,10 @@ public class FileDetailActivitiesFragment extends Fragment implements
                                getResources(),
                                binding.avatar,
                                getContext());
+
+
+
+
 
         return view;
     }
