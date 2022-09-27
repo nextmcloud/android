@@ -160,7 +160,7 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof ActivityViewHolder) {
+      /*  if (holder instanceof ActivityViewHolder) {
             final ActivityViewHolder activityViewHolder = (ActivityViewHolder) holder;
             Activity activity = (Activity) values.get(position);
             if (activity.getDatetime() != null) {
@@ -240,7 +240,7 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         } else {
             ActivityViewHeaderHolder activityViewHeaderHolder = (ActivityViewHeaderHolder) holder;
             activityViewHeaderHolder.binding.header.setText((String) values.get(position));
-        }
+        }*/
     }
 
     private ImageView createThumbnailNew(PreviewObject previewObject, List<RichObject> richObjectList) {
@@ -359,20 +359,24 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemViewType(int position) {
-        if (values.get(position) instanceof Activity) {
+        if (position % 3 == 0){
+            return HEADER_TYPE;
+        }
+        return ACTIVITY_TYPE;
+        /*if (values.get(position) instanceof Activity) {
             return ACTIVITY_TYPE;
         } else {
             return HEADER_TYPE;
-        }
+        }*/
     }
 
     @Override
     public int getItemCount() {
-        return values.size();
+        return 10;//values.size();
     }
 
     public boolean isEmpty() {
-        return values.isEmpty();
+        return false;//values.isEmpty();
     }
 
     /**
