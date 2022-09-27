@@ -32,12 +32,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.common.NextcloudClient;
+import com.nmc.android.ui.FileDetailActivitiesFragmentBottomSheetMenu;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileDetailsActivitiesFragmentBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -436,12 +438,10 @@ public class FileDetailActivitiesFragment extends Fragment implements
     }
 
     @Override
-    public void onOverflowMenuClicked() {
+    public void onOverflowMenuClicked(int position) {
 
-        //todo
-
-
-
+        BottomSheetDialogFragment bottomSheet =  new FileDetailActivitiesFragmentBottomSheetMenu();
+        bottomSheet.show(getChildFragmentManager(),"fileDetailActivitiesFragmentBottomSheetMenu");
 
 
     }

@@ -10,8 +10,8 @@ import com.owncloud.android.R
 import com.owncloud.android.databinding.FragmentFileDetailActivitiesBottomSheetMenuBinding
 
 
-class FileDetailActivitiesFragmentBottomSheetMenu : BottomSheetDialogFragment() {
-    private var binding: FragmentFileDetailActivitiesBottomSheetMenuBinding? = null
+class FileDetailActivitiesFragmentBottomSheetMenu() : BottomSheetDialogFragment() {
+    private lateinit var binding: FragmentFileDetailActivitiesBottomSheetMenuBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,13 +23,15 @@ class FileDetailActivitiesFragmentBottomSheetMenu : BottomSheetDialogFragment() 
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         binding = FragmentFileDetailActivitiesBottomSheetMenuBinding.inflate(inflater, container, false)
-        val view = binding!!.root
+        val view = binding.root
 
-        binding!!.editComment.setOnClickListener {
+        binding.editComment.setOnClickListener {
+            dismissAllowingStateLoss()
             //todo
         }
 
-        binding!!.deleteComment.setOnClickListener {
+        binding.deleteComment.setOnClickListener {
+            dismissAllowingStateLoss()
             //todo
         }
 

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Nextcloud Android client application
 
   Copyright (C) 2018 Andy Scherzinger
@@ -40,28 +39,27 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="@dimen/standard_half_margin"
             android:contentDescription="@null"
-            tools:src="@drawable/ic_user"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:src="@drawable/ic_user" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/commentInputField_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:hint="@string/new_comment"
             android:paddingTop="@dimen/standard_padding"
-            android:paddingBottom="@dimen/standard_margin"
-            android:hint="@string/new_comment">
+            android:paddingBottom="@dimen/standard_margin">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/commentInputField"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="45dp"
                 android:inputType="textNoSuggestions|textCapSentences"
-                android:textSize="@dimen/txt_size_17sp"
+                android:scrollbars="vertical"
                 android:textColor="@color/grey_30"
-                android:textStyle="normal"
-                android:background="@drawable/share_search_background"
-                android:scrollbars="vertical">
+                android:textSize="@dimen/txt_size_17sp"
+                android:textStyle="normal">
 
             </com.google.android.material.textfield.TextInputEditText>
 
@@ -75,7 +73,7 @@
             android:contentDescription="@string/common_send"
             app:cornerRadius="24dp"
             app:icon="@drawable/ic_send"
-            app:iconTint="@color/grey_60"/>
+            app:iconTint="@color/grey_60" />
 
     </LinearLayout>
 
