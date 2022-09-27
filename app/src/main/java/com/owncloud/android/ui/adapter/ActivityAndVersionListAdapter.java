@@ -151,15 +151,21 @@ public class ActivityAndVersionListAdapter extends ActivityListAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        Object value = values.get(position);
 
-        if (value instanceof Activity) {
+        if (position % 3 == 0){
+            return HEADER_TYPE;
+        }else{
             return ACTIVITY_TYPE;
-        } else if (value instanceof FileVersion) {
+        }
+       // Object value = values.get(position);
+
+        //if (value instanceof Activity) {
+           // return ACTIVITY_TYPE;
+      /*  } else if (value instanceof FileVersion) {
             return VERSION_TYPE;
         } else {
             return HEADER_TYPE;
-        }
+        }*/
     }
 
     protected class VersionViewHolder extends RecyclerView.ViewHolder {

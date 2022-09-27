@@ -160,7 +160,7 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof ActivityViewHolder) {
+      /*  if (holder instanceof ActivityViewHolder) {
             final ActivityViewHolder activityViewHolder = (ActivityViewHolder) holder;
             Activity activity = (Activity) values.get(position);
 
@@ -200,57 +200,54 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             //3-dot click listener to open bottom sheet fragment
 
 
-        int nightModeFlag = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            int nightModeFlag = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
 
-        if (!"file_created".equalsIgnoreCase(activity.getType()) &&
-            !"file_deleted".equalsIgnoreCase(activity.getType())) {
-            if (Configuration.UI_MODE_NIGHT_YES == nightModeFlag) {
-                activityViewHolder.binding.icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-            } else {
-                activityViewHolder.binding.icon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+            if (!"file_created".equalsIgnoreCase(activity.getType()) &&
+                !"file_deleted".equalsIgnoreCase(activity.getType())) {
+                if (Configuration.UI_MODE_NIGHT_YES == nightModeFlag) {
+                    activityViewHolder.binding.icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                } else {
+                    activityViewHolder.binding.icon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                }
             }
-        }
 
 
-        if (activity.getRichSubjectElement() != null &&
-            activity.getRichSubjectElement().getRichObjectList().size() > 0) {
-            activityViewHolder.binding.list.setVisibility(View.VISIBLE);
-            activityViewHolder.binding.list.removeAllViews();
+            if (activity.getRichSubjectElement() != null &&
+                activity.getRichSubjectElement().getRichObjectList().size() > 0) {
+                activityViewHolder.binding.list.setVisibility(View.VISIBLE);
+                activityViewHolder.binding.list.removeAllViews();
 
-            activityViewHolder.binding.list.post(() -> {
-                int w = activityViewHolder.binding.list.getMeasuredWidth();
-                int elPxSize = px + 20;
-                int totalColumnCount = w / elPxSize;
+                activityViewHolder.binding.list.post(() -> {
+                    int w = activityViewHolder.binding.list.getMeasuredWidth();
+                    int elPxSize = px + 20;
+                    int totalColumnCount = w / elPxSize;
 
-                try {
-                    activityViewHolder.binding.list.setColumnCount(totalColumnCount);
-                } catch (IllegalArgumentException e) {
-                    Log_OC.e(TAG, "error setting column count to " + totalColumnCount);
+                    try {
+                        activityViewHolder.binding.list.setColumnCount(totalColumnCount);
+                    } catch (IllegalArgumentException e) {
+                        Log_OC.e(TAG, "error setting column count to " + totalColumnCount);
+                    }
+                });
+
+                for (PreviewObject previewObject : activity.getPreviews()) {
+                    if (!isDetailView || MimeTypeUtil.isImageOrVideo(previewObject.getMimeType()) ||
+                        MimeTypeUtil.isVideo(previewObject.getMimeType())) {
+                        ImageView imageView = createThumbnailNew(previewObject,
+                                                                 activity
+                                                                     .getRichSubjectElement()
+                                                                     .getRichObjectList());
+                        activityViewHolder.binding.list.addView(imageView);
+                    }
                 }
-            });
-
-            for (PreviewObject previewObject : activity.getPreviews()) {
-                if (!isDetailView || MimeTypeUtil.isImageOrVideo(previewObject.getMimeType()) ||
-                    MimeTypeUtil.isVideo(previewObject.getMimeType())) {
-                    ImageView imageView = createThumbnailNew(previewObject,
-                                                             activity
-                                                                 .getRichSubjectElement()
-                                                                 .getRichObjectList());
-                    activityViewHolder.binding.list.addView(imageView);
-                }
+            } else {
+                activityViewHolder.binding.list.removeAllViews();
+                activityViewHolder.binding.list.setVisibility(View.GONE);
             }
         } else {
-            activityViewHolder.binding.list.removeAllViews();
-            activityViewHolder.binding.list.setVisibility(View.GONE);
-        }
+            ActivityViewHeaderHolder activityViewHeaderHolder = (ActivityViewHeaderHolder) holder;
+            activityViewHeaderHolder.binding.header.setText((String) values.get(position));
+        }*/
     }
-     else
-
-    {
-        ActivityViewHeaderHolder activityViewHeaderHolder = (ActivityViewHeaderHolder) holder;
-        activityViewHeaderHolder.binding.header.setText((String) values.get(position));
-    }
-}
 
     private ImageView createThumbnailNew(PreviewObject previewObject, List<RichObject> richObjectList) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(px, px);
@@ -348,7 +345,7 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     idx1,
                     idx2,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                           );
+                );
             }
             idx1 = text.indexOf('{', idx2);
         }
@@ -368,20 +365,24 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemViewType(int position) {
-        if (values.get(position) instanceof Activity) {
+        if (position % 3 == 0){
+            return HEADER_TYPE;
+        }
+        return ACTIVITY_TYPE;
+        /*if (values.get(position) instanceof Activity) {
             return ACTIVITY_TYPE;
         } else {
             return HEADER_TYPE;
-        }
+        }*/
     }
 
     @Override
     public int getItemCount() {
-        return values.size();
+        return 10;//values.size();
     }
 
     public boolean isEmpty() {
-        return values.isEmpty();
+        return false;//values.isEmpty();
     }
 
     /**
@@ -437,23 +438,23 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return this.getItemViewType(itemPosition) == HEADER_TYPE;
     }
 
-protected class ActivityViewHolder extends RecyclerView.ViewHolder {
+    protected class ActivityViewHolder extends RecyclerView.ViewHolder {
 
-    ActivityListItemBinding binding;
+        ActivityListItemBinding binding;
 
-    ActivityViewHolder(ActivityListItemBinding binding) {
-        super(binding.getRoot());
-        this.binding = binding;
+        ActivityViewHolder(ActivityListItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
     }
-}
 
-protected class ActivityViewHeaderHolder extends RecyclerView.ViewHolder {
+    protected class ActivityViewHeaderHolder extends RecyclerView.ViewHolder {
 
-    ActivityListItemHeaderBinding binding;
+        ActivityListItemHeaderBinding binding;
 
-    ActivityViewHeaderHolder(ActivityListItemHeaderBinding binding) {
-        super(binding.getRoot());
-        this.binding = binding;
+        ActivityViewHeaderHolder(ActivityListItemHeaderBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
     }
-}
 }
