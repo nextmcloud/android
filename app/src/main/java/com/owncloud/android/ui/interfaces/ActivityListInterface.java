@@ -10,4 +10,6 @@ public interface ActivityListInterface {
 
     void onActivityClicked(RichObject richObject);
 
+    void onOverflowMenuClicked();
+
 }

@@ -1,0 +1,39 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.nmc.android.ui.FileDetailActivitiesFragmentBottomSheetMenu"
+    android:padding="@dimen/standard_padding">
+
+
+    <TextView
+        android:id="@+id/editComment"
+        android:drawableLeft="@drawable/ic_edit_comment"
+        android:drawablePadding="@dimen/standard_half_padding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_comment"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/deleteComment"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="@dimen/txt_size_20sp"
+        android:padding="@dimen/standard_padding"/>
+
+    <TextView
+        android:id="@+id/deleteComment"
+        android:drawableLeft="@drawable/ic_delete_comment"
+        android:drawablePadding="@dimen/standard_half_padding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/delete_comment"
+        app:layout_constraintTop_toBottomOf="@id/editComment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="@dimen/txt_size_20sp"
+        android:padding="@dimen/standard_padding"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

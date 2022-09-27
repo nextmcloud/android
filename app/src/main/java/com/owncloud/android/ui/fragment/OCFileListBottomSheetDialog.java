@@ -58,7 +58,7 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog {
     private final OCFile file;
     private final AppPreferences preferences;
 
-    public OCFileListBottomSheetDialog(FileActivity fileActivity,
+    public  OCFileListBottomSheetDialog(FileActivity fileActivity,
                                        OCFileListBottomSheetActions actions,
                                        DeviceInfo deviceInfo,
                                        User user,
