@@ -58,6 +58,7 @@ import com.owncloud.android.lib.resources.files.model.FileVersion;
 import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.lib.resources.users.GetUserInfoRemoteOperation;
 import com.owncloud.android.operations.CheckCurrentCredentialsOperation;
+import com.owncloud.android.operations.CommentFileOperation;
 import com.owncloud.android.operations.CopyFileOperation;
 import com.owncloud.android.operations.CreateFolderIfNotExistOperation;
 import com.owncloud.android.operations.CreateFolderOperation;
@@ -74,6 +75,7 @@ import com.owncloud.android.operations.UpdateNoteForShareOperation;
 import com.owncloud.android.operations.UpdateShareInfoOperation;
 import com.owncloud.android.operations.UpdateSharePermissionsOperation;
 import com.owncloud.android.operations.UpdateShareViaLinkOperation;
+import com.owncloud.android.operations.comments.GetCommentsRemoteOperation;
 import com.owncloud.android.operations.share_download_limit.GetShareDownloadLimitOperation;
 
 import java.io.IOException;
@@ -113,6 +115,7 @@ public class OperationsService extends Service {
     public static final String EXTRA_IN_BACKGROUND = "IN_BACKGROUND";
     public static final String EXTRA_SHARE_TOKEN = "SHARE_TOKEN";
     public static final String EXTRA_SHARE_DOWNLOAD_LIMIT = "SHARE_DOWNLOAD_LIMIT";
+    public static final String EXTRA_FILE_ID = "FILE_ID";
 
     public static final String ACTION_CREATE_SHARE_VIA_LINK = "CREATE_SHARE_VIA_LINK";
     public static final String ACTION_CREATE_SHARE_WITH_SHAREE = "CREATE_SHARE_WITH_SHAREE";
@@ -134,6 +137,7 @@ public class OperationsService extends Service {
     public static final String ACTION_RESTORE_VERSION = "RESTORE_VERSION";
     public static final String ACTION_CREATE_FOLDER_NOT_EXIST = "CREATE_FOLDER_NOT_EXIST";
     public static final String ACTION_GET_SHARE_DOWNLOAD_LIMIT = "GET_SHARE_DOWNLOAD_LIMIT";
+    public static final String ACTION_GET_COMMENTS = "GET_COMMENTS";
 
     private ServiceHandler mOperationsHandler;
     private OperationsServiceBinder mOperationsBinder;
@@ -748,6 +752,15 @@ public class OperationsService extends Service {
                         String shareToken = operationIntent.getStringExtra(EXTRA_SHARE_TOKEN);
                         if (!TextUtils.isEmpty(shareToken)) {
                             operation = new GetShareDownloadLimitOperation(shareToken);
+                        }
+                        break;
+
+                    case ACTION_GET_COMMENTS:
+                        String fileId = operationIntent.getStringExtra(EXTRA_FILE_ID);
+                        if (!TextUtils.isEmpty(fileId)) {
+                            operation = new GetCommentsRemoteOperation(fileId, 0, 0);
+                        } else {
+                            Log_OC.d(TAG, "Get Comments: empty or null fileId.");
                         }
                         break;
 

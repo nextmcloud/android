@@ -623,7 +623,6 @@ public class FileOperationsHelper {
     }
 
     private void queueShareIntent(Intent shareIntent) {
-        // Unshare the file
         if(fileActivity.getOperationsServiceBinder() != null) {
             mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(shareIntent);
             fileActivity.showLoadingDialog(fileActivity.getApplicationContext().getString(R.string.wait_a_moment));
@@ -800,6 +799,20 @@ public class FileOperationsHelper {
         updateShareIntent.putExtra(OperationsService.EXTRA_SHARE_TOKEN, shareToken);
 
         queueShareIntent(updateShareIntent);
+    }
+
+
+    public void getComments(String fileId) {
+        if (fileActivity != null && fileActivity.getOperationsServiceBinder() != null) {
+            Intent commentsIntent = new Intent(fileActivity, OperationsService.class);
+            commentsIntent.setAction(OperationsService.ACTION_GET_COMMENTS);
+            commentsIntent.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
+            commentsIntent.putExtra(OperationsService.EXTRA_FILE_ID, fileId);
+
+            mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(commentsIntent);
+        } else {
+            Log_OC.d(TAG, "File activity or operation service binder is null.");
+        }
     }
 
     public void sendShareFile(OCFile file, boolean hideNcSharingOptions) {
