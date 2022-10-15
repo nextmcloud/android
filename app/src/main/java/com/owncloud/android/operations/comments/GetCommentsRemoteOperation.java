@@ -47,13 +47,15 @@ import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * class to fetch the list of comments for the given fileId
+ * <p>
+ * API : //PROPFIND to dav/comments/files/{file_id}
  */
 public class GetCommentsRemoteOperation extends RemoteOperation {
 
     private static final String TAG = GetCommentsRemoteOperation.class.getSimpleName();
 
     private static final String EXTENDED_PROPERTY_ID = "id";
-    private static final String EXTENDED_PROPERTY_MESSAGE = "message";
+    protected static final String EXTENDED_PROPERTY_MESSAGE = "message";
     private static final String EXTENDED_PROPERTY_ACTOR_DISPLAY_NAME = "actorDisplayName";
     private static final String EXTENDED_PROPERTY_ACTOR_ID = "actorId";
     private static final String EXTENDED_PROPERTY_ACTOR_TYPE = "actorType";

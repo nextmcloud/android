@@ -52,7 +52,9 @@ import com.owncloud.android.lib.resources.comments.MarkCommentsAsReadRemoteOpera
 import com.owncloud.android.lib.resources.files.model.FileVersion;
 import com.owncloud.android.lib.resources.status.OCCapability;
 import com.owncloud.android.operations.CommentFileOperation;
+import com.owncloud.android.operations.comments.DeleteCommentRemoteOperation;
 import com.owncloud.android.operations.comments.GetCommentsRemoteOperation;
+import com.owncloud.android.operations.comments.UpdateCommentRemoteOperation;
 import com.owncloud.android.ui.activity.ComponentsGetter;
 import com.owncloud.android.ui.adapter.ActivityAndVersionListAdapter;
 import com.owncloud.android.ui.events.CommentsEvent;
@@ -572,4 +574,77 @@ public class FileDetailActivitiesFragment extends Fragment implements
             }
         }
     }
+
+    private static class UpdateCommentTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final String message;
+        private final String fileId;
+        private final int commentId;
+        private final VersionListInterface.CommentCallback callback;
+        private final OwnCloudClient client;
+
+        private UpdateCommentTask(String message, String fileId, int commentId, VersionListInterface.CommentCallback callback,
+                                  OwnCloudClient client) {
+            this.message = message;
+            this.fileId = fileId;
+            this.commentId = commentId;
+            this.callback = callback;
+            this.client = client;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            UpdateCommentRemoteOperation updateCommentRemoteOperation = new UpdateCommentRemoteOperation(fileId, commentId, message);
+
+            RemoteOperationResult result = updateCommentRemoteOperation.execute(client);
+
+            return result.isSuccess();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            super.onPostExecute(success);
+            if (success) {
+                callback.onSuccess();
+            } else {
+                callback.onError(R.string.error_update_comment_file);
+            }
+        }
+    }
+
+    private static class DeleteCommentTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final String fileId;
+        private final int commentId;
+        private final VersionListInterface.CommentCallback callback;
+        private final OwnCloudClient client;
+
+        private DeleteCommentTask(String fileId, int commentId, VersionListInterface.CommentCallback callback,
+                                  OwnCloudClient client) {
+            this.fileId = fileId;
+            this.commentId = commentId;
+            this.callback = callback;
+            this.client = client;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            DeleteCommentRemoteOperation deleteCommentRemoteOperation = new DeleteCommentRemoteOperation(fileId, commentId);
+
+            RemoteOperationResult result = deleteCommentRemoteOperation.execute(client);
+
+            return result.isSuccess();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            super.onPostExecute(success);
+            if (success) {
+                callback.onSuccess();
+            } else {
+                callback.onError(R.string.error_delete_comment_file);
+            }
+        }
+    }
+
 }

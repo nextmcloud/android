@@ -14,30 +14,33 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.owncloud.android.operations.share_download_limit;
+package com.owncloud.android.operations.comments;
 
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
+import com.owncloud.android.operations.share_download_limit.DownloadLimitXMLParser;
+import com.owncloud.android.operations.share_download_limit.ShareDownloadLimitUtils;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 
 /**
- * class to delete the download limit for the link share
- * this has to be executed when user has toggled off the download limit
+ * class to delete the comment
  * <p>
- * API : //DELETE to /ocs/v2.php/apps/files_downloadlimit/{share_token}/limit
+ * API : //DELETE to dav/comments/files/{file_id}/{comment_id}
  */
-public class DeleteShareDownloadLimitRemoteOperation extends RemoteOperation {
+public class DeleteCommentRemoteOperation extends RemoteOperation {
 
-    private static final String TAG = DeleteShareDownloadLimitRemoteOperation.class.getSimpleName();
+    private static final String TAG = DeleteCommentRemoteOperation.class.getSimpleName();
 
-    private final String shareToken;
+    private final String fileId;
+    private final int commentId;
 
-    public DeleteShareDownloadLimitRemoteOperation(String shareToken) {
-        this.shareToken = shareToken;
+    public DeleteCommentRemoteOperation(String fileId, int commentId) {
+        this.fileId = fileId;
+        this.commentId = commentId;
     }
 
     @Override
@@ -48,32 +51,23 @@ public class DeleteShareDownloadLimitRemoteOperation extends RemoteOperation {
         DeleteMethod deleteMethod = null;
 
         try {
-            // Delete Method
-            deleteMethod = new DeleteMethod(client.getBaseUri() + ShareDownloadLimitUtils.INSTANCE.getDownloadLimitApiPath(shareToken));
+            //Delete Method
+            deleteMethod = new DeleteMethod(client.getCommentsUri(fileId) + "/" + commentId);
 
-            deleteMethod.addRequestHeader(OCS_API_HEADER, OCS_API_HEADER_VALUE);
+            //deleteMethod.addRequestHeader(OCS_API_HEADER, OCS_API_HEADER_VALUE);
 
             status = client.executeMethod(deleteMethod);
 
             if (isSuccess(status)) {
-                String response = deleteMethod.getResponseBodyAsString();
-
-                Log_OC.d(TAG, "Delete Download Limit response: " + response);
-
-                DownloadLimitXMLParser parser = new DownloadLimitXMLParser();
-                result = parser.parse(true, response);
-
-                if (result.isSuccess()) {
-                    return result;
-                }
-
+                result = new RemoteOperationResult<>(true, status, deleteMethod.getResponseHeaders());
+                return result;
             } else {
                 result = new RemoteOperationResult<>(false, deleteMethod);
             }
 
         } catch (Exception e) {
             result = new RemoteOperationResult<>(e);
-            Log_OC.e(TAG, "Exception while deleting share download limit", e);
+            Log_OC.e(TAG, "Exception while deleting comment", e);
 
         } finally {
             if (deleteMethod != null) {
@@ -84,7 +78,9 @@ public class DeleteShareDownloadLimitRemoteOperation extends RemoteOperation {
     }
 
     private boolean isSuccess(int status) {
-        return status == HttpStatus.SC_OK || status == HttpStatus.SC_BAD_REQUEST;
+        return status == HttpStatus.SC_OK
+            || status == HttpStatus.SC_NO_CONTENT
+            || status == HttpStatus.SC_MULTI_STATUS;
     }
 
 }

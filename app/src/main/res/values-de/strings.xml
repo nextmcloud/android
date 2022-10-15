@@ -270,6 +270,8 @@
     <string name="error_cant_bind_to_operations_service">Kritischer Fehler: Operationen können nicht ausgeführt werden</string>
     <string name="error_choosing_date">Fehler beim Auswählen des Datums</string>
     <string name="error_comment_file">Fehler beim Kommentieren der Datei</string>
+    <string name="error_update_comment_file">Error in updating comment</string>
+    <string name="error_delete_comment_file">Error in deleting comment</string>
     <string name="error_crash_title">%1$s abgestürzt</string>
     <string name="error_report_issue_action">Melden</string>
     <string name="error_report_issue_text">Problem melden? (benötigt ein GitHub-Konto)</string>
