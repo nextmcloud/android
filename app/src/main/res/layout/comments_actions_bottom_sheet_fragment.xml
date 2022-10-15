@@ -1,19 +1,20 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/bottom_sheet_bg_color"
     android:orientation="vertical"
-    android:paddingTop="@dimen/standard_padding"
-    tools:context="com.nmc.android.ui.FileDetailActivitiesFragmentBottomSheetMenu">
+    android:paddingTop="@dimen/standard_half_padding"
+    android:paddingBottom="@dimen/standard_half_padding"
+    tools:context="com.nmc.android.ui.CommentsActionsBottomSheetDialog">
 
     <LinearLayout
         android:id="@+id/menuEditComment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/minimum_size_for_touchable_area"
         android:background="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/minimum_size_for_touchable_area"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/standard_padding"
         android:paddingTop="@dimen/standard_half_padding"
@@ -21,32 +22,32 @@
         android:paddingBottom="@dimen/standard_half_padding"
         tools:ignore="UseCompoundDrawables">
 
-    <ImageView
-        android:id="@+id/menuIconEditComment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:contentDescription="@null"
-        android:src="@drawable/ic_edit_comment" />
+        <ImageView
+            android:id="@+id/menuIconEditComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_pencil_edit" />
 
         <TextView
             android:id="@+id/textViewEditComment"
-            android:drawablePadding="@dimen/standard_half_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
             android:text="@string/edit_comment"
-            android:textSize="@dimen/txt_size_17sp"
-            android:padding="@dimen/standard_padding"/>
+            android:textColor="@color/bottom_sheet_txt_color"
+            android:textSize="@dimen/txt_size_16sp" />
 
     </LinearLayout>
-
 
     <LinearLayout
         android:id="@+id/menuDeleteComment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/minimum_size_for_touchable_area"
         android:background="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/minimum_size_for_touchable_area"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/standard_padding"
         android:paddingTop="@dimen/standard_half_padding"
@@ -64,21 +65,14 @@
 
         <TextView
             android:id="@+id/textViewDeleteComment"
-            android:drawablePadding="@dimen/standard_half_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
             android:text="@string/delete_comment"
-            android:textSize="@dimen/txt_size_17sp"
-            android:padding="@dimen/standard_padding"/>
+            android:textColor="@color/bottom_sheet_txt_color"
+            android:textSize="@dimen/txt_size_16sp" />
 
     </LinearLayout>
-
-
-
-
-
-
-
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>

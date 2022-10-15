@@ -20,8 +20,6 @@ import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
-import com.owncloud.android.operations.share_download_limit.DownloadLimitXMLParser;
-import com.owncloud.android.operations.share_download_limit.ShareDownloadLimitUtils;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.DeleteMethod;
@@ -53,8 +51,6 @@ public class DeleteCommentRemoteOperation extends RemoteOperation {
         try {
             //Delete Method
             deleteMethod = new DeleteMethod(client.getCommentsUri(fileId) + "/" + commentId);
-
-            //deleteMethod.addRequestHeader(OCS_API_HEADER, OCS_API_HEADER_VALUE);
 
             status = client.executeMethod(deleteMethod);
 

@@ -22,28 +22,18 @@ import com.owncloud.android.lib.common.network.WebdavUtils;
 import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
-import com.owncloud.android.operations.share_download_limit.DownloadLimitXMLParser;
-import com.owncloud.android.operations.share_download_limit.ShareDownloadLimitUtils;
 
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.jackrabbit.webdav.MultiStatus;
 import org.apache.jackrabbit.webdav.MultiStatusResponse;
 import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
 import org.apache.jackrabbit.webdav.property.DavProperty;
-import org.apache.jackrabbit.webdav.property.DavPropertyName;
-import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.jackrabbit.webdav.xml.Namespace;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * class to fetch the list of comments for the given fileId
@@ -145,6 +135,9 @@ public class GetCommentsRemoteOperation extends RemoteOperation {
                 }
             }
 
+            //don't look for other elements if commentId is missing or zero
+            if (commentId == 0) continue;
+
             // OC message property <oc:message>
             prop = propSet.get(EXTENDED_PROPERTY_MESSAGE, ocNamespace);
             String message = "";
@@ -154,12 +147,9 @@ public class GetCommentsRemoteOperation extends RemoteOperation {
 
             // OC actorId property <oc:actorId>
             prop = propSet.get(EXTENDED_PROPERTY_ACTOR_ID, ocNamespace);
-            long actorId = 0L;
+            String actorId = "";
             if (prop != null) {
-                String id = (String) prop.getValue();
-                if (id != null) {
-                    actorId = Long.parseLong(id);
-                }
+                actorId = (String) prop.getValue();
             }
 
             // OC actorDisplayName property <oc:actorDisplayName>

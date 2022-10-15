@@ -45,17 +45,20 @@ package com.owncloud.android.operations.comments
  * </d:multistatus>
  */
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.util.*
 import javax.annotation.Nullable
 
+@Parcelize
 data class Comments(val path: String,
                     val commentId: Int,
                     val message: String,
-                    val actorId: Long,
+                    val actorId: String,
                     val actorDisplayName: String,
                     val actorType: String,
-                    @Nullable val creationDateTime: Date,
+                    val creationDateTime: Date? = null,
                     val isUnread: Boolean = false,
                     val objectId: String,
                     val objectType: String,
-                    val verb: String)
+                    val verb: String) : Parcelable

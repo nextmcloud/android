@@ -106,12 +106,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.AppCompatDrawableManager;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.net.ParseException;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -175,8 +177,8 @@ public final class DisplayUtils {
      * </ul>
      *
      * @param bytes Input file size
-     * @return something readable like "12 MB", {@link com.owncloud.android.R.string#common_pending} for negative
-     * byte values
+     * @return something readable like "12 MB", {@link com.owncloud.android.R.string#common_pending} for negative byte
+     * values
      */
     public static String bytesToHumanReadable(long bytes) {
         if (bytes < 0) {
@@ -195,8 +197,7 @@ public final class DisplayUtils {
     }
 
     /**
-     * Converts MIME types like "image/jpg" to more end user friendly output
-     * like "JPG image".
+     * Converts MIME types like "image/jpg" to more end user friendly output like "JPG image".
      *
      * @param mimetype MIME type to convert
      * @return A human friendly version of the MIME type, {@link #MIME_TYPE_UNKNOWN} if it can't be converted
@@ -273,7 +274,7 @@ public final class DisplayUtils {
     /**
      * Converts an internationalized domain name (IDN) in an URL to and from ASCII/Unicode.
      *
-     * @param url the URL where the domain name should be converted
+     * @param url     the URL where the domain name should be converted
      * @param toASCII if true converts from Unicode to ASCII, if false converts from ASCII to Unicode
      * @return the URL containing the converted domain name
      */
@@ -313,15 +314,15 @@ public final class DisplayUtils {
         final OwnCloudAccount ocs = user.toOwnCloudAccount();
         final String accountName = user.getAccountName();
         return ocs.getDisplayName()
-                + "@"
-                + convertIdn(accountName.substring(accountName.lastIndexOf('@') + 1), false);
+            + "@"
+            + convertIdn(accountName.substring(accountName.lastIndexOf('@') + 1), false);
     }
 
 
     /**
      * calculates the relative time string based on the given modification timestamp.
      *
-     * @param context the app's context
+     * @param context               the app's context
      * @param modificationTimestamp the UNIX timestamp of the file modification time in milliseconds.
      * @return a relative time string
      */
@@ -394,6 +395,54 @@ public final class DisplayUtils {
     }
 
     /**
+     * Code from: https://stackoverflow.com/questions/35858608/how-to-convert-time-to-time-ago-in-android
+     *
+     * method convert the passed time into human readable like into seconds, minutes, days, weeks, years
+     *
+     * @param context
+     * @param time
+     * @return
+     */
+    public static String getRelativeDateTimeString(Context context, long time) {
+
+        String convTime = null;
+
+        Date nowTime = new Date();
+
+        long dateDiff = nowTime.getTime() - time;
+
+        long second = TimeUnit.MILLISECONDS.toSeconds(dateDiff);
+        long minute = TimeUnit.MILLISECONDS.toMinutes(dateDiff);
+        long hour = TimeUnit.MILLISECONDS.toHours(dateDiff);
+        long day = TimeUnit.MILLISECONDS.toDays(dateDiff);
+
+        if (second == 0) {
+            convTime = context.getResources().getString(R.string.just_now);
+        } else if (second < 60) {
+            convTime = context.getResources().getQuantityString(R.plurals.seconds_ago, (int) second, second);
+        } else if (minute < 60) {
+            convTime = context.getResources().getQuantityString(R.plurals.minutes_ago, (int) minute, minute);
+        } else if (hour < 24) {
+            convTime = context.getResources().getQuantityString(R.plurals.hours_ago, (int) hour, hour);
+        } else if (day >= 7) {
+            if (day > 360) {
+                long year = (day / 360);
+                convTime = context.getResources().getQuantityString(R.plurals.years_ago, (int) year, year);
+            } else if (day > 30) {
+                long month = (day / 30);
+                convTime = context.getResources().getQuantityString(R.plurals.months_ago, (int) month, month);
+            } else {
+                long week = (day / 7);
+                convTime = context.getResources().getQuantityString(R.plurals.weeks_ago, (int) week, week);
+            }
+        } else {
+            convTime = context.getResources().getQuantityString(R.plurals.days_ago, (int) day);
+        }
+
+        return convTime;
+    }
+
+    /**
      * Update the passed path removing the last "/" if it is not the root folder.
      *
      * @param path the path to be trimmed
@@ -459,17 +508,17 @@ public final class DisplayUtils {
     /**
      * fetches and sets the avatar of the given account in the passed callContext
      *
-     * @param user        the account to be used to connect to server
-     * @param avatarRadius   the avatar radius
-     * @param resources      reference for density information
-     * @param callContext    which context is called to set the generated avatar
+     * @param user         the account to be used to connect to server
+     * @param avatarRadius the avatar radius
+     * @param resources    reference for density information
+     * @param callContext  which context is called to set the generated avatar
      */
     public static void setAvatar(@NonNull User user, AvatarGenerationListener listener,
                                  float avatarRadius, Resources resources, Object callContext, Context context) {
 
         AccountManager accountManager = AccountManager.get(context);
         String userId = accountManager.getUserData(user.toPlatformAccount(),
-                com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_USER_ID);
+                                                   com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_USER_ID);
 
         setAvatar(user, userId, listener, avatarRadius, resources, callContext, context);
     }
@@ -477,11 +526,11 @@ public final class DisplayUtils {
     /**
      * fetches and sets the avatar of the given account in the passed callContext
      *
-     * @param user        the account to be used to connect to server
-     * @param userId         the userId which avatar should be set
-     * @param avatarRadius   the avatar radius
-     * @param resources      reference for density information
-     * @param callContext    which context is called to set the generated avatar
+     * @param user         the account to be used to connect to server
+     * @param userId       the userId which avatar should be set
+     * @param avatarRadius the avatar radius
+     * @param resources    reference for density information
+     * @param callContext  which context is called to set the generated avatar
      */
     public static void setAvatar(@NonNull User user, @NonNull String userId, AvatarGenerationListener listener,
                                  float avatarRadius, Resources resources, Object callContext, Context context) {
@@ -639,7 +688,7 @@ public final class DisplayUtils {
     /**
      * Get String data from a InputStream
      *
-     * @param inputStream        The File InputStream
+     * @param inputStream The File InputStream
      */
     public static String getData(InputStream inputStream) {
 
@@ -830,7 +879,8 @@ public final class DisplayUtils {
         SortingOrderDialogFragment.newInstance(sortOrder).show(fragmentTransaction, SORTING_ORDER_FRAGMENT);
     }
 
-    public static @StringRes int getSortOrderStringId(FileSortOrder sortOrder) {
+    public static @StringRes
+    int getSortOrderStringId(FileSortOrder sortOrder) {
         switch (sortOrder.name) {
             case sort_z_to_a_id:
                 return R.string.menu_item_sort_by_name_z_a;
@@ -1109,6 +1159,7 @@ public final class DisplayUtils {
 
     /**
      * to check if device height is same or greater than the height passed
+     *
      * @param heightInDp
      * @return true/false if device height is same or equal to passed height
      */

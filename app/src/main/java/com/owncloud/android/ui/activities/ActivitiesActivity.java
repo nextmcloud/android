@@ -18,6 +18,7 @@
  */
 package com.owncloud.android.ui.activities;
 
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -32,6 +33,7 @@ import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.activities.model.RichObject;
 import com.owncloud.android.lib.resources.files.FileUtils;
+import com.owncloud.android.operations.comments.Comments;
 import com.owncloud.android.ui.activities.data.activities.ActivitiesRepository;
 import com.owncloud.android.ui.activities.data.files.FilesRepository;
 import com.owncloud.android.ui.activity.DrawerActivity;
@@ -114,7 +116,8 @@ public class ActivitiesActivity extends DrawerActivity implements ActivityListIn
                                           getUserAccountManager(),
                                           this,
                                           clientFactory,
-                                          false);
+                                          false,
+                                          null);
         binding.list.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -178,10 +181,9 @@ public class ActivitiesActivity extends DrawerActivity implements ActivityListIn
     }
 
     @Override
-    public void onOverflowMenuClicked(int position) {
-        //todo
+    public void onCommentsOverflowMenuClicked(Comments comments) {
+        //nothing to be done here
     }
-
 
     @Override
     public void showActivities(List<Object> activities, NextcloudClient client, int lastGiven) {

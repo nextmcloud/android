@@ -160,6 +160,13 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         refreshSharesFromDB();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        //track screen view when fragment is visible
+        TealiumSdkUtils.trackView(TealiumSdkUtils.SCREEN_VIEW_SHARING, appPreferences);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

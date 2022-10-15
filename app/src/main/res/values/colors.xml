@@ -68,7 +68,7 @@
 
     <!-- Colors -->
     <color name="standard_grey">#757575</color>
-    <color name="magenta_30">#33E20074</color>
+    <color name="magenta_20">#33E20074</color>
     <color name="actionbar_shadow">#222222</color>
     <color name="grey_200">#EEEEEE</color>
     <color name="grey_60">#666666</color>

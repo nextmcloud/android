@@ -23,14 +23,20 @@
 
 package com.owncloud.android.ui.fragment;
 
+import android.accounts.AccountManager;
+import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.snackbar.Snackbar;
@@ -39,7 +45,8 @@ import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.common.NextcloudClient;
-import com.nmc.android.ui.FileDetailActivitiesFragmentBottomSheetMenu;
+import com.nmc.android.ui.CommentsActionsBottomSheetDialog;
+import com.nmc.android.utils.KeyboardUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileDetailsActivitiesFragmentBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -52,11 +59,14 @@ import com.owncloud.android.lib.resources.comments.MarkCommentsAsReadRemoteOpera
 import com.owncloud.android.lib.resources.files.model.FileVersion;
 import com.owncloud.android.lib.resources.status.OCCapability;
 import com.owncloud.android.operations.CommentFileOperation;
+import com.owncloud.android.operations.comments.Comments;
 import com.owncloud.android.operations.comments.DeleteCommentRemoteOperation;
 import com.owncloud.android.operations.comments.GetCommentsRemoteOperation;
 import com.owncloud.android.operations.comments.UpdateCommentRemoteOperation;
 import com.owncloud.android.ui.activity.ComponentsGetter;
 import com.owncloud.android.ui.adapter.ActivityAndVersionListAdapter;
+import com.owncloud.android.ui.dialog.EditCommentDialogFragment;
+import com.owncloud.android.ui.dialog.RenameFileDialogFragment;
 import com.owncloud.android.ui.events.CommentsEvent;
 import com.owncloud.android.ui.helpers.FileOperationsHelper;
 import com.owncloud.android.ui.interfaces.ActivityListInterface;
@@ -76,6 +86,7 @@ import javax.inject.Inject;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -86,6 +97,7 @@ public class FileDetailActivitiesFragment extends Fragment implements
     ActivityListInterface,
     DisplayUtils.AvatarGenerationListener,
     VersionListInterface.View,
+    CommentsActionsBottomSheetDialog.CommentsBottomSheetActions,
     Injectable {
 
     private static final String TAG = FileDetailActivitiesFragment.class.getSimpleName();
@@ -141,7 +153,7 @@ public class FileDetailActivitiesFragment extends Fragment implements
             user = savedInstanceState.getParcelable(ARG_USER);
         }
 
-        binding = FileDetailsActivitiesFragmentBinding.inflate(inflater,container,false);
+        binding = FileDetailsActivitiesFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
         setupView();
@@ -179,10 +191,23 @@ public class FileDetailActivitiesFragment extends Fragment implements
 
         binding.submitComment.setOnClickListener(v -> submitComment());
 
-        ThemeTextInputUtils.colorTextInput(binding.commentInputFieldContainer,
-                                           binding.commentInputField,
-                                           ThemeColorUtils.primaryColor(getContext()),
-                                           ThemeColorUtils.primaryAccentColor(getContext()));
+        binding.commentInputField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    submitComment();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
+        //remove focus from input view on click of root view
+        binding.getRoot().setOnClickListener(v -> {
+            binding.commentInputField.clearFocus();
+            KeyboardUtils.hideKeyboardFrom(requireContext(), binding.getRoot());
+        });
 
         DisplayUtils.setAvatar(user,
                                this,
@@ -190,9 +215,6 @@ public class FileDetailActivitiesFragment extends Fragment implements
                                getResources(),
                                binding.avatar,
                                getContext());
-
-
-
 
 
         return view;
@@ -240,11 +262,16 @@ public class FileDetailActivitiesFragment extends Fragment implements
         binding.emptyList.emptyListIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_activity, null));
         binding.emptyList.emptyListView.setVisibility(View.GONE);
 
+        AccountManager acctManager = AccountManager.get(getContext());
+        String userId = acctManager.getUserData(user.toPlatformAccount(),
+                                                   com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_USER_ID);
+
         adapter = new ActivityAndVersionListAdapter(getContext(),
                                                     accountManager,
                                                     this,
                                                     this,
-                                                    clientFactory
+                                                    clientFactory,
+                                                    userId
         );
         binding.list.setAdapter(adapter);
 
@@ -302,7 +329,7 @@ public class FileDetailActivitiesFragment extends Fragment implements
                 GetCommentsRemoteOperation getCommentsRemoteOperation = new GetCommentsRemoteOperation(file.getLocalId(), 0, 0);
 
                 Log_OC.d(TAG, "BEFORE getCommentsRemoteOperation.execute");
-                RemoteOperationResult result = nextcloudClient.execute(getCommentsRemoteOperation);
+                RemoteOperationResult result = getCommentsRemoteOperation.execute(ownCloudClient);
 
 
                 if (result.isSuccess() && result.getResultData() != null) {
@@ -433,7 +460,6 @@ public class FileDetailActivitiesFragment extends Fragment implements
 
         t.start();
     }*/
-
     public void markCommentsAsRead() {
         new Thread(() -> {
             if (file.getUnreadCommentsCount() > 0) {
@@ -507,12 +533,8 @@ public class FileDetailActivitiesFragment extends Fragment implements
     }
 
     @Override
-    public void onOverflowMenuClicked(int position) {
-
-        BottomSheetDialogFragment bottomSheet =  new FileDetailActivitiesFragmentBottomSheetMenu();
-        bottomSheet.show(getChildFragmentManager(),"fileDetailActivitiesFragmentBottomSheetMenu");
-
-
+    public void onCommentsOverflowMenuClicked(Comments comments) {
+        new CommentsActionsBottomSheetDialog(requireContext(), comments, this).show();
     }
 
     @Override
@@ -536,6 +558,26 @@ public class FileDetailActivitiesFragment extends Fragment implements
     @Override
     public boolean shouldCallGeneratedCallback(String tag, Object callContext) {
         return false;
+    }
+
+    @Override
+    public void onUpdateComment(@NonNull Comments comments) {
+        EditCommentDialogFragment dialog = EditCommentDialogFragment.newInstance(comments);
+        dialog.setOnEditCommentListener((comments1, message) -> {
+            new UpdateCommentTask(message, file.getLocalId(), comments1.getCommentId(), callback, ownCloudClient).execute();
+        });
+        dialog.show(requireActivity().getSupportFragmentManager(), EditCommentDialogFragment.EDIT_COMMENT_FRAGMENT_TAG);
+    }
+
+    @Override
+    public void onDeleteComment(@NonNull Comments comments) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+        builder.setPositiveButton(R.string.common_yes, (dialogInterface, i) -> new DeleteCommentTask(file.getLocalId(), comments.getCommentId(),
+                                                                                         callback, ownCloudClient).execute())
+            .setNegativeButton(R.string.common_no, null)
+            .setMessage(R.string.delete_comment_dialog_message);
+        Dialog dialog = builder.create();
+        dialog.show();
     }
 
     private static class SubmitCommentTask extends AsyncTask<Void, Void, Boolean> {

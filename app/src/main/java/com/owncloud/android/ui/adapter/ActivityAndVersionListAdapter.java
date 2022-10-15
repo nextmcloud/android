@@ -59,9 +59,10 @@ public class ActivityAndVersionListAdapter extends ActivityListAdapter {
         CurrentAccountProvider currentAccountProvider,
         ActivityListInterface activityListInterface,
         VersionListInterface.View versionListInterface,
-        ClientFactory clientFactory
+        ClientFactory clientFactory,
+        String userId
     ) {
-        super(context, currentAccountProvider, activityListInterface, clientFactory, true);
+        super(context, currentAccountProvider, activityListInterface, clientFactory, true, userId);
 
         this.versionListInterface = versionListInterface;
     }
@@ -161,8 +162,10 @@ public class ActivityAndVersionListAdapter extends ActivityListAdapter {
     public int getItemViewType(int position) {
         Object value = values.get(position);
 
-        if (value instanceof Activity || value instanceof Comments) {
+        if (value instanceof Activity) {
             return ACTIVITY_TYPE;
+        } else if (value instanceof Comments) {
+            return COMMENT_TYPE;
         } else if (value instanceof FileVersion) {
             return VERSION_TYPE;
         } else {

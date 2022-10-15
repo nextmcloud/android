@@ -51,6 +51,7 @@ import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.client.network.ConnectivityService;
 import com.nextcloud.client.preferences.AppPreferences;
+import com.nmc.android.utils.KeyboardUtils;
 import com.nmc.android.utils.TealiumSdkUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
@@ -283,9 +284,9 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
             binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.share_dialog_title));
         }
 
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.comments_tab_title));
         ThemeLayoutUtils.colorTabLayout(getContext().getApplicationContext(), binding.tabLayout);
 
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.comments_tab_title));
 
         final FileDetailTabAdapter adapter = new FileDetailTabAdapter(getFragmentManager(), getFile(), user);
         binding.pager.setAdapter(adapter);
@@ -296,6 +297,9 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
                 if (activeTab == 0 && fragment != null) {
                     fragment.markCommentsAsRead();
                 }
+
+                KeyboardUtils.hideKeyboardFrom(requireContext(), binding.getRoot());
+
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
             }
         });
@@ -309,6 +313,8 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
                         fragment.markCommentsAsRead();
                     }
                 }
+
+                KeyboardUtils.hideKeyboardFrom(requireContext(), binding.getRoot());
             }
 
             @Override
@@ -337,8 +343,6 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
         super.onStart();
         listenForTransferProgress();
         EventBus.getDefault().register(this);
-        //track screen view when fragment is visible
-        TealiumSdkUtils.trackView(TealiumSdkUtils.SCREEN_VIEW_SHARING, preferences);
     }
 
     @Override

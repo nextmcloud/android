@@ -61,6 +61,7 @@ import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.ActivityListItemBinding;
 import com.owncloud.android.databinding.ActivityListItemHeaderBinding;
+import com.owncloud.android.databinding.CommentListItemBinding;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.activities.model.Activity;
 import com.owncloud.android.lib.resources.activities.model.RichElement;
@@ -80,6 +81,7 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
@@ -89,6 +91,8 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     static final int HEADER_TYPE = 100;
     static final int ACTIVITY_TYPE = 101;
+    static final int COMMENT_TYPE = 103;
+
     private final ActivityListInterface activityListInterface;
     private final int px;
     private static final String TAG = ActivityListAdapter.class.getSimpleName();
@@ -99,13 +103,16 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private ClientFactory clientFactory;
     protected List<Object> values;
     private boolean isDetailView;
+    @Nullable
+    private final String userId; //it will be null if coming from activities
 
     public ActivityListAdapter(
         Context context,
         CurrentAccountProvider currentAccountProvider,
         ActivityListInterface activityListInterface,
         ClientFactory clientFactory,
-        boolean isDetailView) {
+        boolean isDetailView,
+        @Nullable String userId) {
         this.values = new ArrayList<>();
         this.context = context;
         this.currentAccountProvider = currentAccountProvider;
@@ -113,6 +120,7 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.clientFactory = clientFactory;
         px = getThumbnailDimension();
         this.isDetailView = isDetailView;
+        this.userId = userId;
     }
 
     public void setActivityItems(List<Object> activityItems, NextcloudClient client, boolean clear) {
@@ -149,15 +157,12 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == ACTIVITY_TYPE) {
-            ActivityListItemBinding view = ActivityListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-            view.overflowMenu.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    activityListInterface.onOverflowMenuClicked(0);
-                }
-            });
             return new ActivityViewHolder(
-                view
+                ActivityListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
+            );
+        } else if (viewType == COMMENT_TYPE) {
+            return new CommentViewHolder(
+                CommentListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
             );
         } else {
             return new ActivityViewHeaderHolder(
@@ -171,117 +176,116 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (holder instanceof ActivityViewHolder) {
             final ActivityViewHolder activityViewHolder = (ActivityViewHolder) holder;
 
-            if (values.get(position) instanceof Activity) {
+            Activity activity = (Activity) values.get(position);
 
-                Activity activity = (Activity) values.get(position);
+            if (activity.getDatetime() != null) {
+                activityViewHolder.binding.datetime.setVisibility(View.VISIBLE);
+                activityViewHolder.binding.datetime.setText(DateFormat.format("HH:mm", activity.getDatetime().getTime()));
+            } else {
+                activityViewHolder.binding.datetime.setVisibility(View.GONE);
+            }
 
-                if (activity.getDatetime() != null) {
-                    activityViewHolder.binding.datetime.setVisibility(View.VISIBLE);
-                    activityViewHolder.binding.datetime.setText(DateFormat.format("HH:mm", activity.getDatetime().getTime()));
+            if (activity.getRichSubjectElement() != null &&
+                !TextUtils.isEmpty(activity.getRichSubjectElement().getRichSubject())) {
+                activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
+                activityViewHolder.binding.subject.setMovementMethod(LinkMovementMethod.getInstance());
+                activityViewHolder.binding.subject.setText(addClickablePart(activity.getRichSubjectElement()), TextView.BufferType.SPANNABLE);
+                activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
+            } else if (!TextUtils.isEmpty(activity.getSubject())) {
+                activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
+                activityViewHolder.binding.subject.setText(activity.getSubject());
+            } else {
+                activityViewHolder.binding.subject.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(activity.getMessage())) {
+                activityViewHolder.binding.message.setText(activity.getMessage());
+                activityViewHolder.binding.message.setVisibility(View.VISIBLE);
+            } else {
+                activityViewHolder.binding.message.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(activity.getIcon())) {
+                downloadIcon(activity, activityViewHolder.binding.icon);
+            }
+
+            //3-dot click listener to open bottom sheet fragment
+
+
+            int nightModeFlag = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+            if (!"file_created".equalsIgnoreCase(activity.getType()) &&
+                !"file_deleted".equalsIgnoreCase(activity.getType())) {
+                if (Configuration.UI_MODE_NIGHT_YES == nightModeFlag) {
+                    activityViewHolder.binding.icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
                 } else {
-                    activityViewHolder.binding.datetime.setVisibility(View.GONE);
-                }
-
-                if (activity.getRichSubjectElement() != null &&
-                    !TextUtils.isEmpty(activity.getRichSubjectElement().getRichSubject())) {
-                    activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
-                    activityViewHolder.binding.subject.setMovementMethod(LinkMovementMethod.getInstance());
-                    activityViewHolder.binding.subject.setText(addClickablePart(activity.getRichSubjectElement()), TextView.BufferType.SPANNABLE);
-                    activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
-                } else if (!TextUtils.isEmpty(activity.getSubject())) {
-                    activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
-                    activityViewHolder.binding.subject.setText(activity.getSubject());
-                } else {
-                    activityViewHolder.binding.subject.setVisibility(View.GONE);
-                }
-
-                if (!TextUtils.isEmpty(activity.getMessage())) {
-                    activityViewHolder.binding.message.setText(activity.getMessage());
-                    activityViewHolder.binding.message.setVisibility(View.VISIBLE);
-                } else {
-                    activityViewHolder.binding.message.setVisibility(View.GONE);
-                }
-
-                if (!TextUtils.isEmpty(activity.getIcon())) {
-                    downloadIcon(activity, activityViewHolder.binding.icon);
-                }
-
-                //3-dot click listener to open bottom sheet fragment
-
-
-                int nightModeFlag = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-
-                if (!"file_created".equalsIgnoreCase(activity.getType()) &&
-                    !"file_deleted".equalsIgnoreCase(activity.getType())) {
-                    if (Configuration.UI_MODE_NIGHT_YES == nightModeFlag) {
-                        activityViewHolder.binding.icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-                    } else {
-                        activityViewHolder.binding.icon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
-                    }
-                }
-
-
-                if (activity.getRichSubjectElement() != null &&
-                    activity.getRichSubjectElement().getRichObjectList().size() > 0) {
-                    activityViewHolder.binding.list.setVisibility(View.VISIBLE);
-                    activityViewHolder.binding.list.removeAllViews();
-
-                    activityViewHolder.binding.list.post(() -> {
-                        int w = activityViewHolder.binding.list.getMeasuredWidth();
-                        int elPxSize = px + 20;
-                        int totalColumnCount = w / elPxSize;
-
-                        try {
-                            activityViewHolder.binding.list.setColumnCount(totalColumnCount);
-                        } catch (IllegalArgumentException e) {
-                            Log_OC.e(TAG, "error setting column count to " + totalColumnCount);
-                        }
-                    });
-
-                    for (PreviewObject previewObject : activity.getPreviews()) {
-                        if (!isDetailView || MimeTypeUtil.isImageOrVideo(previewObject.getMimeType()) ||
-                            MimeTypeUtil.isVideo(previewObject.getMimeType())) {
-                            ImageView imageView = createThumbnailNew(previewObject,
-                                                                     activity
-                                                                         .getRichSubjectElement()
-                                                                         .getRichObjectList());
-                            activityViewHolder.binding.list.addView(imageView);
-                        }
-                    }
-                } else {
-                    activityViewHolder.binding.list.removeAllViews();
-                    activityViewHolder.binding.list.setVisibility(View.GONE);
+                    activityViewHolder.binding.icon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
                 }
             }
-            else if (values.get(position) instanceof Comments) {
 
-                Comments comments = (Comments) values.get(position);
+            if (activity.getRichSubjectElement() != null &&
+                activity.getRichSubjectElement().getRichObjectList().size() > 0) {
+                activityViewHolder.binding.list.setVisibility(View.VISIBLE);
+                activityViewHolder.binding.list.removeAllViews();
 
-                if (comments.getCreationDateTime() != null) {
-                    activityViewHolder.binding.datetime.setVisibility(View.VISIBLE);
-                    activityViewHolder.binding.datetime.setText(DateFormat.format("HH:mm", comments.getCreationDateTime().getTime()));
-                } else {
-                    activityViewHolder.binding.datetime.setVisibility(View.GONE);
+                activityViewHolder.binding.list.post(() -> {
+                    int w = activityViewHolder.binding.list.getMeasuredWidth();
+                    int elPxSize = px + 20;
+                    int totalColumnCount = w / elPxSize;
+
+                    try {
+                        activityViewHolder.binding.list.setColumnCount(totalColumnCount);
+                    } catch (IllegalArgumentException e) {
+                        Log_OC.e(TAG, "error setting column count to " + totalColumnCount);
+                    }
+                });
+
+                for (PreviewObject previewObject : activity.getPreviews()) {
+                    if (!isDetailView || MimeTypeUtil.isImageOrVideo(previewObject.getMimeType()) ||
+                        MimeTypeUtil.isVideo(previewObject.getMimeType())) {
+                        ImageView imageView = createThumbnailNew(previewObject,
+                                                                 activity
+                                                                     .getRichSubjectElement()
+                                                                     .getRichObjectList());
+                        activityViewHolder.binding.list.addView(imageView);
+                    }
                 }
-
-                if (!TextUtils.isEmpty(comments.getActorDisplayName())) {
-                    activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
-                    activityViewHolder.binding.subject.setText(comments.getActorDisplayName());
-                } else {
-                    activityViewHolder.binding.subject.setVisibility(View.GONE);
-                }
-
-                if (!TextUtils.isEmpty(comments.getMessage())) {
-                    activityViewHolder.binding.message.setText(comments.getMessage());
-                    activityViewHolder.binding.message.setVisibility(View.VISIBLE);
-                } else {
-                    activityViewHolder.binding.message.setVisibility(View.GONE);
-                }
-
-                activityViewHolder.binding.overflowMenu.setVisibility(View.VISIBLE);
-                activityViewHolder.binding.overflowMenu.setOnClickListener(v -> activityListInterface.onOverflowMenuClicked(position));
-
+            } else {
+                activityViewHolder.binding.list.removeAllViews();
+                activityViewHolder.binding.list.setVisibility(View.GONE);
             }
+        } else if (holder instanceof CommentViewHolder) {
+            final CommentViewHolder commentViewHolder = (CommentViewHolder) holder;
+
+            Comments comments = (Comments) values.get(position);
+
+            if (comments.getCreationDateTime() != null) {
+                String date = DisplayUtils.getRelativeDateTimeString(context, comments.getCreationDateTime().getTime());
+                commentViewHolder.binding.datetime.setText(date);
+                commentViewHolder.binding.datetime.setVisibility(View.VISIBLE);
+            } else {
+                commentViewHolder.binding.datetime.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(comments.getActorDisplayName())) {
+                commentViewHolder.binding.subject.setVisibility(View.VISIBLE);
+                commentViewHolder.binding.subject.setText(comments.getActorDisplayName());
+            } else {
+                commentViewHolder.binding.subject.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(comments.getMessage())) {
+                commentViewHolder.binding.message.setText(comments.getMessage());
+                commentViewHolder.binding.message.setVisibility(View.VISIBLE);
+            } else {
+                commentViewHolder.binding.message.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(comments.getActorId()) && userId != null && comments.getActorId().equals(userId)) {
+                commentViewHolder.binding.overflowMenu.setVisibility(View.VISIBLE);
+                commentViewHolder.binding.overflowMenu.setOnClickListener(v -> activityListInterface.onCommentsOverflowMenuClicked(comments));
+            }
+
         } else {
             ActivityViewHeaderHolder activityViewHeaderHolder = (ActivityViewHeaderHolder) holder;
             activityViewHeaderHolder.binding.header.setText((String) values.get(position));
@@ -384,7 +388,7 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     idx1,
                     idx2,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                );
+                           );
             }
             idx1 = text.indexOf('{', idx2);
         }
@@ -404,9 +408,10 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemViewType(int position) {
-        if (values.get(position) instanceof Activity
-            || values.get(position) instanceof Comments) {
+        if (values.get(position) instanceof Activity) {
             return ACTIVITY_TYPE;
+        } else if (values.get(position) instanceof Comments) {
+            return COMMENT_TYPE;
         } else {
             return HEADER_TYPE;
         }
@@ -479,6 +484,16 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         ActivityListItemBinding binding;
 
         ActivityViewHolder(ActivityListItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+    }
+
+    protected class CommentViewHolder extends RecyclerView.ViewHolder {
+
+        CommentListItemBinding binding;
+
+        CommentViewHolder(CommentListItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
