@@ -419,24 +419,24 @@ public final class DisplayUtils {
         if (second == 0) {
             convTime = context.getResources().getString(R.string.just_now);
         } else if (second < 60) {
-            convTime = context.getResources().getQuantityString(R.plurals.seconds_ago, (int) second, second);
+            convTime = context.getResources().getQuantityString(R.plurals.seconds_ago, (int) second, (int) second);
         } else if (minute < 60) {
-            convTime = context.getResources().getQuantityString(R.plurals.minutes_ago, (int) minute, minute);
+            convTime = context.getResources().getQuantityString(R.plurals.minutes_ago, (int) minute, (int) minute);
         } else if (hour < 24) {
-            convTime = context.getResources().getQuantityString(R.plurals.hours_ago, (int) hour, hour);
+            convTime = context.getResources().getQuantityString(R.plurals.hours_ago, (int) hour, (int) hour);
         } else if (day >= 7) {
             if (day > 360) {
                 long year = (day / 360);
-                convTime = context.getResources().getQuantityString(R.plurals.years_ago, (int) year, year);
+                convTime = context.getResources().getQuantityString(R.plurals.years_ago, (int) year, (int) year);
             } else if (day > 30) {
                 long month = (day / 30);
-                convTime = context.getResources().getQuantityString(R.plurals.months_ago, (int) month, month);
+                convTime = context.getResources().getQuantityString(R.plurals.months_ago, (int) month, (int) month);
             } else {
                 long week = (day / 7);
-                convTime = context.getResources().getQuantityString(R.plurals.weeks_ago, (int) week, week);
+                convTime = context.getResources().getQuantityString(R.plurals.weeks_ago, (int) week, (int) week);
             }
         } else {
-            convTime = context.getResources().getQuantityString(R.plurals.days_ago, (int) day);
+            convTime = context.getResources().getQuantityString(R.plurals.days_ago, (int) day, (int) day);
         }
 
         return convTime;

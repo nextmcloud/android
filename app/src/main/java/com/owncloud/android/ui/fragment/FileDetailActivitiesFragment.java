@@ -264,7 +264,7 @@ public class FileDetailActivitiesFragment extends Fragment implements
 
         AccountManager acctManager = AccountManager.get(getContext());
         String userId = acctManager.getUserData(user.toPlatformAccount(),
-                                                   com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_USER_ID);
+                                                com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_USER_ID);
 
         adapter = new ActivityAndVersionListAdapter(getContext(),
                                                     accountManager,
@@ -573,7 +573,7 @@ public class FileDetailActivitiesFragment extends Fragment implements
     public void onDeleteComment(@NonNull Comments comments) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         builder.setPositiveButton(R.string.common_yes, (dialogInterface, i) -> new DeleteCommentTask(file.getLocalId(), comments.getCommentId(),
-                                                                                         callback, ownCloudClient).execute())
+                                                                                                     callback, ownCloudClient).execute())
             .setNegativeButton(R.string.common_no, null)
             .setMessage(R.string.delete_comment_dialog_message);
         Dialog dialog = builder.create();
@@ -648,6 +648,8 @@ public class FileDetailActivitiesFragment extends Fragment implements
             super.onPostExecute(success);
             if (success) {
                 callback.onSuccess();
+                //call error to show success message
+                callback.onError(R.string.success_update_comment_file);
             } else {
                 callback.onError(R.string.error_update_comment_file);
             }
@@ -683,6 +685,8 @@ public class FileDetailActivitiesFragment extends Fragment implements
             super.onPostExecute(success);
             if (success) {
                 callback.onSuccess();
+                //call error to show success message
+                callback.onError(R.string.success_delete_comment_file);
             } else {
                 callback.onError(R.string.error_delete_comment_file);
             }

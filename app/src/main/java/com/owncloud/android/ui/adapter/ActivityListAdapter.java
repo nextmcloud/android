@@ -441,7 +441,9 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     CharSequence getHeaderDateString(Context context, long modificationTimestamp) {
         if ((System.currentTimeMillis() - modificationTimestamp) < DateUtils.WEEK_IN_MILLIS) {
             return DisplayUtils.getRelativeDateTimeString(context, modificationTimestamp, DateUtils.DAY_IN_MILLIS,
-                                                          DateUtils.WEEK_IN_MILLIS, 0);
+                                                          DateUtils.WEEK_IN_MILLIS, 0,
+                                                          //true to avoid creating wrong header date if date is 1sec future in case of comments
+                                                          true);
         } else {
             return DateFormat.format(DateFormat.getBestDateTimePattern(
                 Locale.getDefault(), "EEEE, MMMM d"), modificationTimestamp);

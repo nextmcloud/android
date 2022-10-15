@@ -621,7 +621,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Override
     public void showActivityDetailView(OCFile file) {
-        mContainerActivity.showDetails(file, 0);
+        mContainerActivity.showDetails(file, 1);
     }
 
     @Override

@@ -88,6 +88,7 @@ public class EditCommentDialogFragment extends DialogFragment implements DialogI
         View view = binding.getRoot();
 
         // Setup layout
+        binding.noteContainer.setHint(requireContext().getResources().getString(R.string.new_comment));
         binding.noteText.setText(comment.getMessage());
         binding.noteText.requestFocus();
         ThemeTextInputUtils.colorTextInput(binding.noteContainer, binding.noteText, primaryColor, ThemeColorUtils.primaryAccentColor(getContext()));
