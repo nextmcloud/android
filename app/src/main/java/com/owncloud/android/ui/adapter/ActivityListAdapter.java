@@ -66,6 +66,7 @@ import com.owncloud.android.lib.resources.activities.model.Activity;
 import com.owncloud.android.lib.resources.activities.model.RichElement;
 import com.owncloud.android.lib.resources.activities.model.RichObject;
 import com.owncloud.android.lib.resources.activities.models.PreviewObject;
+import com.owncloud.android.operations.comments.Comments;
 import com.owncloud.android.ui.interfaces.ActivityListInterface;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.MimeTypeUtil;
@@ -167,93 +168,124 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-      /*  if (holder instanceof ActivityViewHolder) {
+        if (holder instanceof ActivityViewHolder) {
             final ActivityViewHolder activityViewHolder = (ActivityViewHolder) holder;
-            Activity activity = (Activity) values.get(position);
 
-            activityViewHolder.binding.overflowMenu.setOnClickListener(v -> activityListInterface.onOverflowMenuClicked(position));
+            if (values.get(position) instanceof Activity) {
 
-            if (activity.getDatetime() != null) {
-                activityViewHolder.binding.datetime.setVisibility(View.VISIBLE);
-                activityViewHolder.binding.datetime.setText(DateFormat.format("HH:mm", activity.getDatetime().getTime()));
-            } else {
-                activityViewHolder.binding.datetime.setVisibility(View.GONE);
-            }
+                Activity activity = (Activity) values.get(position);
 
-            if (activity.getRichSubjectElement() != null &&
-                !TextUtils.isEmpty(activity.getRichSubjectElement().getRichSubject())) {
-                activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
-                activityViewHolder.binding.subject.setMovementMethod(LinkMovementMethod.getInstance());
-                activityViewHolder.binding.subject.setText(addClickablePart(activity.getRichSubjectElement()), TextView.BufferType.SPANNABLE);
-                activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
-            } else if (!TextUtils.isEmpty(activity.getSubject())) {
-                activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
-                activityViewHolder.binding.subject.setText(activity.getSubject());
-            } else {
-                activityViewHolder.binding.subject.setVisibility(View.GONE);
-            }
-
-            if (!TextUtils.isEmpty(activity.getMessage())) {
-                activityViewHolder.binding.message.setText(activity.getMessage());
-                activityViewHolder.binding.message.setVisibility(View.VISIBLE);
-            } else {
-                activityViewHolder.binding.message.setVisibility(View.GONE);
-            }
-
-            if (!TextUtils.isEmpty(activity.getIcon())) {
-                downloadIcon(activity, activityViewHolder.binding.icon);
-            }
-
-            //3-dot click listener to open bottom sheet fragment
-
-
-            int nightModeFlag = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-
-            if (!"file_created".equalsIgnoreCase(activity.getType()) &&
-                !"file_deleted".equalsIgnoreCase(activity.getType())) {
-                if (Configuration.UI_MODE_NIGHT_YES == nightModeFlag) {
-                    activityViewHolder.binding.icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                if (activity.getDatetime() != null) {
+                    activityViewHolder.binding.datetime.setVisibility(View.VISIBLE);
+                    activityViewHolder.binding.datetime.setText(DateFormat.format("HH:mm", activity.getDatetime().getTime()));
                 } else {
-                    activityViewHolder.binding.icon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    activityViewHolder.binding.datetime.setVisibility(View.GONE);
+                }
+
+                if (activity.getRichSubjectElement() != null &&
+                    !TextUtils.isEmpty(activity.getRichSubjectElement().getRichSubject())) {
+                    activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
+                    activityViewHolder.binding.subject.setMovementMethod(LinkMovementMethod.getInstance());
+                    activityViewHolder.binding.subject.setText(addClickablePart(activity.getRichSubjectElement()), TextView.BufferType.SPANNABLE);
+                    activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
+                } else if (!TextUtils.isEmpty(activity.getSubject())) {
+                    activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
+                    activityViewHolder.binding.subject.setText(activity.getSubject());
+                } else {
+                    activityViewHolder.binding.subject.setVisibility(View.GONE);
+                }
+
+                if (!TextUtils.isEmpty(activity.getMessage())) {
+                    activityViewHolder.binding.message.setText(activity.getMessage());
+                    activityViewHolder.binding.message.setVisibility(View.VISIBLE);
+                } else {
+                    activityViewHolder.binding.message.setVisibility(View.GONE);
+                }
+
+                if (!TextUtils.isEmpty(activity.getIcon())) {
+                    downloadIcon(activity, activityViewHolder.binding.icon);
+                }
+
+                //3-dot click listener to open bottom sheet fragment
+
+
+                int nightModeFlag = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+                if (!"file_created".equalsIgnoreCase(activity.getType()) &&
+                    !"file_deleted".equalsIgnoreCase(activity.getType())) {
+                    if (Configuration.UI_MODE_NIGHT_YES == nightModeFlag) {
+                        activityViewHolder.binding.icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    } else {
+                        activityViewHolder.binding.icon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    }
+                }
+
+
+                if (activity.getRichSubjectElement() != null &&
+                    activity.getRichSubjectElement().getRichObjectList().size() > 0) {
+                    activityViewHolder.binding.list.setVisibility(View.VISIBLE);
+                    activityViewHolder.binding.list.removeAllViews();
+
+                    activityViewHolder.binding.list.post(() -> {
+                        int w = activityViewHolder.binding.list.getMeasuredWidth();
+                        int elPxSize = px + 20;
+                        int totalColumnCount = w / elPxSize;
+
+                        try {
+                            activityViewHolder.binding.list.setColumnCount(totalColumnCount);
+                        } catch (IllegalArgumentException e) {
+                            Log_OC.e(TAG, "error setting column count to " + totalColumnCount);
+                        }
+                    });
+
+                    for (PreviewObject previewObject : activity.getPreviews()) {
+                        if (!isDetailView || MimeTypeUtil.isImageOrVideo(previewObject.getMimeType()) ||
+                            MimeTypeUtil.isVideo(previewObject.getMimeType())) {
+                            ImageView imageView = createThumbnailNew(previewObject,
+                                                                     activity
+                                                                         .getRichSubjectElement()
+                                                                         .getRichObjectList());
+                            activityViewHolder.binding.list.addView(imageView);
+                        }
+                    }
+                } else {
+                    activityViewHolder.binding.list.removeAllViews();
+                    activityViewHolder.binding.list.setVisibility(View.GONE);
                 }
             }
+            else if (values.get(position) instanceof Comments) {
 
+                Comments comments = (Comments) values.get(position);
 
-            if (activity.getRichSubjectElement() != null &&
-                activity.getRichSubjectElement().getRichObjectList().size() > 0) {
-                activityViewHolder.binding.list.setVisibility(View.VISIBLE);
-                activityViewHolder.binding.list.removeAllViews();
-
-                activityViewHolder.binding.list.post(() -> {
-                    int w = activityViewHolder.binding.list.getMeasuredWidth();
-                    int elPxSize = px + 20;
-                    int totalColumnCount = w / elPxSize;
-
-                    try {
-                        activityViewHolder.binding.list.setColumnCount(totalColumnCount);
-                    } catch (IllegalArgumentException e) {
-                        Log_OC.e(TAG, "error setting column count to " + totalColumnCount);
-                    }
-                });
-
-                for (PreviewObject previewObject : activity.getPreviews()) {
-                    if (!isDetailView || MimeTypeUtil.isImageOrVideo(previewObject.getMimeType()) ||
-                        MimeTypeUtil.isVideo(previewObject.getMimeType())) {
-                        ImageView imageView = createThumbnailNew(previewObject,
-                                                                 activity
-                                                                     .getRichSubjectElement()
-                                                                     .getRichObjectList());
-                        activityViewHolder.binding.list.addView(imageView);
-                    }
+                if (comments.getCreationDateTime() != null) {
+                    activityViewHolder.binding.datetime.setVisibility(View.VISIBLE);
+                    activityViewHolder.binding.datetime.setText(DateFormat.format("HH:mm", comments.getCreationDateTime().getTime()));
+                } else {
+                    activityViewHolder.binding.datetime.setVisibility(View.GONE);
                 }
-            } else {
-                activityViewHolder.binding.list.removeAllViews();
-                activityViewHolder.binding.list.setVisibility(View.GONE);
+
+                if (!TextUtils.isEmpty(comments.getActorDisplayName())) {
+                    activityViewHolder.binding.subject.setVisibility(View.VISIBLE);
+                    activityViewHolder.binding.subject.setText(comments.getActorDisplayName());
+                } else {
+                    activityViewHolder.binding.subject.setVisibility(View.GONE);
+                }
+
+                if (!TextUtils.isEmpty(comments.getMessage())) {
+                    activityViewHolder.binding.message.setText(comments.getMessage());
+                    activityViewHolder.binding.message.setVisibility(View.VISIBLE);
+                } else {
+                    activityViewHolder.binding.message.setVisibility(View.GONE);
+                }
+
+                activityViewHolder.binding.overflowMenu.setVisibility(View.VISIBLE);
+                activityViewHolder.binding.overflowMenu.setOnClickListener(v -> activityListInterface.onOverflowMenuClicked(position));
+
             }
         } else {
             ActivityViewHeaderHolder activityViewHeaderHolder = (ActivityViewHeaderHolder) holder;
             activityViewHeaderHolder.binding.header.setText((String) values.get(position));
-        }*/
+        }
     }
 
     private ImageView createThumbnailNew(PreviewObject previewObject, List<RichObject> richObjectList) {
@@ -372,24 +404,21 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemViewType(int position) {
-        if (position % 3 == 0){
-            return HEADER_TYPE;
-        }
-        return ACTIVITY_TYPE;
-        /*if (values.get(position) instanceof Activity) {
+        if (values.get(position) instanceof Activity
+            || values.get(position) instanceof Comments) {
             return ACTIVITY_TYPE;
         } else {
             return HEADER_TYPE;
-        }*/
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 10;//values.size();
+        return values.size();
     }
 
     public boolean isEmpty() {
-        return false;//values.isEmpty();
+        return values.isEmpty();
     }
 
     /**

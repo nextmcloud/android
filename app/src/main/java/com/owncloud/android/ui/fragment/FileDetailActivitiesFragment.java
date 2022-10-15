@@ -47,13 +47,12 @@ import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
-import com.owncloud.android.lib.resources.activities.GetActivitiesRemoteOperation;
 import com.owncloud.android.lib.resources.activities.model.RichObject;
 import com.owncloud.android.lib.resources.comments.MarkCommentsAsReadRemoteOperation;
-import com.owncloud.android.lib.resources.files.ReadFileVersionsRemoteOperation;
 import com.owncloud.android.lib.resources.files.model.FileVersion;
 import com.owncloud.android.lib.resources.status.OCCapability;
 import com.owncloud.android.operations.CommentFileOperation;
+import com.owncloud.android.operations.comments.GetCommentsRemoteOperation;
 import com.owncloud.android.ui.activity.ComponentsGetter;
 import com.owncloud.android.ui.adapter.ActivityAndVersionListAdapter;
 import com.owncloud.android.ui.events.CommentsEvent;
@@ -68,7 +67,6 @@ import com.owncloud.android.utils.theme.ThemeTextInputUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -81,7 +79,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class FileDetailActivitiesFragment extends Fragment implements
     ActivityListInterface,
@@ -105,6 +102,7 @@ public class FileDetailActivitiesFragment extends Fragment implements
     private int lastGiven;
     private boolean isLoadingActivities;
 
+    //not using flag for NMC app
     private boolean restoreFileVersionSupported;
     private FileOperationsHelper operationsHelper;
     private VersionListInterface.CommentCallback callback;
@@ -251,7 +249,7 @@ public class FileDetailActivitiesFragment extends Fragment implements
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
 
         binding.list.setLayoutManager(layoutManager);
-        binding.list.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        /*binding.list.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -268,17 +266,82 @@ public class FileDetailActivitiesFragment extends Fragment implements
                     fetchAndSetData(lastGiven);
                 }
             }
-        });
+        });*/
     }
 
     public void reload() {
         fetchAndSetData(-1);
     }
 
+    private void fetchAndSetData(int lastGiven) {
+        final FragmentActivity activity = getActivity();
+
+        if (activity == null) {
+            Log_OC.e(this, "Activity is null, aborting!");
+            return;
+        }
+
+        final User user = accountManager.getUser();
+
+        if (user.isAnonymous()) {
+            activity.runOnUiThread(() -> {
+                setEmptyContent(getString(R.string.common_error), getString(R.string.file_detail_comment_error));
+            });
+            return;
+        }
+
+        Thread t = new Thread(() -> {
+            try {
+                ownCloudClient = clientFactory.create(user);
+                nextcloudClient = clientFactory.createNextcloudClient(user);
+
+                isLoadingActivities = true;
+
+                GetCommentsRemoteOperation getCommentsRemoteOperation = new GetCommentsRemoteOperation(file.getLocalId(), 0, 0);
+
+                Log_OC.d(TAG, "BEFORE getCommentsRemoteOperation.execute");
+                RemoteOperationResult result = nextcloudClient.execute(getCommentsRemoteOperation);
+
+
+                if (result.isSuccess() && result.getResultData() != null) {
+                    List<Object> commentsList = (List<Object>) result.getResultData();
+
+
+                    activity.runOnUiThread(() -> {
+                        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+                            populateList(commentsList, lastGiven == -1);
+                        }
+                    });
+                } else {
+                    Log_OC.d(TAG, result.getLogMessage());
+                    // show error
+                    String logMessage = result.getLogMessage();
+                    if (result.getHttpCode() == HttpStatus.SC_NOT_MODIFIED) {
+                        logMessage = getString(R.string.activities_no_results_message);
+                    }
+                    final String finalLogMessage = logMessage;
+                    activity.runOnUiThread(() -> {
+                        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+                            setErrorContent(finalLogMessage);
+                            isLoadingActivities = false;
+                        }
+                    });
+                }
+
+                hideRefreshLayoutLoader(activity);
+            } catch (ClientFactory.CreationException e) {
+                Log_OC.e(TAG, "Error fetching file details comments", e);
+            }
+        });
+
+        t.start();
+    }
+
     /**
      * @param lastGiven int; -1 to disable
      */
-    private void fetchAndSetData(int lastGiven) {
+    //NMC: Not using this method as we don't have to show the activities
+    /*private void fetchAndSetData(int lastGiven) {
         final FragmentActivity activity = getActivity();
 
         if (activity == null) {
@@ -367,7 +430,7 @@ public class FileDetailActivitiesFragment extends Fragment implements
         });
 
         t.start();
-    }
+    }*/
 
     public void markCommentsAsRead() {
         new Thread(() -> {
@@ -389,8 +452,8 @@ public class FileDetailActivitiesFragment extends Fragment implements
 
         if (adapter.getItemCount() == 0) {
             setEmptyContent(
-                getString(R.string.activities_no_results_headline),
-                getString(R.string.activities_no_results_message)
+                getString(R.string.comments_no_results_headline),
+                getString(R.string.comments_no_results_message)
                            );
         } else {
             binding.swipeContainingList.setVisibility(View.VISIBLE);
@@ -431,7 +494,6 @@ public class FileDetailActivitiesFragment extends Fragment implements
             if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
                 binding.swipeContainingList.setRefreshing(false);
                 binding.swipeContainingEmpty.setRefreshing(false);
-                binding.emptyList.emptyListView.setVisibility(View.GONE);
                 isLoadingActivities = false;
             }
         });

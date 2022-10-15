@@ -1093,4 +1093,7 @@
     <string name="comments_tab_title">Kommentare</string>
     <string name="delete_comment">Kommentar löschen</string>
     <string name="edit_comment">Kommentar bearbeiten</string>
+    <string name="file_detail_comment_error">Fehler beim Abrufen der Kommentar für die Datei</string>
+    <string name="comments_no_results_headline">No comments yet</string>
+    <string name="comments_no_results_message">No events like additions, changes and shares yet.</string>
 </resources>

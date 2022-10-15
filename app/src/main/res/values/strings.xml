@@ -1198,8 +1198,9 @@
     <string name="locate_folder">Locate folder</string>
     <string name="open_download_folder">Cannot open folder. Please manually browse to Download folder</string>
     <string name="comments_tab_title">Comments</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="delete_comment">Delete comment</string>
     <string name="edit_comment">Edit comment</string>
+    <string name="file_detail_comment_error">Error retrieving comments for file</string>
+    <string name="comments_no_results_headline">No comments yet</string>
+    <string name="comments_no_results_message">No events like additions, changes and shares yet.</string>
 </resources>
