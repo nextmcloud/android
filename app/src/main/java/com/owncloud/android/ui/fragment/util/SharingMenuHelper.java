@@ -189,8 +189,11 @@ public final class SharingMenuHelper {
     public static boolean canEditFile(@NonNull Context context, @NonNull User user,
                                       @NonNull OCCapability capability, @NonNull OCFile file) {
 
-        //if OCFile is folder then no need to check further direct return false
-        if (file.isFolder()) return false;
+        //if OCFile is folder then no need to check further direct return true
+        //as edit permission should be available for folder restriction is only applicable for files
+        if (file.isFolder()) {
+            return true;
+        }
 
         //check for text files like .md, .txt, etc
         boolean isTextFile = EditorUtils.isEditorAvailable(context.getContentResolver(), user,

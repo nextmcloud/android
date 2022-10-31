@@ -933,6 +933,12 @@ public class FileOperationsHelper {
     }
 
     public void toggleEncryption(OCFile file, boolean shouldBeEncrypted) {
+        //shared folders cannot be encrypted
+        if (file.isSharedWithMe() || file.isSharedWithSharee() || file.isSharedViaLink()) {
+            DisplayUtils.showSnackMessage(fileActivity, R.string.shared_folder_end_to_end_encryption_error);
+            return;
+        }
+
         if (file.isEncrypted() != shouldBeEncrypted) {
             EventBus.getDefault().post(new EncryptionEvent(file.getLocalId(),
                                                            file.getRemoteId(),
