@@ -1092,4 +1092,5 @@
     <string name="filedetails_export">Exportieren</string>
     <string name="locate_folder">Ordner lokalisieren</string>
     <string name="open_download_folder">Ordner kann nicht geöffnet werden. Bitte navigieren Sie manuell zum Download Ordner</string>
+    <string name="e2e_not_yet_setup">E2E noch nicht eingerichtet.</string>
 </resources>

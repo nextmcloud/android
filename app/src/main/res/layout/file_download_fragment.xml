@@ -28,7 +28,7 @@
         android:id="@+id/progressText"
 	    android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:textColor="@color/dark_background_text_color"
+		android:textColor="@color/text_color"
 		android:text="@string/downloader_not_downloaded_yet"
 		android:layout_marginBottom="@dimen/alternate_fragment_margin" />
 
@@ -75,7 +75,7 @@
 		android:layout_height="wrap_content"
 		android:layout_gravity="center_horizontal"
 		android:layout_margin="@dimen/file_download_fragment_display_text_margin"
-		android:textColor="@color/dark_background_text_color"
+		android:textColor="@color/text_color"
 		android:text="@string/downloader_download_failed_ticker" />
 
 </LinearLayout>
