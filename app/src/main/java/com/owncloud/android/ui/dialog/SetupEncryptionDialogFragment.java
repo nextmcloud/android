@@ -47,7 +47,6 @@ import com.owncloud.android.lib.resources.users.SendCSROperation;
 import com.owncloud.android.lib.resources.users.StorePrivateKeyOperation;
 import com.owncloud.android.utils.CsrHelper;
 import com.owncloud.android.utils.EncryptionUtils;
-import com.owncloud.android.utils.theme.ThemeButtonUtils;
 import com.owncloud.android.utils.theme.ThemeColorUtils;
 
 import java.io.IOException;
@@ -118,11 +117,10 @@ public class SetupEncryptionDialogFragment extends DialogFragment {
         super.onStart();
 
         AlertDialog alertDialog = (AlertDialog) getDialog();
-
-        positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        neutralButton = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-        ThemeButtonUtils.themeBorderlessButton(positiveButton,
-                                               neutralButton);
+        if (alertDialog != null) {
+            positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            neutralButton = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+        }
 
         task = new DownloadKeysAsyncTask(requireContext());
         task.execute();
@@ -273,7 +271,6 @@ public class SetupEncryptionDialogFragment extends DialogFragment {
 
             textView.setText(R.string.end_to_end_encryption_retrieving_keys);
             positiveButton.setVisibility(View.INVISIBLE);
-            neutralButton.setVisibility(View.INVISIBLE);
         }
 
         @Override
@@ -480,7 +477,6 @@ public class SetupEncryptionDialogFragment extends DialogFragment {
         positiveButton.setVisibility(View.VISIBLE);
 
         neutralButton.setVisibility(View.VISIBLE);
-        ThemeButtonUtils.themeBorderlessButton(positiveButton, neutralButton);
 
         keyResult = KEY_GENERATE;
     }
@@ -499,7 +495,6 @@ public class SetupEncryptionDialogFragment extends DialogFragment {
         passphraseTextView.setVisibility(View.GONE);
         positiveButton.setText(R.string.end_to_end_encryption_dialog_close);
         positiveButton.setVisibility(View.VISIBLE);
-        positiveButton.setTextColor(ThemeColorUtils.primaryAccentColor(getContext()));
     }
 
     @VisibleForTesting
