@@ -43,9 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
-import android.widget.Toast;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -143,7 +141,6 @@ import javax.inject.Inject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -235,7 +232,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
     @Inject DeviceInfo deviceInfo;
 
     private int maxColumnSizeLandscape = 5;
-    private boolean mShowOnlyFolder ;
+    private boolean mShowOnlyFolder, mHideEncryptedFolder;
 
     //this variable will help us to provide number of span count for grid view
     //the width for single item is approx to 360
@@ -1298,6 +1295,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
         action.putStringArrayListExtra(FolderPickerActivity.EXTRA_FILE_PATHS, paths);
         action.putExtra(FolderPickerActivity.EXTRA_CURRENT_FOLDER, mFile);
         action.putExtra(FolderPickerActivity.EXTRA_ACTION, extraAction);
+        action.putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true);
+        action.putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true);
         getActivity().startActivityForResult(action, requestCode);
     }
 
@@ -1318,8 +1317,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
         listDirectory(null, onlyOnDevice, fromSearch);
     }
 
-    public void listDirectoryFolder(boolean onlyOnDevice, boolean fromSearch, boolean showOnlyFolder) {
+    public void listDirectoryFolder(boolean onlyOnDevice, boolean fromSearch, boolean showOnlyFolder, boolean hideEncryptedFolder) {
         mShowOnlyFolder = showOnlyFolder;
+        mHideEncryptedFolder = hideEncryptedFolder;
         listDirectory(null, onlyOnDevice, fromSearch);
     }
 
@@ -1389,7 +1389,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
                         directory,
                         storageManager,
                         onlyOnDevice,
-                        mLimitToMimeType);
+                        mLimitToMimeType,
+                        mHideEncryptedFolder);
                 }
                 else {
                     mAdapter.swapDirectory(

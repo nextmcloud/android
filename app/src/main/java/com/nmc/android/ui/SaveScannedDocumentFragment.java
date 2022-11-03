@@ -222,6 +222,8 @@ public class SaveScannedDocumentFragment extends Fragment implements CompoundBut
             case R.id.scan_save_location_edit_btn:
                 Intent action = new Intent(requireActivity(), FolderPickerActivity.class);
                 action.putExtra(FolderPickerActivity.EXTRA_ACTION, FolderPickerActivity.CHOOSE_LOCATION);
+                action.putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true);
+                action.putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, false);
                 startActivityForResult(action, SELECT_LOCATION_REQUEST_CODE);
                 break;
             case R.id.save_scan_btn_cancel:
