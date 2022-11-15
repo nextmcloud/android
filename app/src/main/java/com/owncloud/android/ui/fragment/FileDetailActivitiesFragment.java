@@ -492,7 +492,8 @@ public class FileDetailActivitiesFragment extends Fragment implements
     }
 
     private void setEmptyContent(String headline, String message) {
-        setInfoContent(R.drawable.ic_activity, headline, message);
+        //no icon required for empty state
+        setInfoContent(0, headline, message);
     }
 
     @VisibleForTesting
@@ -501,9 +502,15 @@ public class FileDetailActivitiesFragment extends Fragment implements
     }
 
     private void setInfoContent(@DrawableRes int icon, String headline, String message) {
-        binding.emptyList.emptyListIcon.setImageDrawable(ResourcesCompat.getDrawable(requireContext().getResources(),
-                                                                                     icon,
-                                                                                     null));
+        if (icon != 0) {
+            binding.emptyList.emptyListIcon.setImageDrawable(ResourcesCompat.getDrawable(requireContext().getResources(),
+                                                                                         icon,
+                                                                                         null));
+            binding.emptyList.emptyListIcon.setVisibility(View.VISIBLE);
+        } else {
+            binding.emptyList.emptyListIcon.setVisibility(View.GONE);
+        }
+
         binding.emptyList.emptyListViewHeadline.setText(headline);
         binding.emptyList.emptyListViewText.setText(message);
 
@@ -512,7 +519,6 @@ public class FileDetailActivitiesFragment extends Fragment implements
 
         binding.emptyList.emptyListViewHeadline.setVisibility(View.VISIBLE);
         binding.emptyList.emptyListViewText.setVisibility(View.VISIBLE);
-        binding.emptyList.emptyListIcon.setVisibility(View.VISIBLE);
         binding.emptyList.emptyListView.setVisibility(View.VISIBLE);
         binding.swipeContainingEmpty.setVisibility(View.VISIBLE);
     }
