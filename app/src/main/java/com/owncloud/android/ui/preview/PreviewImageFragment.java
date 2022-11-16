@@ -470,10 +470,12 @@ public class PreviewImageFragment extends FileFragment implements Injectable {
         }
 
 
-        //enable rotate image if image is png or jpg
+        //rotate functionality will not be available for encrypted files
+        //enable rotate functionality if image is png or jpg
         //we are not rotating svg, gif or any other format of images
         //image loading should not be failed to show rotate images
-        if (MimeTypeUtil.isJpgOrPngFile(getFile().getFileName()) && !isImageLoadingFailed && binding.emptyListProgress.getVisibility() == View.GONE) {
+        if (!getFile().isEncrypted() && MimeTypeUtil.isJpgOrPngFile(getFile().getFileName())
+            && !isImageLoadingFailed && binding.emptyListProgress.getVisibility() == View.GONE) {
             menu.findItem(R.id.action_rotate_image).setVisible(true);
         }
     }
