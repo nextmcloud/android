@@ -436,8 +436,12 @@ public class FileDisplayActivity extends FileActivity
                 }
                 break;
             case PermissionUtil.PERMISSIONS_CAMERA:
+                if (!shouldShowRequestPermissionRationale(permissions[0])) {
+                    // user CHECKED "never ask again"
+                    DisplayUtils.showSnackMessage(this, R.string.camera_permission_rationale);
+                }
                 // If request is cancelled, result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted
                     getFileOperationsHelper()
                         .uploadFromCamera(this, FileDisplayActivity.REQUEST_CODE__UPLOAD_FROM_CAMERA);
