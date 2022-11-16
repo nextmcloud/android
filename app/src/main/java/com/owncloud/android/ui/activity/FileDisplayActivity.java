@@ -1170,7 +1170,7 @@ public class FileDisplayActivity extends FileActivity
         localBroadcastManager.registerReceiver(mDownloadFinishReceiver, downloadIntentFilter);
 
         // setup drawer
-        menuItemId = getIntent().getIntExtra(FileDisplayActivity.DRAWER_MENU_ID, menuItemId);
+        menuItemId = getIntent().getIntExtra(FileDisplayActivity.DRAWER_MENU_ID, -1);
 
         if (menuItemId == -1) {
             if (MainApp.isOnlyOnDevice()) {
@@ -1558,7 +1558,6 @@ public class FileDisplayActivity extends FileActivity
     public void browseToRoot() {
         OCFileListFragment listOfFiles = getListOfFilesFragment();
         if (listOfFiles != null) {  // should never be null, indeed
-            MainApp.showOnlyFilesOnDevice(false);
             OCFile root = getStorageManager().getFileByPath(OCFile.ROOT_PATH);
             listOfFiles.listDirectory(root, MainApp.isOnlyOnDevice(), false);
             setFile(listOfFiles.getCurrentFile());
