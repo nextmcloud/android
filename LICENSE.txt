@@ -5,8 +5,8 @@ even when built into code that we provide. For any customization other than expl
 replace the Deutsche Telekom and T-Systems brand elements contained in the provided sources.
 
 To help you identify the brand elements, see:
-    ./drawable: folder cotains brand-design specific icons or images
-    Brand-protected Magenta color definitions are (unfortunatley) spread over the source code.
+    ./drawable: folder contains brand-design specific icons or images
+    Brand-protected Magenta colour definitions are (unfortunately) spread over the source code.
 
 
                     GNU GENERAL PUBLIC LICENSE
