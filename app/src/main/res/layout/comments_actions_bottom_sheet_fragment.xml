@@ -1,4 +1,5 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -28,7 +29,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:contentDescription="@null"
-            android:src="@drawable/ic_pencil_edit" />
+            android:src="@drawable/ic_pencil_edit"
+            app:tint="@color/bottom_sheet_icon_color" />
 
         <TextView
             android:id="@+id/textViewEditComment"
@@ -61,7 +63,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:contentDescription="@null"
-            android:src="@drawable/ic_delete_comment" />
+            android:src="@drawable/ic_delete_comment"
+            app:tint="@color/bottom_sheet_icon_color" />
 
         <TextView
             android:id="@+id/textViewDeleteComment"

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/standard_half_padding">
+    android:paddingBottom="@dimen/standard_half_padding"
+    app:tint="@color/bottom_sheet_icon_color">
 
     <RelativeLayout
         android:id="@+id/hideImages"
