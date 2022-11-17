@@ -125,7 +125,7 @@
     <string name="common_switch_account">Konto wechseln</string>
     <string name="common_switch_to_account">Zu Konto wechseln</string>
     <string name="common_yes">Ja</string>
-    <string name="common_done">Done</string>
+    <string name="common_done">Fertig</string>
     <string name="community_beta_headline">Testen Sie die Entwickler-Version</string>
     <string name="community_beta_text">Dies beinhaltet neue Funktionalitäten und ist nicht komplett qualitätsgesichert. Es können daher Fehler/Bugs auftreten, melden Sie uns solche bitte.</string>
     <string name="community_contribute_forum_forum">Forum</string>
@@ -271,10 +271,10 @@
     <string name="error_cant_bind_to_operations_service">Kritischer Fehler: Operationen können nicht ausgeführt werden</string>
     <string name="error_choosing_date">Fehler beim Auswählen des Datums</string>
     <string name="error_comment_file">Fehler beim Kommentieren der Datei</string>
-    <string name="success_update_comment_file">Comment updated successfully</string>
-    <string name="error_update_comment_file">Error in updating comment</string>
-    <string name="success_delete_comment_file">Comment deleted successfully</string>
-    <string name="error_delete_comment_file">Error in deleting comment</string>
+    <string name="success_update_comment_file">Kommentar aktualisiert</string>
+    <string name="error_update_comment_file">Fehler beim Aktualisieren</string>
+    <string name="success_delete_comment_file">Kommentar gelöscht</string>
+    <string name="error_delete_comment_file">Fehler beim Löschen</string>
     <string name="error_crash_title">%1$s abgestürzt</string>
     <string name="error_report_issue_action">Melden</string>
     <string name="error_report_issue_text">Problem melden? (benötigt ein GitHub-Konto)</string>
@@ -471,7 +471,7 @@
     <string name="network_error_socket_exception">Es ist ein Fehler beim Verbinden mit dem Server aufgetreten.</string>
     <string name="network_error_socket_timeout_exception">Es ist ein Fehler beim Warten auf den Server aufgetreten, die Operation konnte nicht abgeschlossen werden</string>
     <string name="network_host_not_available">Die Operation kann nicht abgeschlossen werden, der Server ist nicht erreichbar.</string>
-    <string name="new_comment">Neuer Kommentar…</string>
+    <string name="new_comment">Schreiben Sie eine Nachricht…</string>
     <string name="new_media_folder_detected">Neuer Medienordner %1$s gefunden.</string>
     <string name="new_media_folder_photos">Foto</string>
     <string name="new_media_folder_videos">Video</string>
@@ -1095,42 +1095,42 @@
     <string name="filedetails_export">Exportieren</string>
     <string name="locate_folder">Ordner lokalisieren</string>
     <string name="open_download_folder">Ordner kann nicht geöffnet werden. Bitte navigieren Sie manuell zum Download Ordner</string>
-    <string name="comments_tab_title">Kommentare</string>
+    <string name="comments_tab_title">Kommentar</string>
     <string name="delete_comment">Kommentar löschen</string>
     <string name="edit_comment">Kommentar bearbeiten</string>
-    <string name="file_detail_comment_error">Fehler beim Abrufen der Kommentar für die Datei</string>
+    <string name="file_detail_comment_error">Fehler beim Laden der Kommentare</string>
     <string name="comments_no_results_headline">Noch keine Kommentare.</string>
     <string name="comments_no_results_message">Sie können geteilte Inhalte kommentieren. Ihre Nachrichten werden alle erreichen, mit denen die Datei oder der Ordner geteilt ist.</string>
-    <string name="empty_comment_message">Comment cannot be empty.</string>
-    <string name="error_comment_update">Could not update comment.</string>
-    <string name="delete_comment_dialog_message">Are you sure you want to delete this comment?</string>
-    <string name="just_now">Just now</string>
+    <string name="empty_comment_message">Kommentarfeld darf nicht leer sein.</string>
+    <string name="error_comment_update">Aktualisierung fehlgeschlagen.</string>
+    <string name="delete_comment_dialog_message">Möchten Sie den Kommentar wirklich löschen?</string>
+    <string name="just_now">Gerade eben</string>
     <plurals name="seconds_ago">
-        <item quantity="one">%d second ago</item>
-        <item quantity="other">%d seconds ago</item>
+        <item quantity="one">vor %d Sekunde</item>
+        <item quantity="other">vor %d Sekunden</item>
     </plurals>
     <plurals name="minutes_ago">
-        <item quantity="one">%d minute ago</item>
-        <item quantity="other">%d minutes ago</item>
+        <item quantity="one">vor %d Minute</item>
+        <item quantity="other">vor %d Minuten</item>
     </plurals>
     <plurals name="hours_ago">
-        <item quantity="one">%d hour ago</item>
-        <item quantity="other">%d hours ago</item>
+        <item quantity="one">vor %d Stunde</item>
+        <item quantity="other">vor %d Stunden</item>
     </plurals>
     <plurals name="days_ago">
-        <item quantity="one">%d day ago</item>
-        <item quantity="other">%d days ago</item>
+        <item quantity="one">vor %d Tag</item>
+        <item quantity="other">vor %d Tagen</item>
     </plurals>
     <plurals name="weeks_ago">
-        <item quantity="one">%d week ago</item>
-        <item quantity="other">%d weeks ago</item>
+        <item quantity="one">vor %d Woche</item>
+        <item quantity="other">vor %d Wochen</item>
     </plurals>
     <plurals name="months_ago">
-        <item quantity="one">%d month ago</item>
-        <item quantity="other">%d months ago</item>
+        <item quantity="one">vor %d Monat</item>
+        <item quantity="other">vor %d Monaten</item>
     </plurals>
     <plurals name="years_ago">
-        <item quantity="one">%d year ago</item>
-        <item quantity="other">%d years ago</item>
+        <item quantity="one">vor %d Jahr</item>
+        <item quantity="other">vor %d Jahren</item>
     </plurals>
 </resources>
