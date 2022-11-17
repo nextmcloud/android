@@ -189,6 +189,7 @@
         app:tabIndicatorColor="@color/primary"
         app:tabInlineLabel="true"
         app:tabMode="fixed"
+        app:tabMaxWidth="0dp"
         app:tabSelectedTextColor="@color/primary"
         app:tabTextAppearance="@style/AppTabTextAppearance" />
 

@@ -791,7 +791,7 @@
     <string name="trashbin_file_not_restored">Datei %1$s konnte nicht wiederhergestellt werden!</string>
     <string name="trashbin_loading_failed">Laden des Papierkorbs fehlgeschlagen!</string>
     <string name="trashbin_not_emptied">Dateien konnten nicht endgültig gelöscht werden!</string>
-    <string name="unread_comments">Es gibt  ungelesene Kommentare</string>
+    <string name="unread_comments">Es gibt ungelesene Kommentare</string>
     <string name="unset_encrypted">Verschlüsselung aufheben</string>
     <string name="unset_favorite">Aus den Favoriten entfernen</string>
     <string name="unshare">Freigabe aufheben</string>
