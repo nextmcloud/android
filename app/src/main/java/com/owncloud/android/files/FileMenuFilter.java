@@ -577,7 +577,9 @@ public class FileMenuFilter {
         if (isSingleSelection()) {
             OCFile file = files.iterator().next();
 
-            return file.isFolder() && file.getFileLength() == EMPTY_FILE_LENGTH;
+            int childCount = componentsGetter.getStorageManager().getFolderContent(file, false).size();
+
+            return file.isFolder() && file.getFileLength() == EMPTY_FILE_LENGTH && childCount == 0;
         } else {
             return false;
         }
