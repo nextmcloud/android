@@ -264,6 +264,7 @@
     <string name="end_to_end_encryption_title">Verschlüsselung einrichten</string>
     <string name="end_to_end_encryption_unsuccessful">Die Schlüssel konnten nicht gespeichert werden. Bitte erneut versuchen.</string>
     <string name="end_to_end_encryption_wrong_password">Fehler beim Entschlüsseln. Falsches Passwort?</string>
+    <string name="shared_folder_end_to_end_encryption_error">Geteilte Ordner können nicht verschlüsselt werden.</string>
     <string name="enter_destination_filename">Ziel-Dateiname eingeben</string>
     <string name="enter_filename">Bitte Dateinamen eingeben</string>
     <string name="error__upload__local_file_not_copied">%1$s konnte nicht in den lokalen %2$s Ordner kopiert werden</string>
