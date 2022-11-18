@@ -1701,6 +1701,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
     public void onMessageEvent(ChangeMenuEvent changeMenuEvent) {
         searchFragment = false;
         searchEvent = null;
+        currentSearchType = SearchType.NO_SEARCH;
 
         menuItemAddRemoveValue = MenuItemAddRemove.ADD_GRID_AND_SORT_WITH_SEARCH;
         if (getActivity() != null) {
