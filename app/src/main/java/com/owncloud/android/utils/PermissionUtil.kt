@@ -140,43 +140,47 @@ object PermissionUtil {
                         showPermissionChoiceDialog(activity, permissionRequired)
                     } else {
                         // can not request all files, request READ_EXTERNAL_STORAGE
-                        requestStoragePermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        requestStoragePermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE, permissionRequired)
                     }
                 }
-                else -> requestStoragePermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                else -> requestStoragePermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE, permissionRequired)
             }
         }
     }
     /**
      * Request a storage permission
      */
-    private fun requestStoragePermission(activity: Activity, permission: String) {
+    private fun requestStoragePermission(activity: Activity, permission: String, permissionRequired: Boolean) {
+        val preferences: AppPreferences = AppPreferencesImpl.fromContext(activity)
+        val shouldRequestPermission = !preferences.isStoragePermissionRequested || permissionRequired
+
         fun doRequest() {
             ActivityCompat.requestPermissions(
                 activity, arrayOf(permission),
                 PERMISSIONS_EXTERNAL_STORAGE
             )
+            preferences.isStoragePermissionRequested = true
         }
 
-        // Check if we should show an explanation
-        if (shouldShowRequestPermissionRationale(activity, permission)) {
-            // Show explanation to the user and then request permission
-            Snackbar
-                .make(
-                    activity.findViewById(android.R.id.content),
-                    R.string.permission_storage_access,
-                    Snackbar.LENGTH_INDEFINITE
-                )
-                .setAction(R.string.common_ok) {
-                    doRequest()
-                }
-                .also {
-                    ThemeSnackbarUtils.colorSnackbar(activity, it)
-                }
-                .show()
-        } else {
-            // No explanation needed, request the permission.
-            doRequest()
+        if (shouldRequestPermission) {
+            // Check if we should show an explanation
+            if (shouldShowRequestPermissionRationale(activity, permission)) {
+                // Show explanation to the user and then request permission
+                Snackbar
+                    .make(
+                        activity.findViewById(android.R.id.content),
+                        R.string.permission_storage_access,
+                        Snackbar.LENGTH_INDEFINITE
+                    )
+                    .setAction(R.string.common_ok) {
+                        doRequest()
+                    }
+                    .also { ThemeSnackbarUtils.colorSnackbar(activity, it) }
+                    .show()
+            } else {
+                // No explanation needed, request the permission.
+                doRequest()
+            }
         }
     }
 
@@ -222,7 +226,7 @@ object PermissionUtil {
 
                     override fun onClickMediaReadOnly() {
                         preferences.isStoragePermissionRequested = true
-                        requestStoragePermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        requestStoragePermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE, permissionRequired)
                     }
                 }
                 val dialogFragment = StoragePermissionDialogFragment(listener, permissionRequired)
