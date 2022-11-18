@@ -361,9 +361,9 @@
     <string name="file_rename">Umbenennen</string>
     <string name="file_version_restored_error">Fehler beim Wiederherstellen der Dateiversion!</string>
     <string name="file_version_restored_successfully">Dateiversion erfolgreich wiederhergestellt</string>
-    <string name="filedetails_download">Herunterladen</string>
+    <string name="filedetails_download">Offline Verfügbarkeit</string>
     <string name="filedetails_renamed_in_upload_msg">Datei während des Hochladens in %1$s umbenannt</string>
-    <string name="filedetails_sync_file">Synchronisieren</string>
+    <string name="filedetails_sync_file">Offline Verfügbarkeit</string>
     <string name="filedisplay_no_file_selected">Keine Datei gewählt</string>
     <string name="filename_empty">Dateiname darf nicht leer sein</string>
     <string name="filename_forbidden_characters">Verbotene Zeichen: / \\ &lt; &gt; : \" | ? *</string>
