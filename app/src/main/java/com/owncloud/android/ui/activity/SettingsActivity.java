@@ -501,12 +501,9 @@ public class SettingsActivity extends ThemedPreferenceActivity
                         .setNegativeButton(R.string.common_cancel, ((dialog, i) -> dialog.dismiss()))
                         .setPositiveButton(R.string.confirm_removal, (dialog, which) -> {
                             EncryptionUtils.removeE2E(arbitraryDataProvider, user);
-                            preferenceCategoryMore.removePreference(preference);
 
-                            Preference pMnemonic = findPreference("mnemonic");
-                            if (pMnemonic != null) {
-                                preferenceCategoryMore.removePreference(pMnemonic);
-                            }
+                            //restart to show the preferences correctly
+                            restartSettingsActivity();
 
                             dialog.dismiss();
                         })
@@ -980,13 +977,16 @@ public class SettingsActivity extends ThemedPreferenceActivity
         } else if (requestCode == ACTION_SHOW_MNEMONIC && resultCode == RESULT_OK) {
             handleMnemonicRequest(data);
         } else if (requestCode == ACTION_E2E && data != null && data.getBooleanExtra(SetupEncryptionDialogFragment.SUCCESS, false)) {
-            PreferenceCategory preferenceCategoryMore = (PreferenceCategory) findPreference("more");
-
-            setupE2EPreference(preferenceCategoryMore);
-            setupE2EKeysExist(preferenceCategoryMore);
-            setupE2EMnemonicPreference(preferenceCategoryMore);
-            removeE2E(preferenceCategoryMore);
+            //restart to show the preferences correctly
+            restartSettingsActivity();
         }
+    }
+
+    private void restartSettingsActivity() {
+        Intent i = new Intent(this, SettingsActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(i);
     }
 
     @VisibleForTesting
