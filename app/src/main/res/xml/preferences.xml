@@ -95,30 +95,25 @@
             android:summary="@string/prefs_daily_backup_summary"
             android:title="@string/backup_title" />
         <Preference
-            android:title="@string/prefs_setup_e2e"
             android:key="setup_e2e"
             android:layout="@layout/custom_preference_layout"
-            android:summary="@string/setup_e2e" />
+            android:summary="@string/setup_e2e"
+            android:title="@string/prefs_setup_e2e" />
         <Preference
-            android:title="@string/prefs_keys_exist"
             android:key="setup_e2e_keys_exist"
             android:layout="@layout/custom_preference_layout"
-            android:summary="End to end encryption was already set up on another client. Please enter your mnemonic to allow this client to sync and decrypt the files." />
+            android:summary="@string/prefs_keys_exist_summary"
+            android:title="@string/prefs_keys_exist" />
         <Preference
-            android:title="@string/prefs_e2e_active"
-            android:key="mnemonic"
-            android:layout="@layout/custom_preference_layout"
-            android:summary="@string/displays_mnemonic" />
-        <Preference
-            android:title="@string/prefs_remove_e2e"
-            android:key="remove_e2e"
-            android:layout="@layout/custom_preference_layout"
-            android:summary="@string/remove_e2e" />
-    <!--    <Preference
             android:key="mnemonic"
             android:layout="@layout/custom_preference_layout"
             android:summary="@string/prefs_mnemonic_summary"
-            android:title="@string/prefs_e2e_mnemonic" />-->
+            android:title="@string/prefs_e2e_mnemonic" />
+        <Preference
+            android:key="remove_e2e"
+            android:layout="@layout/custom_preference_layout"
+            android:summary="@string/remove_e2e"
+            android:title="@string/prefs_remove_e2e" />
         <!--
                 <Preference android:title="@string/prefs_recommend" android:key="recommend" />
         -->

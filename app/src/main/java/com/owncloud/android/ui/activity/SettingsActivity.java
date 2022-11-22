@@ -494,7 +494,7 @@ public class SettingsActivity extends ThemedPreferenceActivity
                 preferenceCategoryMore.removePreference(preference);
             } else {
                 preference.setOnPreferenceClickListener(p -> {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.FallbackTheming_Dialog);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     AlertDialog alertDialog = builder.setTitle(R.string.prefs_e2e_mnemonic)
                         .setMessage(getString(R.string.remove_e2e_message))
                         .setCancelable(true)
@@ -1001,7 +1001,7 @@ public class SettingsActivity extends ThemedPreferenceActivity
                 ArbitraryDataProvider arbitraryDataProvider = new ArbitraryDataProvider(getContentResolver());
                 String mnemonic = arbitraryDataProvider.getValue(user.getAccountName(), EncryptionUtils.MNEMONIC);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.FallbackTheming_Dialog);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 AlertDialog alertDialog = builder.setTitle(R.string.dialog_e2e_mnemonic_title)
                     .setMessage(mnemonic)
                     .setNegativeButton(R.string.common_cancel, (dialog, i) -> dialog.dismiss())
