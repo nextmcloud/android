@@ -55,6 +55,7 @@ import com.nextcloud.client.di.Injectable;
 
 import com.nextcloud.client.jobs.BackgroundJobManager;
 
+import com.nextcloud.client.media.ExoplayerListener;
 import com.nextcloud.client.media.NextcloudExoPlayer;
 import com.nextcloud.client.media.PlayerServiceConnection;
 import com.nextcloud.client.network.ClientFactory;
@@ -334,6 +335,7 @@ public class PreviewMediaFragment extends FileFragment implements OnTouchListene
                             final NextcloudClient client = clientFactory.createNextcloudClient(accountManager.getUser());
                             handler.post(() ->{
                                 exoPlayer = NextcloudExoPlayer.createNextcloudExoplayer(requireContext(), client);
+                                exoPlayer.addListener(new ExoplayerListener(requireContext(), binding.exoplayerView, exoPlayer));
                                 playVideo();
                             });
                         } catch (ClientFactory.CreationException e) {
