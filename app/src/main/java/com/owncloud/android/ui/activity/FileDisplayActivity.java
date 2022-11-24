@@ -86,6 +86,7 @@ import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.files.RestoreFileVersionRemoteOperation;
 import com.owncloud.android.lib.resources.files.SearchRemoteOperation;
 import com.owncloud.android.lib.resources.status.OwnCloudVersion;
+import com.owncloud.android.ui.events.ChangeMenuEvent;
 import com.owncloud.android.ui.events.SearchEvent;
 import com.owncloud.android.ui.events.SyncEventFinished;
 import com.owncloud.android.ui.fragment.SearchType;
@@ -1086,6 +1087,8 @@ public class FileDisplayActivity extends FileActivity
                 listOfFiles.registerFabListener();
                 showSortListGroup(true);
                 resetTitleBarAndScrolling();
+                setDrawerAllFiles();
+                EventBus.getDefault().post(new ChangeMenuEvent()); // for OCFileListFragment to update sort menu
             }
         } else if (leftFragment instanceof PreviewTextStringFragment) {
             createMinFragments(null);
@@ -1177,13 +1180,7 @@ public class FileDisplayActivity extends FileActivity
         menuItemId = getIntent().getIntExtra(FileDisplayActivity.DRAWER_MENU_ID, -1);
 
         if (menuItemId == -1) {
-            if (MainApp.isOnlyOnDevice()) {
-                setDrawerMenuItemChecked(R.id.nav_on_device);
-                setupToolbar();
-            } else {
-                setDrawerMenuItemChecked(R.id.nav_all_files);
-                setupHomeSearchToolbarWithSortAndListButtons();
-            }
+            setDrawerAllFiles();
         } else {
             if (menuItemId == R.id.nav_all_files) {
                 setupHomeSearchToolbarWithSortAndListButtons();
@@ -1201,6 +1198,16 @@ public class FileDisplayActivity extends FileActivity
         inAppReviewHelper.showInAppReview(this);
 
         Log_OC.v(TAG, "onResume() end");
+    }
+
+    private void setDrawerAllFiles() {
+        if (MainApp.isOnlyOnDevice()) {
+            setDrawerMenuItemChecked(R.id.nav_on_device);
+            setupToolbar();
+        } else {
+            setDrawerMenuItemChecked(R.id.nav_all_files);
+            setupHomeSearchToolbarWithSortAndListButtons();
+        }
     }
 
     public void initSyncBroadcastReceiver() {
