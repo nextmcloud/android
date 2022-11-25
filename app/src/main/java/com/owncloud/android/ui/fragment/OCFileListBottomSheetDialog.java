@@ -83,9 +83,8 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog {
             getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        OCCapability capability = fileActivity.getCapabilities();
-        if (capability != null &&
-            capability.getRichDocuments().isTrue() &&
+        OCCapability capability = fileActivity.getStorageManager().getCapability(user.getAccountName());
+        if (capability.getRichDocuments().isTrue() &&
             capability.getRichDocumentsDirectEditing().isTrue() &&
             capability.getRichDocumentsTemplatesAvailable().isTrue() &&
             !file.isEncrypted()) {
@@ -134,6 +133,12 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog {
             binding.menuScanDocument.setVisibility(View.GONE);
         }
 
+        if (capability.getEndToEndEncryption().isTrue()) {
+            binding.menuEncryptedMkdir.setVisibility(View.VISIBLE);
+        } else {
+            binding.menuEncryptedMkdir.setVisibility(View.GONE);
+        }
+
         //check if scanbot sdk licence is valid or not
         //hide the view if license is not valid
         if (!ScanBotSdkUtils.isScanBotLicenseValid(fileActivity)) {
@@ -177,6 +182,11 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog {
 
         binding.menuMkdir.setOnClickListener(v -> {
             actions.createFolder();
+            dismiss();
+        });
+
+        binding.menuEncryptedMkdir.setOnClickListener(v -> {
+            actions.createEncryptedFolder();
             dismiss();
         });
 
