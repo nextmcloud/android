@@ -1959,6 +1959,8 @@ public class FileDataStorageManager {
                           capability.getServerLogo());
         contentValues.put(ProviderTableMeta.CAPABILITIES_END_TO_END_ENCRYPTION,
                           capability.getEndToEndEncryption().getValue());
+        contentValues.put(ProviderTableMeta.CAPABILITIES_END_TO_END_ENCRYPTION_KEYS_EXIST,
+                          capability.getEndToEndEncryptionKeysExist().getValue());
         contentValues.put(ProviderTableMeta.CAPABILITIES_SERVER_BACKGROUND_DEFAULT,
                           capability.getServerBackgroundDefault().getValue());
         contentValues.put(ProviderTableMeta.CAPABILITIES_SERVER_BACKGROUND_PLAIN,
@@ -2105,6 +2107,10 @@ public class FileDataStorageManager {
             capability.setServerSlogan(getString(cursor, ProviderTableMeta.CAPABILITIES_SERVER_SLOGAN));
             capability.setServerLogo(getString(cursor, ProviderTableMeta.CAPABILITIES_SERVER_LOGO));
             capability.setEndToEndEncryption(getBoolean(cursor, ProviderTableMeta.CAPABILITIES_END_TO_END_ENCRYPTION));
+            capability.setEndToEndEncryptionKeysExist(
+                getBoolean(cursor,
+                           ProviderTableMeta.CAPABILITIES_END_TO_END_ENCRYPTION_KEYS_EXIST)
+                                                     );
             capability.setServerBackgroundDefault(
                 getBoolean(cursor, ProviderTableMeta.CAPABILITIES_SERVER_BACKGROUND_DEFAULT));
             capability.setServerBackgroundPlain(getBoolean(cursor,

@@ -127,6 +127,7 @@
     <string name="common_send">Send</string>
     <string name="common_share">Share</string>
     <string name="common_skip">Skip</string>
+    <string name="common_copy">Copy</string>
     <string name="about_title">About</string>
     <string name="delete_account">Remove account</string>
     <string name="delete_account_warning">Remove account %s and delete all local files?\n\nDeletion cannot be undone.</string>
@@ -1201,4 +1202,13 @@
     <string name="locate_folder">Locate folder</string>
     <string name="open_download_folder">Cannot open folder. Please manually browse to Download folder</string>
     <string name="e2e_not_yet_setup">End-to-end encryption is not yet setup.</string>
+    <string name="prefs_setup_e2e">Start end-to-end encryption</string>
+    <string name="prefs_remove_e2e">Remove encryption locally</string>
+    <string name="remove_e2e">You can remove end-to-end encryption locally on this device.</string>
+    <string name="confirm_removal">Remove encryption locally</string>
+    <string name="remove_e2e_message">You can remove the passphrase on this device. This will not affect the encrypted content, but this device will no longer be able to decrypt your data.\n\nYou can re- enter the passphrase here at any time to ensure access to your encrypted content from this device.</string>
+    <string name="setup_e2e">After starting the encryption, a randomly generated word sequence (passphrase) of 12 words is displayed. This remains in this app and can be displayed again. Nevertheless, we recommend that you write down the passphrase.</string>
+    <string name="error_showing_encryption_dialog">Error showing setup encryption dialog!</string>
+    <string name="prefs_keys_exist">Add end-to-end encryption to this client</string>
+    <string name="prefs_keys_exist_summary">End-to-end encryption was already set up on another client. Please enter your mnemonic to allow this client to sync and decrypt the files.</string>
 </resources>

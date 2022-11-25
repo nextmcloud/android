@@ -125,6 +125,7 @@
     <string name="common_switch_account">Konto wechseln</string>
     <string name="common_switch_to_account">Zu Konto wechseln</string>
     <string name="common_yes">Ja</string>
+    <string name="common_copy">Kopieren</string>
     <string name="community_beta_headline">Testen Sie die Entwickler-Version</string>
     <string name="community_beta_text">Dies beinhaltet neue Funktionalitäten und ist nicht komplett qualitätsgesichert. Es können daher Fehler/Bugs auftreten, melden Sie uns solche bitte.</string>
     <string name="community_contribute_forum_forum">Forum</string>
@@ -1094,4 +1095,14 @@
     <string name="locate_folder">Ordner lokalisieren</string>
     <string name="open_download_folder">Ordner kann nicht geöffnet werden. Bitte navigieren Sie manuell zum Download Ordner</string>
     <string name="e2e_not_yet_setup">Die Ende-zu-Ende Verschlüsselung ist noch nicht eingerichtet.</string>
+    <string name="prefs_setup_e2e">Ende-zu-ende Verschlüsselung starten</string>
+    <string name="prefs_remove_e2e">Verschlüsselung lokal entfernen</string>
+    <string name="remove_e2e">Sie können die Passphrase auf diesem Gerät entfernen.</string>
+    <string name="confirm_removal">Verschlüsselung lokal entfernen</string>
+    <string name="remove_e2e_message">Sie können die Passphrase auf diesem Gerät entfernen. Dadurch bleiben die verschlüsselten Inhalte unberührt, jedoch kann dieses Gerät die Daten nicht mehr entschlüsseln.\n\nSie können die Passphrase jederzeit wieder hier eingeben, um Zugriff von diesem Gerät aus auf ihre verschlüsselten Inhalte zu gewährleisten.</string>
+    <string name="setup_e2e">Nach dem Start der Verschlüsselung wird ihnen eine aus 12 Wörtern zufällig erzeugte Wortfolge (Passphrase) angezeigt. Diese bleibt in dieser App erhalten und kann erneut angezeigt werden. Dennoch empfehlen wir ihnen, die Passphrase zu notieren.</string>
+    <string name="error_showing_encryption_dialog">Fehler bei der Anzeige des Verschlüsselungsdialogs!</string>
+    <string name="prefs_keys_exist">Fügen Sie dieses Gerät zur Ende-zu-Ende Verschlüsselung hinzu.</string>
+    <string name="prefs_keys_exist_summary">Die Ende-zu-Ende Verschlüsselung wurde bereits auf einem anderen Gerät eingerichtet. Bitte geben Sie Ihre Passphrase ein, damit die Dateien synchronisiert und entschlüsselt werden.</string>
+
 </resources>
