@@ -480,7 +480,7 @@ open class FolderPickerActivity :
                                     currentFolder!!.fileName)
                             browseToRoot()
                         } else {
-                            if (currentFile == null && !file.isFolder) {
+                            if (currentFile == null && file!= null && file.isFolder) {
                                 // currently selected file was removed in the server, and now we know it
                                 currentFile = currentDir
                             }
