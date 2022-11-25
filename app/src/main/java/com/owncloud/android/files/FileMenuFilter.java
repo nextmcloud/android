@@ -667,4 +667,13 @@ public class FileMenuFilter {
         }
         return true;
     }
+
+    private boolean isShared() {
+        for (OCFile file : files) {
+            if (file.isSharedWithMe() || file.isSharedViaLink() || file.isSharedWithSharee()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
