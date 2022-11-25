@@ -838,7 +838,8 @@ public class FileContentProvider extends ContentProvider {
                        + ProviderTableMeta.CAPABILITIES_USER_STATUS + INTEGER
                        + ProviderTableMeta.CAPABILITIES_USER_STATUS_SUPPORTS_EMOJI + INTEGER
                        + ProviderTableMeta.CAPABILITIES_ETAG + TEXT
-                       + ProviderTableMeta.CAPABILITIES_FILES_LOCKING_VERSION + " TEXT );");
+                       + ProviderTableMeta.CAPABILITIES_FILES_LOCKING_VERSION + TEXT
+                       + ProviderTableMeta.CAPABILITIES_END_TO_END_ENCRYPTION_KEYS_EXIST + " INTEGER );");
     }
 
     private void createUploadsTable(SQLiteDatabase db) {
