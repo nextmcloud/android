@@ -1141,11 +1141,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
             int position = data.getIntExtra(SetupEncryptionDialogFragment.ARG_POSITION, -1);
             OCFile file = mAdapter.getItem(position);
 
-            if (file == null) {
-                return;
+            if (file != null) {
+                mContainerActivity.getFileOperationsHelper().toggleEncryption(file, true);
             }
-
-            encryptFolder(file.getLocalId(), file.getRemoteId(), file.getRemotePath(), true);
 
             // update state and view of this fragment
             searchFragment = false;
