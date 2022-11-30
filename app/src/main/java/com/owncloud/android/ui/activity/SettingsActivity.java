@@ -425,6 +425,10 @@ public class SettingsActivity extends ThemedPreferenceActivity
         Preference preference = findPreference("setup_e2e");
 
         if (preference != null) {
+            if (!CapabilityUtils.getCapability(this).getEndToEndEncryption().isTrue()) {
+                preferenceCategoryMore.removePreference(preference);
+                return;
+            }
             if (FileOperationsHelper.isEndToEndEncryptionSetup(this, user) ||
                 CapabilityUtils.getCapability(this).getEndToEndEncryptionKeysExist().isTrue()) {
                 preferenceCategoryMore.removePreference(preference);
