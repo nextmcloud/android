@@ -188,7 +188,7 @@
     <string name="create_new">Neues Textdokument erstellen</string>
     <string name="create_new_document">Neues Dokument erstellen</string>
     <string name="create_new_folder">Neuen Ordner erstellen</string>
-    <string name="create_new_encrypted_folder">Verschlüsselten Ordern erstellen</string>
+    <string name="create_new_encrypted_folder">Verschlüsselten Ordner erstellen</string>
     <string name="create_new_presentation">Neue Präsentation erstellen</string>
     <string name="create_new_spreadsheet">Neue Tabelle erstellen</string>
     <string name="create_rich_workspace">Ordnerinfo hinzufügen</string>
@@ -1096,7 +1096,7 @@
     <string name="locate_folder">Ordner lokalisieren</string>
     <string name="open_download_folder">Ordner kann nicht geöffnet werden. Bitte navigieren Sie manuell zum Download Ordner</string>
     <string name="e2e_not_yet_setup">Die Ende-zu-Ende Verschlüsselung ist noch nicht eingerichtet.</string>
-    <string name="prefs_setup_e2e">Ende-zu-ende Verschlüsselung starten</string>
+    <string name="prefs_setup_e2e">Ende-zu-Ende Verschlüsselung starten</string>
     <string name="prefs_remove_e2e">Verschlüsselung lokal entfernen</string>
     <string name="remove_e2e">Sie können die Passphrase auf diesem Gerät entfernen.</string>
     <string name="confirm_removal">Verschlüsselung lokal entfernen</string>
