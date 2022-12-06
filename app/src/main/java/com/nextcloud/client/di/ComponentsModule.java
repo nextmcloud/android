@@ -97,7 +97,6 @@ import com.owncloud.android.ui.preview.PreviewMediaFragment;
 import com.owncloud.android.ui.preview.PreviewTextFileFragment;
 import com.owncloud.android.ui.preview.PreviewTextFragment;
 import com.owncloud.android.ui.preview.PreviewTextStringFragment;
-import com.owncloud.android.ui.preview.PreviewVideoActivity;
 import com.owncloud.android.ui.preview.pdf.PreviewPdfFragment;
 import com.owncloud.android.ui.trashbin.TrashbinActivity;
 
@@ -131,7 +130,6 @@ abstract class ComponentsModule {
     @ContributesAndroidInjector abstract CommunityActivity participateActivity();
     @ContributesAndroidInjector abstract PassCodeActivity passCodeActivity();
     @ContributesAndroidInjector abstract PreviewImageActivity previewImageActivity();
-    @ContributesAndroidInjector abstract PreviewVideoActivity previewVideoActivity();
     @ContributesAndroidInjector abstract ReceiveExternalFilesActivity receiveExternalFilesActivity();
     @ContributesAndroidInjector abstract RequestCredentialsActivity requestCredentialsActivity();
     @ContributesAndroidInjector abstract SettingsActivity settingsActivity();

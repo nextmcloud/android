@@ -360,11 +360,6 @@
         <item name="android:textColorHint">@color/secondary_text_color</item>
     </style>
 
-    <style name="Theme.ownCloud.Fullscreen" parent="@style/Theme.MaterialComponents.DayNight">
-        <item name="android:windowFullscreen">true</item>
-        <item name="colorAccent">@color/color_accent</item>
-    </style>
-
     <style name="Theme.ownCloud.Splash" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/primary</item>
         <item name="colorPrimary">@color/primary</item>
