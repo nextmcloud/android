@@ -592,13 +592,17 @@ public class OCFile implements Parcelable, Comparable<OCFile>, ServerFileInterfa
 
     /**
      * The unique fileId for the file within the instance
+     * This only works if we have 12 digits for instanceId
+     * RemoteId is a combination of localId + instanceId
+     * If a file has remoteId: 4174305739oc97a8ddfc96,
+     * in this 4174305739 is localId & oc97a8ddfc96 is instanceId which is of 12 digits
      *
      * @return file fileId, unique within the instance
      */
     @Nullable
     public String getLocalId() {
         if (getRemoteId() != null) {
-            return getRemoteId().substring(0, 8).replaceAll("^0*", "");
+            return getRemoteId().substring(0, getRemoteId().length() - 12).replaceAll("^0*", "");
         } else {
             return null;
         }
