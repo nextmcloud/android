@@ -1861,6 +1861,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 }
             }
             openSetupEncryptionDialog(position, user);
+            return false;
         } else {
             return true;
         }
