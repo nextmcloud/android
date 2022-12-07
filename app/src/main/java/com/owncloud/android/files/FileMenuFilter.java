@@ -37,6 +37,7 @@ import com.owncloud.android.files.services.FileUploader.FileUploaderBinder;
 import com.owncloud.android.lib.resources.status.OCCapability;
 import com.owncloud.android.services.OperationsService.OperationsServiceBinder;
 import com.owncloud.android.ui.activity.ComponentsGetter;
+import com.owncloud.android.ui.helpers.FileOperationsHelper;
 import com.owncloud.android.utils.EditorUtils;
 import com.owncloud.android.utils.MimeTypeUtil;
 import com.owncloud.android.utils.NextcloudServer;
@@ -336,7 +337,7 @@ public class FileMenuFilter {
         }
 
         if (!endToEndEncryptionEnabled || files.isEmpty() || !isSingleSelection() || isSingleFile()
-            || !isEncryptedFolder() || hasEncryptedParent() || !isEmptyFolder()) {
+            || !isEncryptedFolder() || hasEncryptedParent() || !isEmptyFolder() || !FileOperationsHelper.isEndToEndEncryptionSetup(context, user)) {
             toHide.add(R.id.action_unset_encrypted);
         } else {
             toShow.add(R.id.action_unset_encrypted);
@@ -384,7 +385,8 @@ public class FileMenuFilter {
     }
 
     private void filterSync(List<Integer> toShow, List<Integer> toHide, boolean synchronizing) {
-        if (files.isEmpty() || (!anyFileDown() && !containsFolder()) || synchronizing) {
+        if (files.isEmpty() || (!anyFileDown() && !containsFolder()) || synchronizing || containsEncryptedFile()
+            || containsEncryptedFolder()) {
             toHide.add(R.id.action_sync_file);
         } else {
             toShow.add(R.id.action_sync_file);
