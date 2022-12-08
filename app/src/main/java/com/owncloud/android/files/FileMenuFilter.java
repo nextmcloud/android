@@ -260,7 +260,8 @@ public class FileMenuFilter {
     }
 
     private void filterFavorite(List<Integer> toShow, List<Integer> toHide, boolean synchronizing) {
-        if (files.isEmpty() || synchronizing || allFavorites()) {
+        if (files.isEmpty() || synchronizing || allFavorites()  || containsEncryptedFile()
+            || containsEncryptedFolder()) {
             toHide.add(R.id.action_favorite);
         } else {
             toShow.add(R.id.action_favorite);
@@ -268,7 +269,8 @@ public class FileMenuFilter {
     }
 
     private void filterUnfavorite(List<Integer> toShow, List<Integer> toHide, boolean synchronizing) {
-        if (files.isEmpty() || synchronizing || allNotFavorites()) {
+        if (files.isEmpty() || synchronizing || allNotFavorites()  || containsEncryptedFile()
+            || containsEncryptedFolder()) {
             toHide.add(R.id.action_unset_favorite);
         } else {
             toShow.add(R.id.action_unset_favorite);
