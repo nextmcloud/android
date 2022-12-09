@@ -385,8 +385,7 @@ public class FileMenuFilter {
     }
 
     private void filterSync(List<Integer> toShow, List<Integer> toHide, boolean synchronizing) {
-        if (files.isEmpty() || (!anyFileDown() && !containsFolder()) || synchronizing || containsEncryptedFile()
-            || containsEncryptedFolder()) {
+        if (files.isEmpty() || (!anyFileDown() && !containsFolder()) || synchronizing) {
             toHide.add(R.id.action_sync_file);
         } else {
             toShow.add(R.id.action_sync_file);
