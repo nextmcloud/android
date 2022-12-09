@@ -5,21 +5,21 @@
     android:viewportWidth="64"
     android:viewportHeight="64">
   <path
-      android:pathData="M22,9H6a2,2 0,0 0,-2 2v5H29Z"
+      android:pathData="M20.57,5.71H2.29A2.3,2.3 0,0 0,0 8v5.71H28.57Z"
       android:fillColor="#53baf2"/>
   <path
-      android:pathData="M22,9H6a2,2 0,0 0,-2 2v5H29Z"
+      android:pathData="M20.57,5.71H2.29A2.3,2.3 0,0 0,0 8v5.71H28.57Z"
       android:strokeAlpha="0.25"
       android:fillColor="#317cb3"
       android:fillAlpha="0.25"/>
   <path
-      android:pathData="M58,16H4V53a2,2 0,0 0,2 2H58a2,2 0,0 0,2 -2V18A2,2 0,0 0,58 16Z">
+      android:pathData="M61.71,13.71H0V56a2.3,2.3 0,0 0,2.29 2.29H61.71A2.3,2.3 0,0 0,64 56V16A2.3,2.3 0,0 0,61.71 13.71Z">
     <aapt:attr name="android:fillColor">
-      <gradient
-          android:startY="54.840004"
-          android:startX="31.999996"
-          android:endY="15.930003"
-          android:endX="31.999996"
+      <gradient 
+          android:startX="32"
+          android:startY="58.11"
+          android:endX="32"
+          android:endY="13.64"
           android:type="linear">
         <item android:offset="0" android:color="#FF53BAF2"/>
         <item android:offset="1" android:color="#FF7ECBF5"/>
