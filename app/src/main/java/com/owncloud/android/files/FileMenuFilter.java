@@ -261,7 +261,7 @@ public class FileMenuFilter {
     }
 
     private void filterFavorite(List<Integer> toShow, List<Integer> toHide, boolean synchronizing) {
-        if (files.isEmpty() || synchronizing || allFavorites()  || containsEncryptedFile()
+        if (files.isEmpty() || synchronizing || allFavorites() || containsEncryptedFile()
             || containsEncryptedFolder()) {
             toHide.add(R.id.action_favorite);
         } else {
@@ -270,7 +270,7 @@ public class FileMenuFilter {
     }
 
     private void filterUnfavorite(List<Integer> toShow, List<Integer> toHide, boolean synchronizing) {
-        if (files.isEmpty() || synchronizing || allNotFavorites()  || containsEncryptedFile()
+        if (files.isEmpty() || synchronizing || allNotFavorites() || containsEncryptedFile()
             || containsEncryptedFolder()) {
             toHide.add(R.id.action_unset_favorite);
         } else {
@@ -324,7 +324,8 @@ public class FileMenuFilter {
         }
 
         if (files.isEmpty() || !isSingleSelection() || isSingleFile() || isEncryptedFolder() || isGroupFolder()
-            || !endToEndEncryptionEnabled || !isEmptyFolder()) {
+            /* || !endToEndEncryptionEnabled || !isEmptyFolder()) */
+            || !endToEndEncryptionEnabled || !isEmptyFolder() || isInSubFolder()) {
             toHide.add(R.id.action_encrypted);
         } else {
             toShow.add(R.id.action_encrypted);
@@ -357,7 +358,7 @@ public class FileMenuFilter {
     private void filterEdit(List<Integer> toShow,
                             List<Integer> toHide,
                             OCCapability capability
-    ) {
+                           ) {
         if (files.iterator().next().isEncrypted()) {
             toHide.add(R.id.action_edit);
             return;
@@ -505,8 +506,8 @@ public class FileMenuFilter {
             FileUploaderBinder uploaderBinder = componentsGetter.getFileUploaderBinder();
             FileDownloaderBinder downloaderBinder = componentsGetter.getFileDownloaderBinder();
             synchronizing = anyFileSynchronizing(opsBinder) ||      // comparing local and remote
-                            anyFileDownloading(downloaderBinder) ||
-                            anyFileUploading(uploaderBinder);
+                anyFileDownloading(downloaderBinder) ||
+                anyFileUploading(uploaderBinder);
         }
         return synchronizing;
     }
@@ -543,9 +544,9 @@ public class FileMenuFilter {
 
     private boolean isShareApiEnabled(OCCapability capability) {
         return capability != null &&
-                (capability.getFilesSharingApiEnabled().isTrue() ||
-                        capability.getFilesSharingApiEnabled().isUnknown()
-                );
+            (capability.getFilesSharingApiEnabled().isTrue() ||
+                capability.getFilesSharingApiEnabled().isUnknown()
+            );
     }
 
     private boolean isShareWithUsersAllowed() {
@@ -678,5 +679,15 @@ public class FileMenuFilter {
             }
         }
         return false;
+    }
+
+    private boolean isInSubFolder() {
+        OCFile folder = files.iterator().next();
+        OCFile parent = componentsGetter.getStorageManager().getFileById(folder.getParentId());
+
+        if (parent == null) {
+            return false;
+        }
+        return !OCFile.ROOT_PATH.equals(parent.getRemotePath());
     }
 }
