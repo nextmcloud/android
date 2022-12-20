@@ -137,6 +137,7 @@ open class FolderPickerActivity :
             caption = ThemeUtils.getDefaultDisplayNameForRootFolder(this)
         }
         mTargetFilePaths = intent.getStringArrayListExtra(EXTRA_FILE_PATHS)
+
         if (savedInstanceState == null) {
             createFragments()
         }
@@ -257,6 +258,9 @@ open class FolderPickerActivity :
         // refresh list of files
         refreshListOfFilesFragment(false)
 
+        file = listOfFilesFragment?.currentFile
+        updateUiElements()
+
         // Listen for sync messages
         val syncIntentFilter = IntentFilter(FileSyncAdapter.EVENT_FULL_SYNC_START)
         syncIntentFilter.addAction(FileSyncAdapter.EVENT_FULL_SYNC_END)
@@ -370,7 +374,9 @@ open class FolderPickerActivity :
     }
 
     private fun toggleChooseEnabled() {
-        mChooseBtn?.isEnabled = checkFolderSelectable()
+        val isFolderSelectable = checkFolderSelectable()
+        mChooseBtn?.isEnabled = isFolderSelectable
+        mChooseBtn?.alpha = if (isFolderSelectable) 1f else 0.5f
     }
 
     // for copy and move, disable selecting parent folder of target files
@@ -595,7 +601,6 @@ open class FolderPickerActivity :
 
         @JvmField
         val EXTRA_ACTION = FolderPickerActivity::class.java.canonicalName?.plus(".EXTRA_ACTION")
-
 
         @JvmField
         val EXTRA_SHOW_ONLY_FOLDER = FolderPickerActivity::class.java.canonicalName?.plus(".EXTRA_SHOW_ONLY_FOLDER")

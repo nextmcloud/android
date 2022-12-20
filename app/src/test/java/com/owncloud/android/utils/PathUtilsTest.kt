@@ -20,9 +20,8 @@
  *
  */
 
-package com.owncloud.android.utils.theme
+package com.owncloud.android.utils
 
-import com.owncloud.android.utils.PathUtils
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
