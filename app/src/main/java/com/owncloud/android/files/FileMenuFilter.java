@@ -325,7 +325,7 @@ public class FileMenuFilter {
 
         if (files.isEmpty() || !isSingleSelection() || isSingleFile() || isEncryptedFolder() || isGroupFolder()
             /* || !endToEndEncryptionEnabled || !isEmptyFolder()) */
-            || !endToEndEncryptionEnabled || !isEmptyFolder() || isInSubFolder()) {
+            || !endToEndEncryptionEnabled || !isEmptyFolder() || isShared() || isInSubFolder()) {
             toHide.add(R.id.action_encrypted);
         } else {
             toShow.add(R.id.action_encrypted);
