@@ -95,6 +95,7 @@ class UnifiedSearchFragment : Fragment(), Injectable, UnifiedSearchListInterface
         vm.searchResults.observe(this, this::onSearchResultChanged)
         vm.isLoading.observe(this) { loading ->
             binding.swipeContainingList.isRefreshing = loading
+            KeyboardUtils.hideKeyboardFrom(requireContext(), binding.root)
         }
         PairMediatorLiveData(vm.searchResults, vm.isLoading).observe(this) { pair ->
             if (pair.second == false) {
@@ -110,7 +111,6 @@ class UnifiedSearchFragment : Fragment(), Injectable, UnifiedSearchListInterface
                     binding.emptyList.emptyListViewText.visibility = View.VISIBLE
                     binding.emptyList.emptyListIcon.visibility = View.VISIBLE
 
-                    KeyboardUtils.hideKeyboardFrom(requireContext(), binding.root)
 
                     binding.emptyList.emptyListViewHeadline.text =
                         requireContext().getString(R.string.file_list_empty_headline_server_search)
