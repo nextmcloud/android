@@ -95,7 +95,6 @@ class UnifiedSearchFragment : Fragment(), Injectable, UnifiedSearchListInterface
         vm.searchResults.observe(this, this::onSearchResultChanged)
         vm.isLoading.observe(this) { loading ->
             binding.swipeContainingList.isRefreshing = loading
-            KeyboardUtils.hideKeyboardFrom(requireContext(), binding.root)
         }
         PairMediatorLiveData(vm.searchResults, vm.isLoading).observe(this) { pair ->
             if (pair.second == false) {
@@ -244,6 +243,7 @@ class UnifiedSearchFragment : Fragment(), Injectable, UnifiedSearchListInterface
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
+        KeyboardUtils.hideKeyboardFrom(requireContext(), binding.root)
         vm.setQuery(query)
         vm.initialQuery()
         return true
