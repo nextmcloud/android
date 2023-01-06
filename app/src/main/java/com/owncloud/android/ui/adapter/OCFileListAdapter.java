@@ -34,7 +34,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -461,12 +460,12 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
        /* if (gridView && gridImage) {
             holder.getFileName().setVisibility(View.GONE);
         } else {*/
-            if (gridView && ocFileListFragmentInterface.getColumnsCount() > showFilenameColumnThreshold) {
-                holder.getFileName().setVisibility(View.GONE);
-            } else {
-                holder.getFileName().setVisibility(View.VISIBLE);
-            }
-       // }
+        if (gridView && ocFileListFragmentInterface.getColumnsCount() > showFilenameColumnThreshold) {
+            holder.getFileName().setVisibility(View.GONE);
+        } else {
+            holder.getFileName().setVisibility(View.VISIBLE);
+        }
+        // }
     }
 
     @Override
@@ -658,7 +657,9 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 OCFile ocFile = allFiles.get(i);
 
                 //if e2ee folder has to hide then ignore if OCFile is encrypted
-                if (hideEncryptedFolder && ocFile.isEncrypted()) continue;
+                if (hideEncryptedFolder && ocFile.isEncrypted()) {
+                    continue;
+                }
 
                 if (ocFile.getMimeType().equals(MimeType.DIRECTORY)) {
                     mFiles.add(allFiles.get(i));
@@ -820,23 +821,18 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
 
                 if (!onlyMedia || MimeTypeUtil.isImage(ocFile) || MimeTypeUtil.isVideo(ocFile)) {
-
                     //Handling duplicacy of favorites folder.....
-                  //  boolean available = false;
                     if (mFiles.isEmpty()) {
                         mFiles.add(ocFile);
                     } else {
-                        for (OCFile file: mFiles){
+                        for (OCFile file : mFiles) {
                             if (file.getFileId() == ocFile.getFileId()) {
-                           //     available = true;
                                 return;
                             }
                         }
-                            mFiles.add(ocFile);
-
+                        mFiles.add(ocFile);
                     }
                 }
-
                 ContentValues cv = new ContentValues();
                 cv.put(ProviderMeta.ProviderTableMeta.VIRTUAL_TYPE, type.toString());
                 cv.put(ProviderMeta.ProviderTableMeta.VIRTUAL_OCFILE_ID, ocFile.getFileId());
