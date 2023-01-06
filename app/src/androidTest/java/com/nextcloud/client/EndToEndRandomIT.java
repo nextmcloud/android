@@ -531,7 +531,7 @@ public class EndToEndRandomIT extends AbstractOnServerIT {
         currentFolder = createFolder(0);
 
         // lock folder
-        String token = EncryptionUtils.lockFolder(currentFolder, client);
+        String token = EncryptionUtils.lockFolder(currentFolder, client, "");
         assertNotNull(token);
 
         // unlock folder

@@ -134,7 +134,7 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
 
         try {
             // lock folder
-            token = EncryptionUtils.lockFolder(parent, client);
+            token = EncryptionUtils.lockFolder(parent, client, "");
 
             // get metadata
             Pair<Boolean, DecryptedFolderMetadata> metadataPair = EncryptionUtils.retrieveMetadata(parent,

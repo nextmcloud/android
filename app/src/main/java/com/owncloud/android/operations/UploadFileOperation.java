@@ -434,17 +434,19 @@ public class UploadFileOperation extends SyncOperation {
 
         mFile.setParentId(parent.getFileId());
 
+        //Note: Unlocking folder is not required as this will throw exception during retry.
+        //So we have removed it for NMC.
         // try to unlock folder with stored token, e.g. when upload needs to be resumed or app crashed
         // the parent folder should exist as it is a resume of a broken upload
-        if (mFolderUnlockToken != null && !mFolderUnlockToken.isEmpty()) {
+        /*if (mFolderUnlockToken != null && !mFolderUnlockToken.isEmpty()) {
             UnlockFileRemoteOperation unlockFileOperation = new UnlockFileRemoteOperation(parent.getLocalId(),
-                mFolderUnlockToken);
+                                                                                          mFolderUnlockToken);
             RemoteOperationResult unlockFileOperationResult = unlockFileOperation.execute(client);
 
             if (!unlockFileOperationResult.isSuccess()) {
                 return unlockFileOperationResult;
             }
-        }
+        }*/
 
         // check if any parent is encrypted
         encryptedAncestor = FileStorageUtils.checkEncryptionStatus(parent, getStorageManager());
@@ -502,7 +504,7 @@ public class UploadFileOperation extends SyncOperation {
 
             /***** E2E *****/
             try {
-                token = EncryptionUtils.lockFolder(parentFile, client);
+                token = EncryptionUtils.lockFolder(parentFile, client, mFolderUnlockToken);
             } catch (UploadException e) {
                 return new RemoteOperationResult(ResultCode.LOCK_FAILED);
             }
