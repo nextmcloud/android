@@ -1211,5 +1211,6 @@
     <string name="setup_e2e">After starting the encryption, a randomly generated word sequence (passphrase) of 12 words is displayed. This remains in this app and can be displayed again. Nevertheless, we recommend that you write down the passphrase.</string>
     <string name="error_showing_encryption_dialog">Error showing setup encryption dialog!</string>
     <string name="prefs_keys_exist">Add end-to-end encryption to this client</string>
+    <string name="e2e_offline">Not possible without internet connection</string>
     <string name="prefs_keys_exist_summary">End-to-end encryption was already set up on another client. Please enter your mnemonic to allow this client to sync and decrypt the files.</string>
 </resources>
