@@ -437,10 +437,7 @@ public class SettingsActivity extends ThemedPreferenceActivity
             } else {
                 preference.setOnPreferenceClickListener(p -> {
                     if (connectivityService.getConnectivity().isConnected()) {
-                        Intent i = new Intent(MainApp.getAppContext(), SetupEncryptionActivity.class);
-                        i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        i.putExtra("EXTRA_USER", user);
-                        startActivityForResult(i, ACTION_E2E);
+                        openSetupEncryptionActivity();
                     } else {
                         DisplayUtils.showSnackMessage(this, R.string.e2e_offline);
                     }
