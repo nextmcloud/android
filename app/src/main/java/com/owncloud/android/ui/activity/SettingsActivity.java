@@ -55,6 +55,7 @@ import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.client.preferences.AppPreferencesImpl;
 import com.nmc.android.ui.PrivacySettingsActivity;
+import com.nextcloud.client.network.ConnectivityService;
 import com.nmc.android.utils.TealiumSdkUtils;
 import com.owncloud.android.BuildConfig;
 import com.owncloud.android.MainApp;
@@ -143,6 +144,7 @@ public class SettingsActivity extends ThemedPreferenceActivity
     private User user;
     @Inject ArbitraryDataProvider arbitraryDataProvider;
     @Inject AppPreferences preferences;
+    @Inject ConnectivityService connectivityService;
     @Inject UserAccountManager accountManager;
     @Inject ClientFactory clientFactory;
 
@@ -434,7 +436,11 @@ public class SettingsActivity extends ThemedPreferenceActivity
                 preferenceCategoryMore.removePreference(preference);
             } else {
                 preference.setOnPreferenceClickListener(p -> {
-                    openSetupEncryptionActivity();
+                    if (connectivityService.getConnectivity().isConnected()) {
+                        openSetupEncryptionActivity();
+                    } else {
+                        DisplayUtils.showSnackMessage(this, R.string.e2e_offline);
+                    }
                     return true;
                 });
             }
