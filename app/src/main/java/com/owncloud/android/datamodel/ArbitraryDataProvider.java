@@ -26,6 +26,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.nextcloud.client.account.User;
+import com.owncloud.android.BuildConfig;
 import com.owncloud.android.db.ProviderMeta;
 import com.owncloud.android.lib.common.utils.Log_OC;
 
@@ -83,8 +84,12 @@ public class ArbitraryDataProvider {
         }
 
         if (data == null) {
-            Log_OC.v(TAG, "Adding arbitrary data with cloud id: " + accountName + " key: " + key
-                + " value: " + value);
+            //only capture the key and value in debug mode for security reasons
+            //as we don't want it in release builds
+            if (BuildConfig.DEBUG) {
+                Log_OC.v(TAG, "Adding arbitrary data with cloud id: " + accountName + " key: " + key
+                    + " value: " + value);
+            }
 
             ContentValues cv = new ContentValues();
             cv.put(ProviderMeta.ProviderTableMeta.ARBITRARY_DATA_CLOUD_ID, accountName);
