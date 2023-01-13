@@ -133,7 +133,7 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog {
             binding.menuScanDocument.setVisibility(View.GONE);
         }
 
-        if (capability.getEndToEndEncryption().isTrue()) {
+        if (capability.getEndToEndEncryption().isTrue() && OCFile.ROOT_PATH.equals(file.getRemotePath())){
             binding.menuEncryptedMkdir.setVisibility(View.VISIBLE);
         } else {
             binding.menuEncryptedMkdir.setVisibility(View.GONE);
