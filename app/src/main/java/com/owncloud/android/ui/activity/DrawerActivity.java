@@ -397,9 +397,7 @@ public abstract class DrawerActivity extends ToolbarActivity
         //so removing the check as we need this option always
         //DrawerMenuUtil.filterTrashbinMenuItem(menu, capability);
         DrawerMenuUtil.filterActivityMenuItem(menu, capability);
-
         DrawerMenuUtil.setupHomeMenuItem(menu, getResources());
-
         DrawerMenuUtil.removeMenuItem(menu, R.id.nav_community,
                                       !getResources().getBoolean(R.bool.participate_enabled));
         DrawerMenuUtil.removeMenuItem(menu, R.id.nav_shared, !getResources().getBoolean(R.bool.shared_enabled));
