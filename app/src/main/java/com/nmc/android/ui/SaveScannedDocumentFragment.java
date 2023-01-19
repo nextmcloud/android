@@ -119,7 +119,7 @@ public class SaveScannedDocumentFragment extends Fragment implements CompoundBut
         if (requireActivity() instanceof ScanActivity) {
             String remotePath = ((ScanActivity) requireActivity()).getRemotePath();
             //remote path should not be null and should not be root path i.e only /
-            if (!TextUtils.isEmpty(remotePath) && !remotePath.equals(OCFile.ROOT_PATH)) {
+            if (!TextUtils.isEmpty(remotePath)) {
                 setRemoteFilePath(remotePath);
                 return;
             }
