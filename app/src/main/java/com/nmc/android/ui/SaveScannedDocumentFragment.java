@@ -28,6 +28,8 @@ import com.owncloud.android.ui.activity.FolderPickerActivity;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.theme.ThemeColorUtils;
 
+import org.apache.commons.lang.StringUtils;
+
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
@@ -120,10 +122,15 @@ public class SaveScannedDocumentFragment extends Fragment implements CompoundBut
                 setRemoteFilePath(remotePath);
                 return;
             }
+            String lastRemotePath = appPreferences.getUploadScansLastPath();
+            if(remotePath.equals(OCFile.ROOT_PATH) && !lastRemotePath.equals("/Scans/")){
+                setRemoteFilePath(remotePath);
+                return;
+            }
+            else{
+                setRemoteFilePath(appPreferences.getUploadScansLastPath());
+            }
         }
-
-        setRemoteFilePath(appPreferences.getUploadScansLastPath());
-
     }
 
     protected void setRemoteFilePath(String remotePath) {
