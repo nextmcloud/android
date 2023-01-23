@@ -125,15 +125,18 @@ public class SaveScannedDocumentFragment extends Fragment implements CompoundBut
                 setRemoteFilePath(remotePath);
                 return;
             }
+
             String lastRemotePath = appPreferences.getUploadScansLastPath();
-            if(remotePath.equals(OCFile.ROOT_PATH) && !lastRemotePath.equals("/Scans/")){
+            //if user coming from Root path and the last saved path is not Scans folder
+            //then show the Root as scan doc path
+            if (remotePath.equals(OCFile.ROOT_PATH) && !lastRemotePath.equals(ScanActivity.DEFAULT_UPLOAD_SCAN_PATH)) {
                 setRemoteFilePath(remotePath);
                 return;
             }
-            else{
-                setRemoteFilePath(appPreferences.getUploadScansLastPath());
-            }
         }
+
+        setRemoteFilePath(appPreferences.getUploadScansLastPath());
+
     }
 
     protected void setRemoteFilePath(String remotePath) {

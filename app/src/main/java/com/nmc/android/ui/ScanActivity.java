@@ -231,7 +231,6 @@ public class ScanActivity extends FileActivity implements OnFragmentChangeListen
 
         //if last saved remote path is not root path then we have to check if the folder exist or not
         if (!lastRemotePath.equals(OCFile.ROOT_PATH)) {
-            lastRemotePath =  this.getRemotePath();
             getFileOperationsHelper().createFolderIfNotExist(lastRemotePath, true);
         }
     }
