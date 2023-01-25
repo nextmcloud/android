@@ -547,6 +547,8 @@ public class SettingsActivity extends ThemedPreferenceActivity
         if (pContactsBackup != null) {
             pContactsBackup.setTitle(ThemeTextUtils.getColoredTitle(getString(R.string.actionbar_contacts),
                                                                     accentColor));
+            pContactsBackup.setSummary(getResources().getBoolean(R.bool.show_calendar_backup) ? getString(R.string.prefs_daily_backup_summary) :
+                                           getString(R.string.prefs_daily_contact_backup_summary));
             pContactsBackup.setOnPreferenceClickListener(preference -> {
                 ContactsPreferenceActivity.startActivityWithoutSidebar(this);
                 return true;
