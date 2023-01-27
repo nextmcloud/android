@@ -31,6 +31,8 @@ import com.owncloud.android.utils.theme.ThemeCheckableUtils;
 import com.owncloud.android.utils.theme.ThemeColorUtils;
 import com.owncloud.android.utils.theme.ThemeTextInputUtils;
 
+import org.apache.commons.lang.StringUtils;
+
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
@@ -120,6 +122,14 @@ public class SaveScannedDocumentFragment extends Fragment implements CompoundBut
             String remotePath = ((ScanActivity) requireActivity()).getRemotePath();
             //remote path should not be null and should not be root path i.e only /
             if (!TextUtils.isEmpty(remotePath) && !remotePath.equals(OCFile.ROOT_PATH)) {
+                setRemoteFilePath(remotePath);
+                return;
+            }
+
+            String lastRemotePath = appPreferences.getUploadScansLastPath();
+            //if user coming from Root path and the last saved path is not Scans folder
+            //then show the Root as scan doc path
+            if (remotePath.equals(OCFile.ROOT_PATH) && !lastRemotePath.equals(ScanActivity.DEFAULT_UPLOAD_SCAN_PATH)) {
                 setRemoteFilePath(remotePath);
                 return;
             }
