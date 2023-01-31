@@ -1389,6 +1389,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
                         if ((activity = getActivity()) != null && activity instanceof FileDisplayActivity) {
                             FileDisplayActivity fileDisplayActivity = (FileDisplayActivity) activity;
                             fileDisplayActivity.hideSearchView(fileDisplayActivity.getCurrentDir());
+
+                            // commented below line as per NMC requirement......
 //                            if (getCurrentFile() != null) {
 //                                fileDisplayActivity
 //                                    .setDrawerIndicatorEnabled(fileDisplayActivity.isRoot(getCurrentFile()));
