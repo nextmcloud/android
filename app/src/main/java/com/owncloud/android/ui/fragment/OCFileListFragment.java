@@ -1385,7 +1385,6 @@ public class OCFileListFragment extends ExtendedListFragment implements
                     searchView.post(() -> {
                         searchView.setQuery("", false);
                         // commented below line as per NMC requirement......
-
                       //   searchView.onActionViewCollapsed();
                         Activity activity;
                         if ((activity = getActivity()) != null && activity instanceof FileDisplayActivity) {
