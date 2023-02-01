@@ -20,7 +20,7 @@ buildscript {
         documentScannerVersion = "1.0.1"
         roomVersion = "2.5.0"
         butterknifeVersion = "10.2.3"
-        scanbotSdkVersion = "1.80.1"
+        scanbotSdkVersion = "1.89.0"
 
         ciBuild = System.getenv("CI") == "true"
     }

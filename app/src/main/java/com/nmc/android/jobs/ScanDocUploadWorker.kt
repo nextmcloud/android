@@ -112,9 +112,9 @@ class ScanDocUploadWorker constructor(
 
     private fun initScanBotSDK() {
         scanbotSDK = ScanbotSDK(context)
-        pdfRenderer = scanbotSDK.pdfRenderer()
+        pdfRenderer = scanbotSDK.createPdfRenderer()
         pageFileStorage = scanbotSDK.pageFileStorage
-        opticalCharacterRecognizer = scanbotSDK.ocrRecognizer()
+        opticalCharacterRecognizer = scanbotSDK.createOcrRecognizer()
     }
 
     private fun saveJPGImageFiles(fileName: String?, bitmapList: List<Bitmap>) {

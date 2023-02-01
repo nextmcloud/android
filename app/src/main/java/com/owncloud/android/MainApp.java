@@ -123,6 +123,7 @@ import io.scanbot.sap.SdkLicenseInfo;
 import io.scanbot.sap.Status;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.ScanbotSDKInitializer;
+import io.scanbot.sdk.core.contourdetector.ContourDetector;
 
 import static com.owncloud.android.ui.activity.ContactsPreferenceActivity.PREFERENCE_CONTACTS_AUTOMATIC_BACKUP;
 
@@ -883,8 +884,9 @@ public class MainApp extends MultiDexApplication implements HasAndroidInjector {
     private void initialiseScanBotSDK() {
         new ScanbotSDKInitializer()
             .withLogging(BuildConfig.DEBUG)
-            .license(this, ScanBotSdkUtils.getScanBotLicenseKey())
-            .licenceErrorHandler((status, sdkFeature) -> {
+            .license(this, ScanBotSdkUtils.LICENSE_KEY)
+            .contourDetectorType(ContourDetector.Type.ML_BASED) // ML_BASED is default. Set it to EDGE_BASED to use the edge-based approach
+            .licenceErrorHandler((status, sdkFeature, statusMessage) -> {
                 // Handle license errors here:
                 Log_OC.d(TAG, "License status: " + status.name());
                 if (sdkFeature != SdkFeature.NoSdkFeature) {
