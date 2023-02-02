@@ -149,7 +149,7 @@ public class ConflictsResolveActivity extends FileActivity implements OnConflict
                     break;
                 case KEEP_SERVER: // Download
                     if (newFile.isEncrypted()) {
-                        return;
+                        break;
                     }
                     if (!shouldDeleteLocal()) {
                         // Overwrite local file

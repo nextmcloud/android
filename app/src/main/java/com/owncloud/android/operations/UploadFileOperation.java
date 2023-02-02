@@ -87,7 +87,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.CheckResult;
-import androidx.annotation.Nullable;
 
 
 /**
@@ -285,9 +284,9 @@ public class UploadFileOperation extends SyncOperation {
     }
 
     /**
-     * If remote file was renamed, return original OCFile which was uploaded. Is null is file was not renamed.
+     * If remote file was renamed, return original OCFile which was uploaded. Is
+     * null is file was not renamed.
      */
-    @Nullable
     public OCFile getOldFile() {
         return mOldFile;
     }
@@ -464,18 +463,7 @@ public class UploadFileOperation extends SyncOperation {
             if (result != null) {
                 return result;
             }
-
             /***** E2E *****/
-
-            // we might have an old token from interrupted upload
-            if (mFolderUnlockToken != null && !mFolderUnlockToken.isEmpty()) {
-                token = mFolderUnlockToken;
-            } else {
-                token = EncryptionUtils.lockFolder(parentFile, client);
-                // immediately store it
-                mUpload.setFolderUnlockToken(token);
-                uploadsStorageManager.updateUpload(mUpload);
-            }
 
             // Retrieve metadata
             Pair<Boolean, DecryptedFolderMetadata> metadataPair = EncryptionUtils.retrieveMetadata(parentFile,
@@ -486,8 +474,6 @@ public class UploadFileOperation extends SyncOperation {
             metadataExists = metadataPair.first;
             DecryptedFolderMetadata metadata = metadataPair.second;
 
-            /**** E2E *****/
-
             // check name collision
             RemoteOperationResult collisionResult = checkNameCollision(client, metadata, parentFile.isEncrypted());
             if (collisionResult != null) {
@@ -495,13 +481,32 @@ public class UploadFileOperation extends SyncOperation {
                 return collisionResult;
             }
 
-            mFile.setDecryptedRemotePath(parentFile.getDecryptedRemotePath() + originalFile.getName());
+            /**** E2E *****/
+            //NOTE: Folder locking operation should be kept after the checkNameCollision operation
+            //this will avoid upload failures during file conflict
+
+            // we might have an old token from interrupted upload
+            if (mFolderUnlockToken != null && !mFolderUnlockToken.isEmpty()) {
+                token = mFolderUnlockToken;
+            } else {
+                try {
+                    token = EncryptionUtils.lockFolder(parentFile, client);
+
+                    // immediately store it
+                    mUpload.setFolderUnlockToken(token);
+                    uploadsStorageManager.updateUpload(mUpload);
+                } catch (UploadException e) {
+                    return new RemoteOperationResult(ResultCode.LOCK_FAILED);
+                }
+            }
+
+            mFile.setDecryptedRemotePath(parentFile.getDecryptedRemotePath() + mFile.getFileName());
             String expectedPath = FileStorageUtils.getDefaultSavePathFor(user.getAccountName(), mFile);
             expectedFile = new File(expectedPath);
 
             result = copyFile(originalFile, expectedPath);
             if (!result.isSuccess()) {
-                return result;
+                return returnGracefully(temporalFile, token, parentFile, client, result);
             }
 
             // Get the last modification date of the file from the file system
@@ -610,7 +615,7 @@ public class UploadFileOperation extends SyncOperation {
             }
 
             if (result.isSuccess()) {
-                mFile.setDecryptedRemotePath(parentFile.getDecryptedRemotePath() + originalFile.getName());
+                mFile.setDecryptedRemotePath(parentFile.getDecryptedRemotePath() + mFile.getFileName());
                 mFile.setRemotePath(parentFile.getRemotePath() + encryptedFileName);
 
                 // update metadata
@@ -679,6 +684,20 @@ public class UploadFileOperation extends SyncOperation {
             getStorageManager().saveConflict(mFile, mFile.getEtagInConflict());
         }
 
+        return returnGracefully(temporalFile, token, parentFile, client, result);
+    }
+
+    private RemoteOperationResult returnGracefully(
+        File temporalFile,
+        String token,
+        OCFile parentFile,
+        OwnCloudClient client,
+        RemoteOperationResult result) {
+        // delete temporal file
+        if (temporalFile != null && temporalFile.exists() && !temporalFile.delete()) {
+            Log_OC.e(TAG, "Could not delete temporal file " + temporalFile.getAbsolutePath());
+        }
+
         // unlock must be done always
         if (token != null) {
             RemoteOperationResult unlockFolderResult = EncryptionUtils.unlockFolder(parentFile,
@@ -689,12 +708,6 @@ public class UploadFileOperation extends SyncOperation {
                 return unlockFolderResult;
             }
         }
-
-        // delete temporal file
-        if (temporalFile != null && temporalFile.exists() && !temporalFile.delete()) {
-            Log_OC.e(TAG, "Could not delete temporal file " + temporalFile.getAbsolutePath());
-        }
-
         return result;
     }
 
