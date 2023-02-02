@@ -794,9 +794,9 @@ public final class EncryptionUtils {
         return hashWithSalt.equals(newHash);
     }
 
-    public static String lockFolder(OCFile parentFile, OwnCloudClient client, @Nullable String e2eToken) throws UploadException {
+    public static String lockFolder(OCFile parentFile, OwnCloudClient client) throws UploadException {
         // Lock folder
-        LockFileRemoteOperation lockFileOperation = new LockFileRemoteOperation(parentFile.getLocalId(), e2eToken);
+        LockFileRemoteOperation lockFileOperation = new LockFileRemoteOperation(parentFile.getLocalId());
         RemoteOperationResult lockFileOperationResult = lockFileOperation.execute(client);
 
         if (lockFileOperationResult.isSuccess() &&

@@ -27,7 +27,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 
 import com.nextcloud.client.account.User;
@@ -53,7 +52,6 @@ import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult.ResultCode;
 import com.owncloud.android.lib.common.utils.Log_OC;
-import com.owncloud.android.lib.resources.e2ee.UnlockFileRemoteOperation;
 import com.owncloud.android.lib.resources.files.ChunkedFileUploadRemoteOperation;
 import com.owncloud.android.lib.resources.files.ExistenceCheckRemoteOperation;
 import com.owncloud.android.lib.resources.files.ReadFileRemoteOperation;
@@ -89,6 +87,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.CheckResult;
+import androidx.annotation.Nullable;
 
 
 /**
@@ -286,9 +285,9 @@ public class UploadFileOperation extends SyncOperation {
     }
 
     /**
-     * If remote file was renamed, return original OCFile which was uploaded. Is
-     * null is file was not renamed.
+     * If remote file was renamed, return original OCFile which was uploaded. Is null is file was not renamed.
      */
+    @Nullable
     public OCFile getOldFile() {
         return mOldFile;
     }
@@ -398,13 +397,7 @@ public class UploadFileOperation extends SyncOperation {
         mCancellationRequested.set(false);
         mUploadStarted.set(true);
 
-        for (OCUpload ocUpload : uploadsStorageManager.getAllStoredUploads()) {
-            if (ocUpload.getUploadId() == getOCUploadId()) {
-                ocUpload.setFileSize(0);
-                uploadsStorageManager.updateUpload(ocUpload);
-                break;
-            }
-        }
+        updateSize(0);
 
         String remoteParentPath = new File(getRemotePath()).getParent();
         remoteParentPath = remoteParentPath.endsWith(OCFile.PATH_SEPARATOR) ?
@@ -433,20 +426,6 @@ public class UploadFileOperation extends SyncOperation {
         // - resume of encrypted upload, then parent file exists already as unlock is only for direct parent
 
         mFile.setParentId(parent.getFileId());
-
-        //Note: Unlocking folder is not required as this will throw exception during retry.
-        //So we have removed it for NMC.
-        // try to unlock folder with stored token, e.g. when upload needs to be resumed or app crashed
-        // the parent folder should exist as it is a resume of a broken upload
-        /*if (mFolderUnlockToken != null && !mFolderUnlockToken.isEmpty()) {
-            UnlockFileRemoteOperation unlockFileOperation = new UnlockFileRemoteOperation(parent.getLocalId(),
-                                                                                          mFolderUnlockToken);
-            RemoteOperationResult unlockFileOperationResult = unlockFileOperation.execute(client);
-
-            if (!unlockFileOperationResult.isSuccess()) {
-                return unlockFileOperationResult;
-            }
-        }*/
 
         // check if any parent is encrypted
         encryptedAncestor = FileStorageUtils.checkEncryptionStatus(parent, getStorageManager());
@@ -486,7 +465,19 @@ public class UploadFileOperation extends SyncOperation {
                 return result;
             }
 
-            // retrieve metadata
+            /***** E2E *****/
+
+            // we might have an old token from interrupted upload
+            if (mFolderUnlockToken != null && !mFolderUnlockToken.isEmpty()) {
+                token = mFolderUnlockToken;
+            } else {
+                token = EncryptionUtils.lockFolder(parentFile, client);
+                // immediately store it
+                mUpload.setFolderUnlockToken(token);
+                uploadsStorageManager.updateUpload(mUpload);
+            }
+
+            // Retrieve metadata
             Pair<Boolean, DecryptedFolderMetadata> metadataPair = EncryptionUtils.retrieveMetadata(parentFile,
                                                                                                    client,
                                                                                                    privateKey,
@@ -495,6 +486,8 @@ public class UploadFileOperation extends SyncOperation {
             metadataExists = metadataPair.first;
             DecryptedFolderMetadata metadata = metadataPair.second;
 
+            /**** E2E *****/
+
             // check name collision
             RemoteOperationResult collisionResult = checkNameCollision(client, metadata, parentFile.isEncrypted());
             if (collisionResult != null) {
@@ -502,24 +495,13 @@ public class UploadFileOperation extends SyncOperation {
                 return collisionResult;
             }
 
-            /***** E2E *****/
-            try {
-                token = EncryptionUtils.lockFolder(parentFile, client, mFolderUnlockToken);
-            } catch (UploadException e) {
-                return new RemoteOperationResult(ResultCode.LOCK_FAILED);
-            }
-            // immediately store it
-            mUpload.setFolderUnlockToken(token);
-            uploadsStorageManager.updateUpload(mUpload);
-
-            // Update metadata
-            mFile.setDecryptedRemotePath(parentFile.getDecryptedRemotePath() + mFile.getFileName());
+            mFile.setDecryptedRemotePath(parentFile.getDecryptedRemotePath() + originalFile.getName());
             String expectedPath = FileStorageUtils.getDefaultSavePathFor(user.getAccountName(), mFile);
             expectedFile = new File(expectedPath);
 
             result = copyFile(originalFile, expectedPath);
             if (!result.isSuccess()) {
-                return returnGracefully(temporalFile, token, parentFile, client, result);
+                return result;
             }
 
             // Get the last modification date of the file from the file system
@@ -582,13 +564,8 @@ public class UploadFileOperation extends SyncOperation {
                 size = new File(mFile.getStoragePath()).length();
             }
 
-            for (OCUpload ocUpload : uploadsStorageManager.getAllStoredUploads()) {
-                if (ocUpload.getUploadId() == getOCUploadId()) {
-                    ocUpload.setFileSize(size);
-                    uploadsStorageManager.updateUpload(ocUpload);
-                    break;
-                }
-            }
+
+            updateSize(size);
 
             /// perform the upload
             if (size > ChunkedFileUploadRemoteOperation.CHUNK_SIZE_MOBILE) {
@@ -633,7 +610,7 @@ public class UploadFileOperation extends SyncOperation {
             }
 
             if (result.isSuccess()) {
-                mFile.setDecryptedRemotePath(parentFile.getDecryptedRemotePath() + mFile.getFileName());
+                mFile.setDecryptedRemotePath(parentFile.getDecryptedRemotePath() + originalFile.getName());
                 mFile.setRemotePath(parentFile.getRemotePath() + encryptedFileName);
 
                 // update metadata
@@ -702,20 +679,6 @@ public class UploadFileOperation extends SyncOperation {
             getStorageManager().saveConflict(mFile, mFile.getEtagInConflict());
         }
 
-        return returnGracefully(temporalFile, token, parentFile, client, result);
-    }
-
-    private RemoteOperationResult returnGracefully(
-        File temporalFile,
-        String token,
-        OCFile parentFile,
-        OwnCloudClient client,
-        RemoteOperationResult result) {
-        // delete temporal file
-        if (temporalFile != null && temporalFile.exists() && !temporalFile.delete()) {
-            Log_OC.e(TAG, "Could not delete temporal file " + temporalFile.getAbsolutePath());
-        }
-
         // unlock must be done always
         if (token != null) {
             RemoteOperationResult unlockFolderResult = EncryptionUtils.unlockFolder(parentFile,
@@ -726,6 +689,12 @@ public class UploadFileOperation extends SyncOperation {
                 return unlockFolderResult;
             }
         }
+
+        // delete temporal file
+        if (temporalFile != null && temporalFile.exists() && !temporalFile.delete()) {
+            Log_OC.e(TAG, "Could not delete temporal file " + temporalFile.getAbsolutePath());
+        }
+
         return result;
     }
 
@@ -772,6 +741,8 @@ public class UploadFileOperation extends SyncOperation {
         File originalFile = new File(mOriginalStoragePath);
         File expectedFile = null;
         FileLock fileLock = null;
+        FileChannel channel = null;
+
         long size;
 
         try {
@@ -802,7 +773,6 @@ public class UploadFileOperation extends SyncOperation {
 
             final Long creationTimestamp = FileUtil.getCreationTimestamp(originalFile);
 
-            FileChannel channel = null;
             try {
                 channel = new RandomAccessFile(mFile.getStoragePath(), "rw").getChannel();
                 fileLock = channel.tryLock();
@@ -833,13 +803,7 @@ public class UploadFileOperation extends SyncOperation {
                 size = new File(mFile.getStoragePath()).length();
             }
 
-            for (OCUpload ocUpload : uploadsStorageManager.getAllStoredUploads()) {
-                if (ocUpload.getUploadId() == getOCUploadId()) {
-                    ocUpload.setFileSize(size);
-                    uploadsStorageManager.updateUpload(ocUpload);
-                    break;
-                }
-            }
+            updateSize(size);
 
             // perform the upload
             if (size > ChunkedFileUploadRemoteOperation.CHUNK_SIZE_MOBILE) {
@@ -899,6 +863,14 @@ public class UploadFileOperation extends SyncOperation {
                 }
             }
 
+            if (channel != null) {
+                try {
+                    channel.close();
+                } catch (IOException e) {
+                    Log_OC.w(TAG, "Failed to close file channel");
+                }
+            }
+
             if (temporalFile != null && !originalFile.equals(temporalFile)) {
                 temporalFile.delete();
             }
@@ -922,6 +894,14 @@ public class UploadFileOperation extends SyncOperation {
         }
 
         return result;
+    }
+
+    private void updateSize(long size) {
+        OCUpload ocUpload = uploadsStorageManager.getUploadById(getOCUploadId());
+        if(ocUpload != null){
+            ocUpload.setFileSize(size);
+            uploadsStorageManager.updateUpload(ocUpload);
+        }
     }
 
     private void logResult(RemoteOperationResult result, String sourcePath, String targetPath) {
@@ -1063,7 +1043,7 @@ public class UploadFileOperation extends SyncOperation {
                 try {
                     move(originalFile, newFile);
                 } catch (IOException e) {
-                    Log.e(TAG, "Error moving file", e);
+                    Log_OC.e(TAG, "Error moving file", e);
                 }
                 getStorageManager().deleteFileInMediaScan(originalFile.getAbsolutePath());
                 mFile.setStoragePath(newFile.getAbsolutePath());
@@ -1215,6 +1195,7 @@ public class UploadFileOperation extends SyncOperation {
                 Log_OC.d(TAG, "Cancelling upload during upload preparations.");
                 mCancellationRequested.set(true);
             } else {
+                mCancellationRequested.set(true);
                 Log_OC.e(TAG, "No upload in progress. This should not happen.");
             }
         } else {
