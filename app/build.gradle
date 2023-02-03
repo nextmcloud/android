@@ -128,7 +128,6 @@ android {
                 resValue "string", "webview_login_url", "${PROD_SERVER_URL}"
             }
             debug {
-                debuggable false
                 resValue "string", "webview_login_url", "${DEV_SERVER_URL}"
                 testCoverageEnabled(project.hasProperty('coverage'))
             }
