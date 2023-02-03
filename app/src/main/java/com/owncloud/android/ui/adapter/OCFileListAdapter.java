@@ -200,9 +200,10 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return position;
     }
 
-    public void setFavoriteAttributeForItemID(String fileId, boolean favorite, boolean removeFromList) {
+    public void setFavoriteAttributeForItemID(String remotePath, boolean favorite, boolean removeFromList,
+                                              SearchType searchType) {
         for (OCFile file : mFiles) {
-            if (file.getRemoteId().equals(fileId)) {
+            if (file.getRemotePath().equals(remotePath)) {
                 file.setFavorite(favorite);
 
                 if (removeFromList) {
@@ -214,7 +215,7 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
         for (OCFile file : mFilesAll) {
-            if (file.getRemoteId().equals(fileId)) {
+            if (file.getRemotePath().equals(remotePath)) {
                 file.setFavorite(favorite);
 
                 mStorageManager.saveFile(file);
@@ -228,7 +229,14 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
         FileSortOrder sortOrder = preferences.getSortOrderByFolder(currentDirectory);
-        mFiles = sortOrder.sortCloudFiles(mFiles);
+
+        if (searchType == SearchType.SHARED_FILTER) {
+            Collections.sort(mFiles,
+                             (o1, o2) -> Long.compare(o2.getFirstShareTimestamp(), o1.getFirstShareTimestamp())
+                            );
+        } else {
+            mFiles = sortOrder.sortCloudFiles(mFiles);
+        }
 
         new Handler(Looper.getMainLooper()).post(this::notifyDataSetChanged);
     }
@@ -765,6 +773,8 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
         List<OCFile> files = OCShareToOCFileConverter.buildOCFilesFromShares(shares);
+        //clearing list before adding all items to avoid duplicacy of elements in Shared Tab
+        mFiles.clear();
         mFiles.addAll(files);
         mStorageManager.saveShares(shares);
     }
