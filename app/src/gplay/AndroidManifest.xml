@@ -20,6 +20,10 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="com.owncloud.android">
 
+    <uses-permission
+        android:name="android.permission.REQUEST_INSTALL_PACKAGES"
+        tools:node="remove"/>
+
     <application
         android:name=".MainApp"
         android:icon="@mipmap/ic_launcher"
