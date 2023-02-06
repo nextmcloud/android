@@ -45,10 +45,10 @@
         android:id="@+id/encryption_passwordInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:autofillHints="password"
         android:ems="10"
         android:hint="@string/end_to_end_encryption_password"
-        android:inputType="textPassword"
+        android:inputType="text"
         android:textCursorDrawable="@null"
-        android:visibility="gone"
-        android:autofillHints="password"/>
+        android:visibility="gone" />
 </LinearLayout>

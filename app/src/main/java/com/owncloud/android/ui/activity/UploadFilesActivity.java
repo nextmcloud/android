@@ -309,12 +309,6 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
         mToolbarSpinner.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        requestPermissions();
-    }
-
     private void fillDirectoryDropdown() {
         File currentDir = mCurrentDir;
         while (currentDir != null && currentDir.getParentFile() != null) {
@@ -738,12 +732,9 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
     @Override
     protected void onStart() {
         super.onStart();
-        if (getAccount() != null) {
-            if (!mAccountOnCreation.equals(getAccount())) {
-                setResult(RESULT_CANCELED);
-                finish();
-            }
-
+        final Account account = getAccount();
+        if (mAccountOnCreation != null && mAccountOnCreation.equals(account)) {
+            requestPermissions();
         } else {
             setResult(RESULT_CANCELED);
             finish();

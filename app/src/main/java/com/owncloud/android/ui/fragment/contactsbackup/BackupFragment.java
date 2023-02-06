@@ -104,6 +104,7 @@ public class BackupFragment extends FileFragment implements DatePickerDialog.OnD
     private CompoundButton.OnCheckedChangeListener calendarCheckedListener;
     private User user;
     private boolean showSidebar = true;
+    private boolean showCalendarBackup = true;//flag to check if calendar backup should be shown or not and backup should be done or not
 
     public static BackupFragment create(boolean showSidebar) {
         BackupFragment fragment = new BackupFragment();
@@ -147,13 +148,15 @@ public class BackupFragment extends FileFragment implements DatePickerDialog.OnD
             showSidebar = getArguments().getBoolean(ARG_SHOW_SIDEBAR);
         }
 
+        showCalendarBackup = requireContext().getResources().getBoolean(R.bool.show_calendar_backup);
+
         final ContactsPreferenceActivity contactsPreferenceActivity = (ContactsPreferenceActivity) getActivity();
         user = contactsPreferenceActivity.getUser().orElseThrow(RuntimeException::new);
 
         ActionBar actionBar = contactsPreferenceActivity != null ? contactsPreferenceActivity.getSupportActionBar() : null;
 
         if (actionBar != null) {
-            ThemeToolbarUtils.setColoredTitle(actionBar, getString(R.string.backup_title), getContext());
+            ThemeToolbarUtils.setColoredTitle(actionBar, showCalendarBackup ? getString(R.string.backup_title) : getString(R.string.contact_backup_title), getContext());
 
             actionBar.setDisplayHomeAsUpEnabled(true);
             ThemeToolbarUtils.tintBackButton(actionBar, getContext());
@@ -171,6 +174,8 @@ public class BackupFragment extends FileFragment implements DatePickerDialog.OnD
 
         binding.contacts.setChecked(isContactsBackupEnabled() && checkContactBackupPermission());
         binding.calendar.setChecked(isCalendarBackupEnabled() && checkCalendarBackupPermission(getContext()));
+
+        binding.calendar.setVisibility(showCalendarBackup ? View.VISIBLE : View.GONE);
 
         setupCheckListeners();
 
@@ -392,8 +397,6 @@ public class BackupFragment extends FileFragment implements DatePickerDialog.OnD
 
             } else {
                 setCalendarBackupEnabled(true);
-
-
             }
         }
 
@@ -407,7 +410,7 @@ public class BackupFragment extends FileFragment implements DatePickerDialog.OnD
             startContactsBackupJob();
         }
 
-        if (isCalendarBackupEnabled() && checkCalendarBackupPermission(requireContext())) {
+        if (showCalendarBackup && isCalendarBackupEnabled() && checkCalendarBackupPermission(requireContext())) {
             startCalendarBackupJob();
         }
 
@@ -665,7 +668,7 @@ public class BackupFragment extends FileFragment implements DatePickerDialog.OnD
                 }
 
                 // calendars
-                if (MimeTypeUtil.isCalendar(file)) {
+                if (showCalendarBackup && MimeTypeUtil.isCalendar(file)) {
                     calendarBackupsToRestore.add(file);
                 }
             }

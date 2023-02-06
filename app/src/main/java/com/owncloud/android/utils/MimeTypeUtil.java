@@ -232,19 +232,11 @@ public final class MimeTypeUtil {
     }
 
     //check if file is png or jpg image
-    public static boolean isJpgOrPngFile(@Nullable String fileName) {
-        if (fileName == null) {
-            return false;
-        }
-
-        int pos = fileName.lastIndexOf('.');
-        if (pos >= 0) {
-            String extension = fileName.substring(pos);
-            return extension.equalsIgnoreCase(".png")
-                || extension.equalsIgnoreCase(".jpg")
-                || extension.equalsIgnoreCase(".jpeg");
-        }
-        return false;
+    public static boolean isJpgOrPngFile(String fileName) {
+        String extension = fileName.substring(fileName.lastIndexOf("."));
+        return extension.equalsIgnoreCase(".png")
+            || extension.equalsIgnoreCase(".jpg")
+            || extension.equalsIgnoreCase(".jpeg");
     }
 
     /**
@@ -525,6 +517,10 @@ public final class MimeTypeUtil {
         MIMETYPE_TO_ICON_MAPPING.put("application/vnd.ms-visio.template", R.drawable.file_doc);
         MIMETYPE_TO_ICON_MAPPING.put("application/vnd.ms-word.document.macroEnabled.12", R.drawable.file_doc);
         MIMETYPE_TO_ICON_MAPPING.put("application/vnd.ms-word.template.macroEnabled.12", R.drawable.file_doc);
+        MIMETYPE_TO_ICON_MAPPING.put("application/vnd.oasis.opendocument.formula", R.drawable.file_analytics);
+        MIMETYPE_TO_ICON_MAPPING.put("application/vnd.oasis.opendocument.formula-template", R.drawable.file_analytics);
+        MIMETYPE_TO_ICON_MAPPING.put("application/vnd.oasis.opendocument.graphics", R.drawable.file_analytics);
+        MIMETYPE_TO_ICON_MAPPING.put("application/vnd.oasis.opendocument.graphics-template", R.drawable.file_analytics);
         MIMETYPE_TO_ICON_MAPPING.put("application/vnd.oasis.opendocument.presentation", R.drawable.file_ppt);
         MIMETYPE_TO_ICON_MAPPING.put("application/vnd.oasis.opendocument.presentation-template", R.drawable.file_ppt);
         MIMETYPE_TO_ICON_MAPPING.put("application/vnd.oasis.opendocument.spreadsheet", R.drawable.file_xls);

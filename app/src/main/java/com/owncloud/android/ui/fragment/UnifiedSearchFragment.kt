@@ -22,11 +22,7 @@ package com.owncloud.android.ui.fragment
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
@@ -39,6 +35,7 @@ import com.nextcloud.client.core.AsyncRunner
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.di.ViewModelFactory
 import com.nextcloud.client.network.ClientFactory
+import com.nmc.android.utils.KeyboardUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ListFragmentBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -94,17 +91,14 @@ class UnifiedSearchFragment : Fragment(), Injectable, UnifiedSearchListInterface
             vm.initialQuery()
         }
     }
-
     private fun setUpViewModel() {
         vm.searchResults.observe(this, this::onSearchResultChanged)
         vm.isLoading.observe(this) { loading ->
             binding.swipeContainingList.isRefreshing = loading
         }
-
         PairMediatorLiveData(vm.searchResults, vm.isLoading).observe(this) { pair ->
             if (pair.second == false) {
                 var count = 0
-
                 pair.first?.forEach {
                     count += it.entries.size
                 }
@@ -115,6 +109,7 @@ class UnifiedSearchFragment : Fragment(), Injectable, UnifiedSearchListInterface
                     binding.emptyList.emptyListViewHeadline.visibility = View.VISIBLE
                     binding.emptyList.emptyListViewText.visibility = View.VISIBLE
                     binding.emptyList.emptyListIcon.visibility = View.VISIBLE
+
 
                     binding.emptyList.emptyListViewHeadline.text =
                         requireContext().getString(R.string.file_list_empty_headline_server_search)
@@ -149,13 +144,11 @@ class UnifiedSearchFragment : Fragment(), Injectable, UnifiedSearchListInterface
             showFile(it)
         }
     }
-
     private fun setUpBinding() {
         binding.swipeContainingList.setOnRefreshListener {
             vm.initialQuery()
         }
     }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = ListFragmentBinding.inflate(inflater, container, false)
         binding.listRoot.updatePadding(top = resources.getDimension(R.dimen.standard_half_padding).toInt())
@@ -250,6 +243,7 @@ class UnifiedSearchFragment : Fragment(), Injectable, UnifiedSearchListInterface
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
+        KeyboardUtils.hideKeyboardFrom(requireContext(), binding.root)
         vm.setQuery(query)
         vm.initialQuery()
         return true

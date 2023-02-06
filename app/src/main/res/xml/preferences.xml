@@ -95,10 +95,25 @@
             android:summary="@string/prefs_daily_backup_summary"
             android:title="@string/backup_title" />
         <Preference
+            android:key="setup_e2e"
+            android:layout="@layout/custom_preference_layout"
+            android:summary="@string/setup_e2e"
+            android:title="@string/prefs_setup_e2e" />
+        <Preference
+            android:key="setup_e2e_keys_exist"
+            android:layout="@layout/custom_preference_layout"
+            android:summary="@string/prefs_keys_exist_summary"
+            android:title="@string/prefs_keys_exist" />
+        <Preference
             android:key="mnemonic"
             android:layout="@layout/custom_preference_layout"
             android:summary="@string/prefs_mnemonic_summary"
             android:title="@string/prefs_e2e_mnemonic" />
+        <Preference
+            android:key="remove_e2e"
+            android:layout="@layout/custom_preference_layout"
+            android:summary="@string/remove_e2e"
+            android:title="@string/prefs_remove_e2e" />
         <!--
                 <Preference android:title="@string/prefs_recommend" android:key="recommend" />
         -->

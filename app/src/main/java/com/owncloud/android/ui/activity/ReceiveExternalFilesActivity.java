@@ -88,6 +88,7 @@ import com.owncloud.android.ui.dialog.CreateFolderDialogFragment;
 import com.owncloud.android.ui.dialog.MultipleAccountsDialog;
 import com.owncloud.android.ui.dialog.SortingOrderDialogFragment;
 import com.owncloud.android.ui.fragment.TaskRetainerFragment;
+import com.owncloud.android.ui.helpers.FileOperationsHelper;
 import com.owncloud.android.ui.helpers.UriUploader;
 import com.owncloud.android.utils.DataHolderUtil;
 import com.owncloud.android.utils.DisplayUtils;
@@ -655,7 +656,15 @@ public class ReceiveExternalFilesActivity extends FileActivity
         if (files.size() < position) {
             throw new IndexOutOfBoundsException("Incorrect item selected");
         }
-        if (files.get(position).isFolder()){
+
+        OCFile ocFile = files.get(position);
+        if (ocFile.isFolder()) {
+            if (ocFile.isEncrypted() &&
+                !FileOperationsHelper.isEndToEndEncryptionSetup(this, getUser().orElseThrow(IllegalAccessError::new))) {
+                DisplayUtils.showSnackMessage(this, R.string.e2e_not_yet_setup);
+                return;
+            }
+
             OCFile folderToEnter = files.get(position);
             startSyncFolderOperation(folderToEnter);
             mParents.push(folderToEnter.getFileName());

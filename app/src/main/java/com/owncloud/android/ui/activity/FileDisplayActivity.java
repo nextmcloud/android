@@ -86,6 +86,7 @@ import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.files.RestoreFileVersionRemoteOperation;
 import com.owncloud.android.lib.resources.files.SearchRemoteOperation;
 import com.owncloud.android.lib.resources.status.OwnCloudVersion;
+import com.owncloud.android.ui.events.ChangeMenuEvent;
 import com.owncloud.android.ui.events.SearchEvent;
 import com.owncloud.android.ui.events.SyncEventFinished;
 import com.owncloud.android.ui.fragment.SearchType;
@@ -119,7 +120,6 @@ import com.owncloud.android.ui.preview.PreviewMediaFragment;
 import com.owncloud.android.ui.preview.PreviewTextFileFragment;
 import com.owncloud.android.ui.preview.PreviewTextFragment;
 import com.owncloud.android.ui.preview.PreviewTextStringFragment;
-import com.owncloud.android.ui.preview.PreviewVideoActivity;
 import com.owncloud.android.ui.preview.pdf.PreviewPdfFragment;
 import com.owncloud.android.utils.DataHolderUtil;
 import com.owncloud.android.utils.DisplayUtils;
@@ -441,6 +441,9 @@ public class FileDisplayActivity extends FileActivity
                     // permission was granted
                     getFileOperationsHelper()
                         .uploadFromCamera(this, FileDisplayActivity.REQUEST_CODE__UPLOAD_FROM_CAMERA);
+                } else if (!shouldShowRequestPermissionRationale(permissions[0])) {
+                    // user CHECKED "never ask again"
+                    DisplayUtils.showSnackMessage(this, R.string.camera_permission_rationale);
                 }
                 break;
             default:
@@ -1082,6 +1085,8 @@ public class FileDisplayActivity extends FileActivity
                 listOfFiles.registerFabListener();
                 showSortListGroup(true);
                 resetTitleBarAndScrolling();
+                setDrawerAllFiles();
+                EventBus.getDefault().post(new ChangeMenuEvent()); // for OCFileListFragment to update sort menu
             }
         } else if (leftFragment instanceof PreviewTextStringFragment) {
             createMinFragments(null);
@@ -1170,16 +1175,10 @@ public class FileDisplayActivity extends FileActivity
         localBroadcastManager.registerReceiver(mDownloadFinishReceiver, downloadIntentFilter);
 
         // setup drawer
-        menuItemId = getIntent().getIntExtra(FileDisplayActivity.DRAWER_MENU_ID, menuItemId);
+        menuItemId = getIntent().getIntExtra(FileDisplayActivity.DRAWER_MENU_ID, -1);
 
         if (menuItemId == -1) {
-            if (MainApp.isOnlyOnDevice()) {
-                setDrawerMenuItemChecked(R.id.nav_on_device);
-                setupToolbar();
-            } else {
-                setDrawerMenuItemChecked(R.id.nav_all_files);
-                setupHomeSearchToolbarWithSortAndListButtons();
-            }
+            setDrawerAllFiles();
         } else {
             if (menuItemId == R.id.nav_all_files) {
                 setupHomeSearchToolbarWithSortAndListButtons();
@@ -1197,6 +1196,16 @@ public class FileDisplayActivity extends FileActivity
         inAppReviewHelper.showInAppReview(this);
 
         Log_OC.v(TAG, "onResume() end");
+    }
+
+    private void setDrawerAllFiles() {
+        if (MainApp.isOnlyOnDevice()) {
+            setDrawerMenuItemChecked(R.id.nav_on_device);
+            setupToolbar();
+        } else {
+            setDrawerMenuItemChecked(R.id.nav_all_files);
+            setupHomeSearchToolbarWithSortAndListButtons();
+        }
     }
 
     public void initSyncBroadcastReceiver() {
@@ -1558,7 +1567,6 @@ public class FileDisplayActivity extends FileActivity
     public void browseToRoot() {
         OCFileListFragment listOfFiles = getListOfFilesFragment();
         if (listOfFiles != null) {  // should never be null, indeed
-            MainApp.showOnlyFilesOnDevice(false);
             OCFile root = getStorageManager().getFileByPath(OCFile.ROOT_PATH);
             listOfFiles.listDirectory(root, MainApp.isOnlyOnDevice(), false);
             setFile(listOfFiles.getCurrentFile());
@@ -2035,7 +2043,7 @@ public class FileDisplayActivity extends FileActivity
 
         // the execution is slightly delayed to allow the activity get the window focus if it's being started
         // or if the method is called from a dialog that is being dismissed
-        if (TextUtils.isEmpty(searchQuery)) {
+        if (TextUtils.isEmpty(searchQuery) && getUser().isPresent()) {
             getHandler().postDelayed(
                 new Runnable() {
                     @Override
@@ -2184,8 +2192,8 @@ public class FileDisplayActivity extends FileActivity
         } else {
             Intent previewIntent = new Intent();
             previewIntent.putExtra(EXTRA_FILE, file);
-            previewIntent.putExtra(PreviewVideoActivity.EXTRA_START_POSITION, startPlaybackPosition);
-            previewIntent.putExtra(PreviewVideoActivity.EXTRA_AUTOPLAY, autoplay);
+            previewIntent.putExtra(PreviewMediaFragment.EXTRA_START_POSITION, startPlaybackPosition);
+            previewIntent.putExtra(PreviewMediaFragment.EXTRA_AUTOPLAY, autoplay);
             FileOperationsHelper fileOperationsHelper = new FileOperationsHelper(this,
                                                                                  getUserAccountManager(),
                                                                                  connectivityService);
@@ -2366,10 +2374,10 @@ public class FileDisplayActivity extends FileActivity
         Bundle bundle = event.getIntent().getExtras();
         if (event.getIntent().getBooleanExtra(TEXT_PREVIEW, false)) {
             startTextPreview((OCFile) bundle.get(EXTRA_FILE), true);
-        } else if (bundle.containsKey(PreviewVideoActivity.EXTRA_START_POSITION)) {
+        } else if (bundle.containsKey(PreviewMediaFragment.EXTRA_START_POSITION)) {
             startMediaPreview((OCFile) bundle.get(EXTRA_FILE),
-                              (long) bundle.get(PreviewVideoActivity.EXTRA_START_POSITION),
-                              (boolean) bundle.get(PreviewVideoActivity.EXTRA_AUTOPLAY), true, true);
+                              (long) bundle.get(PreviewMediaFragment.EXTRA_START_POSITION),
+                              (boolean) bundle.get(PreviewMediaFragment.EXTRA_AUTOPLAY), true, true);
         } else if (bundle.containsKey(PreviewImageActivity.EXTRA_VIRTUAL_TYPE)) {
             startImagePreview((OCFile) bundle.get(EXTRA_FILE),
                               (VirtualFolderType) bundle.get(PreviewImageActivity.EXTRA_VIRTUAL_TYPE),

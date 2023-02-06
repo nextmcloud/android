@@ -83,6 +83,7 @@
     <string name="away">Abwesend</string>
     <string name="backup_settings">Sicherungseinstellungen</string>
     <string name="backup_title">Kontakte &amp; Kalender-Sicherung</string>
+    <string name="contact_backup_title">Kontakte-Sicherung</string>
     <string name="battery_optimization_close">Schliessen</string>
     <string name="battery_optimization_disable">Deaktivieren</string>
     <string name="battery_optimization_message">Ihr Gerät hat möglicherweise Batterieoptimierung aktiv. AutoUpload funktioniert nur dann richtig, wenn Sie diese App davon ausschließen.</string>
@@ -125,6 +126,7 @@
     <string name="common_switch_account">Konto wechseln</string>
     <string name="common_switch_to_account">Zu Konto wechseln</string>
     <string name="common_yes">Ja</string>
+    <string name="common_copy">Kopieren</string>
     <string name="community_beta_headline">Testen Sie die Entwickler-Version</string>
     <string name="community_beta_text">Dies beinhaltet neue Funktionalitäten und ist nicht komplett qualitätsgesichert. Es können daher Fehler/Bugs auftreten, melden Sie uns solche bitte.</string>
     <string name="community_contribute_forum_forum">Forum</string>
@@ -187,6 +189,7 @@
     <string name="create_new">Neues Textdokument erstellen</string>
     <string name="create_new_document">Neues Dokument erstellen</string>
     <string name="create_new_folder">Neuen Ordner erstellen</string>
+    <string name="create_new_encrypted_folder">Verschlüsselten Ordner erstellen</string>
     <string name="create_new_presentation">Neue Präsentation erstellen</string>
     <string name="create_new_spreadsheet">Neue Tabelle erstellen</string>
     <string name="create_rich_workspace">Ordnerinfo hinzufügen</string>
@@ -252,18 +255,19 @@
     <string name="end_to_end_encryption_confirm_button">Verschlüsselung einrichten</string>
     <string name="end_to_end_encryption_decrypting">Entschlüssele…</string>
     <string name="end_to_end_encryption_dialog_close">Schließen</string>
-    <string name="end_to_end_encryption_enter_password">Geben Sie bitte das Passwort ein, um den privaten Schlüssel zu entschlüsseln.</string>
+    <string name="end_to_end_encryption_enter_password">Bitte geben Sie ihren 12-Wort-Schlüssel (Passphrase) ein.</string>
     <string name="end_to_end_encryption_folder_not_empty">Dieser Ordner ist nicht leer.</string>
     <string name="end_to_end_encryption_generating_keys">Neue Schlüssel generieren…</string>
     <string name="end_to_end_encryption_keywords_description">Diese 12 Wörter-Phrase ist wie ein sehr starkes Passwort: Sie bietet vollen Zugriff um Ihre verschlüsselten Dateien anzusehen und zu verwenden. Bitte schreiben Sie sie auf und verwahren sie an einem sicheren Ort.</string>
     <string name="end_to_end_encryption_not_enabled">Ende-zu-Ende Verschlüsselung ist auf diesem Server deaktiviert.</string>
     <string name="end_to_end_encryption_passphrase_title">Notieren Sie Ihre Verschlüsselungs-Passphrase</string>
-    <string name="end_to_end_encryption_password">Passwort…</string>
+    <string name="end_to_end_encryption_password">Passphrase…</string>
     <string name="end_to_end_encryption_retrieving_keys">Schlüssel abrufen…</string>
     <string name="end_to_end_encryption_storing_keys">Schlüssel speichern</string>
     <string name="end_to_end_encryption_title">Verschlüsselung einrichten</string>
     <string name="end_to_end_encryption_unsuccessful">Die Schlüssel konnten nicht gespeichert werden. Bitte erneut versuchen.</string>
     <string name="end_to_end_encryption_wrong_password">Fehler beim Entschlüsseln. Falsches Passwort?</string>
+    <string name="shared_folder_end_to_end_encryption_error">Geteilte Ordner können nicht verschlüsselt werden.</string>
     <string name="enter_destination_filename">Ziel-Dateiname eingeben</string>
     <string name="enter_filename">Bitte Dateinamen eingeben</string>
     <string name="error__upload__local_file_not_copied">%1$s konnte nicht in den lokalen %2$s Ordner kopiert werden</string>
@@ -360,9 +364,9 @@
     <string name="file_rename">Umbenennen</string>
     <string name="file_version_restored_error">Fehler beim Wiederherstellen der Dateiversion!</string>
     <string name="file_version_restored_successfully">Dateiversion erfolgreich wiederhergestellt</string>
-    <string name="filedetails_download">Herunterladen</string>
+    <string name="filedetails_download">Offline Verfügbarkeit</string>
     <string name="filedetails_renamed_in_upload_msg">Datei während des Hochladens in %1$s umbenannt</string>
-    <string name="filedetails_sync_file">Synchronisieren</string>
+    <string name="filedetails_sync_file">Offline Verfügbarkeit</string>
     <string name="filedisplay_no_file_selected">Keine Datei gewählt</string>
     <string name="filename_empty">Dateiname darf nicht leer sein</string>
     <string name="filename_forbidden_characters">Verbotene Zeichen: / \\ &lt; &gt; : \" | ? *</string>
@@ -556,6 +560,7 @@
     <string name="prefs_category_general">Allgemein</string>
     <string name="prefs_category_more">Mehr</string>
     <string name="prefs_daily_backup_summary">Tägliche Sicherung Ihrer Kalender &amp; Kontakte</string>
+    <string name="prefs_daily_contact_backup_summary">Tägliche Sicherung Ihrer Kontakte</string>
     <string name="prefs_e2e_mnemonic">Ende-zu-Ende Verschlüsselung</string>
     <string name="prefs_mnemonic_summary">12-Wort-Schlüssel anzeigen (Passphrase)</string>
     <string name="dialog_e2e_mnemonic_title">Passphrase</string>
@@ -1092,4 +1097,16 @@
     <string name="filedetails_export">Exportieren</string>
     <string name="locate_folder">Ordner lokalisieren</string>
     <string name="open_download_folder">Ordner kann nicht geöffnet werden. Bitte navigieren Sie manuell zum Download Ordner</string>
+    <string name="e2e_not_yet_setup">Die Ende-zu-Ende Verschlüsselung ist noch nicht eingerichtet.</string>
+    <string name="prefs_setup_e2e">Ende-zu-Ende Verschlüsselung starten</string>
+    <string name="prefs_remove_e2e">Verschlüsselung lokal entfernen</string>
+    <string name="remove_e2e">Sie können die Passphrase auf diesem Gerät entfernen.</string>
+    <string name="confirm_removal">Verschlüsselung lokal entfernen</string>
+    <string name="e2e_offline">Ohne Internetverbindung nicht möglich</string>
+    <string name="remove_e2e_message">Sie können die Passphrase auf diesem Gerät entfernen. Dadurch bleiben die verschlüsselten Inhalte unberührt, jedoch kann dieses Gerät die Daten nicht mehr entschlüsseln.\n\nSie können die Passphrase jederzeit wieder hier eingeben, um Zugriff von diesem Gerät aus auf ihre verschlüsselten Inhalte zu gewährleisten.</string>
+    <string name="setup_e2e">Nach dem Start der Verschlüsselung wird ihnen eine aus 12 Wörtern zufällig erzeugte Wortfolge (Passphrase) angezeigt. Diese bleibt in dieser App erhalten und kann erneut angezeigt werden. Dennoch empfehlen wir ihnen, die Passphrase zu notieren.</string>
+    <string name="error_showing_encryption_dialog">Fehler bei der Anzeige des Verschlüsselungsdialogs!</string>
+    <string name="prefs_keys_exist">Fügen Sie dieses Gerät zur Ende-zu-Ende Verschlüsselung hinzu.</string>
+    <string name="prefs_keys_exist_summary">Die Ende-zu-Ende Verschlüsselung wurde bereits auf einem anderen Gerät eingerichtet. Bitte geben Sie Ihre Passphrase ein, damit die Dateien synchronisiert und entschlüsselt werden.</string>
+
 </resources>

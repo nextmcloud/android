@@ -155,7 +155,7 @@
         android:showAsAction="never" />
     <item
         android:id="@+id/action_cancel_sync"
-        android:title="@string/common_cancel_sync"
+        android:title="@string/common_cancel"
         app:showAsAction="never"
         android:showAsAction="never" />
 

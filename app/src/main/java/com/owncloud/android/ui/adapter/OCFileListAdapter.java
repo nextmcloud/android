@@ -34,7 +34,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -201,9 +200,10 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return position;
     }
 
-    public void setFavoriteAttributeForItemID(String fileId, boolean favorite, boolean removeFromList) {
+    public void setFavoriteAttributeForItemID(String remotePath, boolean favorite, boolean removeFromList,
+                                              SearchType searchType) {
         for (OCFile file : mFiles) {
-            if (file.getRemoteId().equals(fileId)) {
+            if (file.getRemotePath().equals(remotePath)) {
                 file.setFavorite(favorite);
 
                 if (removeFromList) {
@@ -215,7 +215,7 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
         for (OCFile file : mFilesAll) {
-            if (file.getRemoteId().equals(fileId)) {
+            if (file.getRemotePath().equals(remotePath)) {
                 file.setFavorite(favorite);
 
                 mStorageManager.saveFile(file);
@@ -229,7 +229,14 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
         FileSortOrder sortOrder = preferences.getSortOrderByFolder(currentDirectory);
-        mFiles = sortOrder.sortCloudFiles(mFiles);
+
+        if (searchType == SearchType.SHARED_FILTER) {
+            Collections.sort(mFiles,
+                             (o1, o2) -> Long.compare(o2.getFirstShareTimestamp(), o1.getFirstShareTimestamp())
+                            );
+        } else {
+            mFiles = sortOrder.sortCloudFiles(mFiles);
+        }
 
         new Handler(Looper.getMainLooper()).post(this::notifyDataSetChanged);
     }
@@ -461,12 +468,12 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
        /* if (gridView && gridImage) {
             holder.getFileName().setVisibility(View.GONE);
         } else {*/
-            if (gridView && ocFileListFragmentInterface.getColumnsCount() > showFilenameColumnThreshold) {
-                holder.getFileName().setVisibility(View.GONE);
-            } else {
-                holder.getFileName().setVisibility(View.VISIBLE);
-            }
-       // }
+        if (gridView && ocFileListFragmentInterface.getColumnsCount() > showFilenameColumnThreshold) {
+            holder.getFileName().setVisibility(View.GONE);
+        } else {
+            holder.getFileName().setVisibility(View.VISIBLE);
+        }
+        // }
     }
 
     @Override
@@ -521,6 +528,10 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public @Nullable
     OCFile getItem(int position) {
+        if (position == -1) {
+            return null;
+        }
+
         int newPosition = position;
 
         if (shouldShowHeader() && position > 0) {
@@ -624,11 +635,15 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         notifyDataSetChanged();
     }
 
+    /**
+     * method will only called if only folders has to show
+     */
     public void showOnlyFolder(
         User account,
         OCFile directory,
         FileDataStorageManager updatedStorageManager,
-        boolean onlyOnDevice, String limitToMimeType
+        boolean onlyOnDevice, String limitToMimeType,
+        boolean hideEncryptedFolder
                               ) {
         this.onlyOnDevice = onlyOnDevice;
 
@@ -645,14 +660,19 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             List<OCFile> allFiles = mStorageManager.getFolderContent(directory, onlyOnDevice);
             mFiles.clear();
-            for(int i = 0; i< allFiles.size() ; i++)
-            {
-                if(allFiles.get(i).getMimeType().equals(MimeType.DIRECTORY))
-                {
+
+            for (int i = 0; i < allFiles.size(); i++) {
+                OCFile ocFile = allFiles.get(i);
+
+                //if e2ee folder has to hide then ignore if OCFile is encrypted
+                if (hideEncryptedFolder && ocFile.isEncrypted()) {
+                    continue;
+                }
+
+                if (ocFile.getMimeType().equals(MimeType.DIRECTORY)) {
                     mFiles.add(allFiles.get(i));
                 }
             }
-            // mFiles = mStorageManager.getFolderContent(directory, onlyOnDevice);
 
             if (!preferences.isShowHiddenFilesEnabled()) {
                 mFiles = filterHiddenFiles(mFiles);
@@ -753,6 +773,8 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
         List<OCFile> files = OCShareToOCFileConverter.buildOCFilesFromShares(shares);
+        //clearing list before adding all items to avoid duplicacy of elements in Shared Tab
+        mFiles.clear();
         mFiles.addAll(files);
         mStorageManager.saveShares(shares);
     }
@@ -809,9 +831,18 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
 
                 if (!onlyMedia || MimeTypeUtil.isImage(ocFile) || MimeTypeUtil.isVideo(ocFile)) {
-                    mFiles.add(ocFile);
+                    //Handling duplicacy of favorites folder.....
+                    if (mFiles.isEmpty()) {
+                        mFiles.add(ocFile);
+                    } else {
+                        for (OCFile file : mFiles) {
+                            if (file.getFileId() == ocFile.getFileId()) {
+                                return;
+                            }
+                        }
+                        mFiles.add(ocFile);
+                    }
                 }
-
                 ContentValues cv = new ContentValues();
                 cv.put(ProviderMeta.ProviderTableMeta.VIRTUAL_TYPE, type.toString());
                 cv.put(ProviderMeta.ProviderTableMeta.VIRTUAL_OCFILE_ID, ocFile.getFileId());

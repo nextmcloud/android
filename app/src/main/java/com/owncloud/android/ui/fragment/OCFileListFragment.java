@@ -43,9 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
-import android.widget.Toast;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -143,16 +141,18 @@ import javax.inject.Inject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import static com.owncloud.android.datamodel.OCFile.ROOT_PATH;
+import static com.owncloud.android.ui.dialog.SetupEncryptionDialogFragment.SETUP_ENCRYPTION_DIALOG_TAG;
+import static com.owncloud.android.ui.dialog.SetupEncryptionDialogFragment.SETUP_ENCRYPTION_REQUEST_CODE;
 import static com.owncloud.android.ui.fragment.SearchType.FAVORITE_SEARCH;
 import static com.owncloud.android.ui.fragment.SearchType.FILE_SEARCH;
 import static com.owncloud.android.ui.fragment.SearchType.NO_SEARCH;
@@ -235,7 +235,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
     @Inject DeviceInfo deviceInfo;
 
     private int maxColumnSizeLandscape = 5;
-    private boolean mShowOnlyFolder ;
+    private boolean mShowOnlyFolder, mHideEncryptedFolder;
 
     //this variable will help us to provide number of span count for grid view
     //the width for single item is approx to 360
@@ -263,7 +263,6 @@ public class OCFileListFragment extends ExtendedListFragment implements
             searchEvent = savedInstanceState.getParcelable(OCFileListFragment.SEARCH_EVENT);
             mFile = savedInstanceState.getParcelable(KEY_FILE);
         }
-
         searchFragment = currentSearchType != null && isSearchEventSet(searchEvent);
     }
 
@@ -506,6 +505,14 @@ public class OCFileListFragment extends ExtendedListFragment implements
     public void createFolder() {
         CreateFolderDialogFragment.newInstance(mFile)
             .show(getActivity().getSupportFragmentManager(), DIALOG_CREATE_FOLDER);
+    }
+
+    @Override
+    public void createEncryptedFolder() {
+        if (checkEncryptionIsSetup(null)) {
+            CreateFolderDialogFragment.newInstance(mFile, true)
+                .show(getActivity().getSupportFragmentManager(), DIALOG_CREATE_FOLDER);
+        }
     }
 
     @Override
@@ -1017,31 +1024,17 @@ public class OCFileListFragment extends ExtendedListFragment implements
                             return;
                         }
                         // check if keys are stored
-                        ArbitraryDataProvider arbitraryDataProvider = new ArbitraryDataProvider(
-                            getContext().getContentResolver());
-
-
-                        String publicKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PUBLIC_KEY);
-                        String privateKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PRIVATE_KEY);
-
-                        if (publicKey.isEmpty() || privateKey.isEmpty()) {
-                            Log_OC.d(TAG, "no public key for " + user.getAccountName());
-
-                            SetupEncryptionDialogFragment dialog = SetupEncryptionDialogFragment.newInstance(user,
-                                                                                                             position);
-                            dialog.setTargetFragment(this, SetupEncryptionDialogFragment.SETUP_ENCRYPTION_REQUEST_CODE);
-                            dialog.show(getFragmentManager(), SetupEncryptionDialogFragment.SETUP_ENCRYPTION_DIALOG_TAG);
-                        } else {
+                        if (FileOperationsHelper.isEndToEndEncryptionSetup(requireContext(), user)) {
                             // update state and view of this fragment
                             searchFragment = false;
                             mHideFab = false;
 
                             if (mContainerActivity instanceof FolderPickerActivity &&
-                                    ((FolderPickerActivity) mContainerActivity)
-                                            .isDoNotEnterEncryptedFolder()) {
+                                ((FolderPickerActivity) mContainerActivity)
+                                    .isDoNotEnterEncryptedFolder()) {
                                 Snackbar.make(getRecyclerView(),
-                                        R.string.copy_move_to_encrypted_folder_not_supported,
-                                        Snackbar.LENGTH_LONG).show();
+                                              R.string.copy_move_to_encrypted_folder_not_supported,
+                                              Snackbar.LENGTH_LONG).show();
                             } else {
                                 listDirectory(file, MainApp.isOnlyOnDevice(), false);
                                 // then, notify parent activity to let it update its state and view
@@ -1049,6 +1042,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
                                 // save index and top position
                                 saveIndexAndTopPosition(position);
                             }
+                        } else {
+                            Log_OC.d(TAG, "no public key for " + user.getAccountName());
+
+                            openSetupEncryptionDialog(position, user);
                         }
                     } else {
                         // update state and view of this fragment
@@ -1134,16 +1131,30 @@ public class OCFileListFragment extends ExtendedListFragment implements
         }
     }
 
+    private void openSetupEncryptionDialog(int position, User user) {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        if (fragmentManager.findFragmentByTag(SETUP_ENCRYPTION_DIALOG_TAG) == null) {
+            SetupEncryptionDialogFragment dialog = SetupEncryptionDialogFragment.newInstance(user,
+                                                                                             position);
+            dialog.setTargetFragment(this, SETUP_ENCRYPTION_REQUEST_CODE);
+            dialog.show(fragmentManager, SETUP_ENCRYPTION_DIALOG_TAG);
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == SetupEncryptionDialogFragment.SETUP_ENCRYPTION_REQUEST_CODE &&
-                resultCode == SetupEncryptionDialogFragment.SETUP_ENCRYPTION_RESULT_CODE &&
-                data.getBooleanExtra(SetupEncryptionDialogFragment.SUCCESS, false)) {
+        if (requestCode == SETUP_ENCRYPTION_REQUEST_CODE &&
+            resultCode == SetupEncryptionDialogFragment.SETUP_ENCRYPTION_RESULT_CODE &&
+            data.getBooleanExtra(SetupEncryptionDialogFragment.SUCCESS, false)) {
 
             int position = data.getIntExtra(SetupEncryptionDialogFragment.ARG_POSITION, -1);
             OCFile file = mAdapter.getItem(position);
 
-            encryptFolder(file.getLocalId(), file.getRemoteId(), file.getRemotePath(), true);
+            if (file == null) {
+                return;
+            }
+
+            mContainerActivity.getFileOperationsHelper().toggleEncryption(file, true);
 
             // update state and view of this fragment
             searchFragment = false;
@@ -1296,8 +1307,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
             paths.add(file.getRemotePath());
         }
         action.putStringArrayListExtra(FolderPickerActivity.EXTRA_FILE_PATHS, paths);
-        action.putExtra(FolderPickerActivity.EXTRA_CURRENT_FOLDER, mFile);
         action.putExtra(FolderPickerActivity.EXTRA_ACTION, extraAction);
+        action.putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true);
+        action.putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true);
         getActivity().startActivityForResult(action, requestCode);
     }
 
@@ -1318,8 +1330,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
         listDirectory(null, onlyOnDevice, fromSearch);
     }
 
-    public void listDirectoryFolder(boolean onlyOnDevice, boolean fromSearch, boolean showOnlyFolder) {
+    public void listDirectoryFolder(boolean onlyOnDevice, boolean fromSearch, boolean showOnlyFolder, boolean hideEncryptedFolder) {
         mShowOnlyFolder = showOnlyFolder;
+        mHideEncryptedFolder = hideEncryptedFolder;
         listDirectory(null, onlyOnDevice, fromSearch);
     }
 
@@ -1370,15 +1383,18 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 if (searchView != null && !searchView.isIconified() && !fromSearch) {
                     searchView.post(() -> {
                         searchView.setQuery("", false);
-                        searchView.onActionViewCollapsed();
+                        // commented below line as per NMC requirement......
+                      //   searchView.onActionViewCollapsed();
                         Activity activity;
                         if ((activity = getActivity()) != null && activity instanceof FileDisplayActivity) {
                             FileDisplayActivity fileDisplayActivity = (FileDisplayActivity) activity;
                             fileDisplayActivity.hideSearchView(fileDisplayActivity.getCurrentDir());
-                            if (getCurrentFile() != null) {
-                                fileDisplayActivity
-                                    .setDrawerIndicatorEnabled(fileDisplayActivity.isRoot(getCurrentFile()));
-                            }
+
+                            // commented below line as per NMC requirement......
+//                            if (getCurrentFile() != null) {
+//                                fileDisplayActivity
+//                                    .setDrawerIndicatorEnabled(fileDisplayActivity.isRoot(getCurrentFile()));
+//                            }
                         }
                     });
                 }
@@ -1389,7 +1405,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
                         directory,
                         storageManager,
                         onlyOnDevice,
-                        mLimitToMimeType);
+                        mLimitToMimeType,
+                        mHideEncryptedFolder);
                 }
                 else {
                     mAdapter.swapDirectory(
@@ -1705,6 +1722,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
     public void onMessageEvent(ChangeMenuEvent changeMenuEvent) {
         searchFragment = false;
         searchEvent = null;
+        currentSearchType = SearchType.NO_SEARCH;
 
         menuItemAddRemoveValue = MenuItemAddRemove.ADD_GRID_AND_SORT_WITH_SEARCH;
         if (getActivity() != null) {
@@ -1743,7 +1761,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
             if (remoteOperationResult.isSuccess()) {
                 boolean removeFromList = currentSearchType == SearchType.FAVORITE_SEARCH && !event.shouldFavorite;
                 setEmptyListMessage(SearchType.FAVORITE_SEARCH);
-                mAdapter.setFavoriteAttributeForItemID(event.remoteId, event.shouldFavorite, removeFromList);
+                mAdapter.setFavoriteAttributeForItemID(event.remotePath, event.shouldFavorite, removeFromList, currentSearchType);
             }
 
         } catch (ClientFactory.CreationException e) {
@@ -1817,6 +1835,12 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onMessageEvent(EncryptionEvent event) {
+        if (checkEncryptionIsSetup(event.remoteId)) {
+            encryptFolder(event.localId, event.remoteId, event.remotePath, event.shouldBeEncrypted);
+        }
+    }
+
+    private boolean checkEncryptionIsSetup(@Nullable String remoteId) {
         final User user = accountManager.getUser();
 
         // check if keys are stored
@@ -1830,16 +1854,17 @@ public class OCFileListFragment extends ExtendedListFragment implements
             Log_OC.d(TAG, "no public key for " + user.getAccountName());
 
             FileDataStorageManager storageManager = mContainerActivity.getStorageManager();
-            OCFile file = storageManager.getFileByRemoteId(event.remoteId);
             int position = -1;
-            if (file != null) {
-                position = mAdapter.getItemPosition(file);
+            if (remoteId != null) {
+                OCFile file = storageManager.getFileByRemoteId(remoteId);
+                if (file != null) {
+                    position = mAdapter.getItemPosition(file);
+                }
             }
-            SetupEncryptionDialogFragment dialog = SetupEncryptionDialogFragment.newInstance(user, position);
-            dialog.setTargetFragment(this, SetupEncryptionDialogFragment.SETUP_ENCRYPTION_REQUEST_CODE);
-            dialog.show(getParentFragmentManager(), SetupEncryptionDialogFragment.SETUP_ENCRYPTION_DIALOG_TAG);
+            openSetupEncryptionDialog(position, user);
+            return false;
         } else {
-            encryptFolder(event.localId, event.remoteId, event.remotePath, event.shouldBeEncrypted);
+            return true;
         }
     }
 

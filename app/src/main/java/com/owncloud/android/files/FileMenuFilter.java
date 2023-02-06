@@ -37,6 +37,7 @@ import com.owncloud.android.files.services.FileUploader.FileUploaderBinder;
 import com.owncloud.android.lib.resources.status.OCCapability;
 import com.owncloud.android.services.OperationsService.OperationsServiceBinder;
 import com.owncloud.android.ui.activity.ComponentsGetter;
+import com.owncloud.android.ui.helpers.FileOperationsHelper;
 import com.owncloud.android.utils.EditorUtils;
 import com.owncloud.android.utils.MimeTypeUtil;
 import com.owncloud.android.utils.NextcloudServer;
@@ -238,7 +239,7 @@ public class FileMenuFilter {
 
     private void filterSendFiles(List<Integer> toShow, List<Integer> toHide, boolean inSingleFileFragment) {
         boolean show = true;
-        if (containsEncryptedFile() || overflowMenu || SEND_OFF.equalsIgnoreCase(context.getString(R.string.send_files_to_other_apps))) {
+        if (overflowMenu || SEND_OFF.equalsIgnoreCase(context.getString(R.string.send_files_to_other_apps)) || containsEncryptedFile()) {
             show = false;
         }
         if (!inSingleFileFragment && (isSingleSelection() || !anyFileDown())) {
@@ -252,7 +253,7 @@ public class FileMenuFilter {
     }
 
     private void filterDetails(Collection<Integer> toShow, Collection<Integer> toHide) {
-        if (isSingleSelection() && !isEncryptedFolder()) {
+        if (isSingleSelection() && !containsEncryptedFolder() && !containsEncryptedFile()) {
             toShow.add(R.id.action_see_details);
         } else {
             toHide.add(R.id.action_see_details);
@@ -260,7 +261,8 @@ public class FileMenuFilter {
     }
 
     private void filterFavorite(List<Integer> toShow, List<Integer> toHide, boolean synchronizing) {
-        if (files.isEmpty() || synchronizing || allFavorites()) {
+        if (files.isEmpty() || synchronizing || allFavorites() || containsEncryptedFile()
+            || containsEncryptedFolder()) {
             toHide.add(R.id.action_favorite);
         } else {
             toShow.add(R.id.action_favorite);
@@ -268,7 +270,8 @@ public class FileMenuFilter {
     }
 
     private void filterUnfavorite(List<Integer> toShow, List<Integer> toHide, boolean synchronizing) {
-        if (files.isEmpty() || synchronizing || allNotFavorites()) {
+        if (files.isEmpty() || synchronizing || allNotFavorites() || containsEncryptedFile()
+            || containsEncryptedFolder()) {
             toHide.add(R.id.action_unset_favorite);
         } else {
             toShow.add(R.id.action_unset_favorite);
@@ -320,9 +323,9 @@ public class FileMenuFilter {
             return;
         }
 
-        if (files.isEmpty() || !isSingleSelection() || isSingleFile() || isEncryptedFolder()
-
-            || !endToEndEncryptionEnabled || !isEmptyFolder()) {
+        if (files.isEmpty() || !isSingleSelection() || isSingleFile() || isEncryptedFolder() || isGroupFolder()
+            /* || !endToEndEncryptionEnabled || !isEmptyFolder()) */
+            || !endToEndEncryptionEnabled || !isEmptyFolder() || isShared() || isInSubFolder()) {
             toHide.add(R.id.action_encrypted);
         } else {
             toShow.add(R.id.action_encrypted);
@@ -336,9 +339,8 @@ public class FileMenuFilter {
             return;
         }
 
-        if (files.isEmpty() || !isSingleSelection() || isSingleFile() || !isEncryptedFolder()
-
-            || !endToEndEncryptionEnabled || !isEmptyFolder()){
+        if (!endToEndEncryptionEnabled || files.isEmpty() || !isSingleSelection() || isSingleFile()
+            || !isEncryptedFolder() || hasEncryptedParent() || !isEmptyFolder() || !FileOperationsHelper.isEndToEndEncryptionSetup(context, user)) {
             toHide.add(R.id.action_unset_encrypted);
         } else {
             toShow.add(R.id.action_unset_encrypted);
@@ -356,7 +358,7 @@ public class FileMenuFilter {
     private void filterEdit(List<Integer> toShow,
                             List<Integer> toHide,
                             OCCapability capability
-    ) {
+                           ) {
         if (files.iterator().next().isEncrypted()) {
             toHide.add(R.id.action_edit);
             return;
@@ -438,8 +440,12 @@ public class FileMenuFilter {
     }
 
     private void filterRemove(List<Integer> toShow, List<Integer> toHide, boolean synchronizing) {
-        if (files.isEmpty() || synchronizing || containsLockedFile()) {
-            toHide.add(R.id.action_remove_file);
+        if (files.isEmpty() || synchronizing || containsLockedFile() || containsEncryptedFolder()) {
+            if (hasEncryptedParent()) {
+                toShow.add(R.id.action_remove_file);
+            } else {
+                toHide.add(R.id.action_remove_file);
+            }
         } else {
             toShow.add(R.id.action_remove_file);
         }
@@ -460,7 +466,6 @@ public class FileMenuFilter {
             toShow.add(R.id.action_copy);
         }
     }
-
 
     private void filterRename(Collection<Integer> toShow, Collection<Integer> toHide, boolean synchronizing) {
         if (!isSingleSelection() || synchronizing || containsEncryptedFile() || containsEncryptedFolder() || containsLockedFile()) {
@@ -501,8 +506,8 @@ public class FileMenuFilter {
             FileUploaderBinder uploaderBinder = componentsGetter.getFileUploaderBinder();
             FileDownloaderBinder downloaderBinder = componentsGetter.getFileDownloaderBinder();
             synchronizing = anyFileSynchronizing(opsBinder) ||      // comparing local and remote
-                            anyFileDownloading(downloaderBinder) ||
-                            anyFileUploading(uploaderBinder);
+                anyFileDownloading(downloaderBinder) ||
+                anyFileUploading(uploaderBinder);
         }
         return synchronizing;
     }
@@ -539,9 +544,9 @@ public class FileMenuFilter {
 
     private boolean isShareApiEnabled(OCCapability capability) {
         return capability != null &&
-                (capability.getFilesSharingApiEnabled().isTrue() ||
-                        capability.getFilesSharingApiEnabled().isUnknown()
-                );
+            (capability.getFilesSharingApiEnabled().isTrue() ||
+                capability.getFilesSharingApiEnabled().isUnknown()
+            );
     }
 
     private boolean isShareWithUsersAllowed() {
@@ -571,16 +576,29 @@ public class FileMenuFilter {
             return false;
         }
     }
+
     private boolean isEmptyFolder() {
         if (isSingleSelection()) {
             OCFile file = files.iterator().next();
 
-            return file.isFolder() && file.getFileLength() == EMPTY_FILE_LENGTH;
+            int childCount = componentsGetter.getStorageManager().getFolderContent(file, false).size();
+
+            return file.isFolder() && file.getFileLength() == EMPTY_FILE_LENGTH && childCount == 0;
         } else {
             return false;
         }
     }
 
+    private boolean isGroupFolder() {
+        return files.iterator().next().isGroupFolder();
+    }
+
+    private boolean hasEncryptedParent() {
+        OCFile folder = files.iterator().next();
+        OCFile parent = componentsGetter.getStorageManager().getFileById(folder.getParentId());
+
+        return parent != null && parent.isEncrypted();
+    }
 
     private boolean isSingleImage() {
         return isSingleSelection() && MimeTypeUtil.isImage(files.iterator().next());
@@ -652,5 +670,24 @@ public class FileMenuFilter {
             }
         }
         return true;
+    }
+
+    private boolean isShared() {
+        for (OCFile file : files) {
+            if (file.isSharedWithMe() || file.isSharedViaLink() || file.isSharedWithSharee()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isInSubFolder() {
+        OCFile folder = files.iterator().next();
+        OCFile parent = componentsGetter.getStorageManager().getFileById(folder.getParentId());
+
+        if (parent == null) {
+            return false;
+        }
+        return !OCFile.ROOT_PATH.equals(parent.getRemotePath());
     }
 }

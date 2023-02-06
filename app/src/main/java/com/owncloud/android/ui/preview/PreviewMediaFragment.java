@@ -55,6 +55,7 @@ import com.nextcloud.client.di.Injectable;
 
 import com.nextcloud.client.jobs.BackgroundJobManager;
 
+import com.nextcloud.client.media.ExoplayerListener;
 import com.nextcloud.client.media.NextcloudExoPlayer;
 import com.nextcloud.client.media.PlayerServiceConnection;
 import com.nextcloud.client.network.ClientFactory;
@@ -89,6 +90,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * This fragment shows a preview of a downloaded media file (audio or video).
@@ -106,6 +108,8 @@ public class PreviewMediaFragment extends FileFragment implements OnTouchListene
 
     public static final String EXTRA_FILE = "FILE";
     public static final String EXTRA_USER = "USER";
+    public static final String EXTRA_AUTOPLAY = "AUTOPLAY";
+    public static final String EXTRA_START_POSITION = "START_POSITION";
     private static final String EXTRA_PLAY_POSITION = "PLAY_POSITION";
     private static final String EXTRA_PLAYING = "PLAYING";
     private static final double MIN_DENSITY_RATIO = 24.0;
@@ -131,6 +135,7 @@ public class PreviewMediaFragment extends FileFragment implements OnTouchListene
     FragmentPreviewMediaBinding binding;
     private ViewGroup emptyListView;
     private ExoPlayer exoPlayer;
+    private NextcloudClient nextcloudClient;
 
     /**
      * Creates a fragment to preview a file.
@@ -331,9 +336,10 @@ public class PreviewMediaFragment extends FileFragment implements OnTouchListene
                     final Handler handler = new Handler();
                     Executors.newSingleThreadExecutor().execute(() -> {
                         try {
-                            final NextcloudClient client = clientFactory.createNextcloudClient(accountManager.getUser());
+                            nextcloudClient = clientFactory.createNextcloudClient(accountManager.getUser());
                             handler.post(() ->{
-                                exoPlayer = NextcloudExoPlayer.createNextcloudExoplayer(requireContext(), client);
+                                exoPlayer = NextcloudExoPlayer.createNextcloudExoplayer(requireContext(), nextcloudClient );
+                                exoPlayer.addListener(new ExoplayerListener(requireContext(), binding.exoplayerView, exoPlayer));
                                 playVideo();
                             });
                         } catch (ClientFactory.CreationException e) {
@@ -668,14 +674,10 @@ public class PreviewMediaFragment extends FileFragment implements OnTouchListene
     }
 
     private void startFullScreenVideo() {
-        Intent intent = new Intent(getActivity(), PreviewVideoActivity.class);
-        intent.putExtra(FileActivity.EXTRA_USER, user);
-        intent.putExtra(FileActivity.EXTRA_FILE, getFile());
-        intent.putExtra(PreviewVideoActivity.EXTRA_AUTOPLAY, exoPlayer.isPlaying());
-        intent.putExtra(PreviewVideoActivity.EXTRA_STREAM_URL, videoUri);
-        exoPlayer.pause();
-        intent.putExtra(PreviewVideoActivity.EXTRA_START_POSITION, exoPlayer.getCurrentPosition());
-        startActivityForResult(intent, FileActivity.REQUEST_CODE__LAST_SHARED + 1);
+        final FragmentActivity activity = getActivity();
+        if (activity != null) {
+            new PreviewVideoFullscreenDialog(activity, nextcloudClient, exoPlayer, binding.exoplayerView).show();
+        }
     }
 
     @Override
@@ -689,8 +691,8 @@ public class PreviewMediaFragment extends FileFragment implements OnTouchListene
         Log_OC.v(TAG, "onActivityResult " + this);
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            savedPlaybackPosition = data.getLongExtra(PreviewVideoActivity.EXTRA_START_POSITION, 0);
-            autoplay = data.getBooleanExtra(PreviewVideoActivity.EXTRA_AUTOPLAY, false);
+            savedPlaybackPosition = data.getLongExtra(EXTRA_START_POSITION, 0);
+            autoplay = data.getBooleanExtra(EXTRA_AUTOPLAY, false);
         }
     }
 

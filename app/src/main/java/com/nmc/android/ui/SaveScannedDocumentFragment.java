@@ -31,6 +31,8 @@ import com.owncloud.android.utils.theme.ThemeCheckableUtils;
 import com.owncloud.android.utils.theme.ThemeColorUtils;
 import com.owncloud.android.utils.theme.ThemeTextInputUtils;
 
+import org.apache.commons.lang.StringUtils;
+
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
@@ -120,6 +122,14 @@ public class SaveScannedDocumentFragment extends Fragment implements CompoundBut
             String remotePath = ((ScanActivity) requireActivity()).getRemotePath();
             //remote path should not be null and should not be root path i.e only /
             if (!TextUtils.isEmpty(remotePath) && !remotePath.equals(OCFile.ROOT_PATH)) {
+                setRemoteFilePath(remotePath);
+                return;
+            }
+
+            String lastRemotePath = appPreferences.getUploadScansLastPath();
+            //if user coming from Root path and the last saved path is not Scans folder
+            //then show the Root as scan doc path
+            if (remotePath.equals(OCFile.ROOT_PATH) && !lastRemotePath.equals(ScanActivity.DEFAULT_UPLOAD_SCAN_PATH)) {
                 setRemoteFilePath(remotePath);
                 return;
             }
@@ -222,6 +232,8 @@ public class SaveScannedDocumentFragment extends Fragment implements CompoundBut
             case R.id.scan_save_location_edit_btn:
                 Intent action = new Intent(requireActivity(), FolderPickerActivity.class);
                 action.putExtra(FolderPickerActivity.EXTRA_ACTION, FolderPickerActivity.CHOOSE_LOCATION);
+                action.putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true);
+                action.putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, false);
                 startActivityForResult(action, SELECT_LOCATION_REQUEST_CODE);
                 break;
             case R.id.save_scan_btn_cancel:

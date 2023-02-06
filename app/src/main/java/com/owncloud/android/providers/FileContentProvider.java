@@ -838,7 +838,8 @@ public class FileContentProvider extends ContentProvider {
                        + ProviderTableMeta.CAPABILITIES_USER_STATUS + INTEGER
                        + ProviderTableMeta.CAPABILITIES_USER_STATUS_SUPPORTS_EMOJI + INTEGER
                        + ProviderTableMeta.CAPABILITIES_ETAG + TEXT
-                       + ProviderTableMeta.CAPABILITIES_FILES_LOCKING_VERSION + " TEXT );");
+                       + ProviderTableMeta.CAPABILITIES_FILES_LOCKING_VERSION + TEXT
+                       + ProviderTableMeta.CAPABILITIES_END_TO_END_ENCRYPTION_KEYS_EXIST + " INTEGER );");
     }
 
     private void createUploadsTable(SQLiteDatabase db) {
@@ -2490,6 +2491,23 @@ public class FileContentProvider extends ContentProvider {
                                    ADD_COLUMN + ProviderTableMeta.FILE_LOCK_TOKEN + " TEXT ");
                     db.execSQL("UPDATE " + ProviderTableMeta.FILE_TABLE_NAME + " SET " + ProviderTableMeta.FILE_ETAG + " = '' WHERE 1=1");
 
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+            }
+
+            if (!upgraded) {
+                Log_OC.i(SQL, String.format(Locale.ENGLISH, UPGRADE_VERSION_MSG, oldVersion, newVersion));
+            }
+
+            if (oldVersion < 64 && newVersion >= 64) {
+                Log_OC.i(SQL, "Entering in the #64 Adding e2ee_key_exist flag to capabilities");
+                db.beginTransaction();
+                try {
+                    db.execSQL(ALTER_TABLE + ProviderTableMeta.CAPABILITIES_TABLE_NAME +
+                                   ADD_COLUMN + ProviderTableMeta.CAPABILITIES_END_TO_END_ENCRYPTION_KEYS_EXIST + " INTEGER ");
+                    upgraded = true;
                     db.setTransactionSuccessful();
                 } finally {
                     db.endTransaction();

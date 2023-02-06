@@ -54,6 +54,7 @@ import com.nextcloud.client.network.ConnectivityService;
 import com.nextcloud.java.util.Optional;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
+import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.files.StreamMediaFileOperation;
@@ -83,6 +84,7 @@ import com.owncloud.android.ui.events.FileLockEvent;
 import com.owncloud.android.ui.events.SyncEventFinished;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.EditorUtils;
+import com.owncloud.android.utils.EncryptionUtils;
 import com.owncloud.android.utils.FileStorageUtils;
 import com.owncloud.android.utils.PermissionUtil;
 import com.owncloud.android.utils.UriUtils;
@@ -928,11 +930,17 @@ public class FileOperationsHelper {
 
     public void toggleFavoriteFile(OCFile file, boolean shouldBeFavorite) {
         if (file.isFavorite() != shouldBeFavorite) {
-            EventBus.getDefault().post(new FavoriteEvent(file.getRemotePath(), shouldBeFavorite, file.getRemoteId()));
+            EventBus.getDefault().post(new FavoriteEvent(file.getRemotePath(), shouldBeFavorite));
         }
     }
 
     public void toggleEncryption(OCFile file, boolean shouldBeEncrypted) {
+        //shared folders cannot be encrypted
+        if (file.isSharedWithMe() || file.isSharedWithSharee() || file.isSharedViaLink()) {
+            DisplayUtils.showSnackMessage(fileActivity, R.string.shared_folder_end_to_end_encryption_error);
+            return;
+        }
+
         if (file.isEncrypted() != shouldBeEncrypted) {
             EventBus.getDefault().post(new EncryptionEvent(file.getLocalId(),
                                                            file.getRemoteId(),
@@ -987,11 +995,16 @@ public class FileOperationsHelper {
 
 
     public void createFolder(String remotePath) {
+        createFolder(remotePath, false);
+    }
+
+    public void createFolder(String remotePath, boolean encrypted) {
         // Create Folder
         Intent service = new Intent(fileActivity, OperationsService.class);
         service.setAction(OperationsService.ACTION_CREATE_FOLDER);
         service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
         service.putExtra(OperationsService.EXTRA_REMOTE_PATH, remotePath);
+        service.putExtra(OperationsService.EXTRA_ENCRYPTED, encrypted);
         mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
 
         fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
@@ -1152,5 +1165,14 @@ public class FileOperationsHelper {
         }
 
         return stat.getBlockSizeLong() * stat.getAvailableBlocksLong();
+    }
+
+    public static boolean isEndToEndEncryptionSetup(Context context, User user) {
+        ArbitraryDataProvider arbitraryDataProvider = new ArbitraryDataProvider(context.getContentResolver());
+
+        String publicKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PUBLIC_KEY);
+        String privateKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PRIVATE_KEY);
+
+        return !publicKey.isEmpty() && !privateKey.isEmpty();
     }
 }
