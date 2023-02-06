@@ -232,19 +232,11 @@ public final class MimeTypeUtil {
     }
 
     //check if file is png or jpg image
-    public static boolean isJpgOrPngFile(@Nullable String fileName) {
-        if (fileName == null) {
-            return false;
-        }
-
-        int pos = fileName.lastIndexOf('.');
-        if (pos >= 0) {
-            String extension = fileName.substring(pos);
-            return extension.equalsIgnoreCase(".png")
-                || extension.equalsIgnoreCase(".jpg")
-                || extension.equalsIgnoreCase(".jpeg");
-        }
-        return false;
+    public static boolean isJpgOrPngFile(String fileName) {
+        String extension = fileName.substring(fileName.lastIndexOf("."));
+        return extension.equalsIgnoreCase(".png")
+            || extension.equalsIgnoreCase(".jpg")
+            || extension.equalsIgnoreCase(".jpeg");
     }
 
     /**
