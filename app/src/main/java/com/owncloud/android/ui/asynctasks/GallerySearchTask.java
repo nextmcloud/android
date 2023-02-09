@@ -98,11 +98,11 @@ public class GallerySearchTask extends AsyncTask<Void, Void, GallerySearchTask.R
 
                 RemoteOperationResult result = searchRemoteOperation.execute(user.toPlatformAccount(),
                                                                              photoFragment.getContext());
-                try {
+                if(result.isSuccess()){
                     boolean emptySearch = parseMedia(startDate, endDate, result.getData());
                     long lastTimeStamp = findLastTimestamp(result.getData());
                     return new Result(result.isSuccess(), emptySearch, lastTimeStamp);
-                } catch (RuntimeException e) {
+                } else {
                     return new Result(false, false, -1);
                 }
 
