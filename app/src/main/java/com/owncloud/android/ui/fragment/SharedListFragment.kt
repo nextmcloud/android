@@ -102,6 +102,8 @@ class SharedListFragment : OCFileListFragment(), Injectable {
                     isSharedWithSharee = partialFile.isSharedWithSharee
                     sharees = partialFile.sharees
                 }
+                adapter.replaceFileByRemotePath(savedFile, false)
+                savedFile
             }
         }
     }
