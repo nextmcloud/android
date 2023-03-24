@@ -417,6 +417,8 @@
     <style name="Theme.ToolbarTheme" parent="@style/ThemeOverlay.Material3.Dark.ActionBar">
         <item name="android:textColor">@color/menu_item_text_color</item>
         <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item>
+        <item name="actionMenuTextColor">@color/menu_item_text_color</item>
+        <item name="android:actionMenuTextColor">@color/menu_item_text_color</item>
     </style>
 
     <style name="OverflowMenuStyle" parent="Widget.Material3.PopupMenu.Overflow">

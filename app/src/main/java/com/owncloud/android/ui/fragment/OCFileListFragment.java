@@ -228,7 +228,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Inject DeviceInfo deviceInfo;
 
-    private boolean mShowOnlyFolder ;
+    private boolean mShowOnlyFolder, mHideEncryptedFolder;
 
     //this variable will help us to provide number of span count for grid view
     //the width for single item is approx to 360
@@ -1293,8 +1293,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
         listDirectory(null, onlyOnDevice, fromSearch);
     }
 
-    public void listDirectoryFolder(boolean onlyOnDevice, boolean fromSearch, boolean showOnlyFolder) {
+    public void listDirectoryFolder(boolean onlyOnDevice, boolean fromSearch, boolean showOnlyFolder, boolean hideEncryptedFolder) {
         mShowOnlyFolder = showOnlyFolder;
+        mHideEncryptedFolder = hideEncryptedFolder;
         listDirectory(null, onlyOnDevice, fromSearch);
     }
 
@@ -1363,7 +1364,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
                         directory,
                         storageManager,
                         onlyOnDevice,
-                        mLimitToMimeType);
+                        mLimitToMimeType,
+                        mHideEncryptedFolder);
                 }
                 else {
                     mAdapter.swapDirectory(

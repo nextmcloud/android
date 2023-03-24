@@ -36,6 +36,7 @@ import com.nextcloud.client.widget.DashboardWidgetService;
 import com.nextcloud.ui.ChooseAccountDialogFragment;
 import com.nextcloud.ui.SetStatusDialogFragment;
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet;
+import com.nmc.android.ui.SaveScannedDocumentFragment;
 import com.nmc.android.ui.ScanActivity;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.authentication.AuthenticatorActivity;
@@ -470,5 +471,8 @@ abstract class ComponentsModule {
 
     @ContributesAndroidInjector
     abstract ScanActivity scanActivity();
+
+    @ContributesAndroidInjector
+    abstract SaveScannedDocumentFragment saveScannedDocumentFragment();
 
 }

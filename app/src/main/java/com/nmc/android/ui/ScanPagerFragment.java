@@ -1,7 +1,6 @@
 package com.nmc.android.ui;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,11 +8,11 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.nmc.android.interfaces.OnDocScanListener;
 import com.nmc.android.utils.ScanBotSdkUtils;
 import com.owncloud.android.R;
+import com.owncloud.android.databinding.ItemScannedDocBinding;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,15 +25,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.os.HandlerCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.process.FilterOperation;
 import io.scanbot.sdk.process.ImageFilterType;
 import io.scanbot.sdk.process.RotateOperation;
-import io.scanbot.sdk.ui.EditPolygonImageView;
 
 public class ScanPagerFragment extends Fragment {
 
@@ -53,10 +47,7 @@ public class ScanPagerFragment extends Fragment {
         return fragment;
     }
 
-    private Unbinder unbinder;
-    //private String scannedDocPath;
-    @BindView(R.id.editScannedImageView) EditPolygonImageView editPolygonImageView;
-    @BindView(R.id.editScanImageProgressBar) ProgressBar progressBar;
+    private ItemScannedDocBinding binding;
 
     private ScanbotSDK scanbotSDK;
     private Bitmap originalBitmap;
@@ -72,6 +63,9 @@ public class ScanPagerFragment extends Fragment {
     private OnDocScanListener onDocScanListener;
     private AlertDialog applyFilterDialog;
     private int selectedFilter = 0;
+
+    //flag to check if applying filter is in progress or not
+    private boolean isFilterApplyInProgress = false;
 
 
     @Override
@@ -97,13 +91,13 @@ public class ScanPagerFragment extends Fragment {
         if (requireActivity() instanceof ScanActivity) {
             scanbotSDK = ((ScanActivity) requireActivity()).getScanbotSDK();
         }
-        return inflater.inflate(R.layout.item_scanned_doc, container, false);
+        binding = ItemScannedDocBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        unbinder = ButterKnife.bind(this, view);
         //File file = new File(scannedDocPath);
         //originalBitmap = FileUtils.convertFileToBitmap(file);
         // previewBitmap = ScanBotSdkUtils.resizeForPreview(originalBitmap);
@@ -112,36 +106,33 @@ public class ScanPagerFragment extends Fragment {
     }
 
     private void setUpBitmap() {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
+        executorService.execute(() -> {
+            if (index >= 0 && index < ScanActivity.filteredImages.size()) {
                 originalBitmap = onDocScanListener.getScannedDocs().get(index);
                 previewBitmap = ScanBotSdkUtils.resizeForPreview(originalBitmap);
-                selectedFilter = ScanActivity.scannedImagesFilterIndex.get(index);
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadImage();
-                    }
-                });
             }
+            if (index >= 0 && index < ScanActivity.scannedImagesFilterIndex.size()) {
+                selectedFilter = ScanActivity.scannedImagesFilterIndex.get(index);
+            }
+            handler.post(() -> loadImage());
         });
     }
 
     private void loadImage() {
-        if (previewBitmap != null) {
-            editPolygonImageView.setImageBitmap(previewBitmap);
-        } else {
-            editPolygonImageView.setImageBitmap(originalBitmap);
+        if (binding != null) {
+            if (previewBitmap != null) {
+                binding.editScannedImageView.setImageBitmap(previewBitmap);
+            } else if (originalBitmap != null) {
+                binding.editScannedImageView.setImageBitmap(originalBitmap);
+            }
         }
     }
 
     @Override
     public void onDestroyView() {
+        binding = null;
+
         super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
 
         if (applyFilterDialog != null && applyFilterDialog.isShowing()) {
             applyFilterDialog.dismiss();
@@ -153,21 +144,18 @@ public class ScanPagerFragment extends Fragment {
             return;
         }
         rotationDegrees += 90;
-        editPolygonImageView.rotateClockwise();
+        binding.editScannedImageView.rotateClockwise();
         lastRotationEventTs = System.currentTimeMillis();
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                Bitmap rotatedBitmap = scanbotSDK.imageProcessor().process(originalBitmap,
-                                                                           new ArrayList<>(Collections.singletonList(new RotateOperation(rotationDegrees))), false);
-                onDocScanListener.replaceScannedDoc(index, rotatedBitmap, false);
-            }
+        executorService.execute(() -> {
+            Bitmap rotatedBitmap = scanbotSDK.imageProcessor().process(originalBitmap,
+                                                                       new ArrayList<>(Collections.singletonList(new RotateOperation(rotationDegrees))), false);
+            onDocScanListener.replaceScannedDoc(index, rotatedBitmap, false);
         });
     }
 
     public void showApplyFilterDialog() {
         String[] filterArray = getResources().getStringArray(R.array.edit_scan_filter_values);
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         builder.setTitle(R.string.edit_scan_filter_dialog_title)
             .setSingleChoiceItems(filterArray,
                                   selectedFilter,
@@ -190,32 +178,36 @@ public class ScanPagerFragment extends Fragment {
 
                                       dialog.dismiss();
                                   })
-            .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                }
+            .setOnCancelListener(dialog -> {
             });
         applyFilterDialog = builder.create();
         applyFilterDialog.show();
     }
 
     private void applyFilter(ImageFilterType... imageFilterType) {
-        progressBar.setVisibility(View.VISIBLE);
+        binding.editScanImageProgressBar.setVisibility(View.VISIBLE);
+        isFilterApplyInProgress = true;
         executorService.execute(() -> {
-            if (imageFilterType[0] != ImageFilterType.NONE){
+            if (imageFilterType[0] != ImageFilterType.NONE) {
                 List<FilterOperation> filterOperationList = new ArrayList<>();
                 for (ImageFilterType filters : imageFilterType) {
                     filterOperationList.add(new FilterOperation(filters));
                 }
                 previewBitmap = scanbotSDK.imageProcessor().process(originalBitmap, filterOperationList, false);
-            }else{
+            } else {
                 previewBitmap = ScanActivity.originalScannedImages.get(index);
             }
             onDocScanListener.replaceScannedDoc(index, previewBitmap, true);
             handler.post(() -> {
-                progressBar.setVisibility(View.GONE);
+                isFilterApplyInProgress = false;
+                binding.editScanImageProgressBar.setVisibility(View.GONE);
                 loadImage();
             });
         });
+    }
+
+    //scan should not be saved till filter is applied
+    public boolean isFilterApplyInProgress() {
+        return isFilterApplyInProgress;
     }
 }

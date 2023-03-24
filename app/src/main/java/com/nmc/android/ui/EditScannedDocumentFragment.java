@@ -1,6 +1,8 @@
 package com.nmc.android.ui;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,26 +12,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nmc.android.adapters.ViewPagerFragmentAdapter;
 import com.nmc.android.interfaces.OnDocScanListener;
 import com.nmc.android.interfaces.OnFragmentChangeListener;
-import com.nmc.android.adapters.ViewPagerFragmentAdapter;
 import com.owncloud.android.R;
+import com.owncloud.android.databinding.FragmentEditScannedDocumentBinding;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
 
-public class EditScannedDocumentFragment extends Fragment {
+public class EditScannedDocumentFragment extends Fragment implements View.OnClickListener {
 
     private static final String ARG_CURRENT_INDEX = "current_index";
     protected static final String TAG = "EditScannedDocumentFragment";
@@ -45,25 +43,10 @@ public class EditScannedDocumentFragment extends Fragment {
         return fragment;
     }
 
-    private Unbinder unbinder;
+    private FragmentEditScannedDocumentBinding binding;
     private ViewPagerFragmentAdapter pagerFragmentAdapter;
     private OnFragmentChangeListener onFragmentChangeListener;
     private OnDocScanListener onDocScanListener;
-
-    @BindView(R.id.editScannedViewPager)
-    ViewPager2 imageViewPager;
-    @BindView(R.id.editScanDocCountLabel)
-    AppCompatTextView scannedDocCountLabel;
-    @BindView(R.id.scanMoreButton)
-    AppCompatImageView scanMoreButton;
-    @BindView(R.id.cropDocButton)
-    AppCompatImageView cropButton;
-    @BindView(R.id.filterDocButton)
-    AppCompatImageView filterButton;
-    @BindView(R.id.rotateDocButton)
-    AppCompatImageView rotateButton;
-    @BindView(R.id.deleteDocButton)
-    AppCompatImageView deleteButton;
 
     private Bitmap selectedScannedDocFile;
     private int currentSelectedItemIndex;
@@ -75,6 +58,8 @@ public class EditScannedDocumentFragment extends Fragment {
         if (getArguments() != null) {
             currentItemIndex = getArguments().getInt(ARG_CURRENT_INDEX, 0);
         }
+        //Fragment screen orientation normal both portrait and landscape
+        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
     @Override
@@ -97,14 +82,21 @@ public class EditScannedDocumentFragment extends Fragment {
             ((ScanActivity) requireActivity()).updateActionBarTitleAndHomeButtonByString(getResources().getString(R.string.title_edit_scan));
         }
         setHasOptionsMenu(true);
-        return inflater.inflate(R.layout.fragment_edit_scanned_document, container, false);
+        binding = FragmentEditScannedDocumentBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        unbinder = ButterKnife.bind(this, view);
         setUpViewPager();
+
+        binding.cropDocButton.setOnClickListener(this);
+        binding.scanMoreButton.setOnClickListener(this);
+        binding.filterDocButton.setOnClickListener(this);
+        binding.rotateDocButton.setOnClickListener(this);
+        binding.deleteDocButton.setOnClickListener(this);
+
     }
 
     private void setUpViewPager() {
@@ -117,9 +109,9 @@ public class EditScannedDocumentFragment extends Fragment {
         for (int i = 0; i < filesList.size(); i++) {
             pagerFragmentAdapter.addFragment(ScanPagerFragment.newInstance(i));
         }
-        imageViewPager.setAdapter(pagerFragmentAdapter);
-        imageViewPager.post(() -> imageViewPager.setCurrentItem(currentItemIndex, false));
-        imageViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+        binding.editScannedViewPager.setAdapter(pagerFragmentAdapter);
+        binding.editScannedViewPager.post(() -> binding.editScannedViewPager.setCurrentItem(currentItemIndex, false));
+        binding.editScannedViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
@@ -130,20 +122,20 @@ public class EditScannedDocumentFragment extends Fragment {
         });
 
         if (filesList.size() == 1) {
-            scannedDocCountLabel.setVisibility(View.INVISIBLE);
+            binding.editScanDocCountLabel.setVisibility(View.INVISIBLE);
         } else {
-            scannedDocCountLabel.setVisibility(View.VISIBLE);
+            binding.editScanDocCountLabel.setVisibility(View.VISIBLE);
             updateDocCountText(currentItemIndex, filesList.size());
         }
     }
 
     private void updateDocCountText(int position, int totalSize) {
-        scannedDocCountLabel.setText(String.format(getResources().getString(R.string.scanned_doc_count),
-                                                   position + 1, totalSize));
+        binding.editScanDocCountLabel.setText(String.format(getResources().getString(R.string.scanned_doc_count),
+                                                            position + 1, totalSize));
     }
 
-    @OnClick({R.id.scanMoreButton, R.id.cropDocButton, R.id.filterDocButton, R.id.rotateDocButton, R.id.deleteDocButton})
-    void onClickListener(View view) {
+    @Override
+    public void onClick(View view) {
         switch (view.getId()) {
             case R.id.scanMoreButton:
                 onScanMore(false);
@@ -169,6 +161,12 @@ public class EditScannedDocumentFragment extends Fragment {
                 break;
 
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull @NotNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setUpViewPager();
     }
 
     /**
@@ -198,19 +196,28 @@ public class EditScannedDocumentFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                onFragmentChangeListener.onReplaceFragment(SaveScannedDocumentFragment.newInstance(),
-                                                           ScanActivity.FRAGMENT_SAVE_SCAN_TAG, false);
+                Fragment fragment = pagerFragmentAdapter.getFragment(currentSelectedItemIndex);
+                if (fragment instanceof ScanPagerFragment) {
+                    //if applying filter is not in process then only show save fragment
+                    if(!((ScanPagerFragment) fragment).isFilterApplyInProgress()){
+                        saveScannedDocs();
+                    }
+                }else {
+                    saveScannedDocs();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
+    private void saveScannedDocs() {
+        onFragmentChangeListener.onReplaceFragment(SaveScannedDocumentFragment.newInstance(),
+                                                   ScanActivity.FRAGMENT_SAVE_SCAN_TAG, false);
     }
 
+    @Override
+    public void onDestroyView() {
+        binding = null;
+        super.onDestroyView();
+    }
 }

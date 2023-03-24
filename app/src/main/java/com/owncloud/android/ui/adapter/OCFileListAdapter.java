@@ -646,8 +646,9 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         User account,
         OCFile directory,
         FileDataStorageManager updatedStorageManager,
-        boolean onlyOnDevice, String limitToMimeType
-                                   ) {
+        boolean onlyOnDevice, String limitToMimeType,
+        boolean hideEncryptedFolder
+                              ) {
         this.onlyOnDevice = onlyOnDevice;
 
         if (updatedStorageManager != null && !updatedStorageManager.equals(mStorageManager)) {
@@ -655,18 +656,24 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             ocFileListDelegate.setShowShareAvatar(CapabilityUtils.getCapability(account, activity).getVersion().isShareesOnDavSupported());
             this.user = account;
         }
+
         if (mStorageManager != null) {
 
             List<OCFile> allFiles = mStorageManager.getFolderContent(directory, onlyOnDevice);
             mFiles.clear();
-            for(int i = 0; i< allFiles.size() ; i++)
-            {
-                if(allFiles.get(i).getMimeType().equals(MimeType.DIRECTORY))
-                {
+
+            for (int i = 0; i < allFiles.size(); i++) {
+                OCFile ocFile = allFiles.get(i);
+
+                //if e2ee folder has to hide then ignore if OCFile is encrypted
+                if (hideEncryptedFolder && ocFile.isEncrypted()) {
+                    continue;
+                }
+
+                if (ocFile.getMimeType().equals(MimeType.DIRECTORY)) {
                     mFiles.add(allFiles.get(i));
                 }
             }
-            // mFiles = mStorageManager.getFolderContent(directory, onlyOnDevice);
 
             if (!preferences.isShowHiddenFilesEnabled()) {
                 mFiles = filterHiddenFiles(mFiles);

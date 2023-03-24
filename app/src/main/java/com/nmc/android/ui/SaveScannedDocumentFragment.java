@@ -27,6 +27,7 @@ import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.ui.activity.FolderPickerActivity;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.theme.ThemeColorUtils;
+import com.owncloud.android.utils.theme.ThemeTextInputUtils;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -145,7 +146,7 @@ public class SaveScannedDocumentFragment extends Fragment implements CompoundBut
 
     private void initViews() {
         binding.scanSaveFilenameInput.setText(FileUtils.scannedFileName());
-        /*ThemeCheckableUtils.tintSwitch(binding.scanSavePdfPasswordSwitch, 0);
+       /* ThemeCheckableUtils.tintSwitch(binding.scanSavePdfPasswordSwitch, 0);
         ThemeCheckableUtils.tintCheckbox(0, binding.scanSaveWithoutTxtRecognitionPdfCheckbox,
                                          binding.scanSaveWithoutTxtRecognitionPngCheckbox,
                                          binding.scanSaveWithoutTxtRecognitionJpgCheckbox,
@@ -154,10 +155,10 @@ public class SaveScannedDocumentFragment extends Fragment implements CompoundBut
         ThemeButtonUtils.colorPrimaryButton(binding.saveScanBtnSave, requireContext());*/
 
         binding.scanSaveWithTxtRecognitionPdfCheckbox.setChecked(true);
-        //ThemeTextInputUtils.colorTextInputLayout(binding.scanSavePdfPasswordTextInput,
-          //                                       getResources().getColor(R.color.secondary_text_color),
-            //                                     ThemeColorUtils.primaryAccentColor(requireContext()));
-        //binding.scanSavePdfPasswordEt.setHighlightColor(getResources().getColor(R.color.et_highlight_color));
+        ThemeTextInputUtils.colorTextInputLayout(binding.scanSavePdfPasswordTextInput,
+                                                 getResources().getColor(R.color.secondary_text_color),
+                                                 getResources().getColor(R.color.color_accent));
+        binding.scanSavePdfPasswordEt.setHighlightColor(getResources().getColor(R.color.et_highlight_color));
         binding.scanSavePdfPasswordTextInput.setDefaultHintTextColor(new ColorStateList(
             new int[][]{
                 new int[]{-android.R.attr.state_focused},
@@ -229,6 +230,8 @@ public class SaveScannedDocumentFragment extends Fragment implements CompoundBut
             case R.id.scan_save_location_edit_btn:
                 Intent action = new Intent(requireActivity(), FolderPickerActivity.class);
                 action.putExtra(FolderPickerActivity.EXTRA_ACTION, FolderPickerActivity.CHOOSE_LOCATION);
+                action.putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true);
+                action.putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, false);
                 startActivityForResult(action, SELECT_LOCATION_REQUEST_CODE);
                 break;
             case R.id.save_scan_btn_cancel:

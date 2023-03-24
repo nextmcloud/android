@@ -106,6 +106,7 @@ class BackgroundJobFactory @Inject constructor(
                 FilesExportWork::class -> createFilesExportWork(context, workerParameters)
                 FilesUploadWorker::class -> createFilesUploadWorker(context, workerParameters)
                 GeneratePdfFromImagesWork::class -> createPDFGenerateWork(context, workerParameters)
+                ScanDocUploadWorker::class -> createScanDocUploadWork(context, workerParameters)
                 else -> null // caller falls back to default factory
             }
         }
