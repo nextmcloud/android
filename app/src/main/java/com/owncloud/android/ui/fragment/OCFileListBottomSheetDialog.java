@@ -28,7 +28,6 @@ import com.google.gson.Gson;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.device.DeviceInfo;
 import com.nextcloud.client.di.Injectable;
-import com.nextcloud.client.documentscan.AppScanOptionalFeature;
 import com.nextcloud.utils.EditorUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileListActionsBottomSheetCreatorBinding;
@@ -60,9 +59,6 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
     private final ViewThemeUtils viewThemeUtils;
     private final EditorUtils editorUtils;
 
-    private final AppScanOptionalFeature appScanOptionalFeature;
-
-
     public OCFileListBottomSheetDialog(FileActivity fileActivity,
                                        OCFileListBottomSheetActions actions,
                                        DeviceInfo deviceInfo,
@@ -70,8 +66,7 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
                                        OCFile file,
                                        ThemeUtils themeUtils,
                                        ViewThemeUtils viewThemeUtils,
-                                       EditorUtils editorUtils,
-                                       AppScanOptionalFeature appScanOptionalFeature) {
+                                       EditorUtils editorUtils) {
         super(fileActivity);
         this.actions = actions;
         this.fileActivity = fileActivity;
@@ -81,7 +76,6 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
         this.themeUtils = themeUtils;
         this.viewThemeUtils = viewThemeUtils;
         this.editorUtils = editorUtils;
-        this.appScanOptionalFeature = appScanOptionalFeature;
     }
 
     @Override
@@ -93,7 +87,6 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
         viewThemeUtils.platform.colorImageView(binding.menuIconUploadFiles);
         viewThemeUtils.platform.colorImageView(binding.menuIconUploadFromApp);
         viewThemeUtils.platform.colorImageView(binding.menuIconDirectCameraUpload);
-        viewThemeUtils.platform.colorImageView(binding.menuIconScanDocUpload);
         viewThemeUtils.platform.colorImageView(binding.menuIconMkdir);
         viewThemeUtils.platform.colorImageView(binding.menuIconAddFolderInfo);
 
@@ -200,15 +193,6 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
             actions.directCameraUpload();
             dismiss();
         });
-
-        if (appScanOptionalFeature.isAvailable()) {
-            binding.menuScanDocUpload.setOnClickListener(v -> {
-                actions.scanDocUpload();
-                dismiss();
-            });
-        } else {
-            binding.menuScanDocUpload.setVisibility(View.GONE);
-        }
 
         binding.menuScanDocument.setOnClickListener(v -> {
             actions.scanDocument();

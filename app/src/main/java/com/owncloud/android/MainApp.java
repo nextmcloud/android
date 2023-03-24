@@ -117,11 +117,7 @@ import dagger.android.HasAndroidInjector;
 import de.cotech.hw.SecurityKeyManager;
 import de.cotech.hw.SecurityKeyManagerConfig;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.scanbot.sap.IScanbotSDKLicenseErrorHandler;
 import io.scanbot.sap.SdkFeature;
-import io.scanbot.sap.SdkLicenseInfo;
-import io.scanbot.sap.Status;
-import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.ScanbotSDKInitializer;
 import io.scanbot.sdk.core.contourdetector.ContourDetector;
 

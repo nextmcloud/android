@@ -34,8 +34,6 @@ import com.nextcloud.client.account.UserAccountManager
 import com.nextcloud.client.core.Clock
 import com.nextcloud.client.device.DeviceInfo
 import com.nextcloud.client.device.PowerManagementService
-import com.nextcloud.client.documentscan.GeneratePDFUseCase
-import com.nextcloud.client.documentscan.GeneratePdfFromImagesWork
 import com.nextcloud.client.integrations.deck.DeckApi
 import com.nextcloud.client.logger.Logger
 import com.nextcloud.client.network.ConnectivityService
@@ -72,8 +70,7 @@ class BackgroundJobFactory @Inject constructor(
     private val eventBus: EventBus,
     private val deckApi: DeckApi,
     private val viewThemeUtils: Provider<ViewThemeUtils>,
-    private val localBroadcastManager: Provider<LocalBroadcastManager>,
-    private val generatePdfUseCase: GeneratePDFUseCase
+    private val localBroadcastManager: Provider<LocalBroadcastManager>
 ) : WorkerFactory() {
 
     @SuppressLint("NewApi")
@@ -105,7 +102,6 @@ class BackgroundJobFactory @Inject constructor(
                 CalendarImportWork::class -> createCalendarImportWork(context, workerParameters)
                 FilesExportWork::class -> createFilesExportWork(context, workerParameters)
                 FilesUploadWorker::class -> createFilesUploadWorker(context, workerParameters)
-                GeneratePdfFromImagesWork::class -> createPDFGenerateWork(context, workerParameters)
                 ScanDocUploadWorker::class -> createScanDocUploadWork(context, workerParameters)
                 else -> null // caller falls back to default factory
             }
@@ -257,18 +253,6 @@ class BackgroundJobFactory @Inject constructor(
             localBroadcastManager.get(),
             context,
             params
-        )
-    }
-
-    private fun createPDFGenerateWork(context: Context, params: WorkerParameters): GeneratePdfFromImagesWork {
-        return GeneratePdfFromImagesWork(
-            appContext = context,
-            generatePdfUseCase = generatePdfUseCase,
-            viewThemeUtils = viewThemeUtils.get(),
-            notificationManager = notificationManager,
-            userAccountManager = accountManager,
-            logger = logger,
-            params = params
         )
     }
 

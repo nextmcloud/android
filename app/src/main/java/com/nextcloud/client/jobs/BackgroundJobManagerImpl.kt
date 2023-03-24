@@ -39,7 +39,6 @@ import androidx.work.workDataOf
 import com.google.common.util.concurrent.ListenableFuture
 import com.nextcloud.client.account.User
 import com.nextcloud.client.core.Clock
-import com.nextcloud.client.documentscan.GeneratePdfFromImagesWork
 import com.owncloud.android.datamodel.OCFile
 import com.nmc.android.jobs.ScanDocUploadWorker
 import java.util.Date
@@ -470,24 +469,6 @@ internal class BackgroundJobManagerImpl(
         return Transformations.map(workInfo) {
             it.map { fromWorkInfo(it) ?: JobInfo() }
         }
-    }
-
-    override fun startPdfGenerateAndUploadWork(
-        user: User,
-        uploadFolder: String,
-        imagePaths: List<String>,
-        pdfPath: String
-    ) {
-        val data = workDataOf(
-            GeneratePdfFromImagesWork.INPUT_IMAGE_FILE_PATHS to imagePaths.toTypedArray(),
-            GeneratePdfFromImagesWork.INPUT_OUTPUT_FILE_PATH to pdfPath,
-            GeneratePdfFromImagesWork.INPUT_UPLOAD_ACCOUNT to user.accountName,
-            GeneratePdfFromImagesWork.INPUT_UPLOAD_FOLDER to uploadFolder
-        )
-        val request = oneTimeRequestBuilder(GeneratePdfFromImagesWork::class, JOB_PDF_GENERATION)
-            .setInputData(data)
-            .build()
-        workManager.enqueue(request)
     }
 
     override fun scheduleImmediateScanDocUploadJob(
