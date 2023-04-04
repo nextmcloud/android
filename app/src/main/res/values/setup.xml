@@ -118,8 +118,8 @@
     <string name="push_server_url" translatable="false"></string>
 
     <!-- if contains values, will be used to show branding title below app icon in splash screen -->
-    <string name="splashScreenBold"></string>
-    <string name="splashScreenNormal"></string>
+    <string name="splashScreenBold">Magenta</string>
+    <string name="splashScreenNormal">CLOUD</string>
 
     <!-- Dev settings -->
     <string name="dev_link">https://download.nextcloud.com/android/dev/nextcloud-dev-</string>
