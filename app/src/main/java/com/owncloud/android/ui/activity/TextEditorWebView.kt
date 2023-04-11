@@ -75,9 +75,9 @@ class TextEditorWebView : EditorWebView() {
             WebSettingsCompat.setForceDark(getWebView().settings, WebSettingsCompat.FORCE_DARK_ON)
         }
 
-        getWebView().setDownloadListener { url, _, _, _, _ -> downloadFile(Uri.parse(url)) }
+        webView.setDownloadListener { url, _, _, _, _ -> downloadFile(Uri.parse(url)) }
 
-        loadUrl(intent.getStringExtra(ExternalSiteWebView.EXTRA_URL))
+        loadUrl(null)
     }
 
     override fun loadUrl(url: String?) {
