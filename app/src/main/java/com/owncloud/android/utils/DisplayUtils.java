@@ -952,11 +952,10 @@ public final class DisplayUtils {
         stopShimmer(shimmerThumbnail, thumbnailView);
 
         boolean isAutoUploadFolder = SyncedFolderProvider.isAutoUploadFolder(syncedFolderProvider, file, user);
-        boolean isDarkModeActive = preferences.isDarkModeEnabled();
 
         final var overlayIconId = file.getFileOverlayIconId(isAutoUploadFolder);
-        final var fileIcon = MimeTypeUtil.getFolderIcon(isDarkModeActive, overlayIconId, context, viewThemeUtils);
-        thumbnailView.setImageDrawable(fileIcon);
+        // NMC Customization: No overlay icon will be used. Directly using folder icons
+        thumbnailView.setImageDrawable(ContextCompat.getDrawable(context, overlayIconId));
     }
 
     private static void setThumbnailFromCache(OCFile file, ImageView thumbnailView, FileDataStorageManager storageManager, List<ThumbnailsCacheManager.ThumbnailGenerationTask> asyncTasks, boolean gridView, LoaderImageView shimmerThumbnail, User user, AppPreferences preferences, Context context, ViewThemeUtils viewThemeUtils) {

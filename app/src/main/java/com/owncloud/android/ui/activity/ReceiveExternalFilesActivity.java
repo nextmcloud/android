@@ -98,6 +98,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -770,6 +771,10 @@ public class ReceiveExternalFilesActivity extends FileActivity
         }
 
         List<OCFile> files = getStorageManager().getFolderContent(mFile, false);
+
+        // NMC-2893 Task
+        // Filtering and showing only files which are folder
+        files = files.stream().filter(OCFile::isFolder).collect(Collectors.toList());
 
         if (files.isEmpty()) {
             setMessageForEmptyList(R.string.file_list_empty_headline, R.string.empty,
