@@ -729,14 +729,8 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 });
             }
         } else {
-            boolean isAutoUpload = SyncedFolderProvider.isAutoUploadFolder(syncedFolderProvider, file, user);
-            boolean isDarkModeActive = preferences.isDarkModeEnabled();
-            Drawable icon = MimeTypeUtil.getOCFileIcon(file, context, viewThemeUtils, isAutoUpload, isDarkModeActive);
-            holder.getThumbnail().setImageDrawable(icon);
-
-            if (!file.isFolder()) {
-                ViewExtensionsKt.makeRounded(holder.getThumbnail(), context, 4);
-            }
+            // NMC Customization: no need to apply tinting to folders
+            holder.getThumbnail().setColorFilter(null);
         }
     }
 
