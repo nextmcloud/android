@@ -38,6 +38,7 @@ import com.nextcloud.client.account.CurrentAccountProvider
 import com.nextcloud.client.core.AsyncRunner
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.di.ViewModelFactory
+import com.nmc.android.utils.KeyboardUtils
 import com.nextcloud.client.network.ClientFactory
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ListFragmentBinding
@@ -251,6 +252,7 @@ class UnifiedSearchFragment : Fragment(), Injectable, UnifiedSearchListInterface
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
+        KeyboardUtils.hideKeyboardFrom(requireContext(), binding.root)
         vm.setQuery(query)
         vm.initialQuery()
         return true
