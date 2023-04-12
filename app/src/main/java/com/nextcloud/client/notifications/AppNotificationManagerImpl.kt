@@ -40,7 +40,8 @@ class AppNotificationManagerImpl @Inject constructor(
     private fun builder(channelId: String): NotificationCompat.Builder {
         val builder =
             NotificationCompat.Builder(context, channelId)
-        viewThemeUtils.get().androidx.themeNotificationCompatBuilder(context, builder)
+        // NMC Customization
+        builder.color = context.resources.getColor(R.color.primary, null)
         return builder
     }
 
