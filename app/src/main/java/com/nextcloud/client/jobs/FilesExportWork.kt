@@ -161,7 +161,8 @@ class FilesExportWork(
             .setContentTitle(message)
             .setAutoCancel(true)
             .addAction(NotificationCompat.Action(null, context.getString(R.string.locate_folder), pendingIntent))
-            .also { viewThemeUtils.androidx.themeNotificationCompatBuilder(context, it) }
+            // NMC Customization
+            .also { it.setColor(context.resources.getColor(R.color.primary, null)) }
             .build()
 
         notificationManager.notify(NOTIFICATION_ID, notification)
