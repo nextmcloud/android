@@ -25,9 +25,8 @@ object MimeTypeUtil {
     ): Drawable? {
         val iconId = getFileTypeIconId(mimetype, filename)
 
+        // NMC Customization: no tinting
         return ContextCompat.getDrawable(context, iconId)
-            ?.mutate()
-            ?.tintIfZip(iconId, context, viewThemeUtils)
     }
 
     /**
@@ -43,11 +42,14 @@ object MimeTypeUtil {
     @JvmStatic
     fun getDefaultFolderIcon(context: Context, viewThemeUtils: ViewThemeUtils): Drawable {
         val drawable = checkNotNull(ContextCompat.getDrawable(context, R.drawable.folder))
-        viewThemeUtils.platform.tintDrawable(context, drawable, ColorRole.PRIMARY)
 
         return drawable
     }
 
+    // NMC Note: This function won't be used in NMC as we are using different folder icons with inbuilt overlay.
+    // So this function is of no use for us. changed access to PRIVATE,
+    // in case if NC will use this function in more areas then we will get compile error which can be fixed by us
+    // so that UI won't be impacted.
     fun getFolderIcon(
         isDarkModeActive: Boolean,
         overlayIconId: Int?,
