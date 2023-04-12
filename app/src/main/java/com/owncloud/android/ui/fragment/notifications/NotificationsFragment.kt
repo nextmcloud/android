@@ -249,7 +249,8 @@ class NotificationsFragment :
         val messageRes = when {
             pushUrl.isEmpty() -> R.string.push_notifications_not_implemented
             isUsingOldLogin() -> R.string.push_notifications_old_login
-            isPushValueEmpty() -> R.string.push_notifications_temp_error
+            // NMC-6225: disable showing this notification
+            // isPushValueEmpty() -> R.string.push_notifications_temp_error
             else -> return
         }
 
