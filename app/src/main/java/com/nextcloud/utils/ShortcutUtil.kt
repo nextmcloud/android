@@ -15,6 +15,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
+import androidx.core.content.ContextCompat
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.createBitmap
@@ -60,10 +61,13 @@ class ShortcutUtil @Inject constructor(private val mContext: Context) {
                 icon = IconCompat.createWithAdaptiveBitmap(thumbnail)
             } else if (file.isFolder) {
                 val isAutoUploadFolder = SyncedFolderProvider.isAutoUploadFolder(syncedFolderProvider, file, user)
-                val isDarkModeActive = syncedFolderProvider.preferences.isDarkModeEnabled
 
                 val overlayIconId = file.getFileOverlayIconId(isAutoUploadFolder)
-                val drawable = MimeTypeUtil.getFolderIcon(isDarkModeActive, overlayIconId, mContext, viewThemeUtils)
+                // NMC Customization: No overlay icon will be used. Directly using folder icons
+                val drawable = ContextCompat.getDrawable(mContext, overlayIconId) ?: MimeTypeUtil.getDefaultFolderIcon(
+                    mContext,
+                    viewThemeUtils
+                )
                 val bitmapIcon = drawable.toBitmap()
                 icon = IconCompat.createWithBitmap(bitmapIcon)
             } else {
