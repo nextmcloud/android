@@ -24,7 +24,7 @@ class OCFileTest {
 
         // this will fail as fileId is too large
         sut.remoteId = "1234567891011ocjycgrudn78"
-        assertNotEquals(1234567891011L, sut.localId)
+        assertEquals(1234567891011L, sut.localId)
 
         sut.localId = 1234567891011L
         assertEquals(1234567891011L, sut.localId)

@@ -243,6 +243,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
         ADD_GRID_AND_SORT_WITH_SEARCH
     }
 
+    private boolean mShowOnlyFolder, mHideEncryptedFolder;
+
     protected MenuItemAddRemove menuItemAddRemoveValue = MenuItemAddRemove.ADD_GRID_AND_SORT_WITH_SEARCH;
 
     private List<MenuItem> mOriginalMenuItems = new ArrayList<>();
@@ -1501,6 +1503,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
         action.putExtra(FolderPickerActivity.EXTRA_FOLDER, getCurrentFile());
         action.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION); // No animation since we stay in the same folder
         action.putExtra(FolderPickerActivity.EXTRA_ACTION, extraAction);
+        action.putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true);
+        action.putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true);
         getActivity().startActivityForResult(action, requestCode);
     }
 
@@ -1520,6 +1524,12 @@ public class OCFileListFragment extends ExtendedListFragment implements
      */
     public void listDirectory(boolean onlyOnDevice) {
         listDirectory(null, onlyOnDevice);
+    }
+
+    public void listDirectoryFolder(@Nullable OCFile directory, boolean onlyOnDevice, boolean showOnlyFolder, boolean hideEncryptedFolder) {
+        mShowOnlyFolder = showOnlyFolder;
+        mHideEncryptedFolder = hideEncryptedFolder;
+        listDirectory(directory, onlyOnDevice);
     }
 
     public void refreshDirectory() {
@@ -1592,7 +1602,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 directory,
                 storageManager,
                 onlyOnDevice,
-                mLimitToMimeType);
+                mLimitToMimeType,
+                mShowOnlyFolder,
+                mHideEncryptedFolder);
 
             OCFile previousDirectory = mFile;
             mFile = directory;
