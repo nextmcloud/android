@@ -73,7 +73,9 @@ class FileMenuFilter internal constructor(
         if (isEditHidden(capability)) add(R.id.action_edit)
         if (!selection.isSingleSelection || synchronizing || containsEncryptedOrLocked) add(R.id.action_rename_file)
         if (synchronizing || containsEncryptedOrLocked) add(R.id.action_move_or_copy)
-        if (synchronizing || selection.containsLocked || selection.containsEncryptedFolderContent()) {
+        if ((synchronizing || selection.containsLocked || selection.containsEncryptedFolderContent()) &&
+            // NMC: show delete option for encrypted sub-folder
+            !selection.hasEncryptedParent()) {
             add(R.id.action_remove_file)
         }
     }
@@ -90,7 +92,9 @@ class FileMenuFilter internal constructor(
 
         if (inSingleFileFragment || allFilesSelected || overflowMenu) add(R.id.action_select_all_action_menu)
         if (inSingleFileFragment || overflowMenu) add(R.id.action_deselect_all_action_menu)
-        if (!selection.isSingleSelection) add(R.id.action_see_details)
+        if (!selection.isSingleSelection || selection.containsEncryptedFolder || selection.containsEncryptedFile) {
+            add(R.id.action_see_details)
+        }
         if (isPinToHomeHidden()) add(R.id.action_pin_to_homescreen)
     }
 
@@ -113,8 +117,22 @@ class FileMenuFilter internal constructor(
     }
 
     private fun getHiddenFavoriteActions(synchronizing: Boolean) = buildList {
-        if (synchronizing || selection.allFavorites) add(R.id.action_favorite)
-        if (synchronizing || selection.noneFavorite) add(R.id.action_unset_favorite)
+        if (
+            synchronizing ||
+            selection.allFavorites ||
+            selection.containsEncryptedFile ||
+            selection.containsEncryptedFolder
+        ) {
+            add(R.id.action_favorite)
+        }
+        if (
+            synchronizing ||
+            selection.noneFavorite ||
+            selection.containsEncryptedFile ||
+            selection.containsEncryptedFolder
+        ) {
+            add(R.id.action_unset_favorite)
+        }
     }
 
     private fun getHiddenEncryptionActions(endToEndEncryptionEnabled: Boolean) = buildList {
@@ -174,7 +192,12 @@ class FileMenuFilter internal constructor(
         !selection.isSingleSelection || !ShortcutManagerCompat.isRequestPinShortcutSupported(context)
 
     private fun isShareFileHidden(capability: OCCapability): Boolean {
-        if (!selection.isSingleSelection || selection.containsEncryptedFile || selection.hasEncryptedParent()) {
+        if (
+            !selection.isSingleSelection ||
+            selection.containsEncryptedFile ||
+            selection.hasEncryptedParent() ||
+            selection.containsEncryptedFolder
+        ) {
             return true
         }
 
@@ -199,7 +222,7 @@ class FileMenuFilter internal constructor(
 
     private fun isEncryptHidden(endToEndEncryptionEnabled: Boolean): Boolean {
         if (!endToEndEncryptionEnabled || !selection.isSingleFolder || selection.isEncryptedFolder) return true
-        if (selection.isGroupFolder || selection.containsShared) return true
+        if (selection.isGroupFolder || selection.containsShared || isInSubFolder()) return true
 
         return !selection.isEmptyFolder()
     }
@@ -223,5 +246,11 @@ class FileMenuFilter internal constructor(
         val userId = userId ?: return false
 
         return canUserUnlockFile(userId, selection.firstFile)
+    }
+
+    private fun isInSubFolder(): Boolean {
+        val parent = storageManager.getFileById(selection.firstFile.parentId) ?: return false
+
+        return parent.remotePath != OCFile.ROOT_PATH
     }
 }

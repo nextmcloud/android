@@ -23,6 +23,7 @@ import com.owncloud.android.operations.e2e.E2ECertificateRenewalResult
 import com.owncloud.android.operations.e2e.E2ECertificateRenewalService
 import com.owncloud.android.operations.e2e.E2EDeletionService
 import com.owncloud.android.ui.activity.RequestCredentialsActivity
+import com.owncloud.android.ui.activity.SettingsActivity
 import com.owncloud.android.ui.activity.SetupEncryptionActivity
 import com.owncloud.android.ui.activity.settings.util.bindOrRemove
 import com.owncloud.android.ui.activity.settings.util.isCredentialCheckSuccessful
@@ -56,12 +57,18 @@ class E2ESettingsCategory(
     override fun setup() {
         val category = fragment.findPreference<PreferenceCategory>(MORE_CATEGORY_KEY) ?: return
         val isSetUp = FileOperationsHelper.isEndToEndEncryptionSetup(activity, user)
+        val isE2EAvailable = CapabilityUtils.getCapability(activity).endToEndEncryption.isTrue
         val keysExist = CapabilityUtils.getCapability(activity).endToEndEncryptionKeysExist
         val isDebugActionAvailable = BuildConfig.DEBUG && isSetUp
 
+        // Keep setup action hidden when server-side E2EE is not available.
+        if (!isE2EAvailable) {
+            category.removePreferenceRecursively(SETUP_E2E_KEY)
+        }
+
         category.bindOrRemove(
             fragment.findPreference<Preference>(SETUP_E2E_KEY),
-            !isSetUp && !keysExist.isTrue && !keysExist.isUnknown
+            !isSetUp && !keysExist.isTrue
         ) { runIfConnected(::startEncryptionSetup) }
 
         category.bindOrRemove(
@@ -150,7 +157,7 @@ class E2ESettingsCategory(
             .setCancelable(true)
             .setNegativeButton(R.string.common_cancel) { dialog, _ -> dialog.dismiss() }
             .setPositiveButton(R.string.confirm_removal) { dialog, _ ->
-                removeE2E(category, REMOVE_E2E_KEY, MNEMONIC_KEY)
+                removeE2E(category, REMOVE_E2E_KEY, MNEMONIC_KEY, restartActivity = true)
                 dialog.dismiss()
             }
             .show()
@@ -164,10 +171,25 @@ class E2ESettingsCategory(
         }
     }
 
-    private fun removeE2E(category: PreferenceCategory, vararg preferenceKeys: String) {
+    private fun removeE2E(
+        category: PreferenceCategory,
+        vararg preferenceKeys: String,
+        restartActivity: Boolean = false
+    ) {
         EncryptionUtils.removeE2E(arbitraryDataProvider, user)
 
         preferenceKeys.forEach(category::removePreferenceRecursively)
+
+        // NMC: restart to show the preferences correctly
+        // if (restartActivity) restartSettingsActivity()
+    }
+
+    private fun restartSettingsActivity() {
+        val intent = Intent(activity, SettingsActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+
+        activity.startActivity(intent)
     }
 
     private fun renewCertificate(preference: Preference) = runIfConnected {
