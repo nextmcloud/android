@@ -117,3 +117,7 @@ fun OCFile.isLocalETagOutdated(): Boolean {
     val serverETag = etagInConflict
     return !serverETag.isNullOrEmpty() && etag.eTagChanged(serverETag)
 }
+
+// NMC method to filter only folders with/without e2ee folders
+fun List<OCFile>.filterByFolder(hideEncryptedFolder: Boolean = false): List<OCFile> =
+    filter { it.isFolder && (!hideEncryptedFolder || !it.isEncrypted) }
