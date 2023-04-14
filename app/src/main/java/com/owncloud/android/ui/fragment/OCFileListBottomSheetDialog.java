@@ -86,9 +86,8 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
         binding.addToCloud.setText(getContext().getResources().getString(R.string.add_to_cloud,
                                                                          themeUtils.getDefaultDisplayNameForRootFolder(getContext())));
 
-        OCCapability capability = fileActivity.getCapabilities();
-        if (capability != null &&
-            capability.getRichDocuments().isTrue() &&
+        OCCapability capability = fileActivity.getStorageManager().getCapability(user.getAccountName());
+        if (capability.getRichDocuments().isTrue() &&
             capability.getRichDocumentsDirectEditing().isTrue() &&
             capability.getRichDocumentsTemplatesAvailable().isTrue() &&
             !file.isEncrypted()) {
@@ -136,6 +135,21 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
             binding.menuDirectCameraUpload.setVisibility(View.GONE);
         }
 
+        if (capability.getEndToEndEncryption().isTrue()) {
+            // NMC-4348 fix
+            // show encrypted folder option for root and e2ee folder
+            binding.menuEncryptedMkdir.setVisibility((file.isEncrypted()
+                || OCFile.ROOT_PATH.equals(file.getRemotePath()))
+                                                         ? View.VISIBLE
+                                                         : View.GONE);
+            // for e2ee folder don't show normal folder option
+            if (file.isEncrypted()) {
+                binding.menuMkdir.setVisibility(View.GONE);
+            }
+        } else {
+            binding.menuEncryptedMkdir.setVisibility(View.GONE);
+        }
+
         // create rich workspace
         if (editorUtils.isEditorAvailable(user,
                                           MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN) &&
@@ -168,6 +182,18 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
 
         binding.menuMkdir.setOnClickListener(v -> {
             actions.createFolder();
+            dismiss();
+        });
+
+        binding.menuEncryptedMkdir.setOnClickListener(v -> {
+            // NMC-4348 fix
+            // for e2ee folder call normal folder creation
+            // it will auto handle creating e2ee sub folder
+            if (file.isEncrypted()) {
+                actions.createFolder();
+            } else {
+                actions.createEncryptedFolder();
+            }
             dismiss();
         });
 
