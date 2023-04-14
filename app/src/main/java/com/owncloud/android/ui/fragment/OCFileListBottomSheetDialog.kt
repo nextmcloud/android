@@ -109,6 +109,7 @@ class OCFileListBottomSheetDialog(
 
         applyBranding()
 
+        checkTemplateVisibility()
         initCreatorContainer()
 
         if (!deviceInfo.hasCamera(context)) {
@@ -135,46 +136,41 @@ class OCFileListBottomSheetDialog(
         }
     }
 
-    private fun checkCreateEncryptedFolderVisibility() {
-        fileActivity.capabilities.ifPresent { capabilities ->
-            binding.menuEncryptedMkdir.setVisibleIf(!file.isEncrypted && capabilities.endToEndEncryption.isTrue)
+    private fun checkTemplateVisibility() {
+        val optionalCapability = fileActivity.capabilities
+        if (optionalCapability.isEmpty) {
+            return
         }
-    }
 
-    private fun applyBranding() {
-        viewThemeUtils.material.run {
-            binding.run {
-                colorMaterialButtonContent(menuUploadFiles, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuUploadFromApp, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuDirectCameraUpload, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuScanDocUpload, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuMkdir, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuEncryptedMkdir, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuCreateRichWorkspace, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuMoreDocuments, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuBack, ColorRole.PRIMARY)
-
-                viewThemeUtils.platform.tintDrawable(
-                    context,
-                    binding.menuMoreDocumentsExpand.drawable,
-                    ColorRole.PRIMARY
-                )
+        if (optionalCapability.get().endToEndEncryption.isTrue) {
+            // NMC-4348 fix
+            // show encrypted folder option for root and e2ee folder
+            binding.menuEncryptedMkdir.visibility =
+                if (file.isEncrypted || file.isRootDirectory)
+                    View.VISIBLE
+                else
+                    View.GONE
+            // for e2ee folder don't show normal folder option
+            if (file.isEncrypted) {
+                binding.menuMkdir.visibility = View.GONE
             }
+        } else {
+            binding.menuEncryptedMkdir.visibility = View.GONE
         }
 
-        viewThemeUtils.platform.colorViewBackground(binding.bottomSheet, ColorRole.SURFACE)
+        if (file.isEncrypted) {
+            return
+        }
 
-        val textColor = ContextCompat.getColor(context, R.color.text_color)
+        val capability = optionalCapability.get()
+        if (!capability.isTemplateAvailable()) {
+            return
+        }
 
         binding.run {
-            menuUploadFiles.setTextColor(textColor)
-            menuUploadFromApp.setTextColor(textColor)
-            menuDirectCameraUpload.setTextColor(textColor)
-            menuScanDocUpload.setTextColor(textColor)
-            menuMkdir.setTextColor(textColor)
-            menuEncryptedMkdir.setTextColor(textColor)
-            menuCreateRichWorkspace.setTextColor(textColor)
-            menuMoreDocuments.setTextColor(textColor)
+            menuNewDocument.visibility = View.VISIBLE
+            menuNewSpreadsheet.visibility = View.VISIBLE
+            menuNewPresentation.visibility = View.VISIBLE
         }
     }
 
@@ -373,7 +369,11 @@ class OCFileListBottomSheetDialog(
             }
 
             menuEncryptedMkdir.setOnClickListener {
-                actions.createFolder(encrypted = true)
+                // NMC-4348 fix
+                // for e2e folder call normal folder creation
+                // it will auto handle creating e2e sub folder
+                // for root path the value will be true and will create e2e folder
+                actions.createFolder(!file.isEncrypted)
                 dismiss()
             }
 
