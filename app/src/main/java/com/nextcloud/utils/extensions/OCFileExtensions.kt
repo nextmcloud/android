@@ -105,3 +105,7 @@ fun OCFile.createStoragePath(accountName: String) {
 
     storagePath = savePath
 }
+
+// NMC method to filter only folders with/without e2ee folders
+fun List<OCFile>.filterByFolder(hideEncryptedFolder: Boolean = false): List<OCFile> =
+    filter { it.isFolder && (!hideEncryptedFolder || !it.isEncrypted) }
