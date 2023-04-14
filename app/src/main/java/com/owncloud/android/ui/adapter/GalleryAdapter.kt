@@ -388,6 +388,8 @@ class GalleryAdapter(
         storageManager: FileDataStorageManager,
         onlyOnDevice: Boolean,
         mLimitToMimeType: String,
+        showOnlyFolder: Boolean,
+        hideEncryptedFolder: Boolean,
         onSwapped: () -> Unit
     ) = Unit
 
