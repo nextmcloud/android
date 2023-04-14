@@ -335,6 +335,10 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Nullable
     public OCFile getItem(int position) {
+        if (position == -1) {
+            return null;
+        }
+
         int newPosition = position;
 
         if (shouldShowHeader() && position > 0) {
@@ -824,7 +828,9 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         @NonNull OCFile directory,
         @NonNull FileDataStorageManager updatedStorageManager,
         boolean onlyOnDevice,
-        @NonNull String limitToMimeType) {
+        @NonNull String limitToMimeType,
+        boolean showOnlyFolder,
+        boolean hideEncryptedFolder) {
 
         this.onlyOnDevice = onlyOnDevice;
 
@@ -848,6 +854,8 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                adapterDataProvider,
                                onlyOnDevice,
                                limitToMimeType,
+                               showOnlyFolder,
+                               hideEncryptedFolder,
                                preferences,
                                userId,
                                (newList, fileSortOrder) ->
