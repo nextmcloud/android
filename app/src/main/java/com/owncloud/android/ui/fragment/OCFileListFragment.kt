@@ -229,6 +229,9 @@ open class OCFileListFragment :
         ADD_GRID_AND_SORT_WITH_SEARCH
     }
 
+    private var mShowOnlyFolder = false
+    private var mHideEncryptedFolder: Boolean = false
+
     fun requireContainerActivity(): ContainerActivity =
         checkNotNull(containerActivity) { "Fragment $this is not attached to a ContainerActivity" }
     //endregion
@@ -984,6 +987,7 @@ open class OCFileListFragment :
             putExtra(FolderPickerActivity.EXTRA_FOLDER, currentFile)
             addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             putExtra(FolderPickerActivity.EXTRA_ACTION, FolderPickerActivity.MOVE_OR_COPY)
+            putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true)
         }
         activity.startActivityForResult(action, FileDisplayActivity.REQUEST_CODE__MOVE_OR_COPY_FILES)
     }
@@ -1126,7 +1130,11 @@ open class OCFileListFragment :
 
         Log_OC.i(TAG, "Listing directory ${directoryToList.decryptedRemotePath}, onlyOnDevice=$onlyOnDevice")
         val previousDirectory = currentFile
-        adapter.swapDirectory(accountManager.user, directoryToList, storageManager, onlyOnDevice, mimeType) {
+        adapter.swapDirectory(
+            accountManager.user, directoryToList, storageManager, onlyOnDevice, mimeType,
+            mShowOnlyFolder,
+            mHideEncryptedFolder
+        ) {
             if (view == null) return@swapDirectory
             fileListLayoutManager?.setLayoutViewMode()
             scrollToHighlightedFileOrTop(adapter, highlightedFile, previousDirectory, directoryToList)
@@ -1164,6 +1172,17 @@ open class OCFileListFragment :
 
         Log_OC.d(TAG, "${candidate.remotePath} is not a folder, listing its parent instead")
         return storageManager.getFileById(candidate.parentId)
+    }
+
+    fun listDirectoryFolder(
+        directory: OCFile?,
+        onlyOnDevice: Boolean,
+        showOnlyFolder: Boolean,
+        hideEncryptedFolder: Boolean
+    ) {
+        mShowOnlyFolder = showOnlyFolder
+        mHideEncryptedFolder = hideEncryptedFolder
+        listDirectory(directory, onlyOnDevice)
     }
 
     fun refreshDirectory() {
