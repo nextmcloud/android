@@ -19,6 +19,11 @@ public interface OCFileListBottomSheetActions {
     void createFolder();
 
     /**
+     * creates an encrypted folder within the actual folder
+     */
+    void createEncryptedFolder();
+
+    /**
      * offers a file upload with the Android OS file picker to the current folder.
      */
     void uploadFromApp();
