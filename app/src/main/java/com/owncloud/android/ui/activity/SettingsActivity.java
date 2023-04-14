@@ -455,10 +455,14 @@ public class SettingsActivity extends PreferenceActivity
         Preference preference = findPreference("setup_e2e");
 
         if (preference != null) {
+
+            if (!CapabilityUtils.getCapability(this).getEndToEndEncryption().isTrue()) {
+                preferenceCategoryMore.removePreference(preference);
+                return;
+            }
+
             if (FileOperationsHelper.isEndToEndEncryptionSetup(this, user) ||
-                CapabilityUtils.getCapability(this).getEndToEndEncryptionKeysExist().isTrue() ||
-                CapabilityUtils.getCapability(this).getEndToEndEncryptionKeysExist().isUnknown()
-            ) {
+                CapabilityUtils.getCapability(this).getEndToEndEncryptionKeysExist().isTrue()) {
                 preferenceCategoryMore.removePreference(preference);
             } else {
                 preference.setOnPreferenceClickListener(p -> {
@@ -552,6 +556,9 @@ public class SettingsActivity extends PreferenceActivity
                 if (pMnemonic != null) {
                     preferenceCategoryMore.removePreference(pMnemonic);
                 }
+
+                // NMC: restart to show the preferences correctly
+                restartSettingsActivity();
 
                 dialog.dismiss();
             })
@@ -1050,8 +1057,8 @@ public class SettingsActivity extends PreferenceActivity
         } else if (requestCode == ACTION_SHOW_MNEMONIC && resultCode == RESULT_OK) {
             handleMnemonicRequest(data);
         } else if (requestCode == ACTION_E2E && data != null && data.getBooleanExtra(SetupEncryptionDialogFragment.SUCCESS, false)) {
-            Intent i = new Intent(this, SettingsActivity.class);
-            startActivity(i);
+            //restart to show the preferences correctly
+            restartSettingsActivity();
         } else if (requestCode == ExtendedSettingsActivityDialog.StorageLocation.getResultId() && data != null) {
             String newPath = data.getStringExtra(ExtendedSettingsActivityDialog.StorageLocation.getKey());
             if (storagePath != null && !storagePath.equals(newPath)) {
@@ -1071,6 +1078,13 @@ public class SettingsActivity extends PreferenceActivity
             final PreferenceCategory preferenceCategorySync = (PreferenceCategory) findPreference("sync");
             setupAllFilesAccessPreference(preferenceCategorySync);
         }
+    }
+
+    private void restartSettingsActivity() {
+        Intent i = new Intent(this, SettingsActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(i);
     }
 
     @VisibleForTesting
