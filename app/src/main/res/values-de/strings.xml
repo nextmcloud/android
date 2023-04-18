@@ -648,7 +648,7 @@
     <string name="screenshot_06_davdroid_subline">Synchronisiere mit DAVx5</string>
     <string name="search_error">Fehler beim Abrufen der Suchergebnisse</string>
     <string name="select_all">Alle auswählen</string>
-    <string name="select_media_folder">Medien-Ordner auswählen</string>
+    <string name="select_media_folder">Den Ordner \"Medien\" auswählen</string>
     <string name="select_one_template">Bitte eine Vorlage auswählen</string>
     <string name="select_template">Vorlage auswählen</string>
     <string name="send">Senden</string>
@@ -705,7 +705,7 @@
     <string name="shared_icon_shared_via_link">Über einen Link geteilt</string>
     <string name="shared_with_you_by">Geteilt mit Ihnen von %1$s</string>
     <string name="sharee_add_failed">Freigeben fehlgeschlagen</string>
-    <string name="show_images">Fotos anzeigen</string>
+    <string name="show_images">Bilder anzeigen</string>
     <string name="show_video">Videos anzeigen</string>
     <string name="signup_with_provider">Mit Provider anmelden</string>
     <string name="single_sign_on_request_token" formatted="true">Zulassen, dass %1$s auf Ihr Nextcloud Konto %2$s zugreifen darf?</string>

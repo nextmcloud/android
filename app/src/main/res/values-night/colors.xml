@@ -33,6 +33,8 @@
     <color name="grey_200">#818181</color>
     <color name="nc_grey">#222222</color>
     <color name="icon_on_nc_grey">#ffffff</color>
+    <color name="bottom_sheet_icon_color">@color/grey_30</color>
+    <color name="bottom_sheet_txt_color">@color/grey_0</color>
 
     <!-- Multiselect backgrounds -->
     <color name="action_mode_background">@color/appbar</color>
