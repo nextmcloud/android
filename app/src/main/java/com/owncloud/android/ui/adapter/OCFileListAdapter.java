@@ -54,7 +54,6 @@ import com.owncloud.android.databinding.ListItemBinding;
 import com.owncloud.android.datamodel.DecryptedFolderMetadata;
 import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
-import com.owncloud.android.datamodel.SyncedFolderProvider;
 import com.owncloud.android.datamodel.ThumbnailsCacheManager;
 import com.owncloud.android.datamodel.VirtualFolderType;
 import com.owncloud.android.db.ProviderMeta;
@@ -137,7 +136,6 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         Activity activity,
         @NonNull User user,
         AppPreferences preferences,
-        SyncedFolderProvider syncedFolderProvider,
         ComponentsGetter transferServiceGetter,
         OCFileListFragmentInterface ocFileListFragmentInterface,
         boolean argHideItemOptions,
@@ -175,8 +173,7 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                                         .getCapability(activity)
                                                         .getVersion()
                                                         .isShareesOnDavSupported(),
-                                                    viewThemeUtils,
-                                                    syncedFolderProvider);
+                                                    viewThemeUtils);
 
         // initialise thumbnails cache on background thread
         new ThumbnailsCacheManager.InitDiskCacheTask().execute();
