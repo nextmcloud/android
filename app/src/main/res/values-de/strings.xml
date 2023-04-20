@@ -977,4 +977,5 @@
         <item quantity="one">%d ausgewählt</item>
         <item quantity="other">%d ausgewählt</item>
     </plurals>
+    <string name="gallery_list_empty">Noch keine hochgeladene Fotos oder Videos vorhanden</string>
 </resources>
