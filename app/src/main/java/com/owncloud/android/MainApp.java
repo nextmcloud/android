@@ -35,6 +35,7 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.text.TextUtils;
 import android.view.WindowManager;
+import android.webkit.WebView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.appReview.InAppReviewHelper;
@@ -369,6 +370,8 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
         networkChangeReceiver = new NetworkChangeReceiver(this, connectivityService);
         registerNetworkChangeReceiver();
 
+        configureWebViewForMultiProcess();
+
         if (!MDMConfig.INSTANCE.sendFilesSupport(this)) {
             disableDocumentsStorageProvider();
         }
@@ -382,6 +385,16 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
         ComponentName componentName = new ComponentName(packageName, providerClassName);
         PackageManager packageManager = getPackageManager();
         packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+    }
+
+    // NMC-3964 fix
+    // crash was happening for Xiaomi Android 15 devices
+    private void configureWebViewForMultiProcess(){
+        String processName = getProcessName();
+        if (processName != null && !processName.equals(getPackageName())) {
+            // this ensures each process uses a unique directory, preventing conflicts.
+            WebView.setDataDirectorySuffix(processName);
+        }
     }
 
     private final LifecycleEventObserver lifecycleEventObserver = ((lifecycleOwner, event) -> {
