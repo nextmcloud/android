@@ -65,7 +65,7 @@
     <color name="login_text_hint_color">#7fC0E3</color>
 
     <!-- Multiaccount support -->
-    <bool name="multiaccount_support">true</bool>
+    <bool name="multiaccount_support">false</bool>
 
     <!-- Drawer options -->
     <bool name="recently_modified_enabled">false</bool>
