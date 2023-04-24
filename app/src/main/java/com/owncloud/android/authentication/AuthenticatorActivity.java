@@ -559,7 +559,13 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         if (accountSetupWebviewBinding != null && event.getAction() == KeyEvent.ACTION_DOWN &&
             keyCode == KeyEvent.KEYCODE_BACK) {
             if (accountSetupWebviewBinding.loginWebview.canGoBack()) {
-                accountSetupWebviewBinding.loginWebview.goBack();
+                // NMC-2602 Fix
+                // On back press "Webpage not available" error comes
+                // because login urls doesn't maintain the backstack hierarchy
+                // to solve it we are recreating the activity with the actual login url
+                // if user presses back from other urls which is not first or login url
+                // it will recreate the activity else it will finish the activity
+                recreate();
             } else {
                 finish();
             }
@@ -600,6 +606,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+
+                //scroll to top when url loads
+                //because directly loading Telekom login page it scrolls down automatically
+                view.scrollTo(0,0);
 
                 accountSetupWebviewBinding.loginWebviewProgressBar.setVisibility(View.GONE);
                 accountSetupWebviewBinding.loginWebview.setVisibility(View.VISIBLE);
