@@ -73,7 +73,7 @@
     <color name="login_text_hint_color">#7fC0E3</color>
 
     <!-- Multiaccount support -->
-    <bool name="multiaccount_support">true</bool>
+    <bool name="multiaccount_support">false</bool>
 
     <!-- Drawer options -->
     <bool name="recently_modified_enabled">false</bool>
@@ -142,8 +142,8 @@
     <string name="push_server_url" translatable="false"></string>
 
     <!-- if contains values, will be used to show branding title below app icon in splash screen -->
-    <string name="splashScreenBold"></string>
-    <string name="splashScreenNormal"></string>
+    <string name="splashScreenBold">Magenta</string>
+    <string name="splashScreenNormal">CLOUD</string>
 
     <!-- Geocoding -->
     <string name="osm_geocoder_url" translatable="false">https://nominatim.openstreetmap.org/</string>
