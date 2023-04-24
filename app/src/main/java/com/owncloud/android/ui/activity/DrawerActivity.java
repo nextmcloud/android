@@ -1392,7 +1392,8 @@ public abstract class DrawerActivity extends ToolbarActivity
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAccountRemovedEvent(AccountRemovedEvent event) {
-        restart();
+        //NMC customization
+        finishAffinity();
     }
 
     /**
