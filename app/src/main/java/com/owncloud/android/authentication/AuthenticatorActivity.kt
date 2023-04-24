@@ -22,6 +22,8 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -38,19 +40,13 @@ import android.widget.TextView.OnEditorActionListener
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.ColorInt
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.blikoon.qrcodescanner.QrCodeActivity
-import com.google.gson.Gson
 import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.account.UserAccountManager
 import com.nextcloud.client.device.DeviceInfo
@@ -58,32 +54,30 @@ import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.onboarding.FirstRunActivity
 import com.nextcloud.client.onboarding.OnboardingService
 import com.nextcloud.client.preferences.AppPreferences
-import com.nextcloud.repository.ClientRepository
 import com.nextcloud.utils.SnackbarUtil
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.mdm.MDMConfig
 import com.nextcloud.utils.text.LinkFormatter
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
+import com.owncloud.android.authentication.account.AuthenticatorAccountStore
+import com.owncloud.android.authentication.account.CredentialsVerifier
+import com.owncloud.android.authentication.dialog.LoginDialog
+import com.owncloud.android.authentication.loginurl.LoginDataUrlParser
+import com.owncloud.android.authentication.loginurl.LoginUrlInfo
 import com.owncloud.android.authentication.server.AuthenticatorUrlUtils.normalizeScheme
 import com.owncloud.android.authentication.server.AuthenticatorUrlUtils.normalizeUrlSuffix
 import com.owncloud.android.authentication.server.AuthenticatorUrlUtils.stripIndexPhpOrAppsFiles
 import com.owncloud.android.authentication.server.AuthenticatorUrlUtils.trimWebdavSuffix
 import com.owncloud.android.authentication.server.EnforcedServerPolicy
+import com.owncloud.android.authentication.signup.SignupWebViewLogin
 import com.owncloud.android.authentication.status.AuthenticatorStatus
 import com.owncloud.android.authentication.status.AuthenticatorStatusMapper
-import com.owncloud.android.authentication.account.AuthenticatorAccountStore
-import com.owncloud.android.authentication.account.CredentialsVerifier
 import com.owncloud.android.authentication.account.AuthenticatorViewModel
-import com.owncloud.android.authentication.dialog.LoginDialog
-import com.owncloud.android.authentication.loginflow.LoginBrowserLauncher
-import com.owncloud.android.authentication.loginflow.LoginFlowV2
-import com.owncloud.android.authentication.signup.SignupWebViewLogin
-import com.owncloud.android.authentication.loginurl.LoginDataUrlParser
-import com.owncloud.android.authentication.loginurl.LoginUrlInfo
 import com.owncloud.android.databinding.AccountSetupBinding
 import com.owncloud.android.databinding.AccountSetupWebviewBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
+import com.owncloud.android.lib.common.OwnCloudClientFactory
 import com.owncloud.android.lib.common.OwnCloudCredentials
 import com.owncloud.android.lib.common.OwnCloudCredentialsFactory
 import com.owncloud.android.lib.common.UserInfo
@@ -94,6 +88,8 @@ import com.owncloud.android.lib.common.operations.RemoteOperation
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.common.operations.RemoteOperationResult.ResultCode
 import com.owncloud.android.lib.common.utils.Log_OC
+import com.owncloud.android.lib.resources.status.GetCapabilitiesRemoteOperation
+import com.owncloud.android.lib.resources.status.OCCapability
 import com.owncloud.android.lib.resources.status.OwnCloudVersion
 import com.owncloud.android.lib.resources.users.GetUserInfoRemoteOperation
 import com.owncloud.android.operations.DetectAuthenticationMethodOperation.AuthenticationMethod
@@ -144,9 +140,6 @@ open class AuthenticatorActivity :
     @Inject
     lateinit var viewThemeUtilsFactory: ViewThemeUtils.Factory
 
-    @Inject
-    lateinit var clientRepository: ClientRepository
-
     @get:VisibleForTesting
     var accountSetupBinding: AccountSetupBinding? = null
         private set
@@ -155,10 +148,8 @@ open class AuthenticatorActivity :
     protected val loginDialog = LoginDialog(this)
     private lateinit var viewThemeUtils: ViewThemeUtils
     private val handler = Handler(Looper.getMainLooper())
-    private val gson = Gson()
     private val statusMapper by lazy { AuthenticatorStatusMapper(resources) }
     private val accountStore by lazy { AuthenticatorAccountStore(this, AccountManager.get(this), accountManager) }
-    private val loginFlow by lazy { LoginFlowV2(clientRepository, lifecycleScope, ::completeLoginFlow) }
 
     private var authenticatorAction = ACTION_CREATE
     private var account: Account? = null
@@ -189,6 +180,10 @@ open class AuthenticatorActivity :
     private val isAdditionalAccountForbidden: Boolean
         get() = !MDMConfig.multiAccountSupport(this) && accountManager.accounts.size == 1
 
+    @SuppressLint("ResourceAsColor")
+    @ColorInt
+    private var primaryColor = R.color.primary
+
     // region Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -214,8 +209,12 @@ open class AuthenticatorActivity :
         }
 
         registerBackNavigation()
-        startInitialLogin(savedInstanceState)
-        resumePendingCredentialsCheck()
+        val webLoginUrl = mdmWebLoginUrl() ?: providerWebLoginUrl() ?: brandedWebLoginUrl()
+        if (webLoginUrl != null) {
+            startSignupWebViewLogin(webLoginUrl, false)
+        } else {
+            initServerUrlLogin(savedInstanceState)
+        }
 
         val actionName = if (authenticatorAction == ACTION_CREATE) "create account" else "update credentials"
         val isWebViewLogin = accountSetupWebviewBinding != null
@@ -223,7 +222,6 @@ open class AuthenticatorActivity :
             TAG,
             "Started, action=$actionName, recreated=${savedInstanceState != null}, webViewLogin=$isWebViewLogin"
         )
-        ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleEventObserver)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -235,7 +233,6 @@ open class AuthenticatorActivity :
         serverInfo.mVersion?.let { outState.putString(KEY_OC_VERSION, it.version) }
         outState.putString(KEY_SERVER_AUTH_METHOD, serverInfo.mAuthMethod.name)
         outState.putBoolean(KEY_AUTH_IS_FIRST_ATTEMPT_TAG, isFirstAuthAttempt)
-        loginFlow.pendingAuthObjectJson?.let { outState.putString(KEY_LOGIN_FLOW_AUTH_OBJECT, it) }
         saveSignupWebViewState(outState)
     }
 
@@ -279,7 +276,7 @@ open class AuthenticatorActivity :
         }
 
         if (intent.getBooleanExtra(EXTRA_USE_PROVIDER_AS_WEBLOGIN, false)) {
-            startSignupWebViewLogin()
+            startSignupWebViewLogin(getString(R.string.provider_registration_server), true)
         }
     }
 
@@ -315,7 +312,6 @@ open class AuthenticatorActivity :
             unbindService(it)
             operationsServiceBinder = null
         }
-        ProcessLifecycleOwner.get().lifecycle.removeObserver(lifecycleEventObserver)
         super.onDestroy()
     }
 
@@ -323,7 +319,13 @@ open class AuthenticatorActivity :
         onBackPressedDispatcher.addCallback(this) {
             val webView = accountSetupWebviewBinding?.loginWebview
             if (webView?.canGoBack() == true) {
-                webView.goBack()
+                // NMC-2602 Fix
+                // On back press "Webpage not available" error comes
+                // because login urls doesn't maintain the backstack hierarchy
+                // to solve it we are recreating the activity with the actual login url
+                // if user presses back from other urls which is not first or login url
+                // it will recreate the activity else it will finish the activity
+                recreate()
                 return@addCallback
             }
 
@@ -344,54 +346,17 @@ open class AuthenticatorActivity :
         }
     }
 
+    private fun providerWebLoginUrl(): String? = if (intent.getBooleanExtra(EXTRA_USE_PROVIDER_AS_WEBLOGIN, false)) {
+        getString(R.string.provider_registration_server)
+    } else {
+        null
+    }
+
     private fun mdmWebLoginUrl(): String? {
         if (!MainApp.isClientBrandedPlus) {
             return null
         }
         return MDMConfig.getBaseUrl(this).takeIf { it.isNotEmpty() }?.plus(WEB_LOGIN)
-    }
-
-    private fun startInitialLogin(savedInstanceState: Bundle?) {
-        mdmWebLoginUrl()?.let {
-            startWebLoginFlow(it, savedInstanceState)
-            return
-        }
-
-        if (intent.getBooleanExtra(EXTRA_USE_PROVIDER_AS_WEBLOGIN, false)) {
-            startSignupWebViewLogin(savedInstanceState)
-            return
-        }
-
-        brandedWebLoginUrl()?.let {
-            startWebLoginFlow(it, savedInstanceState)
-            return
-        }
-
-        initServerUrlLogin(savedInstanceState)
-    }
-
-    private fun startWebLoginFlow(url: String, savedInstanceState: Bundle?) {
-        if (restorePendingLoginFlow(savedInstanceState)) {
-            return
-        }
-
-        inflateWebViewLayout()
-        if (viewModel.credentials != null) {
-            return
-        }
-
-        anonymouslyPostLoginRequest(url)
-    }
-
-    private fun resumePendingCredentialsCheck() {
-        val credentials = viewModel.credentials ?: return
-        if (waitingForOpId != NO_PENDING_OPERATION) {
-            return
-        }
-
-        Log_OC.d(TAG, "Login: resuming check of received credentials after activity recreation")
-        serverInfo.mBaseUrl = normalizeUrlSuffix(credentials.server)
-        isServerCheckPendingServiceBinding = true
     }
 
     private fun brandedWebLoginUrl(): String? = getString(R.string.webview_login_url)
@@ -422,11 +387,10 @@ open class AuthenticatorActivity :
         }
 
         initServerInfo(savedInstanceState)
-        restorePendingLoginFlow(savedInstanceState)
     }
 
     private fun initOverallUi(binding: AccountSetupBinding) {
-        binding.hostUrlContainer.setEndIconOnClickListener { checkServerFromInput() }
+        binding.hostUrlContainer.setEndIconOnClickListener { checkOcServer() }
         binding.hostUrlInputHelperText.text =
             getString(R.string.login_url_helper_text, getString(R.string.app_name))
 
@@ -460,6 +424,7 @@ open class AuthenticatorActivity :
         showAuthStatus()
         binding.hostUrlFrame.visibility = View.GONE
         binding.hostUrlInputHelperText.visibility = View.GONE
+        binding.scanQr.visibility = View.GONE
         binding.serversSpinner.visibility = View.VISIBLE
 
         val enforcedServers = EnforcedServerPolicy.parse(getString(R.string.enforce_servers))
@@ -478,7 +443,7 @@ open class AuthenticatorActivity :
                     return
                 }
                 accountSetupBinding?.hostUrlInput?.setText(url)
-                checkServerFromInput()
+                checkOcServer()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
@@ -532,127 +497,9 @@ open class AuthenticatorActivity :
     }
     // endregion
 
-    // region LoginFlow
-    private var isRedirectedToTheDefaultBrowser = false
-    private var isServerCheckPendingServiceBinding = false
-
-    private val lifecycleEventObserver = LifecycleEventObserver { _, event ->
-        if (event == Lifecycle.Event.ON_START && loginFlow.hasPollToken) {
-            Log_OC.d(TAG, "Login flow v2: app is in foreground, polling started")
-            loginFlow.poll()
-        }
-    }
-
-    private fun stopLoginFlowPolling() {
-        loginFlow.stopPolling()
-        ProcessLifecycleOwner.get().lifecycle.removeObserver(lifecycleEventObserver)
-    }
-
-    /**
-     * Anonymously posts a login flow v2 request to [url] (e.g. `https://example.com/index.php/login/v2`) and opens
-     * the returned login URL in the browser.
-     */
-    private fun anonymouslyPostLoginRequest(url: String) {
-        if (url.isEmpty()) {
-            Log_OC.e(TAG, "Login flow v2: cannot start, login request URL is empty")
-            SnackbarUtil.show(this, R.string.authenticator_activity_empty_base_url)
-            return
-        }
-        Log_OC.d(TAG, "Login flow v2: requesting login URL from $url")
-
-        lifecycleScope.launch {
-            val response = loginFlow.requestLoginResponse(url)
-            if (response.isEmpty()) {
-                Log_OC.e(TAG, "Login flow v2: login URL request returned an empty response")
-                SnackbarUtil.show(this@AuthenticatorActivity, R.string.authenticator_activity_empty_response_message)
-                return@launch
-            }
-
-            val loginUrl = loginFlow.parseLoginUrl(response) ?: defaultLoginUrl()
-            initLoginInfoView()
-            ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleEventObserver)
-            loginBrowserLauncher.open(loginUrl)
-        }
-    }
-
-    private fun restartLoginFlow() {
-        Log_OC.d(TAG, "Login flow v2: restarting flow after rejected credentials")
-        loginFlow.isCompleted = false
-        inflateWebViewLayout()
-        anonymouslyPostLoginRequest(serverInfo.mBaseUrl + WEB_LOGIN)
-    }
-
-    private fun defaultLoginUrl(): String {
-        Log_OC.e(TAG, "Login flow v2: no login URL in response, using default login URL")
-        SnackbarUtil.show(this, R.string.authenticator_activity_login_error)
-        return getString(R.string.webview_login_url)
-    }
-
-    private fun completeLoginFlow(response: String, status: Int) {
-        try {
-            val loginUrlInfo: LoginUrlInfo? = gson.fromJson(response, LoginUrlInfo::class.java)
-            if (loginUrlInfo == null) {
-                Log_OC.e(TAG, "Login flow v2: cannot complete, poll response has no credentials")
-                return
-            }
-            loginFlow.isCompleted = loginUrlInfo.isValid(status)
-            Log_OC.d(
-                TAG,
-                "Login flow v2: credentials received for ${loginUrlInfo.server}, valid=${loginFlow.isCompleted}"
-            )
-
-            accountSetupBinding?.hostUrlInput?.setText(EMPTY_STRING)
-            applyLoginCredentials(loginUrlInfo)
-        } catch (e: Exception) {
-            Log_OC.e(TAG, "Login flow v2: poll response parsing failed: ${e.javaClass.simpleName}")
-            showServerStatusAlert(getString(R.string.qr_could_not_be_read))
-        }
-
-        if (operationsServiceBinder == null) {
-            Log_OC.d(TAG, "Login flow v2: operations service not bound yet, server check deferred")
-            isServerCheckPendingServiceBinding = true
-        } else {
-            checkOcServer()
-        }
-        stopLoginFlowPolling()
-        Log_OC.d(TAG, "Login flow v2: polling stopped")
-    }
-
-    private fun restorePendingLoginFlow(savedInstanceState: Bundle?): Boolean {
-        val authObjectJson = savedInstanceState?.getString(KEY_LOGIN_FLOW_AUTH_OBJECT) ?: return false
-
-        loginFlow.restore(authObjectJson)
-        Log_OC.d(TAG, "Login flow v2: pending flow restored after activity recreation")
-        inflateWebViewLayout()
-        initLoginInfoView()
-        return true
-    }
-
-    private fun initLoginInfoView() {
-        val loginFlowBinding = accountSetupWebviewBinding?.loginFlowV2 ?: return
-        val loginFlowLayout = loginFlowBinding.root
-        loginFlowLayout.visibility = View.VISIBLE
-
-        ViewCompat.setOnApplyWindowInsetsListener(loginFlowLayout) { view, insets ->
-            view.updatePadding(bottom = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom)
-            insets
-        }
-        // the listener is attached after the initial insets dispatch, so request a fresh pass
-        ViewCompat.requestApplyInsets(loginFlowLayout)
-
-        loginFlowBinding.cancelButton.setOnClickListener { cancelLoginFlow() }
-    }
-
-    private fun cancelLoginFlow() {
-        Log_OC.d(TAG, "Login flow v2: cancelled by user")
-        stopLoginFlowPolling()
-        loginFlow.clearPendingLogin()
-        recreate()
-    }
-    // endregion
-
     // region WebView login
-    private fun startSignupWebViewLogin(savedInstanceState: Bundle? = null) {
+    private fun startSignupWebViewLogin(baseURL: String, useGenericUserAgent: Boolean,
+        savedInstanceState: Bundle? = null) {
         val binding = inflateWebViewLayout()
         if (viewModel.credentials != null) {
             return
@@ -661,6 +508,8 @@ open class AuthenticatorActivity :
         SignupWebViewLogin(
             activity = this,
             viewThemeUtils = viewThemeUtils,
+            useGenericUserAgent = useGenericUserAgent,
+            baseURL = baseURL,
             currentBinding = { accountSetupWebviewBinding },
             loginDataPrefix = loginDataPrefix,
             onLoginDataUrl = ::parseAndLoginFromWebView
@@ -694,12 +543,6 @@ open class AuthenticatorActivity :
     // endregion
 
     // region Server check
-    private fun checkServerFromInput() {
-        loginFlow.isCompleted = false
-        isRedirectedToTheDefaultBrowser = false
-        checkOcServer()
-    }
-
     @SuppressFBWarnings("NP")
     private fun checkOcServer() {
         val binding = accountSetupBinding
@@ -795,19 +638,28 @@ open class AuthenticatorActivity :
             return
         }
 
-        inflateWebViewLayout()
+        Thread {
+            val client = OwnCloudClientFactory.createOwnCloudClient(
+                Uri.parse(serverInfo.mBaseUrl),
+                this,
+                true
+            )
+            val remoteOperationResult = GetCapabilitiesRemoteOperation().execute(client)
 
-        if (loginFlow.isCompleted) {
-            return
-        }
+            if (remoteOperationResult.isSuccess &&
+                remoteOperationResult.data != null &&
+                remoteOperationResult.data.isNotEmpty()
+            ) {
+                val capability = remoteOperationResult.data[0] as OCCapability
+                try {
+                    primaryColor = Color.parseColor(capability.serverColor)
+                } catch (_: Exception) {
+                    // falls back to primary color
+                }
+            }
+        }.start()
 
-        if (isRedirectedToTheDefaultBrowser) {
-            initLoginInfoView()
-            return
-        }
-
-        anonymouslyPostLoginRequest(serverInfo.mBaseUrl + WEB_LOGIN)
-        isRedirectedToTheDefaultBrowser = true
+        startSignupWebViewLogin(serverInfo.mBaseUrl + WEB_LOGIN, false)
     }
 
     private fun showUntrustedCertDialog(result: RemoteOperationResult<*>) {
@@ -945,6 +797,9 @@ open class AuthenticatorActivity :
             return
         }
 
+        // init webView again
+        accountSetupWebviewBinding?.loginWebview?.visibility = View.GONE
+
         val binding = inflateAccountSetupLayout()
         initOverallUi(binding)
         binding.hostUrlInput.setText(serverInfo.mBaseUrl)
@@ -968,7 +823,11 @@ open class AuthenticatorActivity :
     private fun onCredentialsRejected(result: RemoteOperationResult<UserInfo?>) {
         Log_OC.e(TAG, "Credential check: rejected, code=${result.code}, ${result.logMessage}")
         if (accountSetupWebviewBinding != null) {
-            restartLoginFlow()
+            startSignupWebViewLogin(serverInfo.mBaseUrl + WEB_LOGIN, false)
+            SnackbarUtil.show(
+                accountSetupWebviewBinding?.loginWebview, R.string.auth_access_failed,
+                result.getLogMessage(this)
+            )
         } else {
             SnackbarUtil.show(this, R.string.auth_access_failed, result.getLogMessage(this))
             updateAuthStatus(result)
@@ -1121,8 +980,6 @@ open class AuthenticatorActivity :
     // endregion
 
     // region QR code and deep link login
-    private val loginBrowserLauncher = LoginBrowserLauncher(this)
-
     private val qrScanResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode != RESULT_OK) {
@@ -1195,7 +1052,7 @@ open class AuthenticatorActivity :
     override fun onEditorAction(inputField: TextView?, actionId: Int, event: KeyEvent?): Boolean {
         val isConfirmAction = actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_NULL
         if (isConfirmAction && inputField != null && inputField == accountSetupBinding?.hostUrlInput) {
-            checkServerFromInput()
+            checkOcServer()
         }
         return false // always return false to grant that the software keyboard is hidden anyway
     }
@@ -1220,13 +1077,6 @@ open class AuthenticatorActivity :
 
     private fun onOperationsServiceBound() {
         doOnResumeAndBound()
-        if (!isServerCheckPendingServiceBinding) {
-            return
-        }
-
-        Log_OC.d(TAG, "Login flow v2: operations service bound, running deferred server check")
-        isServerCheckPendingServiceBinding = false
-        checkOcServer()
     }
 
     private inner class OperationsServiceConnection : ServiceConnection {
@@ -1276,7 +1126,6 @@ open class AuthenticatorActivity :
         private const val KEY_SERVER_AUTH_METHOD = "SERVER_AUTH_METHOD"
         private const val KEY_WAITING_FOR_OP_ID = "WAITING_FOR_OP_ID"
         private const val KEY_ONLY_ADD = "onlyAdd"
-        private const val KEY_LOGIN_FLOW_AUTH_OBJECT = "LOGIN_FLOW_AUTH_OBJECT"
         private const val KEY_AUTH_TOKEN_TYPE = "authTokenType"
         private const val SSO_AUTH_TOKEN_TYPE = "SSO"
 
@@ -1294,7 +1143,7 @@ open class AuthenticatorActivity :
         private const val ONE_TIME_LOGIN_PATH = "onetime-login/"
         private const val QR_SCAN_RESULT_EXTRA = "com.blikoon.qrcodescanner.got_qr_scan_relult"
 
-        const val WEB_LOGIN: String = "/index.php/login/v2"
+        const val WEB_LOGIN: String = "/index.php/login/flow"
 
         const val PROTOCOL_SUFFIX: String = "://"
         const val HTTPS_PROTOCOL: String = "https://"
