@@ -1,6 +1,8 @@
 <!--
     @author Google LLC
+    @author Andy Scherzinger
     Copyright (C) 2018 Google LLC
+    Copyright (C) 2020 Andy Scherzinger
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -42,4 +44,9 @@
             </gradient>
         </aapt:attr>
     </path>
+    <path
+        android:pathData="M42.46,32.43L39,32.43v-4a7,7 0,1 0,-13.94 0v4L21.54,32.43a1,1 0,0 0,-1 1L20.54,48.36a1,1 0,0 0,1 1L42.46,49.36a1,1 0,0 0,1 -1L43.46,33.42A1,1 0,0 0,42.46 32.43ZM33,40.64v4.24a0.51,0.51 0,0 1,-0.5 0.5h-1a0.51,0.51 0,0 1,-0.5 -0.5L31,40.64a2.24,2.24 0,1 1,2 0ZM37,32.43L27,32.43v-4a5,5 0,1 1,10 0Z"
+        android:strokeAlpha="0.9"
+        android:fillColor="#fff"
+        android:fillAlpha="0.9"/>
 </vector>
