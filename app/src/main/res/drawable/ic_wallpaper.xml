@@ -1,8 +1,12 @@
-<!-- drawable/wallpaper.xml -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:height="24dp"
     android:width="24dp"
+    android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path android:fillColor="#000" android:pathData="M4,4H11V2H4A2,2 0 0,0 2,4V11H4V4M10,13L6,18H18L15,14L12.97,16.71L10,13M17,8.5A1.5,1.5 0 0,0 15.5,7A1.5,1.5 0 0,0 14,8.5A1.5,1.5 0 0,0 15.5,10A1.5,1.5 0 0,0 17,8.5M20,2H13V4H20V11H22V4A2,2 0 0,0 20,2M20,20H13V22H20A2,2 0 0,0 22,20V13H20V20M4,13H2V20A2,2 0 0,0 4,22H11V20H4V13Z" />
+  <path
+      android:pathData="M21,1L21,18L16,23L6,23C4.345,23 3,21.655 3,20L3,20L3,1L21,1ZM19.5,2.5L4.5,2.5L4.5,20C4.5,20.825 5.175,21.5 6,21.5L6,21.5L15,21.5L15,18.5C15,17.67 15.67,17 16.5,17L16.5,17L19.5,17L19.5,2.5ZM13.5,9L17.77,14.5L6.23,14.5L9.36,10.465L10.86,12.4L13.5,9ZM7.75,7C8.44,7 9,7.56 9,8.25C9,8.94 8.44,9.5 7.75,9.5C7.06,9.5 6.5,8.94 6.5,8.25C6.5,7.56 7.06,7 7.75,7Z"
+      android:strokeWidth="1"
+      android:fillColor="#262626"
+      android:fillType="evenOdd"
+      android:strokeColor="#00000000"/>
 </vector>
