@@ -26,7 +26,7 @@ class OCFileIconTests {
     @Test
     fun testGetFileOverlayIconWhenFileIsAutoUploadFolderShouldReturnFolderOverlayUploadIcon() {
         val fileOverlayIcon = sut?.getFileOverlayIconId(true)
-        val expectedDrawable = R.drawable.ic_folder_overlay_upload
+        val expectedDrawable = R.drawable.folder_auto_upload
         assert(fileOverlayIcon == expectedDrawable)
     }
 
@@ -34,7 +34,7 @@ class OCFileIconTests {
     fun testGetFileOverlayIconWhenFileIsEncryptedShouldReturnFolderOverlayKeyIcon() {
         sut?.isEncrypted = true
         val fileOverlayIcon = sut?.getFileOverlayIconId(false)
-        val expectedDrawable = R.drawable.ic_folder_overlay_key
+        val expectedDrawable = R.drawable.folder_encrypted
         assert(fileOverlayIcon == expectedDrawable)
     }
 
@@ -42,7 +42,7 @@ class OCFileIconTests {
     fun testGetFileOverlayIconWhenFileIsGroupFolderShouldReturnFolderOverlayAccountGroupIcon() {
         sut?.mountType = MountType.GROUP
         val fileOverlayIcon = sut?.getFileOverlayIconId(false)
-        val expectedDrawable = R.drawable.ic_folder_overlay_account_group
+        val expectedDrawable = R.drawable.folder_shared_users
         assert(fileOverlayIcon == expectedDrawable)
     }
 
@@ -50,7 +50,7 @@ class OCFileIconTests {
     fun testGetFileOverlayIconWhenFileIsSharedViaLinkShouldReturnFolderOverlayLinkIcon() {
         sut?.isSharedViaLink = true
         val fileOverlayIcon = sut?.getFileOverlayIconId(false)
-        val expectedDrawable = R.drawable.ic_folder_overlay_link
+        val expectedDrawable = R.drawable.folder_shared_users
         assert(fileOverlayIcon == expectedDrawable)
     }
 
@@ -58,7 +58,7 @@ class OCFileIconTests {
     fun testGetFileOverlayIconWhenFileIsSharedShouldReturnFolderOverlayShareIcon() {
         sut?.isSharedWithSharee = true
         val fileOverlayIcon = sut?.getFileOverlayIconId(false)
-        val expectedDrawable = R.drawable.ic_folder_overlay_share
+        val expectedDrawable = R.drawable.folder_shared_users
         assert(fileOverlayIcon == expectedDrawable)
     }
 
@@ -66,7 +66,7 @@ class OCFileIconTests {
     fun testGetFileOverlayIconWhenFileIsExternalShouldReturnFolderOverlayExternalIcon() {
         sut?.mountType = MountType.EXTERNAL
         val fileOverlayIcon = sut?.getFileOverlayIconId(false)
-        val expectedDrawable = R.drawable.ic_folder_overlay_external
+        val expectedDrawable = R.drawable.folder
         assert(fileOverlayIcon == expectedDrawable)
     }
 
@@ -74,14 +74,15 @@ class OCFileIconTests {
     fun testGetFileOverlayIconWhenFileIsLockedShouldReturnFolderOverlayLockIcon() {
         sut?.isLocked = true
         val fileOverlayIcon = sut?.getFileOverlayIconId(false)
-        val expectedDrawable = R.drawable.ic_folder_overlay_lock
+        val expectedDrawable = R.drawable.folder_encrypted
         assert(fileOverlayIcon == expectedDrawable)
     }
 
     @Test
     fun testGetFileOverlayIconWhenFileIsFolderShouldReturnNull() {
         val fileOverlayIcon = sut?.getFileOverlayIconId(false)
-        assert(fileOverlayIcon == null)
+        val expectedDrawable = R.drawable.folder
+        assert(fileOverlayIcon == expectedDrawable)
     }
 
     @After

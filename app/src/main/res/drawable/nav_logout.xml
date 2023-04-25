@@ -7,11 +7,12 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:autoMirrored="true"
-    android:tint="#757575"
-    android:viewportWidth="960"
-    android:viewportHeight="960">
+    android:viewportWidth="24"
+    android:viewportHeight="24">
     <path
-        android:fillColor="@android:color/white"
-        android:pathData="M200,840Q167,840 143.5,816.5Q120,793 120,760L120,200Q120,167 143.5,143.5Q167,120 200,120L480,120L480,200L200,200Q200,200 200,200Q200,200 200,200L200,760Q200,760 200,760Q200,760 200,760L480,760L480,840L200,840ZM640,680L585,622L687,520L360,520L360,440L687,440L585,338L640,280L840,480L640,680Z" />
+        android:pathData="M14,2L14,7L12.5,7L12.5,3.5L5.75,3.5C4.5,3.5 3.5,4.5 3.5,5.75L3.5,5.75L3.5,17.75C3.5,19 4.5,20 5.75,20L5.75,20L12.5,20L12.5,16.5L14,16.5L14,21.5L5.75,21.5C3.7,21.5 2,19.8 2,17.75L2,17.75L2,5.75C2,3.7 3.7,2 5.75,2L5.75,2L14,2ZM16.5,7.35L23.25,11.75L16.5,16.15L16.5,12.5L7.25,12.5C6.85,12.5 6.5,12.15 6.5,11.75C6.5,11.35 6.85,11 7.25,11L7.25,11L16.5,11L16.5,7.35Z"
+        android:strokeWidth="1"
+        android:fillColor="#262626"
+        android:fillType="evenOdd"
+        android:strokeColor="#00000000"/>
 </vector>
