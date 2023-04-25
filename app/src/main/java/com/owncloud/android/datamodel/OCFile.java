@@ -661,23 +661,25 @@ public class OCFile implements Parcelable, Comparable<OCFile>, ServerFileInterfa
         return permissions != null && permissions.contains(PERMISSION_GROUPFOLDER);
     }
 
+    // NMC Customization: We are not using any overlay icons for normal folders
+    // we have different folder icons with inbuilt overlay
     public Integer getFileOverlayIconId(boolean isAutoUploadFolder) {
         if (WebdavEntry.MountType.GROUP == mountType || isGroupFolder()) {
-            return R.drawable.ic_folder_overlay_account_group;
+            return R.drawable.folder_shared_users;
         } else if (sharedViaLink && !encrypted) {
-            return R.drawable.ic_folder_overlay_link;
+            return R.drawable.folder_shared_users;
         } else if (isSharedWithMe() || sharedWithSharee) {
-            return R.drawable.ic_folder_overlay_share;
+            return R.drawable.folder_shared_users;
         } else if (encrypted) {
-            return R.drawable.ic_folder_overlay_key;
+            return R.drawable.folder_encrypted;
         } else if (WebdavEntry.MountType.EXTERNAL == mountType) {
-            return R.drawable.ic_folder_overlay_external;
+            return R.drawable.folder;
         } else if (locked) {
-            return R.drawable.ic_folder_overlay_lock;
+            return R.drawable.folder_encrypted;
         } else if (isAutoUploadFolder) {
-            return R.drawable.ic_folder_overlay_upload;
+            return R.drawable.folder_auto_upload;
         } else {
-            return null;
+            return R.drawable.folder;
         }
     }
 
