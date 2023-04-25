@@ -8,16 +8,16 @@
 package com.owncloud.android.ui.adapter
 
 import android.content.Context
-import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.nextcloud.android.lib.resources.groupfolders.Groupfolder
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ListItemBinding
 import com.owncloud.android.ui.interfaces.GroupfolderListInterface
-import com.owncloud.android.utils.MimeTypeUtil
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import java.io.File
 
@@ -33,9 +33,10 @@ class GroupfolderListAdapter(
         list = result.values.sortedBy { it.mountPoint }
     }
 
-    private fun getFolderIcon(): LayerDrawable? {
-        val overlayDrawableId = R.drawable.ic_folder_overlay_account_group
-        return MimeTypeUtil.getFileIcon(false, overlayDrawableId, context, viewThemeUtils)
+    private fun getFolderIcon(): Drawable? {
+        val overlayDrawableId = R.drawable.folder_shared_users
+        // NMC Customization: No overlay icon will be used. Directly using folder icons
+        return ContextCompat.getDrawable(context, overlayDrawableId)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
