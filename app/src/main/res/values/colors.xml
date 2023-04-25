@@ -40,8 +40,7 @@
     <color name="grey_200">#EEEEEE</color>
     <color name="grey_400">#BDBDBD</color>
     <color name="grey_600">#666666</color>
-    <color name="grey_0">#F2F2F2</color>
-    <color name="grey_30">#B2B2B2</color>
+
     <!-- standard material color definitions -->
 
     <!-- level colors for info notifications/visualisations -->
@@ -59,8 +58,6 @@
     <color name="secondary_button_text_color">#000000</color>
     <color name="nc_grey">#ededed</color>
     <color name="icon_on_nc_grey">#000000</color>
-    <color name="bottom_sheet_icon_color">#191919</color>
-    <color name="bottom_sheet_txt_color">#191919</color>
 
     <color name="process_dialog_background">#ffffff</color>
     <color name="indicator_dot_selected">#ffffff</color>
