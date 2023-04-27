@@ -25,7 +25,6 @@ import com.owncloud.android.databinding.FileDetailsShareLinkShareItemBinding;
 import com.owncloud.android.databinding.FileDetailsSharePublicLinkAddNewItemBinding;
 import com.owncloud.android.databinding.FileDetailsShareSecureFileDropAddNewItemBinding;
 import com.owncloud.android.databinding.FileDetailsShareShareItemBinding;
-import com.owncloud.android.datamodel.SharesType;
 import com.owncloud.android.lib.resources.shares.OCShare;
 import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.ui.activity.FileActivity;
@@ -52,8 +51,9 @@ public class ShareeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final User user;
     private final ViewThemeUtils viewThemeUtils;
     private final boolean encrypted;
-    private final SharesType sharesType;
-    private boolean showAll = false;
+    // NMC-4219 fix
+    // NMC: show all shares
+    private boolean showAll = true;
     private boolean isTextFile;
 
     public ShareeListAdapter(FileActivity fileActivity,
@@ -62,8 +62,7 @@ public class ShareeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                              String userId,
                              User user,
                              final ViewThemeUtils viewThemeUtils,
-                             boolean encrypted,
-                             SharesType sharesType) {
+                             boolean encrypted) {
         this.fileActivity = fileActivity;
         this.shares = shares;
         this.listener = listener;
@@ -71,7 +70,6 @@ public class ShareeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.user = user;
         this.viewThemeUtils = viewThemeUtils;
         this.encrypted = encrypted;
-        this.sharesType = sharesType;
 
         avatarRadiusDimension = fileActivity.getResources().getDimension(R.dimen.user_icon_radius);
 

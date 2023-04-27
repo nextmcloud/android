@@ -211,7 +211,6 @@
     <string name="could_not_retrieve_url">URL konnte nicht abgerufen werden</string>
     <string name="create">Erstellen</string>
     <string name="create_dir_fail_msg">Verzeichnis konnte nicht erstellt werden</string>
-    <string name="create_link">Link erstellen</string>
     <string name="create_new">Neu</string>
     <string name="create_new_document">Neues Dokument</string>
     <string name="create_new_folder">Neuer Ordner</string>
@@ -822,10 +821,10 @@
     <string name="share_no_password_title">Passwort setzen</string>
     <string name="share_not_allowed_when_file_drop">Erneutes teilen ist für die sichere Dateiablage nicht zugelassen</string>
     <string name="share_option_required">Bitte mindestens eine Freigabeoption wählen, bevor Sie fortfahren.</string>
-    <string name="share_permission_can_edit">Kann bearbeiten</string>
-    <string name="share_permission_file_request">Dateianfrage</string>
+    <string name="share_permission_can_edit">Kann Bearbeiten</string>
+    <string name="share_permission_file_drop">Sammelbox</string>
     <string name="share_permission_secure_file_drop">Sichere Dateiablage</string>
-    <string name="share_permission_view_only">Nur anzeigen</string>
+    <string name="share_permission_read_only">Nur lesen</string>
     <string name="share_permissions">Berechtigungen zum Teilen</string>
     <string name="share_re_share_permission">Teilen</string>
     <string name="share_read_permission">Lesen</string>

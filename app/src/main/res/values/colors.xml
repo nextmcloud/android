@@ -159,6 +159,7 @@
     <color name="sharing_warning_border_color">#C16F81</color>
     <color name="share_color">#0D39DF</color>
     <color name="shared_with_me_color">#0099ff</color>
+    <color name="share_blue_color">#2238df</color>
 
     <!--  Scan Colors  -->
     <color name="scan_doc_bg_color">@color/grey_0</color>

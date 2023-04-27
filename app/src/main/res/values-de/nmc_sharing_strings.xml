@@ -16,14 +16,14 @@
         MagentaCLOUD Nutzer einladen, bieten sich Ihnen mehr Möglichkeiten der Zusammenarbeit.</string>
     <string name="your_message">Ihre Nachricht</string>
     <string name="personal_share_email">persönliche Freigabe per E-Mail</string>
-    <string name="create_link">Link erstellen</string>
+    <string name="create_link">Neuen Link erstellen</string>
     <string name="your_shares">Ihre Freigaben</string>
     <string name="link_label">Linkbezeichnung</string>
     <string name="hint_link_label">Ihre Linkbezeichnung</string>
     <string name="file_drop_info">Bei der Sammelbox ist nur das Hochladen erlaubt. Nur Sie sehen Dateien und Ordner die hochgeladen worden sind.</string>
     <string name="password_protection">Password Protection</string>
     <string name="expiration_date">Expiration Date</string>
-    <string name="empty_shares">Noch keine Freigaben erstellt.</string>
+    <string name="empty_shares">Sie haben ihre Datei / ihren Ordner noch nicht geteilt. Teilen Sie um anderen Zugriff zu geben.</string>
     <string name="link_download_limit">Download Limit</string>
     <string name="download_limit_empty">Das Feld für das Download-Limit darf nicht leer sein.</string>
     <string name="hint_download_limit">Downlimit eingeben</string>
@@ -35,4 +35,18 @@
         Nachrichtentext eintragen, wird es unverschlüsselt im Klartext übertragen.</string>
     <string name="placeholder_receivedMessage">Empfangen</string>
     <string name="placeholder_sharedMessage">Geteilt</string>
+    <string name="sharing_heading">Link per E-Mail versenden</string>
+    <string name="reshare_not_allowed">Weiterteilen wurde nicht erlaubt.</string>
+    <string name="reshare_allowed">Weiterteilen ist erlaubt.</string>
+    <string name="resharing_user_info">Dieser Datei / dieser Ordner wurde mit ihnen geteilt von %s</string>
+    <string name="txt_or">oder</string>
+    <string name="shared_with_heading">Geteilt mit</string>
+    <string name="share_details">Details</string>
+    <string name="share_quick_permission_can_view">Jeder kann nur anzeigen</string>
+    <string name="share_quick_permission_can_edit">Jeder kann bearbeiten</string>
+    <string name="share_quick_permission_can_upload">Jeder kann nur hochladen</string>
+    <string name="advanced_settings">Erweiterte Berechtigungen</string>
+    <string name="link_share_allow_upload_and_editing">Hochladen &amp; Bearbeiten</string>
+    <string name="link_share_file_drop">Sammelbox</string>
+    <string name="allow_resharing">Weiterteilen erlauben</string>
 </resources>

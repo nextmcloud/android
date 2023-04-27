@@ -112,7 +112,6 @@ public class FileDetailSharingMenuBottomSheetDialog extends BottomSheetDialog {
             actions.sendLink(ocShare);
             dismiss();
         });
-
     }
 
     @Override

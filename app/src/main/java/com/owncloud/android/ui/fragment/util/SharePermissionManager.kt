@@ -7,12 +7,18 @@
 
 package com.owncloud.android.ui.fragment.util
 
+import android.content.Context
+import com.nextcloud.client.account.User
+import com.nextcloud.utils.EditorUtils
+import com.owncloud.android.R
+import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.datamodel.quickPermission.QuickPermissionType
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.lib.resources.shares.OCShare
 import com.owncloud.android.lib.resources.shares.attributes.ShareAttributes
 import com.owncloud.android.lib.resources.shares.attributes.ShareAttributesJsonHandler
 import com.owncloud.android.lib.resources.shares.attributes.getDownloadAttribute
+import com.owncloud.android.lib.resources.status.OCCapability
 import com.owncloud.android.ui.fragment.FileDetailsSharingProcessFragment.Companion.TAG
 
 object SharePermissionManager {
@@ -174,4 +180,46 @@ object SharePermissionManager {
         }
     }
     // endregion
+
+    // NMC method
+    /**
+     * method to check if the file should not be a text file or any of the office files
+     * this method will be used during sharing process to disable/enable edit option
+     */
+    @JvmStatic
+    fun canEditFile(
+        user: User,
+        capability: OCCapability, file: OCFile,
+        editorUtils: EditorUtils
+    ): Boolean {
+        //if OCFile is folder then no need to check further direct return true
+        //as edit permission should be available for folder restriction is only applicable for files
+
+        if (file.isFolder) {
+            return true
+        }
+
+        //check for text files like .md, .txt, etc
+        val isTextFile = editorUtils.isEditorAvailable(user, file.mimeType) && !file.isEncrypted
+
+        //check for office files like .docx, .pptx, .xls, etc
+        val isOfficeFile =
+            capability.richDocumentsMimeTypeList != null && capability.richDocumentsMimeTypeList!!.contains(file.mimeType) &&
+                capability.richDocumentsDirectEditing.isTrue && !file.isEncrypted
+
+        return isTextFile || isOfficeFile
+    }
+
+    // function to provide quick permission label for NMC
+    @JvmStatic
+    fun getPermissionName(context: Context, share: OCShare?): String? {
+        if (canEdit(share)) {
+            return context.resources.getString(R.string.share_quick_permission_can_edit)
+        } else if (isViewOnly(share)) {
+            return context.resources.getString(R.string.share_quick_permission_can_view)
+        } else if (isFileRequest(share)) {
+            return context.resources.getString(R.string.share_quick_permission_can_upload)
+        }
+        return null
+    }
 }

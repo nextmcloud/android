@@ -406,7 +406,7 @@ class OCFileListDelegate(
                         context.resources,
                         R.color.shared_with_me_color, null
                     )
-                    val shareWithMeIcon = AppCompatResources.getDrawable(context, R.drawable.ic_shared_with_me)
+                    val shareWithMeIcon = AppCompatResources.getDrawable(context, R.drawable.ic_shared_with_me)?.mutate()
                     val shareWithMeTintedIcon =
                         viewThemeUtils.platform.colorDrawable(shareWithMeIcon!!, sharedWithMeColor)
                     sharedIconView.setImageDrawable(shareWithMeTintedIcon)
@@ -417,7 +417,7 @@ class OCFileListDelegate(
                 }
                 file.isSharedWithSharee -> {
                     val shareIcon = viewThemeUtils.platform.colorDrawable(
-                        AppCompatResources.getDrawable(context, R.drawable.ic_shared)!!,
+                        AppCompatResources.getDrawable(context, R.drawable.ic_share)?.mutate()!!,
                         context.resources.getColor(R.color.primary, null)
                     )
                     sharedIconView.setImageDrawable(shareIcon)
@@ -428,7 +428,7 @@ class OCFileListDelegate(
                 }
                 file.isSharedViaLink -> {
                     val shareIcon = viewThemeUtils.platform.colorDrawable(
-                        AppCompatResources.getDrawable(context, R.drawable.ic_shared)!!,
+                        AppCompatResources.getDrawable(context, R.drawable.ic_share)?.mutate()!!,
                         context.resources.getColor(R.color.primary, null)
                     )
                     sharedIconView.setImageDrawable(shareIcon)
@@ -445,7 +445,7 @@ class OCFileListDelegate(
                         context.resources,
                         R.color.list_icon_color, null
                     )
-                    val unShareIcon = AppCompatResources.getDrawable(context, R.drawable.ic_unshared)
+                    val unShareIcon = AppCompatResources.getDrawable(context, R.drawable.ic_share)?.mutate()
                     val unShareTintedIcon = viewThemeUtils.platform.colorDrawable(unShareIcon!!, unShareIconColor)
                     sharedIconView.setImageDrawable(unShareTintedIcon)
                     sharedIconView.contentDescription = context.getString(R.string.shared_icon_share)
