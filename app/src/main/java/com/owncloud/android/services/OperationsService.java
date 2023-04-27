@@ -64,6 +64,7 @@ import com.owncloud.android.operations.UpdateNoteForShareOperation;
 import com.owncloud.android.operations.UpdateShareInfoOperation;
 import com.owncloud.android.operations.UpdateSharePermissionsOperation;
 import com.owncloud.android.operations.UpdateShareViaLinkOperation;
+import com.owncloud.android.operations.share_download_limit.GetShareDownloadLimitOperation;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -101,6 +102,8 @@ public class OperationsService extends Service {
     public static final String EXTRA_SHARE_ID = "SHARE_ID";
     public static final String EXTRA_SHARE_REMOTE_ID = "SHARE_REMOTE_ID";
     public static final String EXTRA_SHARE_NOTE = "SHARE_NOTE";
+    public static final String EXTRA_SHARE_TOKEN = "SHARE_TOKEN";
+    public static final String EXTRA_SHARE_DOWNLOAD_LIMIT = "SHARE_DOWNLOAD_LIMIT";
     public static final String EXTRA_IN_BACKGROUND = "IN_BACKGROUND";
     public static final String EXTRA_FILES_DOWNLOAD_LIMIT = "FILES_DOWNLOAD_LIMIT";
     public static final String EXTRA_SHARE_ATTRIBUTES = "SHARE_ATTRIBUTES";
@@ -123,6 +126,7 @@ public class OperationsService extends Service {
     public static final String ACTION_MOVE_FILE = "MOVE_FILE";
     public static final String ACTION_COPY_FILE = "COPY_FILE";
     public static final String ACTION_CHECK_CURRENT_CREDENTIALS = "CHECK_CURRENT_CREDENTIALS";
+    public static final String ACTION_GET_SHARE_DOWNLOAD_LIMIT = "GET_SHARE_DOWNLOAD_LIMIT";
     public static final String ACTION_RESTORE_VERSION = "RESTORE_VERSION";
     public static final String ACTION_UPDATE_FILES_DOWNLOAD_LIMIT = "UPDATE_FILES_DOWNLOAD_LIMIT";
 
@@ -657,6 +661,12 @@ public class OperationsService extends Service {
                             String shareAttributes = operationIntent.getStringExtra(EXTRA_SHARE_ATTRIBUTES);
                             updateShare.setAttributes(shareAttributes);
 
+                            // download limit for link share type
+                            if (operationIntent.hasExtra(EXTRA_SHARE_DOWNLOAD_LIMIT)) {
+                                updateShare.setDownloadLimit(operationIntent.getLongExtra(EXTRA_SHARE_DOWNLOAD_LIMIT,
+                                                                                          0L));
+                            }
+
                             operation = updateShare;
                         }
                         break;
@@ -763,6 +773,13 @@ public class OperationsService extends Service {
 
                         operation = new RestoreFileVersionRemoteOperation(fileVersion.getLocalId(),
                                                                           fileVersion.getFileName());
+                        break;
+
+                    case ACTION_GET_SHARE_DOWNLOAD_LIMIT:
+                        String shareToken = operationIntent.getStringExtra(EXTRA_SHARE_TOKEN);
+                        if (!TextUtils.isEmpty(shareToken)) {
+                            operation = new GetShareDownloadLimitOperation(shareToken);
+                        }
                         break;
 
                     case ACTION_UPDATE_FILES_DOWNLOAD_LIMIT:
