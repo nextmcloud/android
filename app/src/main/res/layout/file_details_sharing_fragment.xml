@@ -8,15 +8,26 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/file_details_nested_scroll_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="@dimen/standard_eight_padding">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/shareContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/standard_margin"
         android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/standard_padding"
+            android:paddingRight="@dimen/standard_padding"
+            android:text="@string/share_dialog_title"
+            android:textColor="@color/share_title_txt_color"
+            android:textSize="@dimen/txt_size_16sp"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:id="@+id/shared_with_you_container"
@@ -25,22 +36,23 @@
             android:layout_marginBottom="@dimen/standard_half_margin"
             android:orientation="horizontal"
             android:paddingLeft="@dimen/standard_padding"
-            android:paddingTop="@dimen/standard_padding"
+            android:paddingTop="@dimen/standard_half_padding"
             android:paddingRight="@dimen/standard_padding">
 
             <ImageView
                 android:id="@+id/shared_with_you_avatar"
-                android:layout_width="@dimen/user_icon_size"
-                android:layout_height="@dimen/user_icon_size"
+                android:layout_width="@dimen/shared_with_me_icon_size"
+                android:layout_height="@dimen/shared_with_me_icon_size"
                 android:contentDescription="@string/avatar"
-                android:src="@drawable/ic_user" />
+                app:srcCompat="@drawable/ic_shared_with_me"
+                app:tint="@color/shared_with_me_color" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/standard_padding"
-                android:paddingTop="@dimen/standard_half_padding"
+                android:paddingLeft="@dimen/standard_half_padding"
+                android:paddingTop="@dimen/standard_quarter_padding"
                 android:paddingRight="@dimen/standard_padding">
 
                 <TextView
@@ -77,117 +89,113 @@
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/search_container"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_sharing_details_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="@dimen/standard_padding"
-            android:paddingEnd="@dimen/zero">
+            android:layout_marginTop="@dimen/standard_quarter_margin"
+            android:paddingLeft="@dimen/standard_padding"
+            android:paddingRight="@dimen/standard_padding"
+            android:text="@string/sharing_description"
+            android:textColor="@color/share_info_txt_color"
+            android:textSize="@dimen/txt_size_14sp" />
 
-            <ImageView
-                android:id="@+id/searchViewIcon"
-                android:layout_width="@dimen/user_icon_size"
-                android:layout_height="@dimen/user_icon_size"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/avatar"
-                android:padding="@dimen/standard_half_padding"
-                android:src="@drawable/ic_search_grey" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/standard_double_margin"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/searchView"
                 style="@style/ownCloud.SearchView"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/zero"
-                android:layout_marginEnd="@dimen/standard_quarter_margin"
+                android:layout_height="@dimen/share_search_height"
+                android:layout_marginStart="@dimen/standard_half_margin"
                 android:layout_weight="1"
                 android:hint="@string/share_search"
+                app:queryBackground="@drawable/share_search_background"
                 app:searchIcon="@null" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/pick_contact_email_btn"
-                android:layout_width="@dimen/minimum_size_for_touchable_area"
-                android:layout_height="@dimen/minimum_size_for_touchable_area"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="@dimen/standard_quarter_margin"
-                android:contentDescription="@string/pick_contact_to_share_with"
-                android:padding="12dp"
-                android:src="@drawable/ic_contact_book" />
+                android:layout_width="@dimen/share_search_height"
+                android:layout_height="@dimen/share_search_height"
+                android:layout_marginEnd="@dimen/standard_margin"
+                android:background="@drawable/share_search_background"
+                app:srcCompat="@drawable/ic_contact_book"
+                app:tint="@color/share_btn_txt_color" />
 
         </LinearLayout>
 
-        <TextView
-            android:paddingStart="@dimen/standard_padding"
-            android:paddingEnd="@dimen/zero"
-            android:paddingTop="@dimen/standard_half_padding"
-            android:paddingBottom="@dimen/standard_half_padding"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/label_personal_share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/internal_shares"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/sharesList_internal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="@drawable/divider"
-            android:dividerHeight="1dp"
-            tools:listitem="@layout/file_details_share_link_share_item">
-
-        </androidx.recyclerview.widget.RecyclerView>
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginTop="@dimen/standard_eighth_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:paddingStart="@dimen/standard_half_padding"
+            android:paddingEnd="@dimen/standard_half_padding"
+            android:text="@string/personal_share_email"
+            android:textColor="@color/share_color"
+            android:textSize="@dimen/txt_size_11sp" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/sharesList_internal_show_all"
-            style="@style/Nextcloud.Material.TextButton"
-            android:layout_width="match_parent"
+            android:id="@+id/share_create_new_link"
+            style="@style/ShareOutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/create_link_button_height"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginTop="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:text="@string/create_link"
+            android:textSize="@dimen/txt_size_14sp"
+            android:textStyle="normal"
+            android:typeface="normal"
+            app:cornerRadius="@dimen/button_corner_radius"
+            app:icon="@drawable/ic_plus"
+            app:iconGravity="textStart"
+            app:iconTint="@color/share_btn_txt_color" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_your_shares"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/show_all" />
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginTop="@dimen/standard_double_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:text="@string/your_shares"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/txt_size_16sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/sharesList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@drawable/divider"
+            android:dividerHeight="1dp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_empty_shares"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginTop="@dimen/standard_double_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:text="@string/empty_shares"
+            android:textColor="@color/secondary_text_color"
+            android:textSize="@dimen/txt_size_16sp"
+            android:visibility="gone" />
 
         <View
-            android:id="@+id/divider2"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-
-        <TextView
-            android:id="@+id/external_shares_headline"
-            android:paddingStart="@dimen/standard_padding"
-            android:paddingEnd="@dimen/zero"
-            android:paddingTop="@dimen/standard_half_padding"
-            android:paddingBottom="@dimen/standard_half_padding"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/external_shares"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/create_link"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/standard_double_margin"
-            android:layout_marginEnd="@dimen/standard_double_margin"
-            app:icon="@drawable/file_link"
-            app:iconGravity="textStart"
-            android:text="@string/create_link" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/sharesList_external"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="@drawable/divider"
-            android:dividerHeight="1dp"
-            tools:listitem="@layout/file_details_share_link_share_item">
-
-        </androidx.recyclerview.widget.RecyclerView>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/sharesList_external_show_all"
-            style="@style/Nextcloud.Material.TextButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/show_all" />
+            android:layout_height="80dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
