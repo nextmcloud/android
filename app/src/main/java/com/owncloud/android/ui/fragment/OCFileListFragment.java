@@ -92,6 +92,7 @@ import com.owncloud.android.ui.dialog.ConfirmationDialogFragment;
 import com.owncloud.android.ui.dialog.CreateFolderDialogFragment;
 import com.owncloud.android.ui.dialog.RemoveFilesDialogFragment;
 import com.owncloud.android.ui.dialog.RenameFileDialogFragment;
+import com.owncloud.android.ui.dialog.SendShareDialog;
 import com.owncloud.android.ui.dialog.SetupEncryptionDialogFragment;
 import com.owncloud.android.ui.dialog.SyncFileNotEnoughSpaceDialogFragment;
 import com.owncloud.android.ui.events.ChangeMenuEvent;
@@ -599,6 +600,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Override
     public void onShareIconClick(OCFile file) {
+        //NMC Customization
+        SendShareDialog.isPeopleShareClicked = true;
         if (file.isFolder()) {
             mContainerActivity.showDetails(file, 1);
         } else {
@@ -1168,6 +1171,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
             OCFile singleFile = checkedFiles.iterator().next();
 
             if (itemId == R.id.action_send_share_file) {
+                //NMC Customization
+                SendShareDialog.isPeopleShareClicked = true;
                 mContainerActivity.getFileOperationsHelper().sendShareFile(singleFile);
                 return true;
             } else if (itemId == R.id.action_open_file_with) {
@@ -1196,7 +1201,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 if (mActiveActionMode != null) {
                     mActiveActionMode.finish();
                 }
-
+                //NMC Customization
+                SendShareDialog.isPeopleShareClicked = true;
                 mContainerActivity.showDetails(singleFile);
                 mContainerActivity.showSortListGroup(false);
                 return true;
