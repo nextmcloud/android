@@ -377,7 +377,8 @@ public abstract class FileActivity extends DrawerActivity
             operation instanceof UnshareOperation ||
             operation instanceof SynchronizeFolderOperation ||
             operation instanceof UpdateShareViaLinkOperation ||
-            operation instanceof UpdateSharePermissionsOperation
+            operation instanceof UpdateSharePermissionsOperation ||
+            operation instanceof UpdateShareInfoOperation
         ) {
             if (result.isSuccess()) {
                 updateFileFromDB();
@@ -789,7 +790,6 @@ public abstract class FileActivity extends DrawerActivity
     private void onCreateShareViaLinkOperationFinish(CreateShareViaLinkOperation operation,
                                                      RemoteOperationResult result) {
         FileDetailSharingFragment sharingFragment = getShareFileFragment();
-        final Fragment fileListFragment = getSupportFragmentManager().findFragmentByTag(FileDisplayActivity.TAG_LIST_OF_FILES);
 
         if (result.isSuccess()) {
             updateFileFromDB();
@@ -813,6 +813,8 @@ public abstract class FileActivity extends DrawerActivity
                 sharingFragment.onUpdateShareInformation(result, file);
             }
 
+            //this has to be here to avoid the crash when creating link from inside of FileDetailSharingFragment
+            Fragment fileListFragment = getSupportFragmentManager().findFragmentByTag(FileDisplayActivity.TAG_LIST_OF_FILES);
             if (fileListFragment instanceof OCFileListFragment && file != null) {
                 ((OCFileListFragment) fileListFragment).updateOCFile(file);
             }
@@ -903,9 +905,15 @@ public abstract class FileActivity extends DrawerActivity
      * @param shareType
      */
     protected void doShareWith(String shareeName, ShareType shareType) {
-        FileDetailFragment fragment = getFileDetailFragment();
+        Fragment fragment = getFileDetailFragment();
         if (fragment != null) {
-            fragment.initiateSharingProcess(shareeName, shareType);
+            ((FileDetailFragment) fragment).initiateSharingProcess(shareeName, shareType);
+        } else {
+            //if user sharing from Preview Image Fragment
+            fragment = getSupportFragmentManager().findFragmentByTag(ShareActivity.TAG_SHARE_FRAGMENT);
+            if (fragment != null) {
+                ((FileDetailSharingFragment) fragment).initiateSharingProcess(shareeName, shareType);
+            }
         }
     }
 
@@ -919,9 +927,15 @@ public abstract class FileActivity extends DrawerActivity
     @Override
     public void editExistingShare(OCShare share, int screenTypePermission, boolean isReshareShown,
                                   boolean isExpiryDateShown) {
-        FileDetailFragment fragment = getFileDetailFragment();
+        Fragment fragment = getFileDetailFragment();
         if (fragment != null) {
-            fragment.editExistingShare(share, screenTypePermission, isReshareShown, isExpiryDateShown);
+            ((FileDetailFragment) fragment).editExistingShare(share, screenTypePermission, isReshareShown, isExpiryDateShown);
+        } else {
+            //if user editing from Preview Image Fragment
+            fragment = getSupportFragmentManager().findFragmentByTag(ShareActivity.TAG_SHARE_FRAGMENT);
+            if (fragment != null) {
+                ((FileDetailSharingFragment) fragment).editExistingShare(share, screenTypePermission, isReshareShown, isExpiryDateShown);
+            }
         }
     }
 
@@ -932,7 +946,7 @@ public abstract class FileActivity extends DrawerActivity
     public void onShareProcessClosed() {
         FileDetailFragment fragment = getFileDetailFragment();
         if (fragment != null) {
-            fragment.showHideFragmentView(false);
+            //do something
         }
     }
 
