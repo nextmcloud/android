@@ -3,6 +3,7 @@ package com.owncloud.android.ui.dialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import com.owncloud.android.ui.adapter.SendButtonAdapter;
 import com.owncloud.android.ui.components.SendButtonData;
 import com.owncloud.android.ui.helpers.FileOperationsHelper;
 import com.owncloud.android.utils.MimeTypeUtil;
+import com.owncloud.android.utils.theme.ThemeColorUtils;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
 
 import java.util.ArrayList;
@@ -78,6 +80,9 @@ public class SendShareDialog extends BottomSheetDialogFragment implements Inject
     private boolean sharingPublicAskForPassword;
     private FileOperationsHelper fileOperationsHelper;
     @Inject ViewThemeUtils viewThemeUtils;
+    // TODO: 06/21/23 remove this condition after Comments section included
+    // flag to avoid crash during creating new link share for a file for which link share already exist
+    public static boolean isPeopleShareClicked;
 
     public static SendShareDialog newInstance(OCFile file, boolean hideNcSharingOptions, OCCapability capability) {
 
@@ -183,6 +188,8 @@ public class SendShareDialog extends BottomSheetDialogFragment implements Inject
     }
 
     private void shareByLink() {
+        //NMC Customization
+        isPeopleShareClicked = false;
         if (file.isSharedViaLink()) {
             ((FileActivity) requireActivity()).getFileOperationsHelper().getFileWithLink(file, viewThemeUtils);
         } else if (sharingPublicPasswordEnforced || sharingPublicAskForPassword) {
@@ -204,7 +211,10 @@ public class SendShareDialog extends BottomSheetDialogFragment implements Inject
     }
 
     private void themeShareButtonImage(ImageView shareImageView) {
-        viewThemeUtils.files.themeAvatarButton(shareImageView);
+        shareImageView.getBackground().setColorFilter(requireContext().getResources().getColor(R.color.primary, null),
+                                                      PorterDuff.Mode.SRC_IN);
+        shareImageView.getDrawable().mutate().setColorFilter(requireContext().getResources().getColor(R.color.white, null),
+                                                             PorterDuff.Mode.SRC_IN);
     }
 
     private void showResharingNotAllowedSnackbar() {
@@ -267,6 +277,8 @@ public class SendShareDialog extends BottomSheetDialogFragment implements Inject
     }
 
     private void shareFile(OCFile file) {
+        //NMC Customization
+        isPeopleShareClicked = true;
         dismiss();
 
         if (getActivity() instanceof FileDisplayActivity) {
