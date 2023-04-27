@@ -33,7 +33,6 @@ import com.owncloud.android.lib.resources.shares.OCShare
 import com.owncloud.android.lib.resources.shares.SharePermissionsBuilder
 import com.owncloud.android.lib.resources.shares.ShareType
 import com.owncloud.android.ui.activity.FileActivity
-import com.owncloud.android.ui.activity.ToolbarActivity
 import com.owncloud.android.ui.dialog.ExpirationDatePickerDialogFragment
 import com.owncloud.android.ui.fragment.util.SharingMenuHelper
 import com.owncloud.android.ui.helpers.FileOperationsHelper
@@ -243,12 +242,6 @@ class FileDetailsSharingProcessFragment :
         }
         themeView()
     }
-    private fun scrollTopShowToolbar() {
-        //show the toolbar if it is hidden due to scrolling
-        if (requireActivity() is ToolbarActivity) {
-            (requireActivity() as ToolbarActivity).expandToolbar()
-        }
-    }
 
     private fun themeView() {
         CheckableThemeUtils.tintSwitch(binding.shareProcessSetPasswordSwitch)
@@ -273,7 +266,6 @@ class FileDetailsSharingProcessFragment :
     }
 
     private fun showShareProcessFirst() {
-        scrollTopShowToolbar()
         binding.shareProcessGroupOne.visibility = View.VISIBLE
         binding.shareProcessGroupTwo.visibility = View.GONE
         binding.tvSetPasswordEmailWarning.visibility = View.GONE
@@ -354,7 +346,6 @@ class FileDetailsSharingProcessFragment :
     private fun updateViewForExternalShare() {
         hideLinkLabelViews()
         updateViewForExternalAndLinkShare()
-        updateFileEditingRadioButton()
     }
 
     private fun updateViewForLinkShare() {
@@ -384,8 +375,6 @@ class FileDetailsSharingProcessFragment :
         //from the download limit api
         binding.shareProcessDownloadLimitEt.visibility = View.GONE
         binding.shareProcessRemainingDownloadCountTv.visibility = View.GONE
-
-        updateFileEditingRadioButton()
     }
 
     private fun updateViewForInternalShare() {
@@ -426,13 +415,6 @@ class FileDetailsSharingProcessFragment :
         binding.shareProcessDownloadLimitEt.visibility = View.GONE
         binding.shareProcessRemainingDownloadCountTv.visibility = View.GONE
         binding.dividerSharingDownloadLimit.visibility = View.GONE
-    }
-
-    private fun updateFileEditingRadioButton() {
-        if (!isTextFile) {
-            binding.shareProcessPermissionUploadEditing.isEnabled = false
-            binding.shareProcessPermissionUploadEditing.setTextColor(resources.getColor(R.color.share_disabled_txt_color))
-        }
     }
 
     /**
@@ -502,7 +484,6 @@ class FileDetailsSharingProcessFragment :
      * update views for screen type Note
      */
     private fun showShareProcessSecond() {
-        scrollTopShowToolbar()
         binding.shareProcessGroupOne.visibility = View.GONE
         binding.shareProcessGroupTwo.visibility = View.VISIBLE
         if (share != null) {
