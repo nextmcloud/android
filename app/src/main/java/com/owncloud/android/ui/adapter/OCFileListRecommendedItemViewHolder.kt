@@ -29,6 +29,7 @@ class OCFileListRecommendedItemViewHolder(private val binding: RecommendedFileIt
     override val favorite: ImageView get() = binding.favoriteAction
     override val localFileIndicator: ImageView get() = binding.localFileIndicator
     override val shared: ImageView get() = binding.sharedIcon
+    override val sharedMessage: TextView? get() = null
     override val checkbox: ImageView get() = binding.customCheckbox
     override val itemLayout: View get() = binding.recommendedFileItemLayout
     override val unreadComments: ImageView get() = binding.unreadComments
