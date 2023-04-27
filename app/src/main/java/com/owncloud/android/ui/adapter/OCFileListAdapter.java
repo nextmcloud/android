@@ -618,6 +618,9 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             sharedAvatars.setOnClickListener(view -> ocFileListFragmentInterface.onShareIconClick(file));
             return Unit.INSTANCE;
         });
+
+        // visibility gone as view not required for NMC
+        sharedAvatars.setVisibility(View.GONE);
     }
 
     private void bindListItemViewHolder(ListItemViewHolder holder, OCFile file) {
@@ -930,7 +933,7 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @SuppressLint("NotifyDataSetChanged")
     public void setSortOrder(@Nullable OCFile folder, @NonNull FileSortOrder sortOrder) {
         if (searchType == SearchType.FAVORITE_SEARCH) {
-            preferences.setSortOrder(FileSortOrder.Type.favoritesListView, sortOrder);    
+            preferences.setSortOrder(FileSortOrder.Type.favoritesListView, sortOrder);
         } else {
             preferences.setSortOrder(folder, sortOrder);
         }
