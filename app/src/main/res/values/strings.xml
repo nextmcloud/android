@@ -414,6 +414,7 @@
 
     <string name="prefs_instant_upload_subfolder_rule_title">Subfolder options</string>
 
+    <string name="unshare">Unshare</string>
     <string name="share_link_file_no_exist">Unable to share. Please check whether the file exists.</string>
     <string name="share_link_file_error">An error occurred while trying to share this file or folder.</string>
     <string name="unshare_link_file_no_exist">Unable to unshare. Please check whether the file exists.</string>
@@ -551,11 +552,12 @@
     <string name="share_via_link_section_title">Share link</string>
     <string name="share_via_link_send_link_label">Send link</string>
     <string name="share_password_title">Password-protected</string>
+    <string name="share_privilege_unshare">Unshare</string>
     <string name="share_no_password_title">Set password</string>
     <string name="share_with_title">Share with…</string>
     <string name="share_via_link_unset_password">Unset</string>
 
-    <string name="share_search">Name, Federated Cloud ID or email address …</string>
+    <string name="share_search">Contact name or email</string>
     <string name="secure_share_search">Secure share …</string>
 
     <string name="share_group_clarification">%1$s (group)</string>
@@ -791,6 +793,9 @@
     <string name="hint_name">Name</string>
     <string name="hint_password">Password</string>
     <string name="add_to_cloud">Add to %1$s</string>
+    <string name="allow_creating">Allow creating</string>
+    <string name="allow_deleting">Allow deleting</string>
+    <string name="allow_editing">Allow editing</string>
     <string name="upload_files">Upload files</string>
     <string name="upload_direct_camera_upload">Upload from camera</string>
     <string name="upload_scan_doc_upload">Scan document from camera</string>
@@ -858,6 +863,7 @@
     <string name="no_email_app_available">No App available to handle mail address</string>
     <string name="no_map_app_availble">No App available to handle maps</string>
     <string name="share_via_link_hide_download">Hide download</string>
+    <string name="share_via_link_menu_password_label">Password protect (%1$s)</string>
     <string name="unread_comments">Unread comments exist</string>
     <string name="grid_file_features_live_photo_content_description">This icon indicates availability of live photo</string>
     <string name="richdocuments_failed_to_load_document">Failed to load document!</string>
@@ -915,7 +921,8 @@
     <string name="storage_downloads">Downloads</string>
     <string name="shared_avatar_desc">Avatar from shared user</string>
     <string name="shared_with_you_by">Shared with you by %1$s</string>
-    <string name="reshare_not_allowed">Resharing is not allowed</string>
+    <string name="reshare_not_allowed">Resharing is not allowed.</string>
+    <string name="reshare_allowed">Resharing is allowed.</string>
     <string name="retrieving_file">Retrieving file…</string>
     <string name="associated_account_not_found">Associated account not found!</string>
     <string name="logged_in_as">Logged in as %1$s</string>
@@ -1003,10 +1010,11 @@
     <string name="add_another_public_share_link">Add another link</string>
     <string name="add_new_public_share">Add new public share link</string>
     <string name="public_share_name">New name</string>
-    <string name="share_link_with_label">Share link (%1$s)</string>
+    <string name="share_link_with_label">Link \'%1$s\'</string>
     <string name="share_link">Share link</string>
+    <string name="share_link_folder">Link to folder</string>
+    <string name="share_link_file">Link to file</string>
     <string name="allow_resharing">Allow resharing</string>
-    <string name="link_share_view_only">View only</string>
     <string name="link_share_editing">Editing</string>
     <string name="link_share_allow_upload_and_editing">Allow upload and editing</string>
     <string name="link_share_file_drop">File drop (upload only)</string>
@@ -1042,6 +1050,36 @@
     <string name="wrong_storage_path_desc">This might be due to a backup restore on another device. Falling back to default. Please check settings to adjust data storage folder.</string>
     <string name="dialog_close">Close</string>
     <string name="direct_login_text">Login with %1$s to %2$s</string>
+    <!-- sharing related strings start -->
+    <string name="link_share_read_only">Read only</string>
+    <string name="share_link_empty_exp_date">You must select expiration date.</string>
+    <string name="share_link_empty_note_message">Please enter note.</string>
+    <string name="send_email">Send email</string>
+    <string name="share_open_in">Open in…</string>
+    <string name="share_advanced_permissions">Advanced permissions</string>
+    <string name="sharing_description">You can create links or send shares by mail. If you invite MagentaCLOUD users, you have more opportunities for collaboration.</string>
+    <string name="your_message">Your Message</string>
+    <string name="personal_share_email">Personal share by mail</string>
+    <string name="create_link">Create Link</string>
+    <string name="your_shares">Your Shares</string>
+    <string name="link_label">Link Label</string>
+    <string name="hint_link_label">Your custom link label</string>
+    <string name="file_drop_info">With File drop, only uploading is allowed. Only you can see files and folders that have been uploaded.</string>
+    <string name="password_protection">Password Protection</string>
+    <string name="expiration_date">Expiration Date</string>
+    <string name="empty_shares">No shares created yet.</string>
+    <string name="link_download_limit">Download Limit</string>
+    <string name="download_limit_empty">Download limit cannot be empty.</string>
+    <string name="hint_download_limit">Enter download limit</string>
+    <string name="download_text">Downloads: %s</string>
+    <string name="download_limit_zero">Download limit should be greater than 0.</string>
+    <string name="allow_resharing_info">You are sharing with a MagentaCLOUD user and you can allow her or him to reshare.</string>
+    <string name="sharing_email_warning">Password protection has been enabled. You have to provide the password to
+        the recipient.\n\nIf you send a share via MagentaCLOUD and paste the password in this message, it will be
+        transmitted unencrypted in plaintext.</string>
+    <string name="placeholder_receivedMessage">Received</string>
+    <string name="placeholder_sharedMessage">Shared</string>
+    <!-- sharing related strings end -->
     <string name="direct_login_failed">Login via direct link failed!</string>
     <string name="webview_version_check_alert_dialog_title">Update Android System WebView</string>
     <string name="webview_version_check_alert_dialog_message">Please update the Android System WebView app for a login</string>
@@ -1052,12 +1090,12 @@
     <string name="create">Create</string>
     <string name="select_one_template">Please select one template</string>
     <string name="choose_template_helper_text">Please choose a template and enter a file name.</string>
-    <string name="share_permission_view_only">View only</string>
+    <string name="share_permission_read_only">Read only</string>
     <string name="share_permission_can_edit">Can edit</string>
-    <string name="share_permission_file_drop">File drop</string>
+    <string name="share_permission_file_drop">Filedrop only</string>
     <string name="share_permission_secure_file_drop">Secure file drop</string>
-    <string name="share_permissions">Share Permissions</string>
-    <string name="advanced_settings">Advanced Settings</string>
+    <string name="permissions">Permissions</string>
+    <string name="advance_permissions">Advanced Permissions</string>
     <string name="common_next">Next</string>
     <string name="send_share">Send Share</string>
     <string name="no_share_permission_selected">Please select at least one permission to share.</string>

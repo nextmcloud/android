@@ -10,7 +10,7 @@
     <string name="action_edit">Bearbeiten</string>
     <string name="action_empty_notifications">Alle Benachrichtigungen löschen</string>
     <string name="action_empty_trashbin">Papierkorb leeren</string>
-    <string name="action_send_share">Senden/Teilen</string>
+    <string name="action_send_share">Teilen</string>
     <string name="action_switch_grid_view">Kachelansicht</string>
     <string name="action_switch_list_view">Listenansicht</string>
     <string name="actionbar_calendar_contacts_restore">Kontakte und Kalender wiederherstellen</string>
@@ -33,6 +33,9 @@
     <string name="add_new_secure_file_drop">Neue sichere Dateiablage hinzufügen</string>
     <string name="add_to_cloud">Hinzufügen zu %1$s</string>
     <string name="advanced_settings">Erweiterte Einstellungen</string>
+    <string name="allow_creating">Erstellen erlauben</string>
+    <string name="allow_deleting">Löschen erlauben</string>
+    <string name="allow_editing">Bearbeitung erlauben</string>
     <string name="allow_resharing">Weiterteilen erlauben</string>
     <string name="app_config_base_url_title">Basis-URL</string>
     <string name="app_config_proxy_host_title">Proxy-Hostname</string>
@@ -476,10 +479,10 @@
     <string name="last_backup">Letzte Sicherung:%1$s</string>
     <string name="link">Link</string>
     <string name="link_name">Link-Name</string>
-    <string name="link_share_allow_upload_and_editing">Hochladen und Bearbeiten erlauben</string>
-    <string name="link_share_editing">Bearbeitung</string>
-    <string name="link_share_file_drop">Dateien ablegen (nur Hochladen)</string>
-    <string name="link_share_view_only">Nur anzeigen</string>
+    <string name="link_share_allow_upload_and_editing">Hochladen &amp; Bearbeiten</string>
+    <string name="link_share_file_drop">Sammelbox</string>
+    <string name="link_share_read_only">Nur Lesen</string>
+    <string name="link_share_editing">Bearbeiten</string>
     <string name="list_layout">Layout der Liste</string>
     <string name="load_more_results">Weitere Ergebnisse laden</string>
     <string name="local_file_list_empty">Es befinden sich keine Dateien in diesem Ordner.</string>
@@ -549,7 +552,6 @@
     <string name="no_mutliple_accounts_allowed">Nur ein Konto zulässig</string>
     <string name="no_pdf_app_available">Keine App verfügbar um PDFs anzuzeigen</string>
     <string name="no_send_app">Keine App zum Senden der ausgewählten Dateien verfügbar</string>
-    <string name="no_share_permission_selected">Bitte mindestens eine Berechtigung zum Teilen auswählen.</string>
     <string name="note_could_not_sent">Notiz konnte nicht versandt werden</string>
     <string name="note_icon_hint">Notiz-Symbol</string>
     <string name="notification_action_failed">Ausführen der Aktion fehlgeschlagen.</string>
@@ -693,7 +695,8 @@
     <string name="request_account_deletion">Kontolöschung anfordern</string>
     <string name="request_account_deletion_button">Löschung anfordern</string>
     <string name="request_account_deletion_details">Beim Diensteanbieter die dauerhafte Löschung des Kontos anfordern</string>
-    <string name="reshare_not_allowed">Das Weiterverteilen ist nicht erlaubt </string>
+    <string name="reshare_not_allowed">Weiterteilen ist nicht erlaubt.</string>
+    <string name="reshare_allowed">Weiterteilen ist erlaubt.</string>
     <string name="resharing_is_not_allowed">Resharing/Wiederteilen ist nicht erlaubt.</string>
     <string name="resized_image_not_possible_download">Kein verkleinertes Bild verfügbar. Vollbild herunterladen?</string>
     <string name="restore">Datei wiederherstellen</string>
@@ -724,7 +727,6 @@
     <string name="select_one_template">Bitte eine Vorlage auswählen</string>
     <string name="select_template">Vorlage auswählen</string>
     <string name="send">Senden</string>
-    <string name="send_share">Freigabe senden</string>
     <string name="sendbutton_description">Icon für den Senden-Button</string>
     <string name="set_as">Setze als</string>
     <string name="set_note">Notiz setzen</string>
@@ -744,29 +746,29 @@
     <string name="share_internal_link_to_folder_text">Der interne Freigabelink funktioniert nur für Benutzer mit Zugriff auf diesen Ordner</string>
     <string name="share_known_remote_on_clarification">auf %1$s</string>
     <string name="share_link">Link teilen</string>
+    <string name="share_link_folder">Link zum Ordner</string>
+    <string name="share_link_file">Link zur Datei</string>
     <string name="share_link_empty_password">Sie müssen ein Passwort eingeben</string>
     <string name="share_link_file_error">Es ist ein Fehler beim Freigeben der Datei oder des Ordners aufgetreten.</string>
     <string name="share_link_file_no_exist">Teilen nicht möglich. Bitte prüfen Sie, ob die Datei existiert.</string>
     <string name="share_link_forbidden_permissions">diese Datei zu teilen</string>
     <string name="share_link_optional_password_title">Passwort eingeben (optional)</string>
     <string name="share_link_password_title">Passwort eingeben</string>
-    <string name="share_link_with_label">Teile Link (%1$s)</string>
+    <string name="share_link_with_label">Link \"%1$s\"</string>
     <string name="share_no_expiration_date_label">Ablaufdatum setzen</string>
     <string name="share_no_password_title">Passwort setzen</string>
     <string name="share_not_allowed_when_file_drop">Erneutes teilen ist für die sichere Dateiablage nicht zugelassen</string>
     <string name="share_password_title">Passwortgeschützt</string>
-    <string name="share_permission_can_edit">Kann bearbeiten</string>
-    <string name="share_permission_file_drop">Dateiablage</string>
-    <string name="share_permission_secure_file_drop">Sichere Dateiablage</string>
     <string name="share_permission_view_only">Nur anzeigen</string>
     <string name="share_permissions">Berechtigungen zum Teilen</string>
+    <string name="share_privilege_unshare">Freigabe aufheben</string>
     <string name="share_remote_clarification">%1$s (remote)</string>
     <string name="share_room_clarification">%1$s (Unterhaltung)</string>
-    <string name="share_search">Name, Federated-Cloud-ID oder E-Mail-Adresse …</string>
-    <string name="share_send_new_email">Neue E-Mail senden</string>
+    <string name="share_search">Kontaktname oder E-Mail</string>
     <string name="share_send_note">Notiz an Empfänger</string>
     <string name="share_settings">Einstellungen</string>
     <string name="share_via_link_hide_download">Download verbergen</string>
+    <string name="share_via_link_menu_password_label">Passwortschutz (%1$s)</string>
     <string name="share_via_link_section_title">Link teilen</string>
     <string name="share_via_link_send_link_label">Link teilen</string>
     <string name="share_via_link_unset_password">Entfernen</string>
@@ -883,6 +885,7 @@
     <string name="unread_comments">Es gibt  ungelesene Kommentare</string>
     <string name="unset_encrypted">Verschlüsselung aufheben</string>
     <string name="unset_favorite">Von Favoriten entfernen</string>
+    <string name="unshare">Freigabe aufheben</string>
     <string name="unshare_link_file_error">Es ist ein Fehler beim Entfernen der Freigabe für diese Datei oder den Ordner aufgetreten.</string>
     <string name="unshare_link_file_no_exist">Entfernen der Freigabe nicht möglich. Bitte prüfen Sie, ob die Datei existiert.</string>
     <string name="unshare_link_forbidden_permissions">diese Datei nicht mehr zu teilen</string>
@@ -1015,6 +1018,44 @@
         <item quantity="one">Inhalte von %1$d Datei konnten nicht synchronisiert werden (Konflikte: %2$d)</item>
         <item quantity="other">Inhalte von %1$d Dateien konnten nicht synchronisiert werden (Konflikte: %2$d)</item>
     </plurals>
+    <!-- sharing related strings start -->
+    <string name="share_permission_read_only">Nur lesen</string>
+    <string name="share_permission_can_edit">Kann Bearbeiten</string>
+    <string name="share_permission_file_drop">Sammelbox</string>
+    <string name="permissions">Berechtigungen</string>
+    <string name="advance_permissions">Erweiterte Berechtigungen</string>
+    <string name="your_message">Ihre Nachricht</string>
+    <string name="send_share">Freigabe senden</string>
+    <string name="no_share_permission_selected">Bitte wählen Sie mindestens eine Berechtigung zum Teilen aus.</string>
+    <string name="share_link_empty_exp_date">Sie müssen das Ablaufdatum auswählen.</string>
+    <string name="share_link_empty_note_message">Bitte Anmerkung eingeben.</string>
+    <string name="send_email">Email senden</string>
+    <string name="share_open_in">Öffnen mit...</string>
+    <string name="share_advanced_permissions">Erweiterte Berechtigungen</string>
+    <string name="share_send_new_email">Neue Email versenden</string>
+    <string name="link_download_limit">Download Limit</string>
+    <string name="download_limit_empty">Das Feld für das Download-Limit darf nicht leer sein.</string>
+    <string name="hint_download_limit">Downlimit eingeben</string>
+    <string name="download_text">Downloads: %s</string>
+    <string name="download_limit_zero">Der Wert für das Downloadlimit sollte größer als 0 sein.</string>
+    <string name="allow_resharing_info">Sie teilen mit einer/einem MagentaCLOUD Nutzer(in). Sie können ihr oder ihm erlauben, den Ordner oder die Dateien weiterzuteilen.</string>
+    <string name="sharing_email_warning">Der Passwortschutz ist aktiviert. Sie müssen dem Empfänger das Passwort
+        selbst mitteilen.\n\nWenn Sie die Freigabe über die MagentaCLOUD verschicken und das Passwort in den
+        Nachrichtentext eintragen, wird es unverschlüsselt im Klartext übertragen.</string>
+    <string name="placeholder_receivedMessage">Empfangen</string>
+    <string name="placeholder_sharedMessage">Geteilt</string>
+    <string name="sharing_description">Sie können Links erstellen oder Freigaben per Mail versenden. Wenn Sie
+        MagentaCLOUD Nutzer einladen, bieten sich Ihnen mehr Möglichkeiten der Zusammenarbeit.</string>
+    <string name="personal_share_email">persönliche Freigabe per E-Mail</string>
+    <string name="create_link">Link erstellen</string>
+    <string name="your_shares">Ihre Freigaben</string>
+    <string name="link_label">Linkbezeichnung</string>
+    <string name="hint_link_label">Ihre Linkbezeichnung</string>
+    <string name="file_drop_info">Bei der Sammelbox ist nur das Hochladen erlaubt. Nur Sie sehen Dateien und Ordner die hochgeladen worden sind.</string>
+    <string name="password_protection">Password Protection</string>
+    <string name="expiration_date">Expiration Date</string>
+    <string name="empty_shares">Noch keine Freigaben erstellt.</string>
+    <!-- sharing related strings end -->
     <plurals name="sync_foreign_files_forgotten_content">
         <item quantity="one">%1$d Datei im %2$s-Verzeichnis konnten nicht kopiert werden nach </item>
         <item quantity="other">%1$d Dateien im %2$s-Verzeichnis konnten nicht kopiert werden nach </item>
