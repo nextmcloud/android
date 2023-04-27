@@ -23,11 +23,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,18 +39,14 @@ import com.nextcloud.client.account.User;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
+import com.nextcloud.utils.EditorUtils;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.nextcloud.utils.extensions.FileExtensionsKt;
-import com.nextcloud.utils.extensions.OCShareExtensionsKt;
-import com.nextcloud.utils.extensions.ViewExtensionsKt;
-import com.nextcloud.utils.mdm.MDMConfig;
-import com.nextcloud.utils.EditorUtils;
 import com.nmc.android.utils.SearchViewThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileDetailsSharingFragmentBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
-import com.owncloud.android.datamodel.SharesType;
 import com.owncloud.android.lib.common.OwnCloudAccount;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
@@ -66,7 +64,7 @@ import com.owncloud.android.ui.asynctasks.RetrieveHoverCardAsyncTask;
 import com.owncloud.android.ui.dialog.SharePasswordDialogFragment;
 import com.owncloud.android.ui.events.ShareSearchViewFocusEvent;
 import com.owncloud.android.ui.fragment.util.FileDetailSharingFragmentHelper;
-import com.owncloud.android.ui.fragment.util.SharingMenuHelper;
+import com.owncloud.android.ui.fragment.util.SharePermissionManager;
 import com.owncloud.android.ui.helpers.FileOperationsHelper;
 import com.owncloud.android.utils.ClipboardUtil;
 import com.owncloud.android.utils.DisplayUtils;
@@ -178,14 +176,23 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         String userId = accountManager.getUserData(user.toPlatformAccount(),
                                                    com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_USER_ID);
 
+        binding.linkSharesList.setAdapter(new ShareeListAdapter(fileActivity,
+                                                                new ArrayList<>(),
+                                                                this,
+                                                                userId,
+                                                                user,
+                                                                viewThemeUtils,
+                                                                file.isEncrypted()));
+
+        binding.linkSharesList.setLayoutManager(new LinearLayoutManager(requireContext()));
+
         binding.sharesList.setAdapter(new ShareeListAdapter(fileActivity,
                                                             new ArrayList<>(),
                                                             this,
                                                             userId,
                                                             user,
                                                             viewThemeUtils,
-                                                            file.isEncrypted(),
-                                                            SharesType.INTERNAL));
+                                                            file.isEncrypted()));
 
         binding.sharesList.setLayoutManager(new LinearLayoutManager(requireContext()));
 
@@ -253,7 +260,6 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
         binding.searchView.setQueryHint(getResources().getString(R.string.share_search));
         binding.searchView.setVisibility(View.VISIBLE);
-        binding.labelPersonalShare.setVisibility(View.VISIBLE);
         binding.pickContactEmailBtn.setVisibility(View.VISIBLE);
 
         binding.searchView.setOnQueryTextFocusChangeListener((view, hasFocus) -> {
@@ -302,15 +308,6 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
             //send the event to show the share top view
             EventBus.getDefault().post(new ShareSearchViewFocusEvent(false));
         }
-
-        checkShareViaUser();
-    }
-
-    private void checkShareViaUser() {
-        if (!MDMConfig.INSTANCE.shareViaUser(requireContext())) {
-            binding.searchView.setVisibility(View.GONE);
-            binding.pickContactEmailBtn.setVisibility(View.GONE);
-        }
     }
 
     private void hideAppBar() {
@@ -319,6 +316,16 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
             if (appBarLayout != null) {
                 appBarLayout.setExpanded(false, true);
+            }
+        }
+    }
+
+    private void disableSearchView(View view) {
+        view.setEnabled(false);
+
+        if (view instanceof ViewGroup viewGroup) {
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                disableSearchView(viewGroup.getChildAt(i));
             }
         }
     }
@@ -335,7 +342,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
                                                                                                                                shareeName,
                                                                                                                                shareType,
                                                                                                                                secureShare,
-                                                                                                                               SharingMenuHelper.canEditFile(requireActivity(), user, capabilities, file, editorUtils)),
+                                                                                                                               SharePermissionManager.canEditFile(user, capabilities, file, editorUtils)),
                                                                                  FileDetailsSharingProcessFragment.TAG)
             .addToBackStack(null)
             .commit();
@@ -353,21 +360,23 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
                                   boolean isExpiryDateShown) {
         requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.share_fragment_container,
                                                                                  FileDetailsSharingProcessFragment.newInstance(share, screenTypePermission, isReshareShown,
-                                                                                                                               isExpiryDateShown, SharingMenuHelper.canEditFile(requireActivity(), user, capabilities, file, editorUtils)),
+                                                                                                                               isExpiryDateShown, SharePermissionManager.canEditFile(user, capabilities, file, editorUtils)),
                                                                                  FileDetailsSharingProcessFragment.TAG)
             .addToBackStack(null)
             .commit();
     }
 
     private void setShareWithYou() {
+        setUpSearchView();
         if (accountManager.userOwnsFile(file, user)) {
-            binding.sharedWithYouContainer.setVisibility(View.GONE);
-            binding.shareCreateNewLink.setVisibility(View.VISIBLE);
-            binding.tvSharingDetailsMessage.setText(getResources().getString(R.string.sharing_description));
-            setUpSearchView();
+            binding.tvResharingInfo.setVisibility(View.GONE);
+            binding.tvResharingStatus.setVisibility(View.GONE);
         } else {
-            binding.sharedWithYouUsername.setText(
-                String.format(getString(R.string.shared_with_you_by), file.getOwnerDisplayName()));
+            binding.tvResharingInfo.setText(
+                DisplayUtils.createTextWithSpan(
+                    String.format(getString(R.string.resharing_user_info), file.getOwnerDisplayName()),
+                    file.getOwnerDisplayName(),
+                    new StyleSpan(Typeface.BOLD)));
           /*  DisplayUtils.setAvatar(user,
                                    file.getOwnerId(),
                                    this,
@@ -378,26 +387,25 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
                                    getContext());
             binding.sharedWithYouAvatar.setVisibility(View.VISIBLE);*/
 
-            String note = file.getNote();
-
-            //NMC Customization --> Share with me note container is not required
-            if (!TextUtils.isEmpty(note)) {
-                binding.sharedWithYouNote.setText(file.getNote());
-                binding.sharedWithYouNoteContainer.setVisibility(View.GONE);
-            } else {
-                binding.sharedWithYouNoteContainer.setVisibility(View.GONE);
-            }
-
             if (file.canReshare()) {
-                binding.tvSharingDetailsMessage.setText(getResources().getString(R.string.reshare_allowed) + " " + getResources().getString(R.string.sharing_description));
-                setUpSearchView();
+                binding.tvResharingStatus.setText(getResources().getString(R.string.reshare_allowed));
             } else {
-                binding.searchView.setVisibility(View.GONE);
-                binding.labelPersonalShare.setVisibility(View.GONE);
-                binding.pickContactEmailBtn.setVisibility(View.GONE);
+                binding.orSectionLayout.setVisibility(View.GONE);
+                binding.linkShareSectionHeading.setVisibility(View.GONE);
+                binding.linkSharesList.setVisibility(View.GONE);
                 binding.shareCreateNewLink.setVisibility(View.GONE);
-                binding.tvSharingDetailsMessage.setText(getResources().getString(R.string.reshare_not_allowed));
+
+                binding.sharedWithDivider.setVisibility(View.GONE);
+                binding.tvYourShares.setVisibility(View.GONE);
+                binding.sharesList.setVisibility(View.GONE);
+                binding.tvEmptyShares.setVisibility(View.GONE);
+
+                binding.tvResharingStatus.setText(getResources().getString(R.string.reshare_not_allowed));
+
+                disableSearchView(binding.searchContainer);
             }
+            binding.tvResharingStatus.setVisibility(View.VISIBLE);
+            binding.tvResharingInfo.setVisibility(View.VISIBLE);
         }
     }
 
@@ -453,6 +461,8 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
             } else {
                 ClipboardUtil.copyToClipboard(requireActivity(), share.getShareLink());
             }
+            // NMC: send link after copying it to clipboard
+            sendLink(share);
         }
     }
 
@@ -578,7 +588,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         adapter.removeAll();
 
         //update flag in adapter
-        adapter.setTextFile(SharingMenuHelper.canEditFile(requireActivity(), user,
+        adapter.setTextFile(SharePermissionManager.canEditFile(user,
                                                           capabilities, file, editorUtils));
 
         // to show share with users/groups info
@@ -587,23 +597,45 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
         adapter.addShares(shares);
 
+        showHideEmailShareView(shares == null || shares.isEmpty());
+
         if (FileDetailSharingFragmentHelper.isPublicShareDisabled(capabilities) || !file.canReshare()) {
             return;
         }
+
+        ShareeListAdapter linkAdapter = (ShareeListAdapter) binding.linkSharesList.getAdapter();
+
+        if (linkAdapter == null) {
+            DisplayUtils.showSnackMessage(getView(), getString(R.string.could_not_retrieve_shares));
+            return;
+        }
+        linkAdapter.getShares().clear();
+
+        //update flag in adapter
+        linkAdapter.setTextFile(SharePermissionManager.canEditFile(user,
+                                                                   capabilities, file, editorUtils));
 
         // Get public share
         List<OCShare> publicShares = fileDataStorageManager.getSharesByPathAndType(file.getRemotePath(),
                                                                                    ShareType.PUBLIC_LINK,
                                                                                    "");
 
-        adapter.addShares(publicShares);
+        linkAdapter.addShares(publicShares);
 
-        showHideView((shares == null || shares.isEmpty()) && (publicShares == null || publicShares.isEmpty()));
+        showHideLinkShareView(publicShares == null || publicShares.isEmpty());
     }
 
-    private void showHideView(boolean isEmptyList) {
+    private void showHideLinkShareView(boolean isEmptyList) {
+        binding.linkSharesList.setVisibility(isEmptyList ? View.GONE : View.VISIBLE);
+    }
+
+    private void showHideEmailShareView(boolean isEmptyList) {
         binding.sharesList.setVisibility(isEmptyList ? View.GONE : View.VISIBLE);
-        binding.tvYourShares.setVisibility(isEmptyList ? View.GONE : View.VISIBLE);
+        // additional check to hide the empty shares if file cannot be shared
+        if (!file.canReshare()) {
+            binding.tvEmptyShares.setVisibility(View.GONE);
+            return;
+        }
         binding.tvEmptyShares.setVisibility(isEmptyList ? View.VISIBLE : View.GONE);
     }
 
@@ -668,7 +700,8 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
     @Override
     public void avatarGenerated(Drawable avatarDrawable, Object callContext) {
-        binding.sharedWithYouAvatar.setImageDrawable(avatarDrawable);
+        // NMC: not required
+        // binding.sharedWithYouAvatar.setImageDrawable(avatarDrawable);
     }
 
     @Override
@@ -706,9 +739,9 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     public void unShare(OCShare share) {
         unShareWith(share);
 
-        if (binding.sharesList.getAdapter() instanceof ShareeListAdapter adapter) {
+        if (binding.linkSharesList.getAdapter() instanceof ShareeListAdapter adapter) {
             adapter.remove(share);
-        } else if (binding.sharesListExternal.getAdapter() instanceof ShareeListAdapter adapter) {
+        } else if (binding.sharesList.getAdapter() instanceof ShareeListAdapter adapter) {
             adapter.remove(share);
         } else {
             DisplayUtils.showSnackMessage(getView(), getString(R.string.failed_update_ui));
@@ -732,11 +765,6 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     @Override
     public void onQuickPermissionChanged(OCShare share, int permission) {
         fileOperationsHelper.setPermissionsToShare(share, permission);
-    }
-
-    @Override
-    public void openShareDetailWithCustomPermissions(OCShare share) {
-        modifyExistingShare(share, FileDetailsSharingProcessFragment.SCREEN_TYPE_PERMISSION_WITH_CUSTOM_PERMISSION);
     }
 
     //launcher for contact permission

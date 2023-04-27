@@ -23,7 +23,6 @@ import com.nextcloud.client.di.Injectable
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.extensions.getSerializableArgument
 import com.nextcloud.utils.extensions.isPublicOrMail
-import com.nextcloud.utils.extensions.setVisibilityWithAnimation
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.nmc.android.utils.CheckableThemeUtils
 import com.owncloud.android.R
@@ -35,7 +34,6 @@ import com.owncloud.android.lib.resources.shares.OCShare
 import com.owncloud.android.lib.resources.shares.ShareType
 import com.owncloud.android.lib.resources.status.OCCapability
 import com.owncloud.android.ui.activity.FileActivity
-import com.owncloud.android.ui.activity.ToolbarActivity
 import com.owncloud.android.ui.dialog.ExpirationDatePickerDialogFragment
 import com.owncloud.android.ui.fragment.util.SharePermissionManager
 import com.owncloud.android.ui.helpers.FileOperationsHelper
@@ -78,7 +76,6 @@ class FileDetailsSharingProcessFragment :
         // types of screens to be displayed
         const val SCREEN_TYPE_PERMISSION = 1 // permissions screen
         const val SCREEN_TYPE_NOTE = 2 // note screen
-        const val SCREEN_TYPE_PERMISSION_WITH_CUSTOM_PERMISSION = 3 // permissions screen with custom permission
 
         /**
          * fragment instance to be called while creating new share for internal and external share
@@ -160,13 +157,6 @@ class FileDetailsSharingProcessFragment :
     private var expirationDatePickerFragment: ExpirationDatePickerDialogFragment? = null
     private var downloadAttribute: String? = null
 
-    private var isHideDownloadCheckedReadOnly: Boolean = false
-    private var isHideDownloadCheckedUploadEdit: Boolean = false
-
-    private var isFileDropSelected: Boolean = false
-    private var isReadOnlySelected: Boolean = false
-    private var isUploadEditingSelected: Boolean = false
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
@@ -185,9 +175,7 @@ class FileDetailsSharingProcessFragment :
 
         requireNotNull(fileActivity) { "FileActivity may not be null" }
 
-        permission = share?.permissions
-            ?: capabilities.defaultPermissions
-                ?: SharePermissionManager.getMaximumPermission(isFolder())
+        permission = capabilities.defaultPermissions ?: OCShare.NO_PERMISSION
     }
 
     private fun initArguments() {
@@ -212,22 +200,11 @@ class FileDetailsSharingProcessFragment :
 
     // Updating Hide Download enable/disable on selection of FileDrop
     override fun onCheckedChanged(group: RadioGroup?, checkId: Int) {
-        if (binding.shareProcessPermissionFileDrop.id == checkId) {
-            isFileDropSelected = true
+        if (binding.fileDropRadioButton.id == checkId) {
             binding.shareProcessHideDownloadCheckbox.isChecked = true
             binding.shareProcessHideDownloadCheckbox.isEnabled = false
         } else {
-            isFileDropSelected = false
             binding.shareProcessHideDownloadCheckbox.isEnabled = true
-            if (binding.shareProcessPermissionReadOnly.id == checkId) {
-                isReadOnlySelected = true
-                isUploadEditingSelected = false
-                binding.shareProcessHideDownloadCheckbox.isChecked = isHideDownloadCheckedReadOnly
-            } else if (binding.shareProcessPermissionUploadEditing.id == checkId) {
-                isReadOnlySelected = false
-                isUploadEditingSelected = true
-                binding.shareProcessHideDownloadCheckbox.isChecked = isHideDownloadCheckedUploadEdit
-            }
         }
     }
 
@@ -250,18 +227,9 @@ class FileDetailsSharingProcessFragment :
             binding.shareProcessRemainingDownloadCountTv.text =
                 String.format(resources.getString(R.string.download_text), "0")
         }
-        binding.shareProcessPermissionRadioGroup.setOnCheckedChangeListener(this)
+        binding.shareRadioGroup.setOnCheckedChangeListener(this)
         implementClickEvents()
         setCheckboxStates()
-        binding.shareProcessHideDownloadCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            if (!isFileDropSelected) {
-                if (isReadOnlySelected) {
-                    isHideDownloadCheckedReadOnly = isChecked
-                } else if (isUploadEditingSelected) {
-                    isHideDownloadCheckedUploadEdit = isChecked
-                }
-            }
-        }
         themeView()
         setVisibilitiesOfShareOption()
         toggleNextButtonAvailability(isAnyShareOptionChecked())
@@ -281,15 +249,8 @@ class FileDetailsSharingProcessFragment :
 
     private fun setVisibilitiesOfShareOption() {
         binding.run {
-            shareAllowDownloadAndSyncCheckbox.setVisibleIf(!isPublicShare())
-            fileRequestRadioButton.setVisibleIf(canSetFileRequest())
-        }
-    }
-
-    private fun scrollTopShowToolbar() {
-        //show the toolbar if it is hidden due to scrolling
-        if (requireActivity() is ToolbarActivity) {
-            (requireActivity() as ToolbarActivity).expandToolbar()
+            shareProcessHideDownloadCheckbox.setVisibleIf(!isPublicShare())
+            fileDropRadioButton.setVisibleIf(canSetFileRequest())
         }
     }
 
@@ -316,10 +277,9 @@ class FileDetailsSharingProcessFragment :
     }
 
     private fun setupUI() {
-        scrollTopShowToolbar()
         binding.run {
+            viewOnlyRadioButton.isChecked = true
             shareProcessGroupOne.visibility = View.VISIBLE
-            shareProcessEditShareLink.visibility = View.VISIBLE
             shareProcessGroupTwo.visibility = View.GONE
         }
 
@@ -327,6 +287,7 @@ class FileDetailsSharingProcessFragment :
 
         // show or hide expiry date
         binding.shareProcessSetExpDateSwitch.setVisibleIf(isExpDateShown && !isSecureShare)
+        binding.dividerSharingExpDate.setVisibleIf(isExpDateShown && !isSecureShare)
         shareProcessStep = SCREEN_TYPE_PERMISSION
     }
 
@@ -351,7 +312,6 @@ class FileDetailsSharingProcessFragment :
         updateViewAccordingToFile()
         showPasswordInput(binding.shareProcessSetPasswordSwitch.isChecked)
         showExpirationDateInput(binding.shareProcessSetExpDateSwitch.isChecked)
-        showFileDownloadLimitInput(binding.shareProcessSetDownloadLimitSwitch.isChecked)
         setMaxPermissionsIfDefaultPermissionExists()
     }
 
@@ -367,13 +327,11 @@ class FileDetailsSharingProcessFragment :
     }
 
     private fun updateViewForUpdate() {
+        binding.shareProcessBtnNext.text = requireContext().resources.getString(R.string.common_confirm)
+
         if (share?.isFolder == true) updateViewForFolder() else updateViewForFile()
 
         selectRadioButtonAccordingToPermission()
-
-        if (isShareProcessStepIsCustomPermission()) {
-            selectCustomPermissionLayout()
-        }
 
         shareType = share?.shareType ?: ShareType.NO_SHARED
 
@@ -382,8 +340,6 @@ class FileDetailsSharingProcessFragment :
         showPasswordInput(binding.shareProcessSetPasswordSwitch.isChecked)
         updateExpirationDateView()
         showExpirationDateInput(binding.shareProcessSetExpDateSwitch.isChecked)
-        updateFileDownloadLimitView()
-        showFileDownloadLimitInput(binding.shareProcessSetDownloadLimitSwitch.isChecked)
     }
 
     private fun selectRadioButtonAccordingToPermission() {
@@ -399,21 +355,12 @@ class FileDetailsSharingProcessFragment :
                 }
 
                 QuickPermissionType.FILE_REQUEST -> {
-                    fileRequestRadioButton.isChecked = true
-                }
-
-                QuickPermissionType.CUSTOM_PERMISSIONS -> {
-                    selectCustomPermissionLayout()
+                    fileDropRadioButton.isChecked = true
                 }
 
                 else -> Unit
             }
         }
-    }
-
-    private fun selectCustomPermissionLayout() {
-        binding.customPermissionRadioButton.isChecked = true
-        binding.customPermissionLayout.setVisibilityWithAnimation(true)
     }
 
     private fun updateViewForShareType() {
@@ -433,25 +380,21 @@ class FileDetailsSharingProcessFragment :
     }
 
     private fun updateViewForExternalShare() {
-        binding.run {
-            shareProcessChangeNameSwitch.visibility = View.GONE
-            hideLinkLabelViews()
-            updateViewForExternalAndLinkShare()
-        }
+        hideLinkLabelViews()
+        updateViewForExternalAndLinkShare()
     }
 
     private fun updateViewForLinkShare() {
         updateViewForExternalAndLinkShare()
         binding.run {
             shareProcessChangeNameSwitch.visibility = View.VISIBLE
+            dividerSharingChangeName.visibility = View.VISIBLE
             if (share != null) {
-                shareProcessChangeName.setText(share?.label)
+                shareProcessChangeNameEt.setText(share?.label)
                 shareProcessChangeNameSwitch.isChecked = !TextUtils.isEmpty(share?.label)
             }
-            shareReadCheckbox.isEnabled = isFolder()
             showChangeNameInput(shareProcessChangeNameSwitch.isChecked)
         }
-        showChangeNameInput(binding.shareProcessChangeNameSwitch.isChecked)
 
         //download limit will only be available for files
         if (share?.isFolder == false || file?.isFolder == false) {
@@ -470,24 +413,34 @@ class FileDetailsSharingProcessFragment :
         //from the download limit api
         binding.shareProcessDownloadLimitEt.visibility = View.GONE
         binding.shareProcessRemainingDownloadCountTv.visibility = View.GONE
-
-        updateFileEditingRadioButton()
     }
 
     private fun updateViewForInternalShare() {
         hideLinkLabelViews()
         binding.run {
+            shareProcessHideDownloadCheckbox.visibility = View.GONE
             shareProcessChangeNameSwitch.visibility = View.GONE
-            shareCheckbox.setVisibleIf(!isSecureShare)
+            shareProcessAllowResharingCheckbox.setVisibleIf(!isSecureShare)
             shareProcessSetPasswordSwitch.visibility = View.GONE
 
             if (share != null) {
                 if (!isReShareShown) {
-                    shareCheckbox.visibility = View.GONE
+                    shareProcessAllowResharingCheckbox.visibility = View.GONE
                 }
-                shareCheckbox.isChecked = SharePermissionManager.canReshare(share)
+                shareProcessAllowResharingCheckbox.isChecked = SharePermissionManager.canReshare(share)
+                if (share?.isFolder == true) {
+                    hideFileDropView()
+                }
+            } else if (file?.isFolder == true) {
+                hideFileDropView()
             }
         }
+    }
+
+    private fun hideFileDropView() {
+        //no file drop for internal share due to 403 bad request api issue
+        binding.fileDropRadioButton.visibility = View.GONE
+        binding.shareFileDropInfo.visibility = View.GONE
     }
 
     private fun hideLinkLabelViews() {
@@ -501,24 +454,24 @@ class FileDetailsSharingProcessFragment :
         binding.dividerSharingDownloadLimit.visibility = View.GONE
     }
 
-    private fun updateFileEditingRadioButton() {
-        if (!isTextFile) {
-            binding.shareProcessPermissionUploadEditing.isEnabled = false
-            binding.shareProcessPermissionUploadEditing.setTextColor(resources.getColor(R.color.share_disabled_txt_color))
-        }
-    }
-
     private fun updateViewForExternalAndLinkShare() {
         binding.run {
             shareProcessHideDownloadCheckbox.visibility = View.VISIBLE
-            shareCheckbox.visibility = View.GONE
+            dividerSharingHideDownload.visibility = View.VISIBLE
+            shareProcessAllowResharingCheckbox.visibility = View.GONE
+            shareProcessAllowResharingInfo.visibility = View.GONE
+            dividerSharingAllowResharing.visibility = View.GONE
             shareProcessSetPasswordSwitch.visibility = View.VISIBLE
+            dividerSharingEnterPassword.visibility = View.VISIBLE
 
             if (share != null) {
                 if (SharePermissionManager.isFileRequest(share)) {
-                    shareProcessHideDownloadCheckbox.visibility = View.GONE
+                    shareProcessHideDownloadCheckbox.isChecked = true
+                    shareProcessHideDownloadCheckbox.isEnabled = false
+                    dividerSharingHideDownload.visibility = View.GONE
                 } else {
-                    shareProcessHideDownloadCheckbox.visibility = View.VISIBLE
+                    shareProcessHideDownloadCheckbox.isEnabled = true
+                    dividerSharingHideDownload.visibility = View.VISIBLE
                     shareProcessHideDownloadCheckbox.isChecked = share?.isHideFileDownload == true
                 }
             }
@@ -538,31 +491,23 @@ class FileDetailsSharingProcessFragment :
         }
     }
 
-    private fun updateFileDownloadLimitView() {
-        if (canSetDownloadLimit()) {
-            binding.shareProcessSetDownloadLimitSwitch.visibility = View.VISIBLE
-
-            val currentDownloadLimit = share?.fileDownloadLimit?.limit ?: capabilities.filesDownloadLimitDefault
-            if (currentDownloadLimit > 0) {
-                binding.shareProcessSetDownloadLimitSwitch.isChecked = true
-                showFileDownloadLimitInput(true)
-                binding.shareProcessSetDownloadLimitInput.setText("$currentDownloadLimit")
-            }
-        }
-    }
-
     private fun updateViewForFile() {
         binding.run {
             canEditRadioButton.text = getString(R.string.link_share_editing)
+            fileDropRadioButton.visibility = View.GONE
+            shareFileDropInfo.visibility = View.GONE
         }
     }
 
     private fun updateViewForFolder() {
         binding.run {
-            canEditRadioButton.text = getString(R.string.share_permission_can_edit)
-
+            canEditRadioButton.text = getString(R.string.link_share_allow_upload_and_editing)
+            fileDropRadioButton.visibility = View.VISIBLE
+            shareFileDropInfo.visibility = View.VISIBLE
             if (isSecureShare) {
-                shareCheckbox.visibility = View.GONE
+                fileDropRadioButton.visibility = View.GONE
+                shareFileDropInfo.visibility = View.GONE
+                shareProcessAllowResharingCheckbox.visibility = View.GONE
                 shareProcessSetExpDateSwitch.visibility = View.GONE
             }
         }
@@ -571,7 +516,6 @@ class FileDetailsSharingProcessFragment :
     private fun updateViewForNoteScreenType() {
         binding.run {
             shareProcessGroupOne.visibility = View.GONE
-            shareProcessEditShareLink.visibility = View.GONE
             shareProcessGroupTwo.visibility = View.VISIBLE
             if (share != null) {
                 shareProcessBtnNext.text = getString(R.string.send_email)
@@ -605,14 +549,14 @@ class FileDetailsSharingProcessFragment :
             shareProcessSetExpDateSwitch.setOnCheckedChangeListener { _, isChecked ->
                 showExpirationDateInput(isChecked)
             }
-            shareProcessSetDownloadLimitSwitch.setOnCheckedChangeListener { _, isChecked ->
-                showFileDownloadLimitInput(isChecked)
-            }
             shareProcessChangeNameSwitch.setOnCheckedChangeListener { _, isChecked ->
                 showChangeNameInput(isChecked)
             }
             shareProcessSelectExpDate.setOnClickListener {
                 showExpirationDateDialog()
+            }
+            shareProcessDownloadLimitSwitch.setOnCheckedChangeListener { _, isChecked ->
+                showDownloadLimitInput(isChecked)
             }
             noteText.setOnTouchListener { view, event ->
                 view.parent.requestDisallowInterceptTouchEvent(true)
@@ -633,13 +577,11 @@ class FileDetailsSharingProcessFragment :
                         permission = SharePermissionManager.getMaximumPermission(isFolder())
                     }
 
-                    R.id.file_request_radio_button -> {
+                    R.id.file_drop_radio_button -> {
                         permission = OCShare.CREATE_PERMISSION_FLAG
                     }
                 }
 
-                val isCustomPermissionSelected = (optionId == R.id.custom_permission_radio_button)
-                customPermissionLayout.setVisibilityWithAnimation(isCustomPermissionSelected)
                 toggleNextButtonAvailability(true)
             }
             // endregion
@@ -648,20 +590,9 @@ class FileDetailsSharingProcessFragment :
 
     private fun isAnyShareOptionChecked(): Boolean {
         return binding.run {
-            val isCustomPermissionChecked = customPermissionRadioButton.isChecked &&
-                (
-                    shareReadCheckbox.isChecked ||
-                        shareCreateCheckbox.isChecked ||
-                        shareEditCheckbox.isChecked ||
-                        shareCheckbox.isChecked ||
-                        shareDeleteCheckbox.isChecked
-                    )
-
             viewOnlyRadioButton.isChecked ||
                 canEditRadioButton.isChecked ||
-                fileRequestRadioButton.isChecked ||
-                isCustomPermissionChecked
-        }
+                fileDropRadioButton.isChecked}
     }
 
     private fun toggleNextButtonAvailability(value: Boolean) {
@@ -677,25 +608,10 @@ class FileDetailsSharingProcessFragment :
 
         binding.run {
             SharePermissionManager.run {
-                shareReadCheckbox.isChecked = hasPermission(currentPermissions, OCShare.READ_PERMISSION_FLAG)
-                shareEditCheckbox.isChecked = hasPermission(currentPermissions, OCShare.UPDATE_PERMISSION_FLAG)
-                shareCheckbox.isChecked = hasPermission(currentPermissions, OCShare.SHARE_PERMISSION_FLAG)
-
-                if (isFolder()) {
-                    // Only for the folder makes sense to have create permission
-                    // so that user can create files in the shared folder
-                    shareCreateCheckbox.isChecked = hasPermission(currentPermissions, OCShare.CREATE_PERMISSION_FLAG)
-                    shareDeleteCheckbox.isChecked = hasPermission(currentPermissions, OCShare.DELETE_PERMISSION_FLAG)
-                } else {
-                    shareCreateCheckbox.visibility = View.GONE
-                    shareDeleteCheckbox.apply {
-                        isChecked = false
-                        isEnabled = false
-                    }
-                }
+                shareProcessAllowResharingCheckbox.isChecked = hasPermission(currentPermissions, OCShare.SHARE_PERMISSION_FLAG)
 
                 if (!isPublicShare()) {
-                    shareAllowDownloadAndSyncCheckbox.isChecked = isAllowDownloadAndSyncEnabled(share)
+                    shareProcessHideDownloadCheckbox.isChecked = isAllowDownloadAndSyncEnabled(share)
                 }
             }
         }
@@ -705,11 +621,7 @@ class FileDetailsSharingProcessFragment :
 
     private fun setCheckboxesListeners() {
         val checkboxes = mapOf(
-            binding.shareReadCheckbox to OCShare.READ_PERMISSION_FLAG,
-            binding.shareCreateCheckbox to OCShare.CREATE_PERMISSION_FLAG,
-            binding.shareEditCheckbox to OCShare.UPDATE_PERMISSION_FLAG,
-            binding.shareCheckbox to OCShare.SHARE_PERMISSION_FLAG,
-            binding.shareDeleteCheckbox to OCShare.DELETE_PERMISSION_FLAG
+            binding.shareProcessAllowResharingCheckbox to OCShare.SHARE_PERMISSION_FLAG,
         )
 
         checkboxes.forEach { (checkbox, flag) ->
@@ -717,7 +629,7 @@ class FileDetailsSharingProcessFragment :
         }
 
         if (!isPublicShare()) {
-            binding.shareAllowDownloadAndSyncCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            binding.shareProcessHideDownloadCheckbox.setOnCheckedChangeListener { _, isChecked ->
                 val result = SharePermissionManager.toggleAllowDownloadAndSync(isChecked, share)
                 share?.attributes = result
                 downloadAttribute = result
@@ -743,10 +655,10 @@ class FileDetailsSharingProcessFragment :
     }
 
     private fun showChangeNameInput(isChecked: Boolean) {
-        binding.shareProcessChangeNameContainer.setVisibleIf(isChecked)
+        binding.shareProcessChangeNameEt.setVisibleIf(isChecked)
 
         if (!isChecked) {
-            binding.shareProcessDownloadLimitEt.setText(R.string.empty)
+            binding.shareProcessChangeNameEt.setText(R.string.empty)
             // hide keyboard when user unchecks
             hideKeyboard()
         }
@@ -802,17 +714,8 @@ class FileDetailsSharingProcessFragment :
         }
     }
 
-    private fun showFileDownloadLimitInput(isChecked: Boolean) {
-        binding.shareProcessSetDownloadLimitInputContainer.setVisibleIf(isChecked)
-
-        // reset download limit if switch is unchecked
-        if (!isChecked) {
-            binding.shareProcessSetDownloadLimitInput.setText(R.string.empty)
-        }
-    }
-
     private fun showPasswordInput(isChecked: Boolean) {
-        binding.shareProcessEnterPasswordContainer.setVisibleIf(isChecked)
+        binding.shareProcessEnterPassword.setVisibleIf(isChecked)
 
         // reset the password if switch is unchecked
         if (!isChecked) {
@@ -900,63 +803,46 @@ class FileDetailsSharingProcessFragment :
         if (file == null && (share != null && share?.note == noteText)) {
             DisplayUtils.showSnackMessage(requireActivity(), R.string.share_cannot_update_empty_note)
             return
-            }
-
-            when {
-                // if modifying existing share then directly update the note and send email
-                share != null && share?.note != noteText -> {
-                    fileOperationsHelper?.updateNoteToShare(share, noteText)
-                }
-
-                file == null -> {
-                    DisplayUtils.showSnackMessage(requireActivity(), R.string.file_not_found_cannot_share)
-                    return
-                }
-
-                else -> {
-                    createShare(noteText)
-                }
-            }
-
-                removeCurrentFragment ()
         }
 
-        private fun updateShare() {
-            // empty string causing fails
-            if (share?.attributes?.isEmpty() == true) {
-                share?.attributes = null
+        when {
+            // if modifying existing share then directly update the note and send email
+            share != null && share?.note != noteText -> {
+                fileOperationsHelper?.updateNoteToShare(share, noteText)
             }
 
-            fileOperationsHelper?.updateShareInformation(
-                share,
-                permission,
-                binding.shareProcessHideDownloadCheckbox.isChecked,
-                binding.shareProcessEnterPassword.text.toString().trim(),
-                chosenExpDateInMills,
-                binding.shareProcessChangeNameEt.text.toString().trim(),
-                binding.shareProcessDownloadLimitEt.text.toString().trim()
+            file == null -> {
+                DisplayUtils.showSnackMessage(requireActivity(), R.string.file_not_found_cannot_share)
+                return
+            }
+
+            else -> {
+                createShare(noteText)
+            }
+        }
+
+        removeCurrentFragment()
+    }
+
+    private fun updateShare() {
+        // empty string causing fails
+        if (share?.attributes?.isEmpty() == true) {
+            share?.attributes = null
+        }
+
+        fileOperationsHelper?.updateShareInformation(
+            share,
+            permission,
+            binding.shareProcessHideDownloadCheckbox.isChecked,
+            binding.shareProcessEnterPassword.text.toString().trim(),
+            chosenExpDateInMills,
+            binding.shareProcessChangeNameEt.text.toString().trim(),
+            binding.shareProcessDownloadLimitEt.text.toString().trim()
             )
-
-            if (canSetDownloadLimit()) {
-                setDownloadLimit()
-            }
-
             // copy the share link if available
             if (!TextUtils.isEmpty(share?.shareLink)) {
                 ClipboardUtil.copyToClipboard(requireActivity(), share?.shareLink)
             }
-        }
-
-        private fun setDownloadLimit() {
-            val downloadLimitInput = binding.shareProcessSetDownloadLimitInput.text.toString().trim()
-            val downloadLimit =
-                if (binding.shareProcessSetDownloadLimitSwitch.isChecked && downloadLimitInput.isNotEmpty()) {
-                    downloadLimitInput.toInt()
-                } else {
-                    0
-                }
-
-            fileOperationsHelper?.updateFilesDownloadLimit(share, downloadLimit)
         }
 
     private fun createShare(noteText: String) {
@@ -971,7 +857,7 @@ class FileDetailsSharingProcessFragment :
             chosenExpDateInMills,
             noteText,
             downloadAttribute,
-            binding.shareProcessChangeName.text.toString().trim(),
+            binding.shareProcessChangeNameEt.text.toString().trim(),
             true
         )
         removeCurrentFragment()
@@ -1022,12 +908,7 @@ class FileDetailsSharingProcessFragment :
 
     // region Helpers
     private fun isShareProcessStepIsPermission(): Boolean = (
-        shareProcessStep == SCREEN_TYPE_PERMISSION ||
-            isShareProcessStepIsCustomPermission()
-        )
-
-    private fun isShareProcessStepIsCustomPermission(): Boolean =
-        (shareProcessStep == SCREEN_TYPE_PERMISSION_WITH_CUSTOM_PERMISSION)
+        shareProcessStep == SCREEN_TYPE_PERMISSION)
 
     private fun isShareProcessStepIsNote(): Boolean = (shareProcessStep == SCREEN_TYPE_NOTE)
 
