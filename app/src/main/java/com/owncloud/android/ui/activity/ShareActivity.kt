@@ -32,6 +32,7 @@ import com.owncloud.android.lib.resources.shares.ShareType
 import com.owncloud.android.operations.GetSharesForFileOperation
 import com.owncloud.android.ui.fragment.FileDetailSharingFragment
 import com.owncloud.android.ui.fragment.FileDetailsSharingProcessFragment
+import com.owncloud.android.ui.fragment.util.SharePermissionManager
 import com.owncloud.android.utils.DisplayUtils
 import com.owncloud.android.utils.MimeTypeUtil
 import com.owncloud.android.utils.overlay.OverlayManager
@@ -91,9 +92,17 @@ class ShareActivity :
     override fun doShareWith(shareeName: String, shareType: ShareType) {
         val file = file ?: return
         supportFragmentManager.beginTransaction()
-            .replace(
+            .add(
                 R.id.share_fragment_container,
-                FileDetailsSharingProcessFragment.newInstance(file, shareeName, shareType, false),
+                FileDetailsSharingProcessFragment.newInstance(
+                    file, shareeName, shareType, false,
+                    SharePermissionManager.canEditFile(
+                        user.get(),
+                        storageManager.getCapability(user.get()),
+                        file,
+                        editorUtils
+                    )
+                ),
                 FileDetailsSharingProcessFragment.TAG
             )
             .commit()
