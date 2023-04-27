@@ -8,6 +8,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -21,8 +22,7 @@ import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.lib.resources.shares.OCShare
 import com.owncloud.android.lib.resources.shares.ShareType
 import com.owncloud.android.ui.fragment.FileDetailFragment
-import com.owncloud.android.ui.fragment.FileDetailSharingFragment
-import com.owncloud.android.ui.fragment.util.SharingMenuHelper
+import com.owncloud.android.ui.fragment.util.SharePermissionManager
 import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -70,15 +70,6 @@ class FileSharingIT : AbstractIT() {
         shortSleep()
     }
 
-    private fun getFragment(): FileDetailSharingFragment? {
-        var fragment: FileDetailSharingFragment? = null
-        activityScenarioRule.scenario.onActivity {
-            fragment =
-                it.supportFragmentManager.findFragmentByTag("SHARING_DETAILS_FRAGMENT") as FileDetailSharingFragment
-        }
-        return fragment
-    }
-
     @Test
     fun validateUiOfFileDetailFragment() {
         show(file)
@@ -91,25 +82,41 @@ class FileSharingIT : AbstractIT() {
         onView(withId(R.id.last_modification_timestamp)).check(matches(isCompletelyDisplayed()))
     }
 
+    private fun validateCommonUI() {
+        onView(withId(R.id.sharing_heading_title)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.sharing_heading_title)).check(matches(withText("Send link by mail")))
+
+        onView(withId(R.id.searchView)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.searchView)).check(matches(isEnabled()))
+        onView(withId(R.id.pick_contact_email_btn)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.pick_contact_email_btn)).check(matches(isEnabled()))
+
+        onView(withId(R.id.or_section_layout)).check(matches(isCompletelyDisplayed()))
+
+        onView(withId(R.id.link_share_section_heading)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.link_share_section_heading)).check(matches(withText("Copy link")))
+
+        onView(withId(R.id.share_create_new_link)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.share_create_new_link)).check(matches(withText("Create new link")))
+
+        onView(withId(R.id.shared_with_divider)).check(matches(isCompletelyDisplayed()))
+
+        onView(withId(R.id.tv_your_shares)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.tv_your_shares)).check(matches(withText("Shared with")))
+    }
+
     @Test
     fun validateUiForEmptyShares() {
         show(file)
 
-        onView(withId(R.id.shared_with_you_container)).check(matches(not(isCompletelyDisplayed())))
-        onView(withId(R.id.tv_sharing_details_message)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.tv_sharing_details_message)).check(matches(withText("You can create links or send shares by mail. If you invite MagentaCLOUD users, you have more opportunities for collaboration.")))
-        onView(withId(R.id.searchView)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.pick_contact_email_btn)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.label_personal_share)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.label_personal_share)).check(matches(withText("Personal share by mail")))
+        validateCommonUI()
 
-        onView(withId(R.id.share_create_new_link)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.share_create_new_link)).check(matches(withText("Create Link")))
+        onView(withId(R.id.linkSharesList)).check(matches(not(isDisplayed())))
 
-        onView(withId(R.id.tv_your_shares)).check(matches(not(isDisplayed())))
         onView(withId(R.id.sharesList)).check(matches(not(isDisplayed())))
+
         onView(withId(R.id.tv_empty_shares)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.tv_empty_shares)).check(matches(withText("No shares created yet.")))
+        onView(withId(R.id.tv_empty_shares)).check(matches(withText("You have not yet shared your file/folder. Share to give others access.")))
     }
 
     @Test
@@ -127,7 +134,7 @@ class FileSharingIT : AbstractIT() {
             OCShare(file.decryptedRemotePath).apply {
                 remoteId = 3
                 shareType = ShareType.EMAIL
-                permissions = SharingMenuHelper.CAN_EDIT_PERMISSIONS_FOR_FILE
+                permissions = OCShare.MAXIMUM_PERMISSIONS_FOR_FILE
                 sharedWithDisplayName = "johndoe@gmail.com"
                 userId = getUserId(user)
                 it.storageManager.saveShare(this)
@@ -144,7 +151,7 @@ class FileSharingIT : AbstractIT() {
             OCShare(file.decryptedRemotePath).apply {
                 remoteId = 5
                 shareType = ShareType.PUBLIC_LINK
-                permissions = SharingMenuHelper.CAN_EDIT_PERMISSIONS_FOR_FILE
+                permissions = OCShare.MAXIMUM_PERMISSIONS_FOR_FILE
                 label = "Colleagues"
                 it.storageManager.saveShare(this)
             }
@@ -152,19 +159,9 @@ class FileSharingIT : AbstractIT() {
         }
         show(file)
 
-        onView(withId(R.id.shared_with_you_container)).check(matches(not(isCompletelyDisplayed())))
-        onView(withId(R.id.tv_sharing_details_message)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.tv_sharing_details_message)).check(matches(withText("You can create links or send shares by mail. If you invite MagentaCLOUD users, you have more opportunities for collaboration.")))
-        onView(withId(R.id.searchView)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.pick_contact_email_btn)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.label_personal_share)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.label_personal_share)).check(matches(withText("Personal share by mail")))
+        validateCommonUI()
 
-        onView(withId(R.id.share_create_new_link)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.share_create_new_link)).check(matches(withText("Create Link")))
-
-        onView(withId(R.id.tv_your_shares)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.tv_your_shares)).check(matches(withText("Your Shares")))
+        onView(withId(R.id.linkSharesList)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.sharesList)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.tv_empty_shares)).check(matches(not(isDisplayed())))
     }
@@ -179,17 +176,22 @@ class FileSharingIT : AbstractIT() {
         }
         show(file)
 
-        onView(withId(R.id.shared_with_you_container)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.tv_sharing_details_message)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.tv_sharing_details_message)).check(matches(withText("Resharing is not allowed.")))
-        onView(withId(R.id.shared_with_you_username)).check(matches(withText("Shared with you by John Doe")))
-        onView(withId(R.id.shared_with_you_note)).check(matches(withText("Shared for testing purpose.")))
-        onView(withId(R.id.shared_with_you_avatar)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.tv_resharing_info)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.tv_resharing_info)).check(matches(withText("This file / folder was shared with you by John Doe")))
 
-        onView(withId(R.id.searchView)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.pick_contact_email_btn)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.label_personal_share)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.tv_resharing_status)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.tv_resharing_status)).check(matches(withText("Resharing is not allowed.")))
+
+        onView(withId(R.id.searchView)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.searchView)).check(matches(not(isEnabled())))
+        onView(withId(R.id.pick_contact_email_btn)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.pick_contact_email_btn)).check(matches(not(isEnabled())))
+
+        onView(withId(R.id.or_section_layout)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.link_share_section_heading)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.linkSharesList)).check(matches(not(isDisplayed())))
         onView(withId(R.id.share_create_new_link)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.shared_with_divider)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tv_your_shares)).check(matches(not(isDisplayed())))
         onView(withId(R.id.sharesList)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tv_empty_shares)).check(matches(not(isDisplayed())))
@@ -203,21 +205,18 @@ class FileSharingIT : AbstractIT() {
         }
         show(file)
 
-        onView(withId(R.id.shared_with_you_container)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.tv_sharing_details_message)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.tv_sharing_details_message)).check(matches(withText("Resharing is allowed. You can create links or send shares by mail. If you invite MagentaCLOUD users, you have more opportunities for collaboration.")))
-        onView(withId(R.id.shared_with_you_username)).check(matches(withText("Shared with you by John Doe")))
-        onView(withId(R.id.shared_with_you_avatar)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.shared_with_you_note_container)).check(matches(not(isDisplayed())))
+       validateCommonUI()
 
-        onView(withId(R.id.searchView)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.pick_contact_email_btn)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.label_personal_share)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.share_create_new_link)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.tv_your_shares)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.tv_resharing_info)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.tv_resharing_info)).check(matches(withText("This file / folder was shared with you by John Doe")))
+
+        onView(withId(R.id.tv_resharing_status)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.tv_resharing_status)).check(matches(withText("Resharing is allowed.")))
+
+        onView(withId(R.id.linkSharesList)).check(matches(not(isDisplayed())))
         onView(withId(R.id.sharesList)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tv_empty_shares)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.tv_empty_shares)).check(matches(withText("No shares created yet.")))
+        onView(withId(R.id.tv_empty_shares)).check(matches(withText("You have not yet shared your file/folder. Share to give others access.")))
     }
 
     @Test
@@ -239,7 +238,7 @@ class FileSharingIT : AbstractIT() {
                 remoteId = 3
                 shareType = ShareType.EMAIL
                 sharedWithDisplayName = "johndoe@gmail.com"
-                permissions = SharingMenuHelper.CAN_EDIT_PERMISSIONS_FOR_FILE
+                permissions = OCShare.MAXIMUM_PERMISSIONS_FOR_FILE
                 userId = getUserId(user)
                 isFolder = false
                 it.storageManager.saveShare(this)
@@ -299,7 +298,7 @@ class FileSharingIT : AbstractIT() {
                 remoteId = 3
                 shareType = ShareType.EMAIL
                 sharedWithDisplayName = "johndoe@gmail.com"
-                permissions = SharingMenuHelper.CAN_EDIT_PERMISSIONS_FOR_FOLDER
+                permissions = OCShare.MAXIMUM_PERMISSIONS_FOR_FOLDER
                 userId = getUserId(user)
                 isFolder = true
                 it.storageManager.saveShare(this)
@@ -364,9 +363,9 @@ class FileSharingIT : AbstractIT() {
                 withRecyclerView(R.id.rv_quick_share_permissions)
                     .atPositionOnView(i, R.id.tv_quick_share_check_icon)
             )
-            if ((permissionList[i] == "Read only" && SharingMenuHelper.isReadOnly(ocShare))
-                || (permissionList[i] == "Can edit" && SharingMenuHelper.isUploadAndEditingAllowed(ocShare))
-                || (permissionList[i] == "Filedrop only" && SharingMenuHelper.isFileDrop(ocShare))
+            if ((permissionList[i] == "Read only" && SharePermissionManager.isViewOnly(ocShare))
+                || (permissionList[i] == "Can edit" && SharePermissionManager.canEdit(ocShare))
+                || (permissionList[i] == "Filedrop only" && SharePermissionManager.isFileRequest(ocShare))
             ) {
                 permissionCheckView.check(matches(isDisplayed()))
             }

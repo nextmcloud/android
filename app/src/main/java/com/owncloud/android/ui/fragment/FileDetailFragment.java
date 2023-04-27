@@ -14,14 +14,12 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -64,7 +62,7 @@ import com.owncloud.android.ui.dialog.RenameFileDialogFragment;
 import com.owncloud.android.ui.dialog.SendShareDialog;
 import com.owncloud.android.ui.events.FavoriteEvent;
 import com.owncloud.android.ui.events.ShareSearchViewFocusEvent;
-import com.owncloud.android.ui.fragment.util.SharingMenuHelper;
+import com.owncloud.android.ui.fragment.util.SharePermissionManager;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.MimeTypeUtil;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
@@ -83,7 +81,6 @@ import javax.inject.Inject;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentManager;
 
@@ -104,10 +101,6 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     private User user;
     private OCFile parentFolder;
     private boolean previewLoaded;
-    /**
-     * variable to check if custom back icon on toolbar has to be shown
-     */
-    private boolean isCustomBackIcon;
 
     private FileDetailsFragmentBinding binding;
     private DownloadProgressListener progressListener;
@@ -243,11 +236,6 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
             return null;
         }
 
-        FloatingActionButton fabMain = requireActivity().findViewById(R.id.fab_main);
-        if (fabMain != null) {
-            fabMain.hide();
-        }
-
         if (getFile().getTags().isEmpty()) {
             binding.tagsGroup.setVisibility(View.GONE);
         } else {
@@ -349,16 +337,8 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
             if (previewLoaded) {
                 toolbarActivity.setPreviewImageVisibility(true);
             }
-            showHideCustomBackButton();
         }
 
-    }
-
-    //show custom back button for image previews
-    private void showHideCustomBackButton() {
-        if (toolbarActivity != null) {
-            toolbarActivity.showToolbarBackImage(isCustomBackIcon);
-        }
     }
 
     @Override
@@ -367,7 +347,6 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
 
         if (toolbarActivity != null) {
             toolbarActivity.hidePreviewImage();
-            toolbarActivity.showToolbarBackImage(false);
         }
 
         EventBus.getDefault().unregister(this);
@@ -505,7 +484,11 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
             OCFile file = getFile();
 
             // set file details
-            binding.filename.setText(file.getFileName());
+            if (MimeTypeUtil.isImage(file)) {
+                binding.filename.setText(file.getFileName());
+            } else {
+                binding.filename.setVisibility(View.GONE);
+            }
             binding.size.setText(DisplayUtils.bytesToHumanReadable(file.getFileLength()));
 
             boolean showDetailedTimestamp = preferences.isShowDetailedTimestampEnabled();
@@ -587,8 +570,8 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
             binding.favorite.setContentDescription(getString(R.string.unset_favorite));
         } else {
             binding.favorite.setImageDrawable(ResourcesCompat.getDrawable(getResources(),
-                                                                      R.drawable.ic_star_outline,
-                                                                      null));
+                                                                          R.drawable.ic_star_outline,
+                                                                          null));
             binding.favorite.setContentDescription(getString(R.string.favorite));
 
             //NMC Customization
@@ -616,123 +599,56 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     private void setFilePreview(OCFile file) {
         Bitmap resizedImage;
 
-        if (toolbarActivity != null) {
-            if (file.isFolder()) {
-                boolean isAutoUploadFolder = SyncedFolderProvider.isAutoUploadFolder(syncedFolderProvider, file, user);
+        if (toolbarActivity != null && MimeTypeUtil.isImage(file)) {
+            String tagId = ThumbnailsCacheManager.PREFIX_RESIZED_IMAGE + getFile().getRemoteId();
+            resizedImage = ThumbnailsCacheManager.getBitmapFromDiskCache(tagId);
 
-                Integer overlayIconId = file.getFileOverlayIconId(isAutoUploadFolder);
-                // NMC Customization: No overlay icon will be used. Directly using folder icons
-                toolbarActivity.setPreviewImageDrawable(ContextCompat.getDrawable(requireContext(), overlayIconId));
-
-                int leftRightPadding = requireContext().getResources().getDimensionPixelSize(R.dimen.standard_padding);
-                updatePreviewImageUI(leftRightPadding);
-
+            if (resizedImage != null && !file.isUpdateThumbnailNeeded()) {
+                toolbarActivity.setPreviewImageBitmap(resizedImage);
                 previewLoaded = true;
-                isCustomBackIcon = false;
             } else {
-                if (file.getRemoteId() != null && file.isPreviewAvailable()) {
-                    String tagId = ThumbnailsCacheManager.PREFIX_RESIZED_IMAGE + getFile().getRemoteId();
-                    resizedImage = ThumbnailsCacheManager.getBitmapFromDiskCache(tagId);
+                // show thumbnail while loading resized image
+                Bitmap thumbnail = ThumbnailsCacheManager.getBitmapFromDiskCache(
+                    ThumbnailsCacheManager.PREFIX_THUMBNAIL + getFile().getRemoteId());
 
-                    if (resizedImage != null && !file.isUpdateThumbnailNeeded()) {
-                        toolbarActivity.setPreviewImageBitmap(resizedImage);
-                        toolbarActivity.showToolbarBackImage(true);
-                        previewLoaded = true;
-                        isCustomBackIcon = true;
-                    } else {
-                        // show thumbnail while loading resized image
-                        Bitmap thumbnail = ThumbnailsCacheManager.getBitmapFromDiskCache(
-                            ThumbnailsCacheManager.PREFIX_THUMBNAIL + getFile().getRemoteId());
-
-                        if (thumbnail != null) {
-                            toolbarActivity.setPreviewImageBitmap(thumbnail);
-                            toolbarActivity.showToolbarBackImage(true);
-                            previewLoaded = true;
-                            isCustomBackIcon = true;
-                        } else {
-                            Drawable drawable = MimeTypeUtil.getFileTypeIcon(file.getMimeType(),
-                                                                             file.getFileName(),
-                                                                             requireContext(),
-                                                                             viewThemeUtils);
-                            if (drawable == null) {
-                                thumbnail = ThumbnailsCacheManager.mDefaultImg;
-                                toolbarActivity.setPreviewImageBitmap(thumbnail);
-                            } else {
-                                toolbarActivity.setPreviewImageDrawable(drawable);
-                                previewLoaded = true;
-                                isCustomBackIcon = false;
-                            }
-                            updatePreviewImageUIForFiles();
-                        }
-
-                        if (MimeTypeUtil.isImage(file)) {
-                            // generate new resized image
-                            if (ThumbnailsCacheManager.cancelPotentialThumbnailWork(getFile(), toolbarActivity.getPreviewImageView()) &&
-                                containerActivity.getStorageManager() != null) {
-                                final ThumbnailsCacheManager.ResizedImageGenerationTask task =
-                                    new ThumbnailsCacheManager.ResizedImageGenerationTask(this,
-                                                                                          toolbarActivity.getPreviewImageView(),
-                                                                                          toolbarActivity.getPreviewImageContainer(),
-                                                                                          containerActivity.getStorageManager(),
-                                                                                          connectivityService,
-                                                                                          containerActivity.getStorageManager().getUser(),
-                                                                                          getResources().getColor(R.color.background_color_inverse,
-                                                                                                                  requireContext().getTheme())
-                                    );
-
-                                if (resizedImage == null) {
-                                    resizedImage = thumbnail;
-                                }
-
-                                final ThumbnailsCacheManager.AsyncResizedImageDrawable asyncDrawable =
-                                    new ThumbnailsCacheManager.AsyncResizedImageDrawable(
-                                        MainApp.getAppContext().getResources(),
-                                        resizedImage,
-                                        task
-                                    );
-
-                                toolbarActivity.setPreviewImageDrawable(asyncDrawable);
-                                toolbarActivity.showToolbarBackImage(true);
-                                previewLoaded = true;
-                                isCustomBackIcon = true;
-                                task.execute(getFile());
-                            }
-                        }
-                    }
+                if (thumbnail != null) {
+                    toolbarActivity.setPreviewImageBitmap(thumbnail);
                 } else {
-                    toolbarActivity.setPreviewImageDrawable(MimeTypeUtil.getFileTypeIcon(file.getMimeType(),
-                                                                                         file.getFileName(),
-                                                                                         requireContext(),
-                                                                                         viewThemeUtils));
-                    updatePreviewImageUIForFiles();
+                    thumbnail = ThumbnailsCacheManager.mDefaultImg;
+                }
+
+                // generate new resized image
+                if (ThumbnailsCacheManager.cancelPotentialThumbnailWork(getFile(), toolbarActivity.getPreviewImageView()) &&
+                    containerActivity.getStorageManager() != null) {
+                    final ThumbnailsCacheManager.ResizedImageGenerationTask task =
+                        new ThumbnailsCacheManager.ResizedImageGenerationTask(this,
+                                                                              toolbarActivity.getPreviewImageView(),
+                                                                              toolbarActivity.getPreviewImageContainer(),
+                                                                              containerActivity.getStorageManager(),
+                                                                              connectivityService,
+                                                                              containerActivity.getStorageManager().getUser(),
+                                                                              getResources().getColor(R.color.background_color_inverse,
+                                                                                                      requireContext().getTheme())
+                        );
+
+                    if (resizedImage == null) {
+                        resizedImage = thumbnail;
+                    }
+
+                    final ThumbnailsCacheManager.AsyncResizedImageDrawable asyncDrawable =
+                        new ThumbnailsCacheManager.AsyncResizedImageDrawable(
+                            MainApp.getAppContext().getResources(),
+                            resizedImage,
+                            task
+                        );
+
+                    toolbarActivity.setPreviewImageDrawable(asyncDrawable);
                     previewLoaded = true;
-                    isCustomBackIcon = false;
+                    task.execute(getFile());
                 }
             }
         } else {
             previewLoaded = false;
-            isCustomBackIcon = false;
-        }
-        showHideCustomBackButton();
-    }
-
-    /**
-     * update preview image for files we are taking different paddings for files and folders
-     */
-    private void updatePreviewImageUIForFiles() {
-        int leftRightPadding = requireContext().getResources().getDimensionPixelSize(R.dimen.standard_half_padding);
-        updatePreviewImageUI(leftRightPadding);
-    }
-
-    /**
-     * change scale type and padding for folders and files without thumbnails
-     */
-    private void updatePreviewImageUI(int leftRightPadding) {
-        if (toolbarActivity != null && toolbarActivity.getPreviewImageView() != null) {
-                toolbarActivity.getPreviewImageView().setScaleType(ImageView.ScaleType.FIT_START);
-                int topPadding = requireContext().getResources().getDimensionPixelSize(R.dimen.activity_row_layout_height);
-                int bottomPadding = requireContext().getResources().getDimensionPixelSize(R.dimen.standard_padding);
-                toolbarActivity.getPreviewImageView().setPadding(leftRightPadding, topPadding, leftRightPadding, bottomPadding);
         }
     }
 
@@ -842,7 +758,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
             return;
         }
 
-        final var fileShareDetailFragment = FileDetailsSharingProcessFragment.newInstance(file, shareeName, shareType, secureShare, SharingMenuHelper.canEditFile(requireActivity(), user, storageManager.getCapability(user), getFile(), editorUtils));
+        final var fileShareDetailFragment = FileDetailsSharingProcessFragment.newInstance(file, shareeName, shareType, secureShare, SharePermissionManager.canEditFile(user, storageManager.getCapability(user), getFile(), editorUtils));
 
         requireActivity()
             .getSupportFragmentManager()
@@ -865,7 +781,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
         requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.sharing_frame_container,
                                                                              FileDetailsSharingProcessFragment.newInstance(share, screenTypePermission, isReshareShown,
                                                                                                                            isExpiryDateShown,
-                                                                                                                           SharingMenuHelper.canEditFile(requireActivity(), user, storageManager.getCapability(user), getFile(), editorUtils)),
+                                                                                                                           SharePermissionManager.canEditFile(user, storageManager.getCapability(user), getFile(), editorUtils)),
                                                                              FileDetailsSharingProcessFragment.TAG)
             .addToBackStack(null)
             .commit();
@@ -896,10 +812,11 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     /**
      * hide the view for landscape mode to have more space for the user to type in search view
      * {@link FileDetailSharingFragment#scrollToSearchViewPosition(boolean)}
+     *
      * @param event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ShareSearchViewFocusEvent event) {
-      binding.shareDetailFileContainer.setVisibility(event.getHasFocus() ? View.GONE :  View.VISIBLE);
+        binding.shareDetailFileContainer.setVisibility(event.getHasFocus() ? View.GONE : View.VISIBLE);
     }
 }
