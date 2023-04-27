@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unshare">Freigabe aufheben</string>
+    <string name="allow_creating">Erstellen erlauben</string>
+    <string name="allow_deleting">Löschen erlauben</string>
+    <string name="allow_editing">Bearbeitung erlauben</string>
+    <string name="link_share_read_only">Nur Lesen</string>
+    <string name="share_link_folder">Link zum Ordner</string>
+    <string name="share_link_file">Link zur Datei</string>
+    <string name="share_via_link_menu_password_label">Passwortschutz (%1$s)</string>
+    <string name="share_link_empty_exp_date">Sie müssen das Ablaufdatum auswählen.</string>
+    <string name="share_link_empty_note_message">Bitte Anmerkung eingeben.</string>
+    <string name="send_email">Email senden</string>
+    <string name="share_open_in">Öffnen mit…</string>
+    <string name="sharing_description">Sie können Links erstellen oder Freigaben per Mail versenden. Wenn Sie
+        MagentaCLOUD Nutzer einladen, bieten sich Ihnen mehr Möglichkeiten der Zusammenarbeit.</string>
+    <string name="your_message">Ihre Nachricht</string>
+    <string name="personal_share_email">persönliche Freigabe per E-Mail</string>
+    <string name="create_link">Link erstellen</string>
+    <string name="your_shares">Ihre Freigaben</string>
+    <string name="link_label">Linkbezeichnung</string>
+    <string name="hint_link_label">Ihre Linkbezeichnung</string>
+    <string name="file_drop_info">Bei der Sammelbox ist nur das Hochladen erlaubt. Nur Sie sehen Dateien und Ordner die hochgeladen worden sind.</string>
+    <string name="password_protection">Password Protection</string>
+    <string name="expiration_date">Expiration Date</string>
+    <string name="empty_shares">Noch keine Freigaben erstellt.</string>
+    <string name="link_download_limit">Download Limit</string>
+    <string name="download_limit_empty">Das Feld für das Download-Limit darf nicht leer sein.</string>
+    <string name="hint_download_limit">Downlimit eingeben</string>
+    <string name="download_text">Downloads: %s</string>
+    <string name="download_limit_zero">Der Wert für das Downloadlimit sollte größer als 0 sein.</string>
+    <string name="allow_resharing_info">Sie teilen mit einer/einem MagentaCLOUD Nutzer(in). Sie können ihr oder ihm erlauben, den Ordner oder die Dateien weiterzuteilen.</string>
+    <string name="sharing_email_warning">Der Passwortschutz ist aktiviert. Sie müssen dem Empfänger das Passwort
+        selbst mitteilen.\n\nWenn Sie die Freigabe über die MagentaCLOUD verschicken und das Passwort in den
+        Nachrichtentext eintragen, wird es unverschlüsselt im Klartext übertragen.</string>
+    <string name="placeholder_receivedMessage">Empfangen</string>
+    <string name="placeholder_sharedMessage">Geteilt</string>
+</resources>
