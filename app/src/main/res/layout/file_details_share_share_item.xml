@@ -11,67 +11,73 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/sharee_list_item_size"
-    android:orientation="horizontal"
-    android:weightSum="1"
-    android:layout_marginTop="@dimen/standard_margin"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/standard_quarter_margin"
+    android:orientation="vertical"
     tools:ignore="UseCompoundDrawables">
 
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/standard_margin"
-        android:layout_marginLeft="@dimen/standard_margin"
-        android:layout_marginTop="@dimen/alternate_half_margin"
-        android:layout_marginEnd="@dimen/standard_margin"
-        android:layout_marginRight="@dimen/standard_margin"
-        android:contentDescription="@string/user_icon"
-        app:tint="@color/text_color"
-        android:src="@drawable/ic_internal_share" />
-
     <LinearLayout
-        android:id="@+id/share_name_layout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/sharee_list_item_size"
+        android:orientation="horizontal"
+        android:weightSum="1">
 
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:singleLine="true"
-            android:text="@string/username"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/two_line_primary_text_size" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/permission_name"
+        <ImageView
+            android:id="@+id/icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:singleLine="true"
-            android:textColor="@color/primary"
-            android:textSize="@dimen/txt_size_14sp"
-            app:drawableEndCompat="@drawable/ic_baseline_arrow_drop_down_24"
-            app:drawableRightCompat="@drawable/ic_baseline_arrow_drop_down_24"
-            app:drawableTint="@color/primary"
-            tools:text="View only" />
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginLeft="@dimen/standard_margin"
+            android:layout_marginTop="@dimen/alternate_half_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_marginRight="@dimen/standard_margin"
+            android:contentDescription="@string/user_icon"
+            android:src="@drawable/ic_internal_share"
+            android:visibility="gone"
+            app:tint="@color/text_color" />
+
+        <LinearLayout
+            android:id="@+id/share_name_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="@string/username"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/two_line_primary_text_size" />
+
+            <include
+                android:id="@+id/quick_permission_layout"
+                layout="@layout/quick_permission_layout" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/overflow_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/overflow_menu"
+            android:paddingStart="@dimen/standard_padding"
+            android:paddingTop="@dimen/standard_quarter_margin"
+            android:paddingEnd="@dimen/standard_padding"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_dots_vertical"
+            app:tint="@color/primary" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/overflow_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/overflow_menu"
-        app:tint="@color/primary"
-        android:paddingTop="@dimen/standard_quarter_margin"
-        android:scaleType="fitStart"
-        android:paddingStart="@dimen/standard_padding"
-        android:paddingEnd="@dimen/standard_padding"
-        android:src="@drawable/ic_dots_vertical" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/standard_quarter_margin"
+        android:background="@color/divider_color" />
 </LinearLayout>
