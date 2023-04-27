@@ -36,6 +36,7 @@ interface ListGridImageViewHolder {
     val localFileIndicator: ImageView
     val imageFileName: TextView?
     val shared: ImageView
+    val sharedMessage: TextView?
     val checkbox: ImageView
     val itemLayout: View
     val unreadComments: ImageView
