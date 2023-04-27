@@ -81,7 +81,7 @@ public class UsersAndGroupsSearchProvider extends ContentProvider {
         BaseColumns._ID,
         SearchManager.SUGGEST_COLUMN_TEXT_1,
         SearchManager.SUGGEST_COLUMN_TEXT_2,
-        SearchManager.SUGGEST_COLUMN_ICON_1,
+       // SearchManager.SUGGEST_COLUMN_ICON_1,
         SearchManager.SUGGEST_COLUMN_INTENT_DATA
     };
 
@@ -350,14 +350,14 @@ public class UsersAndGroupsSearchProvider extends ContentProvider {
                                 .add(count++)             // BaseColumns._ID
                                 .add(subline)             // SearchManager.SUGGEST_COLUMN_TEXT_1
                                 .add(displayName)         // SearchManager.SUGGEST_COLUMN_TEXT_2
-                                .add(icon)                // SearchManager.SUGGEST_COLUMN_ICON_1
+                                //.add(icon)                // SearchManager.SUGGEST_COLUMN_ICON_1
                                 .add(dataUri);
                         } else {
                             response.newRow()
                                 .add(count++)             // BaseColumns._ID
                                 .add(displayName)         // SearchManager.SUGGEST_COLUMN_TEXT_1
                                 .add(subline)             // SearchManager.SUGGEST_COLUMN_TEXT_2
-                                .add(icon)                // SearchManager.SUGGEST_COLUMN_ICON_1
+                                //.add(icon)                // SearchManager.SUGGEST_COLUMN_ICON_1
                                 .add(dataUri);
                         }
                     }
