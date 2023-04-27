@@ -22,6 +22,7 @@ import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.lib.resources.shares.OCShare
 import com.owncloud.android.lib.resources.shares.ShareType
 import com.owncloud.android.utils.EspressoIdlingResource
+import com.owncloud.android.ui.fragment.util.SharePermissionManager
 import com.owncloud.android.utils.ScreenshotTest
 import org.junit.After
 import org.junit.Before
@@ -111,7 +112,7 @@ internal class SharedListFragmentIT : AbstractIT() {
                             remoteId = 1
                             shareType = ShareType.USER
                             sharedWithDisplayName = "Admin"
-                            permissions = OCShare.MAXIMUM_PERMISSIONS_FOR_FILE
+                            permissions = SharePermissionManager.CAN_EDIT_PERMISSIONS_FOR_FILE
                             userId = getUserId(user)
                             sharedDate = 1188206955
                             mimetype = "image/png"
@@ -122,7 +123,7 @@ internal class SharedListFragmentIT : AbstractIT() {
                             remoteId = 2
                             shareType = ShareType.GROUP
                             sharedWithDisplayName = "Group"
-                            permissions = OCShare.MAXIMUM_PERMISSIONS_FOR_FILE
+                            permissions = SharePermissionManager.CAN_EDIT_PERMISSIONS_FOR_FILE
                             userId = getUserId(user)
                             sharedDate = 1188206955
                             mimetype = "image/png"
