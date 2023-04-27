@@ -7,12 +7,26 @@
 
 package com.owncloud.android.ui.fragment.util
 
+import android.content.Context
+import com.nextcloud.client.account.User
+import com.nextcloud.utils.EditorUtils
+import com.owncloud.android.R
+import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.datamodel.quickPermission.QuickPermissionType
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.lib.resources.shares.OCShare
+import com.owncloud.android.lib.resources.status.OCCapability
 import com.owncloud.android.ui.fragment.FileDetailsSharingProcessFragment.Companion.TAG
 
 object SharePermissionManager {
+
+    // NMC Customization
+    // updated Edit permissions for folder and files
+    // because the MAXIMUM_PERMISSIONS_FOR_FILE and MAXIMUM_PERMISSIONS_FOR_FOLDER permission in OCShare
+    // are not valid due to functionality changes
+    const val CAN_EDIT_PERMISSIONS_FOR_FILE = OCShare.READ_PERMISSION_FLAG + OCShare.UPDATE_PERMISSION_FLAG
+    const val CAN_EDIT_PERMISSIONS_FOR_FOLDER =
+        CAN_EDIT_PERMISSIONS_FOR_FILE + OCShare.CREATE_PERMISSION_FLAG + OCShare.DELETE_PERMISSION_FLAG
 
     // region Permission change
     fun togglePermission(isChecked: Boolean, permission: Int, permissionFlag: Int): Int {
@@ -76,11 +90,8 @@ object SharePermissionManager {
             return false
         }
 
-        return share.permissions != OCShare.NO_PERMISSION &&
-            (
-                share.permissions == OCShare.READ_PERMISSION_FLAG ||
-                    share.permissions == OCShare.READ_PERMISSION_FLAG + OCShare.SHARE_PERMISSION_FLAG
-                )
+        // NMC Customization: add check for Allow Reshare permission
+        return share.permissions != OCShare.NO_PERMISSION && ((share.permissions and OCShare.Companion.SHARE_PERMISSION_FLAG.inv()) == OCShare.READ_PERMISSION_FLAG)
     }
 
     @Suppress("ReturnCount")
@@ -93,7 +104,8 @@ object SharePermissionManager {
             return false
         }
 
-        return share.permissions != OCShare.NO_PERMISSION && share.permissions == OCShare.CREATE_PERMISSION_FLAG
+        // NMC Customization: add check for Allow Reshare permission
+        return share.permissions != OCShare.NO_PERMISSION && ((share.permissions and OCShare.Companion.SHARE_PERMISSION_FLAG.inv()) == OCShare.CREATE_PERMISSION_FLAG)
     }
 
     fun isSecureFileDrop(share: OCShare?): Boolean {
@@ -153,10 +165,75 @@ object SharePermissionManager {
         }
     }
 
+    // NMC Customization: for NMC no full permission is required
+    // we use our custom permission
     fun getMaximumPermission(isFolder: Boolean): Int = if (isFolder) {
-        OCShare.MAXIMUM_PERMISSIONS_FOR_FOLDER
+        CAN_EDIT_PERMISSIONS_FOR_FOLDER
     } else {
-        OCShare.MAXIMUM_PERMISSIONS_FOR_FILE
+        CAN_EDIT_PERMISSIONS_FOR_FILE
     }
     // endregion
+
+    // NMC method
+    /**
+     * method to check if the file should not be a text file or any of the office files
+     * this method will be used during sharing process to disable/enable edit option
+     */
+    @JvmStatic
+    fun canEditFile(
+        user: User,
+        capability: OCCapability, file: OCFile,
+        editorUtils: EditorUtils
+    ): Boolean {
+        //if OCFile is folder then no need to check further direct return true
+        //as edit permission should be available for folder restriction is only applicable for files
+
+        if (file.isFolder) {
+            return true
+        }
+
+        //check for text files like .md, .txt, etc
+        val isTextFile = editorUtils.isEditorAvailable(user, file.mimeType) && !file.isEncrypted
+
+        //check for office files like .docx, .pptx, .xls, etc
+        val isOfficeFile =
+            capability.richDocumentsMimeTypeList != null && capability.richDocumentsMimeTypeList!!.contains(file.mimeType) &&
+                capability.richDocumentsDirectEditing.isTrue && !file.isEncrypted
+
+        return isTextFile || isOfficeFile
+    }
+
+    // function to provide quick permission label for NMC
+    @JvmStatic
+    fun getPermissionName(context: Context, share: OCShare?): String? {
+        if (canEdit(share)) {
+            return context.resources.getString(R.string.share_quick_permission_can_edit)
+        } else if (isViewOnly(share)) {
+            return context.resources.getString(R.string.share_quick_permission_can_view)
+        } else if (isFileRequest(share)) {
+            return context.resources.getString(R.string.share_quick_permission_can_upload)
+        }
+        return null
+    }
+
+    // function to provide quick permission short label for NMC
+    // will be used in small screen devices where text overlaps
+    @JvmStatic
+    fun getShortPermissionName(context: Context, permissionName: String?): String? {
+        return when (permissionName) {
+            context.resources.getString(R.string.share_quick_permission_can_edit) -> {
+                context.resources.getString(R.string.share_quick_permission_can_edit_short)
+            }
+
+            context.resources.getString(R.string.share_quick_permission_can_view) -> {
+                context.resources.getString(R.string.share_quick_permission_can_view_short)
+            }
+
+            context.resources.getString(R.string.share_quick_permission_can_upload) -> {
+                context.resources.getString(R.string.share_quick_permission_can_upload_short)
+            }
+
+            else -> permissionName
+        }
+    }
 }
