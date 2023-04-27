@@ -14,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ItemQuickSharePermissionsBinding
 import com.owncloud.android.datamodel.quickPermission.QuickPermission
@@ -53,9 +52,7 @@ class QuickSharingPermissionsAdapter(
             val permissionName = quickPermission.type.getText(context)
 
             binding.run {
-                quickPermissionButton.text = permissionName
-                quickPermissionButton.iconGravity = MaterialButton.ICON_GRAVITY_START
-                quickPermissionButton.icon = quickPermission.type.getIcon(context)
+                tvQuickShareName.text = permissionName
 
                 if (quickPermission.isSelected) {
                     tvQuickShareCheckIcon.visibility = View.VISIBLE

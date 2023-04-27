@@ -23,7 +23,6 @@ import com.owncloud.android.databinding.QuickSharingPermissionsBottomSheetFragme
 import com.owncloud.android.datamodel.quickPermission.QuickPermission;
 import com.owncloud.android.datamodel.quickPermission.QuickPermissionType;
 import com.owncloud.android.lib.resources.shares.OCShare;
-import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.ui.adapter.QuickSharingPermissionsAdapter;
 import com.owncloud.android.ui.fragment.util.SharePermissionManager;
@@ -34,6 +33,8 @@ import java.util.List;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import static com.owncloud.android.lib.resources.shares.OCShare.CREATE_PERMISSION_FLAG;
+import static com.owncloud.android.lib.resources.shares.OCShare.MAXIMUM_PERMISSIONS_FOR_FILE;
+import static com.owncloud.android.lib.resources.shares.OCShare.MAXIMUM_PERMISSIONS_FOR_FOLDER;
 import static com.owncloud.android.lib.resources.shares.OCShare.READ_PERMISSION_FLAG;
 
 /**
@@ -84,8 +85,8 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
             new QuickSharingPermissionsAdapter.QuickSharingPermissionViewHolder.OnPermissionChangeListener() {
                 @Override
                 public void onCustomPermissionSelected() {
+                    // NMC Customizations: No action will be required
                     dismiss();
-                    actions.openShareDetailWithCustomPermissions(ocShare);
                 }
 
                 @Override
@@ -115,9 +116,9 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
         int permissionFlag = 0;
         if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_can_edit)) || permissionName.equalsIgnoreCase(res.getString(R.string.link_share_editing))) {
             permissionFlag = ocShare.isFolder() ? MAXIMUM_PERMISSIONS_FOR_FOLDER : MAXIMUM_PERMISSIONS_FOR_FILE;
-        } else if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_view_only))) {
+        } else if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_read_only))) {
             permissionFlag = READ_PERMISSION_FLAG;
-        } else if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_file_request))) {
+        } else if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_file_drop))) {
             permissionFlag = CREATE_PERMISSION_FLAG + READ_PERMISSION_FLAG;
         }
 
@@ -143,7 +144,5 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
 
     public interface QuickPermissionSharingBottomSheetActions {
         void onQuickPermissionChanged(OCShare share, int permission);
-
-        void openShareDetailWithCustomPermissions(OCShare share);
     }
 }
