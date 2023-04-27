@@ -44,6 +44,8 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import com.owncloud.android.ui.fragment.util.SharePermissionManager
+import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 
@@ -79,7 +81,7 @@ class FileDisplayActivityIT : AbstractOnServerIT() {
                 "admin",
                 false,
                 "",
-                OCShare.MAXIMUM_PERMISSIONS_FOR_FOLDER
+                SharePermissionManager.CAN_EDIT_PERMISSIONS_FOR_FOLDER
             ).execute(client).isSuccess
         )
 
