@@ -52,14 +52,6 @@ public class FileDetailSharingMenuBottomSheetDialog extends BottomSheetDialog {
             getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        viewThemeUtils.platform.themeDialog(binding.getRoot());
-
-        viewThemeUtils.platform.colorImageView(binding.menuIconAddAnotherLink);
-        viewThemeUtils.platform.colorImageView(binding.menuIconAdvancedPermissions);
-        viewThemeUtils.platform.colorImageView(binding.menuIconSendLink);
-        viewThemeUtils.platform.colorImageView(binding.menuIconUnshare);
-        viewThemeUtils.platform.colorImageView(binding.menuIconSendNewEmail);
-
         updateUI();
 
         setupClickListener();
@@ -71,15 +63,18 @@ public class FileDetailSharingMenuBottomSheetDialog extends BottomSheetDialog {
     }
 
     private void updateUI() {
-        if (ocShare.getShareType() == ShareType.PUBLIC_LINK) {
-            binding.menuShareAddAnotherLink.setVisibility(View.VISIBLE);
+        if (ocShare.isFolder()) {
+            binding.menuShareOpenIn.setVisibility(View.GONE);
+        } else {
+            binding.menuShareOpenIn.setVisibility(View.VISIBLE);
+        }
 
+        if (ocShare.getShareType() == ShareType.PUBLIC_LINK) {
             if (MDMConfig.INSTANCE.sendFilesSupport(getContext())) {
-                binding.menuShareSendLink.setVisibility(View.VISIBLE);
+                binding.menuShareSendNewEmail.setVisibility(View.GONE);
             }
         } else {
-            binding.menuShareAddAnotherLink.setVisibility(View.GONE);
-            binding.menuShareSendLink.setVisibility(View.GONE);
+            binding.menuShareSendNewEmail.setVisibility(View.VISIBLE);
         }
 
         if (SharingMenuHelper.isSecureFileDrop(ocShare)) {
@@ -89,6 +84,11 @@ public class FileDetailSharingMenuBottomSheetDialog extends BottomSheetDialog {
     }
 
     private void setupClickListener() {
+        binding.menuShareOpenIn.setOnClickListener(v -> {
+            actions.openIn(ocShare);
+            dismiss();
+        });
+
         binding.menuShareAdvancedPermissions.setOnClickListener(v -> {
             actions.advancedPermissions(ocShare);
             dismiss();
@@ -109,10 +109,6 @@ public class FileDetailSharingMenuBottomSheetDialog extends BottomSheetDialog {
             dismiss();
         });
 
-        binding.menuShareAddAnotherLink.setOnClickListener(v -> {
-            actions.addAnotherLink(ocShare);
-            dismiss();
-        });
     }
 
     @Override

@@ -20,6 +20,7 @@ import com.owncloud.android.R;
 import com.owncloud.android.databinding.QuickSharingPermissionsBottomSheetFragmentBinding;
 import com.owncloud.android.datamodel.QuickPermissionModel;
 import com.owncloud.android.lib.resources.shares.OCShare;
+import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.ui.adapter.QuickSharingPermissionsAdapter;
 import com.owncloud.android.ui.fragment.util.SharingMenuHelper;
@@ -31,8 +32,6 @@ import java.util.List;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import static com.owncloud.android.lib.resources.shares.OCShare.CREATE_PERMISSION_FLAG;
-import static com.owncloud.android.lib.resources.shares.OCShare.MAXIMUM_PERMISSIONS_FOR_FILE;
-import static com.owncloud.android.lib.resources.shares.OCShare.MAXIMUM_PERMISSIONS_FOR_FOLDER;
 import static com.owncloud.android.lib.resources.shares.OCShare.READ_PERMISSION_FLAG;
 
 /**
@@ -65,8 +64,6 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
         if (getWindow() != null) {
             getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
-
-        viewThemeUtils.platform.themeDialog(binding.getRoot());
 
         setUpRecyclerView();
         setOnShowListener(d ->
@@ -103,22 +100,21 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
      * @param position
      */
     private void handlePermissionChanged(List<QuickPermissionModel> quickPermissionModelList, int position) {
-        if (quickPermissionModelList.get(position).getPermissionName().equalsIgnoreCase(fileActivity.getResources().getString(R.string.link_share_allow_upload_and_editing))
-            || quickPermissionModelList.get(position).getPermissionName().equalsIgnoreCase(fileActivity.getResources().getString(R.string.link_share_editing))) {
+        if (quickPermissionModelList.get(position).getPermissionName().equalsIgnoreCase(fileActivity.getResources().getString(R.string.share_permission_can_edit))) {
             if (ocShare.isFolder()) {
                 actions.onQuickPermissionChanged(ocShare,
-                                                 MAXIMUM_PERMISSIONS_FOR_FOLDER);
+                                                 SharingMenuHelper.CAN_EDIT_PERMISSIONS_FOR_FOLDER);
             } else {
                 actions.onQuickPermissionChanged(ocShare,
-                                                 MAXIMUM_PERMISSIONS_FOR_FILE);
+                                                 SharingMenuHelper.CAN_EDIT_PERMISSIONS_FOR_FILE);
             }
         } else if (quickPermissionModelList.get(position).getPermissionName().equalsIgnoreCase(fileActivity.getResources().getString(R.string
-                                                                                                                                                                                                                                                                                                                     .link_share_view_only))) {
+                                                                                                                                         .share_permission_read_only))) {
             actions.onQuickPermissionChanged(ocShare,
                                              READ_PERMISSION_FLAG);
 
         } else if (quickPermissionModelList.get(position).getPermissionName().equalsIgnoreCase(fileActivity.getResources().getString(R.string
-                                                                                                                                         .link_share_file_drop))) {
+                                                                                                                                         .share_permission_file_drop))) {
             actions.onQuickPermissionChanged(ocShare,
                                              CREATE_PERMISSION_FLAG);
         }
@@ -133,15 +129,19 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
 
         String[] permissionArray;
         if (ocShare.isFolder()) {
-            permissionArray =
-                fileActivity.getResources().getStringArray(R.array.folder_share_permission_dialog_values);
+            if (ocShare.getShareType() == ShareType.EMAIL || ocShare.getShareType() == ShareType.PUBLIC_LINK) {
+                permissionArray =
+                    fileActivity.getResources().getStringArray(R.array.folder_share_permission_dialog_values);
+            } else {
+                permissionArray =
+                    fileActivity.getResources().getStringArray(R.array.folder_internal_share_permission_dialog_values);
+            }
         } else {
             permissionArray =
                 fileActivity.getResources().getStringArray(R.array.file_share_permission_dialog_values);
         }
         //get the checked item position
         int checkedItem = SharingMenuHelper.getPermissionCheckedItem(fileActivity, ocShare, permissionArray);
-
 
         final List<QuickPermissionModel> quickPermissionModelList = new ArrayList<>(permissionArray.length);
         for (int i = 0; i < permissionArray.length; i++) {

@@ -14,6 +14,8 @@ import android.os.AsyncTask
 import android.view.View
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.ResourcesCompat
 import com.elyeproj.loaderviewlibrary.LoaderImageView
 import com.nextcloud.android.common.ui.theme.utils.ColorRole
@@ -250,7 +252,7 @@ class OCFileListDelegate(
         if (shouldHideShare) {
             gridViewHolder.shared.visibility = View.GONE
         } else {
-            configureSharedIconView(gridViewHolder, file)
+            showShareIcon(gridViewHolder, file)
         }
     }
 
@@ -366,38 +368,74 @@ class OCFileListDelegate(
         }
     }
 
-    private fun configureSharedIconView(gridViewHolder: ListViewHolder, file: OCFile) {
-        val result = getShareIconIdAndContentDescriptionId(gridViewHolder, file)
-
-        gridViewHolder.shared.run {
-            if (result == null) {
-                visibility = View.GONE
-                return
-            }
-
-            setImageResource(result.first)
-            contentDescription = context.getString(result.second)
-            visibility = View.VISIBLE
-            setOnClickListener { ocFileListFragmentInterface.onShareIconClick(file) }
-        }
-    }
-
-    @Suppress("ReturnCount")
-    private fun getShareIconIdAndContentDescriptionId(holder: ListViewHolder, file: OCFile): Pair<Int, Int>? {
+    private fun showShareIcon(gridViewHolder: ListViewHolder, file: OCFile) {
+        val sharedIconView = gridViewHolder.shared
         if (!MDMConfig.sharingSupport(context)) {
-            return null
+            sharedIconView.visibility = View.GONE
+            return
         }
+        //Initialising Textview for Message and setting its visibility
+        //only applicable for list item
+        val sharedMessageView: TextView? = gridViewHolder.sharedMessage
+        sharedMessageView?.visibility = if (com.nmc.android.utils.DisplayUtils.isShowDividerForList()) View.VISIBLE else View.GONE
 
-        if (file.isOfflineOperation) return null
-
-        if (holder !is OCFileListItemViewHolder && file.unreadCommentsCount != 0) return null
-
-        return when {
-            file.isSharedWithSharee || file.isSharedWithMe -> {
-                if (showShareAvatar) null else R.drawable.shared_via_users to R.string.shared_icon_shared
+        if (gridViewHolder is OCFileListItemViewHolder || file.unreadCommentsCount == 0) {
+            sharedIconView.visibility = View.VISIBLE
+            when {
+                file.isSharedWithMe -> {
+                    val sharedWithMeColor = ResourcesCompat.getColor(
+                        context.resources,
+                        R.color.shared_with_me_color, null
+                    )
+                    val shareWithMeIcon = AppCompatResources.getDrawable(context, R.drawable.ic_shared_with_me)
+                    val shareWithMeTintedIcon =
+                        viewThemeUtils.platform.colorDrawable(shareWithMeIcon!!, sharedWithMeColor)
+                    sharedIconView.setImageDrawable(shareWithMeTintedIcon)
+                    sharedIconView.contentDescription = context.getString(R.string.shared_icon_shared)
+                    //Added Code For Message Text
+                    sharedMessageView?.text = context.resources.getString(R.string.placeholder_receivedMessage)
+                    sharedMessageView?.setTextColor(sharedWithMeColor)
+                }
+                file.isSharedWithSharee -> {
+                    val shareIcon = viewThemeUtils.platform.colorDrawable(
+                        AppCompatResources.getDrawable(context, R.drawable.ic_shared)!!,
+                        context.resources.getColor(R.color.primary, null)
+                    )
+                    sharedIconView.setImageDrawable(shareIcon)
+                    sharedIconView.contentDescription = context.getString(R.string.shared_icon_shared)
+                    //Added Code For Message Text
+                    sharedMessageView?.text = context.resources.getString(R.string.placeholder_sharedMessage)
+                    sharedMessageView?.setTextColor(context.resources.getColor(R.color.primary, null))
+                }
+                file.isSharedViaLink -> {
+                    val shareIcon = viewThemeUtils.platform.colorDrawable(
+                        AppCompatResources.getDrawable(context, R.drawable.ic_shared)!!,
+                        context.resources.getColor(R.color.primary, null)
+                    )
+                    sharedIconView.setImageDrawable(shareIcon)
+                    sharedIconView.contentDescription = context.getString(R.string.shared_icon_shared_via_link)
+                    //Added Code For Message Text
+                    sharedMessageView?.text = context.resources.getString(R.string.placeholder_sharedMessage)
+                    sharedMessageView?.setTextColor(context.resources.getColor(R.color.primary, null))
+                }
+                file.isEncrypted -> {
+                    sharedIconView.visibility = View.GONE
+                }
+                else -> {
+                    val unShareIconColor = ResourcesCompat.getColor(
+                        context.resources,
+                        R.color.list_icon_color, null
+                    )
+                    val unShareIcon = AppCompatResources.getDrawable(context, R.drawable.ic_unshared)
+                    val unShareTintedIcon = viewThemeUtils.platform.colorDrawable(unShareIcon!!, unShareIconColor)
+                    sharedIconView.setImageDrawable(unShareTintedIcon)
+                    sharedIconView.contentDescription = context.getString(R.string.shared_icon_share)
+                    sharedMessageView?.visibility = View.GONE
+                }
             }
-            file.isSharedViaLink -> R.drawable.shared_via_link to R.string.shared_icon_shared_via_link
-            else -> R.drawable.ic_unshared to R.string.shared_icon_share
+            sharedIconView.setOnClickListener { ocFileListFragmentInterface.onShareIconClick(file) }
+        } else {
+            sharedIconView.visibility = View.GONE
         }
     }
 
