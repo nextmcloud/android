@@ -342,6 +342,7 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     onView(ViewMatchers.withId(R.id.share_process_hide_download_checkbox)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.share_process_set_password_switch)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.share_process_change_name_switch)).check(matches(isDisplayed()))
+                    onView(ViewMatchers.withId(R.id.share_process_download_limit_switch)).check(matches(not(isDisplayed())))
 
                     // read-only
                     onView(ViewMatchers.withId(R.id.view_only_radio_button)).check(matches(isChecked()))
@@ -491,6 +492,7 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     onView(ViewMatchers.withId(R.id.share_process_hide_download_checkbox)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.share_process_set_password_switch)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.share_process_change_name_switch)).check(matches(isDisplayed()))
+                    onView(ViewMatchers.withId(R.id.share_process_download_limit_switch)).check(matches(isDisplayed()))
 
                     // read-only
                     publicShare.permissions = 17 // from server
@@ -629,6 +631,7 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     onView(
                         ViewMatchers.withId(R.id.share_process_change_name_switch)
                     ).check(matches(not(isDisplayed())))
+                    onView(ViewMatchers.withId(R.id.share_process_download_limit_switch)).check(matches(not(isDisplayed())))
 
                     // read-only
                     userShare.permissions = 17 // from server
@@ -760,6 +763,7 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     onView(
                         ViewMatchers.withId(R.id.share_process_change_name_switch)
                     ).check(matches(not(isDisplayed())))
+                    onView(ViewMatchers.withId(R.id.share_process_download_limit_switch)).check(matches(not(isDisplayed())))
 
                     // read-only
                     userShare.permissions = 17 // from server

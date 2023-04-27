@@ -58,7 +58,9 @@ class QuickSharingPermissionsAdapter(
                 quickPermissionButton.icon = quickPermission.type.getIcon(context)
 
                 if (quickPermission.isSelected) {
-                    viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(quickPermissionButton)
+                    tvQuickShareCheckIcon.visibility = View.VISIBLE
+                } else {
+                    tvQuickShareCheckIcon.visibility = View.INVISIBLE
                 }
             }
 

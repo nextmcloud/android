@@ -64,33 +64,33 @@ class ShareViewHolder extends RecyclerView.ViewHolder {
                      float avatarRadiusDimension) {
         this.avatarRadiusDimension = avatarRadiusDimension;
         String name = share.getSharedWithDisplayName();
-        
+
         if ("".equals(name) && !"".equals(share.getShareWith())) {
             name = share.getShareWith();
         }
-        
+
         binding.icon.setTag(null);
 
         if (share.getShareType() != null) {
             switch (share.getShareType()) {
                 case GROUP:
                     name = context.getString(R.string.share_group_clarification, name);
-                    viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
+                    // viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
                     break;
                 case ROOM:
                     name = context.getString(R.string.share_room_clarification, name);
-                    viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
+                    // viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
                     break;
                 case CIRCLE:
-                    viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
+                    // viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
                     break;
                 case FEDERATED:
                     name = context.getString(R.string.share_remote_clarification, name);
-                    setImage(binding.icon, share.getSharedWithDisplayName());
+                    // setImage(binding.icon, share.getSharedWithDisplayName());
                     break;
                 case USER:
                     binding.icon.setTag(share.getShareWith());
-                    float avatarRadius = context.getResources().getDimension(R.dimen.list_item_avatar_icon_radius);
+                    /* float avatarRadius = context.getResources().getDimension(R.dimen.list_item_avatar_icon_radius);
 
                     if (share.getShareWith() != null) {
                         DisplayUtils.setAvatar(user,
@@ -101,16 +101,17 @@ class ShareViewHolder extends RecyclerView.ViewHolder {
                                                context.getResources(),
                                                binding.icon,
                                                context);
-                    }
-
-                    binding.icon.setOnClickListener(v -> listener.showProfileBottomSheet(user, share.getShareWith()));
+                    } */
+                    // Not required for NMC as per NMC-3097
+                    // binding.icon.setOnClickListener(v -> listener.showProfileBottomSheet(user, share.getShareWith()));
                 default:
-                    setImage(binding.icon, name);
+                    // setImage(binding.icon, name);
                     break;
             }
         }
 
         binding.name.setText(name);
+        binding.icon.setImageResource(R.drawable.ic_internal_share);
 
         if (share.getShareWith() != null && share.getShareWith().equalsIgnoreCase(userId) ||
             share.getUserId() != null && share.getUserId().equalsIgnoreCase(userId)) {
