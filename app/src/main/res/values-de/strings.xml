@@ -10,7 +10,7 @@
     <string name="action_edit">Bearbeiten</string>
     <string name="action_empty_notifications">Alle Benachrichtigungen löschen</string>
     <string name="action_empty_trashbin">Papierkorb leeren</string>
-    <string name="action_send_share">Senden/Teilen</string>
+    <string name="action_send_share">Teilen</string>
     <string name="action_switch_grid_view">Kachelansicht</string>
     <string name="action_switch_list_view">Listenansicht</string>
     <string name="actionbar_calendar_contacts_restore">Kontakte und Kalender wiederherstellen</string>
@@ -511,7 +511,7 @@
     <string name="last_backup">Letzte Sicherung:%1$s</string>
     <string name="link">Link</string>
     <string name="link_name">Link-Name</string>
-    <string name="link_share_editing">Bearbeitung</string>
+    <string name="link_share_editing">Bearbeiten</string>
     <string name="list_layout">Layout der Liste</string>
     <string name="load_more_results">Weitere Ergebnisse laden</string>
     <string name="local_file_list_empty">Es befinden sich keine Dateien in diesem Ordner.</string>
@@ -582,7 +582,7 @@
     <string name="no_mutliple_accounts_allowed">Nur ein Konto zulässig</string>
     <string name="no_pdf_app_available">Keine App zum Öffnen von PDFs verfügbar</string>
     <string name="no_send_app">Keine App zum Senden der ausgewählten Dateien verfügbar</string>
-    <string name="no_share_permission_selected">Bitte mindestens eine Berechtigung zum Teilen auswählen.</string>
+    <string name="no_share_permission_selected">Bitte wählen Sie mindestens eine Berechtigung zum Teilen aus.</string>
     <string name="note_could_not_sent">Notiz konnte nicht versandt werden</string>
     <string name="note_icon_hint">Notiz-Symbol</string>
     <string name="notification_action_failed">Aktion konnte nicht ausgeführt werden</string>
@@ -753,7 +753,7 @@
     <string name="request_account_deletion">Kontolöschung anfordern</string>
     <string name="request_account_deletion_button">Löschung anfordern</string>
     <string name="request_account_deletion_details">Beim Diensteanbieter die dauerhafte Löschung des Kontos anfordern</string>
-    <string name="resharing_is_not_allowed">Richtlinien oder Berechtigungen verhindern das Weiterteilen</string>
+    <string name="resharing_is_not_allowed">Resharing/Wiederteilen ist nicht erlaubt.</string>
     <string name="restore">Datei wiederherstellen</string>
     <string name="restore_backup">Letzte Sicherung wiederherstellen</string>
     <string name="restore_button_description">Gelöschte Datei wiederherstellen</string>
@@ -817,7 +817,7 @@
     <string name="share_link_forbidden_permissions">diese Datei zu teilen</string>
     <string name="share_link_optional_password_title">Passwort eingeben (optional)</string>
     <string name="share_link_password_title">Passwort eingeben</string>
-    <string name="share_link_with_label">Teile Link (%1$s)</string>
+    <string name="share_link_with_label">Link \"%1$s\"</string>
     <string name="share_no_expiration_date_label">Ablaufdatum setzen</string>
     <string name="share_no_password_title">Passwort setzen</string>
     <string name="share_not_allowed_when_file_drop">Erneutes teilen ist für die sichere Dateiablage nicht zugelassen</string>
@@ -831,7 +831,7 @@
     <string name="share_read_permission">Lesen</string>
     <string name="share_remote_clarification">%1$s (remote)</string>
     <string name="share_room_clarification">%1$s (Unterhaltung)</string>
-    <string name="share_search">Name, Federated-Cloud-ID oder E-Mail-Adresse …</string>
+    <string name="share_search">Kontaktname oder E-Mail</string>
     <string name="share_search_internal">Benutzer oder Teams hinzufügen</string>
     <string name="share_send_new_email">Neue E-Mail senden</string>
     <string name="share_send_note">Notiz an Empfänger</string>

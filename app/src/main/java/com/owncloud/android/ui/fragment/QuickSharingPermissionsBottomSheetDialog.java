@@ -23,6 +23,7 @@ import com.owncloud.android.databinding.QuickSharingPermissionsBottomSheetFragme
 import com.owncloud.android.datamodel.quickPermission.QuickPermission;
 import com.owncloud.android.datamodel.quickPermission.QuickPermissionType;
 import com.owncloud.android.lib.resources.shares.OCShare;
+import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.ui.adapter.QuickSharingPermissionsAdapter;
 import com.owncloud.android.ui.fragment.util.SharePermissionManager;
@@ -33,8 +34,6 @@ import java.util.List;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import static com.owncloud.android.lib.resources.shares.OCShare.CREATE_PERMISSION_FLAG;
-import static com.owncloud.android.lib.resources.shares.OCShare.MAXIMUM_PERMISSIONS_FOR_FILE;
-import static com.owncloud.android.lib.resources.shares.OCShare.MAXIMUM_PERMISSIONS_FOR_FOLDER;
 import static com.owncloud.android.lib.resources.shares.OCShare.READ_PERMISSION_FLAG;
 
 /**
@@ -70,8 +69,6 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
         if (getWindow() != null) {
             getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
-
-        viewThemeUtils.platform.themeDialog(binding.getRoot());
 
         setUpRecyclerView();
         setOnShowListener(d ->
