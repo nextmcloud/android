@@ -296,15 +296,6 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
             //send the event to show the share top view
             EventBus.getDefault().post(new ShareSearchViewFocusEvent(false));
         }
-
-        checkShareViaUser();
-    }
-
-    private void checkShareViaUser() {
-        if (!MDMConfig.INSTANCE.shareViaUser(requireContext())) {
-            binding.searchView.setVisibility(View.GONE);
-            binding.pickContactEmailBtn.setVisibility(View.GONE);
-        }
     }
 
     private void hideAppBar() {
