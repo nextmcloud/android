@@ -20,90 +20,48 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/sharing_heading_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/standard_padding"
             android:paddingRight="@dimen/standard_padding"
-            android:text="@string/share_dialog_title"
+            android:text="@string/sharing_heading"
             android:textColor="@color/share_title_txt_color"
             android:textSize="@dimen/txt_size_16sp"
             android:textStyle="bold" />
 
-        <LinearLayout
-            android:id="@+id/shared_with_you_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/standard_half_margin"
-            android:orientation="horizontal"
-            android:paddingLeft="@dimen/standard_padding"
-            android:paddingTop="@dimen/standard_half_padding"
-            android:paddingRight="@dimen/standard_padding">
-
-            <ImageView
-                android:id="@+id/shared_with_you_avatar"
-                android:layout_width="@dimen/shared_with_me_icon_size"
-                android:layout_height="@dimen/shared_with_me_icon_size"
-                android:contentDescription="@string/avatar"
-                app:srcCompat="@drawable/ic_shared_with_me"
-                app:tint="@color/shared_with_me_color" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/standard_half_padding"
-                android:paddingTop="@dimen/standard_quarter_padding"
-                android:paddingRight="@dimen/standard_padding">
-
-                <TextView
-                    android:id="@+id/shared_with_you_username"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/shared_with_you_by"
-                    android:textSize="@dimen/two_line_primary_text_size" />
-
-                <LinearLayout
-                    android:id="@+id/shared_with_you_note_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:paddingTop="@dimen/standard_half_padding"
-                    tools:ignore="UseCompoundDrawables">
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:contentDescription="@string/note_icon_hint"
-                        android:src="@drawable/file_text" />
-
-                    <TextView
-                        android:id="@+id/shared_with_you_note"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingStart="@dimen/standard_half_padding"
-                        android:paddingEnd="@dimen/standard_half_padding"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-            </LinearLayout>
-        </LinearLayout>
-
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_sharing_details_message"
+            android:id="@+id/tv_resharing_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/standard_quarter_margin"
+            android:layout_marginTop="@dimen/standard_margin"
             android:paddingLeft="@dimen/standard_padding"
             android:paddingRight="@dimen/standard_padding"
-            android:text="@string/sharing_description"
+            android:text="@string/resharing_user_info"
             android:textColor="@color/share_info_txt_color"
-            android:textSize="@dimen/txt_size_14sp" />
+            android:textSize="@dimen/txt_size_14sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
-        <LinearLayout
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_resharing_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/standard_double_margin"
+            android:layout_marginTop="@dimen/standard_margin"
+            android:paddingLeft="@dimen/standard_padding"
+            android:paddingRight="@dimen/standard_padding"
+            android:text="@string/reshare_allowed"
+            android:textColor="@color/share_info_txt_color"
+            android:textSize="@dimen/txt_size_14sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/search_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -125,58 +83,97 @@
                 android:layout_marginEnd="@dimen/standard_margin"
                 android:background="@drawable/share_search_background"
                 app:srcCompat="@drawable/ic_contact_book"
-                app:tint="@color/share_btn_txt_color" />
+                app:tint="@color/share_contact_icon_color" />
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/or_section_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:background="@color/divider_color" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/standard_padding"
+                android:paddingRight="@dimen/standard_padding"
+                android:text="@string/txt_or"
+                android:textColor="@color/share_info_txt_color"
+                android:textSize="@dimen/txt_size_14sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:background="@color/divider_color" />
+        </LinearLayout>
+
+
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/label_personal_share"
+            android:id="@+id/link_share_section_heading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/standard_margin"
-            android:layout_marginTop="@dimen/standard_eighth_margin"
+            android:layout_marginTop="@dimen/standard_quarter_margin"
             android:layout_marginEnd="@dimen/standard_margin"
-            android:paddingStart="@dimen/standard_half_padding"
-            android:paddingEnd="@dimen/standard_half_padding"
-            android:text="@string/personal_share_email"
-            android:textColor="@color/share_color"
-            android:textSize="@dimen/txt_size_11sp" />
+            android:text="@string/copy_link"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/txt_size_17sp"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/linkSharesList"
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/standard_quarter_margin"
+            android:layout_height="match_parent"
+            android:divider="@drawable/divider"
+            android:dividerHeight="1dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_create_new_link"
             style="@style/ShareOutlinedButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/create_link_button_height"
-            android:layout_marginStart="@dimen/standard_margin"
-            android:layout_marginTop="@dimen/standard_margin"
-            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_margin="@dimen/standard_margin"
             android:text="@string/create_link"
-            android:textSize="@dimen/txt_size_14sp"
             android:textStyle="normal"
-            android:typeface="normal"
-            app:cornerRadius="@dimen/button_corner_radius"
-            app:icon="@drawable/ic_plus"
-            app:iconGravity="textStart"
-            app:iconTint="@color/share_btn_txt_color" />
+            android:typeface="normal" />
+
+        <View
+            android:id="@+id/shared_with_divider"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
+            android:background="@color/divider_color" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_your_shares"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/standard_margin"
-            android:layout_marginTop="@dimen/standard_double_margin"
+            android:layout_marginTop="@dimen/standard_quarter_margin"
             android:layout_marginEnd="@dimen/standard_margin"
-            android:text="@string/your_shares"
+            android:text="@string/shared_with_heading"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/txt_size_16sp"
-            android:textStyle="bold"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:textSize="@dimen/txt_size_17sp"
+            android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/sharesList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/standard_quarter_margin"
             android:divider="@drawable/divider"
             android:dividerHeight="1dp" />
 
@@ -184,13 +181,12 @@
             android:id="@+id/tv_empty_shares"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginStart="@dimen/standard_margin"
-            android:layout_marginTop="@dimen/standard_double_margin"
+            android:layout_marginTop="@dimen/standard_quarter_margin"
             android:layout_marginEnd="@dimen/standard_margin"
             android:text="@string/empty_shares"
-            android:textColor="@color/secondary_text_color"
-            android:textSize="@dimen/txt_size_16sp"
+            android:textColor="@color/share_info_txt_color"
+            android:textSize="@dimen/txt_size_14sp"
             android:visibility="gone" />
 
         <View
