@@ -9,134 +9,190 @@
   ~ SPDX-License-Identifier: GPL-2.0-only AND (AGPL-3.0-or-later OR GPL-2.0-only)
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-				  android:key="preference_screen">
-    <PreferenceCategory
-        android:title="@string/prefs_category_general"
-        android:key="general">
-        <Preference
-            android:title="@string/prefs_data_storage_location"
-            android:key="data_storage_location"
-            android:summary="@string/prefs_data_storage_location_summary" />
-        <ListPreference
-            android:title="@string/prefs_theme_title"
-            android:key="darkMode"
-            android:summary="%s" />
-	</PreferenceCategory>
-	<PreferenceCategory
-		android:title="@string/drawer_synced_folders"
-		android:key="synced_folders_category">
-		<com.owncloud.android.ui.ThemeableSwitchPreference
-			android:title="@string/auto_upload_on_wifi"
-			android:key="synced_folder_on_wifi"/>
-        <Preference
-			android:title="@string/synced_folders_configure_folders"
-			android:id="@+id/synced_folders_configure_folders"
-			android:key="synced_folders_configure_folders"/>
-	</PreferenceCategory>
+    android:key="preference_screen">
 
-	<PreferenceCategory android:title="@string/prefs_category_details" android:key="details">
-		<com.owncloud.android.ui.ListPreferenceDialog
-			android:title="@string/prefs_lock"
-			android:key="lock"
-			android:dialogTitle="@string/prefs_lock_title"
-			android:defaultValue="none"/>
-		<com.owncloud.android.ui.ThemeableSwitchPreference
-			android:title="@string/prefs_show_hidden_files"
-			android:key="show_hidden_files"/>
+    <com.owncloud.android.ui.PreferenceCustomCategory
+        android:key="account_info"
+        android:title="@string/prefs_category_account_info">
+        <Preference
+            android:key="user_name"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/prefs_category_account_info" />
+        <!--   <ListPreference
+               android:title="@string/prefs_theme_title"
+               android:key="darkMode"
+               android:summary="%s" />-->
+    </com.owncloud.android.ui.PreferenceCustomCategory>
+
+    <com.owncloud.android.ui.PreferenceCustomCategory
+        android:key="general"
+        android:title="@string/prefs_category_general">
+        <ListPreference
+            android:key="storage_path"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/prefs_storage_path" />
+        <!--   <ListPreference
+               android:title="@string/prefs_theme_title"
+               android:key="darkMode"
+               android:summary="%s" />-->
+    </com.owncloud.android.ui.PreferenceCustomCategory>
+
+    <com.owncloud.android.ui.PreferenceCustomCategory
+        android:key="synced_folders_category"
+        android:title="@string/drawer_synced_folders">
+        <com.owncloud.android.ui.ThemeableSwitchPreference
+            android:key="synced_folder_on_wifi"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/auto_upload_on_wifi" />
+        <Preference
+            android:id="@+id/synced_folders_configure_folders"
+            android:key="synced_folders_configure_folders"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/synced_folders_configure_folders" />
+    </com.owncloud.android.ui.PreferenceCustomCategory>
+
+    <com.owncloud.android.ui.PreferenceCustomCategory
+        android:key="details"
+        android:title="@string/prefs_category_details">
+        <ListPreference
+            android:defaultValue="none"
+            android:dialogTitle="@string/prefs_lock_title"
+            android:key="lock"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/prefs_lock" />
+        <com.owncloud.android.ui.ThemeableSwitchPreference
+            android:key="show_hidden_files"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/prefs_show_hidden_files" />
         <com.owncloud.android.ui.ThemeableSwitchPreference
             android:defaultValue="true"
             android:title="@string/prefs_show_ecosystem_apps"
             android:key="show_ecosystem_apps"
+            android:layout="@layout/custom_preference_layout"
             android:summary="@string/prefs_show_ecosystem_apps_summary"/>
         <com.owncloud.android.ui.ThemeableSwitchPreference
-            android:title="@string/prefs_enable_media_scan_notifications"
+            android:key="show_media_scan_notifications"
+            android:layout="@layout/custom_preference_layout"
             android:summary="@string/prefs_enable_media_scan_notifications_summary"
-            android:key="show_media_scan_notifications"/>
-	</PreferenceCategory>
+            android:title="@string/prefs_enable_media_scan_notifications" />
+    </com.owncloud.android.ui.PreferenceCustomCategory>
 
-    <PreferenceCategory
+    <com.owncloud.android.ui.PreferenceCustomCategory
         android:title="@string/prefs_category_sync"
         android:key="sync">
-    <Preference
-        android:title="@string/drawer_synced_folders"
-        android:key="syncedFolders"
-        android:summary="@string/prefs_sycned_folders_summary" />
+        <Preference
+            android:title="@string/drawer_synced_folders"
+            android:key="syncedFolders"
+            android:layout="@layout/custom_preference_layout"
+            android:summary="@string/prefs_sycned_folders_summary" />
 
         <Preference
             android:title="@string/internal_two_way_sync"
             android:key="internal_two_way_sync"
+            android:layout="@layout/custom_preference_layout"
             android:summary="@string/prefs_two_way_sync_summary" />
-    </PreferenceCategory>
+    </com.owncloud.android.ui.PreferenceCustomCategory>
 
-	<PreferenceCategory
+    <com.owncloud.android.ui.PreferenceCustomCategory
         android:title="@string/prefs_category_more"
         android:key="more">
         <Preference
-            android:title="@string/prefs_calendar_contacts"
-            android:key="calendar_contacts"
-            android:summary="@string/prefs_calendar_contacts_summary" />
-        <Preference
-            android:title="@string/backup_title"
             android:key="backup"
-            android:summary="@string/prefs_daily_backup_summary" />
+            android:layout="@layout/custom_preference_layout"
+            android:summary="@string/prefs_daily_backup_summary"
+            android:title="@string/backup_title" />
         <Preference
-            android:title="@string/prefs_setup_e2e"
             android:key="setup_e2e"
-            android:summary="@string/setup_e2e" />
+            android:layout="@layout/custom_preference_layout"
+            android:summary="@string/setup_e2e"
+            android:title="@string/prefs_setup_e2e" />
         <Preference
-            android:title="@string/prefs_keys_exist"
             android:key="setup_e2e_keys_exist"
-            android:summary="End to end encryption was already set up on another client. Please enter your mnemonic to allow this client to sync and decrypt the files." />
+            android:layout="@layout/custom_preference_layout"
+            android:summary="@string/prefs_keys_exist_summary"
+            android:title="@string/prefs_keys_exist" />
         <Preference
-            android:title="@string/prefs_e2e_active"
             android:key="mnemonic"
-            android:summary="@string/displays_mnemonic" />
+            android:layout="@layout/custom_preference_layout"
+            android:summary="@string/prefs_mnemonic_summary"
+            android:title="@string/prefs_e2e_mnemonic" />
         <Preference
-            android:title="@string/prefs_remove_e2e"
             android:key="remove_e2e"
-            android:summary="@string/remove_e2e" />
-
+            android:layout="@layout/custom_preference_layout"
+            android:summary="@string/remove_e2e"
+            android:title="@string/prefs_remove_e2e" />
+        <!--
+                <Preference android:title="@string/prefs_recommend" android:key="recommend" />
+        -->
         <Preference
-            android:title="@string/prefs_help"
-            android:key="help" />
-        <Preference
-            android:title="@string/prefs_recommend"
-            android:key="recommend" />
-        <Preference
-            android:title="@string/logs_title"
-            android:key="logger" />
-        <Preference
-            android:title="@string/prefs_imprint"
-            android:key="imprint" />
-    </PreferenceCategory>
-	<PreferenceCategory android:title="@string/prefs_category_about" android:key="about">
-		<Preference
-			android:title="@string/privacy"
-			android:id="@+id/privacy"
-			android:key="privacy"/>
-		<Preference
-			android:title="@string/prefs_sourcecode"
-			android:id="@+id/sourcecode"
-			android:key="sourcecode"/>
-		<Preference
-			android:title="@string/prefs_license"
-			android:id="@+id/license"
-			android:key="license"/>
-		<Preference android:title="@string/about_title" android:id="@+id/about_app" android:key="about_app" />
-	</PreferenceCategory>
+            android:key="logger"
+            android:title="@string/logs_title" />
+    </com.owncloud.android.ui.PreferenceCustomCategory>
 
-	<PreferenceCategory android:title="@string/prefs_category_dev" android:key="dev_category">
-		<Preference android:id="@+id/dev_link"
-            android:title="@string/download_latest_dev_version"
-					android:key="dev_link" />
+    <com.owncloud.android.ui.PreferenceCustomCategory
+        android:key="data_protection"
+        android:title="@string/prefs_category_data_privacy">
+        <Preference
+            android:id="@+id/privacy_settings"
+            android:key="privacy_settings"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/privacy_settings" />
+        <Preference
+            android:id="@+id/privacy_policy"
+            android:key="privacy_policy"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/privacy_policy" />
+        <Preference
+            android:id="@+id/sourcecode"
+            android:key="sourcecode"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/prefs_open_source" />
+        <!-- <Preference
+             android:title="@string/prefs_license"
+             android:id="@+id/license"
+             android:key="license"/>-->
+    </com.owncloud.android.ui.PreferenceCustomCategory>
 
-		<Preference android:id="@+id/changelog_link"
-            android:title="@string/changelog_dev_version"
-					android:key="changelog_link" />
+    <com.owncloud.android.ui.PreferenceCustomCategory
+        android:key="service"
+        android:title="@string/prefs_category_service">
+        <Preference
+            android:key="help"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/prefs_help" />
+        <Preference
+            android:key="imprint"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/prefs_imprint" />
+    </com.owncloud.android.ui.PreferenceCustomCategory>
 
-        <Preference android:id="@+id/etm"
-                    android:title="@string/etm_title"
-                    android:key="etm" />
-	</PreferenceCategory>
+    <com.owncloud.android.ui.PreferenceCustomCategory
+        android:key="info"
+        android:title="@string/prefs_category_info">
+        <com.owncloud.android.ui.AppVersionPreference
+            android:id="@+id/about_app"
+            android:key="about_app"
+            android:layout="@layout/custom_app_preference_layout"
+            android:title="@string/about_title" />
+    </com.owncloud.android.ui.PreferenceCustomCategory>
+
+    <!-- <com.owncloud.android.ui.PreferenceCustomCategory
+         android:key="dev_category"
+         android:title="@string/prefs_category_dev">
+         <Preference
+             android:id="@+id/dev_link"
+             android:key="dev_link"
+             android:title="@string/download_latest_dev_version" />
+
+         <Preference
+             android:id="@+id/changelog_link"
+             android:key="changelog_link"
+             android:title="@string/changelog_dev_version" />
+
+         <Preference
+             android:id="@+id/etm"
+             android:key="etm"
+             android:title="@string/etm_title" />
+     </com.owncloud.android.ui.PreferenceCustomCategory>-->
 
 </PreferenceScreen>
