@@ -19,8 +19,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -41,6 +39,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
+import android.widget.ListView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.account.User;
@@ -50,6 +49,7 @@ import com.nextcloud.client.etm.EtmActivity;
 import com.nextcloud.client.logger.ui.LogsActivity;
 import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.client.network.ConnectivityService;
+import com.nmc.android.ui.PrivacySettingsInterface;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.client.preferences.AppPreferencesImpl;
 import com.nextcloud.client.preferences.DarkMode;
@@ -77,6 +77,7 @@ import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.EncryptionUtils;
 import com.owncloud.android.utils.MimeTypeUtil;
 import com.owncloud.android.utils.PermissionUtil;
+import com.owncloud.android.utils.StringUtils;
 import com.owncloud.android.utils.theme.CapabilityUtils;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
 
@@ -87,6 +88,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -146,6 +148,17 @@ public class SettingsActivity extends PreferenceActivity
     @Inject ViewThemeUtils viewThemeUtils;
     @Inject ConnectivityService connectivityService;
 
+    /**
+     * Things to note about both the branches.
+     * 1. nmc/1921-settings branch:
+     *    --> interface won't be initialised
+     *    -->  calling of interface method will be done here
+     * 2. nmc/1878-privacy
+     *    --> interface will be initialised
+     *    --> calling of interface method won't be done here
+     */
+    private PrivacySettingsInterface privacySettingsInterface;
+
     @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -154,13 +167,17 @@ public class SettingsActivity extends PreferenceActivity
         getDelegate().installViewFactory();
         getDelegate().onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
-        getListView().setFitsSystemWindows(true);
+
+        ListView listView = getListView();
+        listView.setFitsSystemWindows(true);
+        listView.setDivider(ResourcesCompat.getDrawable(getResources(), R.drawable.item_divider, null));
+
         setupActionBar();
 
         // Register context menu for list of preferences.
         registerForContextMenu(getListView());
 
-        String appVersion = getAppVersion();
+        int titleColor = getResources().getColor(R.color.fontAppbar, null);
         PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("preference_screen");
 
         user = accountManager.getUser();
@@ -168,29 +185,43 @@ public class SettingsActivity extends PreferenceActivity
         // retrieve user's base uri
         setupBaseUri();
 
+        // Account Information
+        setupAccountInfoCategory(titleColor);
+
         // General
-        setupGeneralCategory();
+        setupGeneralCategory(titleColor);
 
         // Synced folders
-        setupAutoUploadCategory(preferenceScreen);
+        setupAutoUploadCategory(titleColor, preferenceScreen);
 
         // Files
-        setupFilesCategory();
+        setupFilesCategory(titleColor);
 
         // Details
-        setupDetailsCategory(preferenceScreen);
+        setupDetailsCategory(titleColor, preferenceScreen);
 
         // Sync
-        setupSyncCategory();
+        setupSyncCategory(titleColor);
 
         // More
-        setupMoreCategory();
+        setupMoreCategory(titleColor);
 
         // About
-        setupAboutCategory(appVersion);
+        // Not required in NMC
+        // setupAboutCategory(appVersion);
 
+        // Data Privacy
+        setupDataPrivacyCategory(titleColor);
+
+        //Service
+        setUpServiceCategory(titleColor);
+
+        //Info
+        setUpInfoCategory(titleColor);
+
+        // Not required for NMC
         // Dev
-        setupDevCategory(preferenceScreen);
+        // setupDevCategory(preferenceScreen);
 
         // workaround for mismatched color when app dark mode and system dark mode don't agree
         setListBackground();
@@ -344,22 +375,107 @@ public class SettingsActivity extends PreferenceActivity
         }
     }
 
-    private void setupSyncCategory() {
+    private void setupSyncCategory(int titleColor) {
         final PreferenceCategory preferenceCategorySync = (PreferenceCategory) findPreference("sync");
-        viewThemeUtils.files.themePreferenceCategory(preferenceCategorySync);
+        preferenceCategorySync.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_sync),
+                                                                 titleColor));
+        setupAutoUploadPreference(preferenceCategorySync, titleColor);
+        // setupInternalTwoWaySyncPreference(titleColor);
+        setupAllFilesAccessPreference(preferenceCategorySync, titleColor);
+    }
+    /**
+     * NMC customization
+     */
+    private void setupDataPrivacyCategory(int titleColor) {
+        PreferenceCategory preferenceCategoryAbout = (PreferenceCategory) findPreference("data_protection");
+        preferenceCategoryAbout.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_data_privacy),
+                                                                  titleColor));
 
-        setupAutoUploadPreference(preferenceCategorySync);
-        setupInternalTwoWaySyncPreference();
-        setupAllFilesAccessPreference(preferenceCategorySync);
+        //privacy settings
+        Preference privacySettingPreference = findPreference("privacy_settings");
+        if (privacySettingPreference != null) {
+            privacySettingPreference.setTitle(StringUtils.getColorSpan(getString(R.string.privacy_settings),
+                                                                       titleColor));
+            privacySettingPreference.setOnPreferenceClickListener(preference -> {
+                //implementation and logic will be available in nmc/1878-privacy
+                if (privacySettingsInterface != null) {
+                    privacySettingsInterface.openPrivacySettingsActivity(SettingsActivity.this);
+                }
+                return true;
+            });
+        }
+
+        // privacy policy
+        Preference privacyPolicyPreference = findPreference("privacy_policy");
+
+        if (privacyPolicyPreference != null) {
+            privacyPolicyPreference.setTitle(StringUtils.getColorSpan(getString(R.string.privacy_policy),
+                                                                      titleColor));
+            if (URLUtil.isValidUrl(getString(R.string.privacy_url))) {
+                privacyPolicyPreference.setOnPreferenceClickListener(preference -> {
+                    try {
+                        Uri privacyUrl = Uri.parse(getString(R.string.privacy_url));
+                        String mimeType = MimeTypeUtil.getBestMimeTypeByFilename(privacyUrl.getLastPathSegment());
+
+                        Intent intent;
+                        if (MimeTypeUtil.isPDF(mimeType)) {
+                            intent = new Intent(Intent.ACTION_VIEW, privacyUrl);
+                            DisplayUtils.startIntentIfAppAvailable(intent, this, R.string.no_pdf_app_available);
+                        } else {
+                            intent = new Intent(getApplicationContext(), ExternalSiteWebView.class);
+                            intent.putExtra(ExternalSiteWebView.EXTRA_TITLE,
+                                            getResources().getString(R.string.privacy_policy));
+                            intent.putExtra(ExternalSiteWebView.EXTRA_URL, privacyUrl.toString());
+                            intent.putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false);
+                        }
+
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        Log_OC.e(TAG, "Could not parse privacy policy url");
+                        preferenceCategoryAbout.removePreference(privacyPolicyPreference);
+                    }
+                    return true;
+                });
+            } else {
+                preferenceCategoryAbout.removePreference(privacyPolicyPreference);
+            }
+        }
+
+        // source code
+        Preference sourcecodePreference = findPreference("sourcecode");
+        if (sourcecodePreference != null) {
+            sourcecodePreference.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_open_source),
+                                                                   titleColor));
+            if (URLUtil.isValidUrl(getString(R.string.sourcecode_url))) {
+                sourcecodePreference.setOnPreferenceClickListener(preference -> {
+                    Intent intent = new Intent(getApplicationContext(), ExternalSiteWebView.class);
+                    intent.putExtra(ExternalSiteWebView.EXTRA_TITLE,
+                                    getResources().getString(R.string.prefs_open_source));
+                    intent.putExtra(ExternalSiteWebView.EXTRA_URL, getResources().getString(R.string.sourcecode_url));
+                    intent.putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false);
+                    startActivity(intent);
+                    return true;
+                });
+            } else {
+                preferenceCategoryAbout.removePreference(sourcecodePreference);
+            }
+        }
     }
 
-    private void setupMoreCategory() {
+    private void setUpInfoCategory(int titleColor) {
+        PreferenceCategory preferenceCategoryAbout = (PreferenceCategory) findPreference("info");
+        preferenceCategoryAbout.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_info),
+                                                                  titleColor));
+    }
+
+    private void setupMoreCategory(int titleColor) {
         final PreferenceCategory preferenceCategoryMore = (PreferenceCategory) findPreference("more");
-        viewThemeUtils.files.themePreferenceCategory(preferenceCategoryMore);
+        preferenceCategoryMore.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_more),
+                                                                 titleColor));
 
         setupCalendarPreference(preferenceCategoryMore);
 
-        setupBackupPreference();
+        setupBackupPreference(titleColor);
 
         setupE2EPreference(preferenceCategoryMore);
 
@@ -369,40 +485,19 @@ public class SettingsActivity extends PreferenceActivity
 
         removeE2E(preferenceCategoryMore);
 
-        setupHelpPreference(preferenceCategoryMore);
-
         setupRecommendPreference(preferenceCategoryMore);
 
-        setupLoggingPreference(preferenceCategoryMore);
-
-        setupImprintPreference(preferenceCategoryMore);
+        setupLoggingPreference(preferenceCategoryMore, titleColor);
 
         loadExternalSettingLinks(preferenceCategoryMore);
     }
 
-    private void setupImprintPreference(PreferenceCategory preferenceCategoryMore) {
-        boolean imprintEnabled = getResources().getBoolean(R.bool.imprint_enabled);
-        Preference pImprint = findPreference("imprint");
-        if (pImprint != null) {
-            if (imprintEnabled) {
-                pImprint.setOnPreferenceClickListener(preference -> {
-                    String imprintWeb = getString(R.string.url_imprint);
+    private void setupLoggingPreference(PreferenceCategory preferenceCategoryMore, int titleColor) {
 
-                    if (!imprintWeb.isEmpty()) {
-                        DisplayUtils.startLinkIntent(this, imprintWeb);
-                    }
-                    //ImprintDialog.newInstance(true).show(preference.get, "IMPRINT_DIALOG");
-                    return true;
-                });
-            } else {
-                preferenceCategoryMore.removePreference(pImprint);
-            }
-        }
-    }
-
-    private void setupLoggingPreference(PreferenceCategory preferenceCategoryMore) {
         Preference pLogger = findPreference("logger");
         if (pLogger != null) {
+            pLogger.setTitle(StringUtils.getColorSpan(getString(R.string.logs_title),
+                                                            titleColor));
             if (MDMConfig.INSTANCE.isLogEnabled(this)) {
                 pLogger.setOnPreferenceClickListener(preference -> {
                     Intent loggerIntent = new Intent(getApplicationContext(), LogsActivity.class);
@@ -559,23 +654,10 @@ public class SettingsActivity extends PreferenceActivity
             .show();
     }
 
-    private void setupHelpPreference(PreferenceCategory preferenceCategoryMore) {
-        boolean helpEnabled = getResources().getBoolean(R.bool.help_enabled);
-        Preference pHelp = findPreference("help");
-        if (pHelp != null) {
-            if (helpEnabled) {
-                pHelp.setOnPreferenceClickListener(preference -> {
-                    DisplayUtils.startLinkIntent(this, R.string.url_help);
-                    return true;
-                });
-            } else {
-                preferenceCategoryMore.removePreference(pHelp);
-            }
-        }
-    }
-
-    private void setupAutoUploadPreference(PreferenceCategory preferenceCategoryMore) {
+    private void setupAutoUploadPreference(PreferenceCategory preferenceCategoryMore, int titleColor) {
         Preference autoUpload = findPreference("syncedFolders");
+        autoUpload.setTitle(StringUtils.getColorSpan(getString(R.string.drawer_synced_folders),
+                                                           titleColor));
         if (getResources().getBoolean(R.bool.syncedFolder_light)) {
             preferenceCategoryMore.removePreference(autoUpload);
         } else {
@@ -587,8 +669,10 @@ public class SettingsActivity extends PreferenceActivity
         }
     }
 
-    private void setupInternalTwoWaySyncPreference() {
+    private void setupInternalTwoWaySyncPreference(int titleColor) {
         Preference twoWaySync = findPreference("internal_two_way_sync");
+        twoWaySync.setTitle(StringUtils.getColorSpan(getString(R.string.internal_two_way_sync),
+                                                     titleColor));
 
         twoWaySync.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(this, InternalTwoWaySyncActivity.class);
@@ -597,8 +681,9 @@ public class SettingsActivity extends PreferenceActivity
         });
     }
 
-    private void setupAllFilesAccessPreference(PreferenceCategory category) {
+    private void setupAllFilesAccessPreference(PreferenceCategory category, int titleColor) {
         Preference allFilesAccess = findPreference("allFilesAccess");
+        allFilesAccess.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_all_files_access_title), titleColor));
 
         if (PermissionUtil.checkAllFilesAccess()) {
             category.removePreference(allFilesAccess);
@@ -614,13 +699,12 @@ public class SettingsActivity extends PreferenceActivity
         });
     }
 
-    private void setupBackupPreference() {
+    private void setupBackupPreference(int titleColor) {
         Preference pContactsBackup = findPreference("backup");
         if (pContactsBackup != null) {
             boolean showCalendarBackup = getResources().getBoolean(R.bool.show_calendar_backup);
-            pContactsBackup.setTitle(showCalendarBackup
-                                         ? getString(R.string.backup_title)
-                                         : getString(R.string.contact_backup_title));
+            // NMC Customization
+            pContactsBackup.setTitle(StringUtils.getColorSpan(getString(R.string.actionbar_contacts), titleColor));
             pContactsBackup.setSummary(showCalendarBackup
                                            ? getString(R.string.prefs_daily_backup_summary)
                                            : getString(R.string.prefs_daily_contact_backup_summary));
@@ -654,9 +738,10 @@ public class SettingsActivity extends PreferenceActivity
         }
     }
 
-    private void setupDetailsCategory(PreferenceScreen preferenceScreen) {
+    private void setupDetailsCategory(int titleColor, PreferenceScreen preferenceScreen) {
         PreferenceCategory preferenceCategoryDetails = (PreferenceCategory) findPreference("details");
-        viewThemeUtils.files.themePreferenceCategory(preferenceCategoryDetails);
+        preferenceCategoryDetails.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_details),
+                                                                          titleColor));
 
         boolean fPassCodeEnabled = getResources().getBoolean(R.bool.passcode_enabled);
         boolean fDeviceCredentialsEnabled = getResources().getBoolean(R.bool.device_credentials_enabled);
@@ -664,11 +749,11 @@ public class SettingsActivity extends PreferenceActivity
         boolean fSyncedFolderLightEnabled = getResources().getBoolean(R.bool.syncedFolder_light);
         boolean fShowMediaScanNotifications = preferences.isShowMediaScanNotifications();
 
-        setupLockPreference(preferenceCategoryDetails, fPassCodeEnabled, fDeviceCredentialsEnabled);
+        setupLockPreference(preferenceCategoryDetails, fPassCodeEnabled, fDeviceCredentialsEnabled, titleColor);
 
         setupShowEcosystemAppsPreference(preferenceCategoryDetails, fShowEcosystemAppsEnabled);
 
-        setupShowMediaScanNotifications(preferenceCategoryDetails, fShowMediaScanNotifications);
+        setupShowMediaScanNotifications(preferenceCategoryDetails, fShowMediaScanNotifications, titleColor);
 
         if (!fPassCodeEnabled && !fDeviceCredentialsEnabled && fSyncedFolderLightEnabled
             && fShowMediaScanNotifications) {
@@ -676,30 +761,33 @@ public class SettingsActivity extends PreferenceActivity
         }
     }
 
-    private void setupFilesCategory() {
+    private void setupFilesCategory(int titleColor) {
         PreferenceCategory preferenceCategoryDetails = (PreferenceCategory) findPreference("files");
-        viewThemeUtils.files.themePreferenceCategory(preferenceCategoryDetails);
+        preferenceCategoryDetails.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_files),
+                                                                    titleColor));
 
         boolean fShowHiddenFilesEnabled = getResources().getBoolean(R.bool.show_hidden_files_enabled);
 
-        setupHiddenFilesPreference(preferenceCategoryDetails, fShowHiddenFilesEnabled);
-        setupFoldersBeforeFilesPreference();
-        setupSortFavoritesFirstPreference();
+        setupHiddenFilesPreference(preferenceCategoryDetails, fShowHiddenFilesEnabled, titleColor);
+        setupFoldersBeforeFilesPreference(titleColor);
+        setupSortFavoritesFirstPreference(titleColor);
     }
 
     private void setupShowMediaScanNotifications(PreferenceCategory preferenceCategoryDetails,
-                                                 boolean fShowMediaScanNotifications) {
-        ThemeableSwitchPreference mShowMediaScanNotifications =
-            (ThemeableSwitchPreference) findPreference(PREFERENCE_SHOW_MEDIA_SCAN_NOTIFICATIONS);
-
+                                                 boolean fShowMediaScanNotifications, int titleColor) {
+        SwitchPreference mShowMediaScanNotifications = (SwitchPreference) findPreference(PREFERENCE_SHOW_MEDIA_SCAN_NOTIFICATIONS);
+        mShowMediaScanNotifications.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_enable_media_scan_notifications),
+                                                                            titleColor));
         if (fShowMediaScanNotifications) {
             preferenceCategoryDetails.removePreference(mShowMediaScanNotifications);
         }
     }
 
     private void setupHiddenFilesPreference(PreferenceCategory preferenceCategoryDetails,
-                                            boolean fShowHiddenFilesEnabled) {
+                                            boolean fShowHiddenFilesEnabled, int titleColor) {
         showHiddenFiles = (ThemeableSwitchPreference) findPreference("show_hidden_files");
+        showHiddenFiles.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_show_hidden_files),
+                                                                titleColor));
         if (fShowHiddenFilesEnabled) {
             showHiddenFiles.setOnPreferenceClickListener(preference -> {
                 preferences.setShowHiddenFilesEnabled(showHiddenFiles.isChecked());
@@ -710,16 +798,20 @@ public class SettingsActivity extends PreferenceActivity
         }
     }
 
-    private void setupFoldersBeforeFilesPreference() {
+    private void setupFoldersBeforeFilesPreference(int titleColor) {
         ThemeableSwitchPreference preference = (ThemeableSwitchPreference) findPreference("sort_folders_before_files");
+        preference.setTitle(StringUtils.getColorSpan(getString(R.string.sort_folders_before_files),
+                                           titleColor));
         preference.setOnPreferenceClickListener(p -> {
                 preferences.setSortFoldersBeforeFiles(preference.isChecked());
                 return true;
             });
     }
 
-    private void setupSortFavoritesFirstPreference() {
+    private void setupSortFavoritesFirstPreference(int titleColor) {
         ThemeableSwitchPreference preference = (ThemeableSwitchPreference) findPreference("sort_favorites_first");
+        preference.setTitle(StringUtils.getColorSpan(getString(R.string.sort_favorites_first),
+                                                     titleColor));
         preference.setOnPreferenceClickListener(p -> {
             preferences.setSortFavoritesFirst(preference.isChecked());
             return true;
@@ -741,9 +833,11 @@ public class SettingsActivity extends PreferenceActivity
 
     private void setupLockPreference(PreferenceCategory preferenceCategoryDetails,
                                      boolean passCodeEnabled,
-                                     boolean deviceCredentialsEnabled) {
+                                     boolean deviceCredentialsEnabled, int titleColor) {
         boolean enforceProtection = MDMConfig.INSTANCE.enforceProtection(this);
         lock = (ListPreferenceDialog) findPreference(PREFERENCE_LOCK);
+        lock.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_lock),
+                                               titleColor));
         int optionSize = 3;
         if (enforceProtection) {
             optionSize = 2;
@@ -799,10 +893,11 @@ public class SettingsActivity extends PreferenceActivity
         }
     }
 
-    private void setupAutoUploadCategory(PreferenceScreen preferenceScreen) {
+    private void setupAutoUploadCategory(int titleColor, PreferenceScreen preferenceScreen) {
         final PreferenceCategory preferenceCategorySyncedFolders =
             (PreferenceCategory) findPreference("synced_folders_category");
-        viewThemeUtils.files.themePreferenceCategory(preferenceCategorySyncedFolders);
+        preferenceCategorySyncedFolders.setTitle(StringUtils.getColorSpan(getString(R.string.drawer_synced_folders),
+                                                                                titleColor));
 
         if (!getResources().getBoolean(R.bool.syncedFolder_light)) {
             preferenceScreen.removePreference(preferenceCategorySyncedFolders);
@@ -811,6 +906,8 @@ public class SettingsActivity extends PreferenceActivity
             final ArbitraryDataProvider arbitraryDataProvider = new ArbitraryDataProviderImpl(this);
 
             final SwitchPreference pUploadOnWifiCheckbox = (SwitchPreference) findPreference("synced_folder_on_wifi");
+            pUploadOnWifiCheckbox.setTitle(StringUtils.getColorSpan(getString(R.string.auto_upload_on_wifi),
+                                                                          titleColor));
             pUploadOnWifiCheckbox.setChecked(
                 arbitraryDataProvider.getBooleanValue(user, SYNCED_FOLDER_LIGHT_UPLOAD_ON_WIFI));
 
@@ -834,6 +931,73 @@ public class SettingsActivity extends PreferenceActivity
                 }
             }
         }
+    }
+
+    private void setUpServiceCategory(int titleColor) {
+        PreferenceCategory preferenceCategoryService = (PreferenceCategory) findPreference("service");
+        preferenceCategoryService.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_service),
+                                                                          titleColor));
+        setupHelpPreference(titleColor);
+        setupDeleteAccountPreference(titleColor);
+        setupImprintPreference(titleColor);
+    }
+
+    private void setupHelpPreference(int titleColor) {
+        Preference pHelp = findPreference("help");
+        if (pHelp != null) {
+            pHelp.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_help),
+                                                          titleColor));
+            pHelp.setOnPreferenceClickListener(preference -> {
+                String helpWeb = getString(R.string.url_help);
+                if (!helpWeb.isEmpty()) {
+                    openLinkInWebView(helpWeb, R.string.prefs_help);
+                }
+                return true;
+            });
+
+        }
+    }
+
+    private void setupDeleteAccountPreference(int titleColor) {
+        Preference pHelp = findPreference("delete_account");
+        if (pHelp != null) {
+            pHelp.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_delete_account),
+                                                    titleColor));
+            pHelp.setOnPreferenceClickListener(preference -> {
+                String helpWeb = getString(R.string.url_delete_account);
+                if (!helpWeb.isEmpty()) {
+                    openLinkInWebView(helpWeb, R.string.prefs_delete_account);
+                }
+                return true;
+            });
+
+        }
+    }
+
+    private void setupImprintPreference(int titleColor) {
+        Preference pImprint = findPreference("imprint");
+        if (pImprint != null) {
+            pImprint.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_imprint),
+                                                             titleColor));
+            pImprint.setOnPreferenceClickListener(preference -> {
+                String imprintWeb = getString(R.string.url_imprint_nmc);
+                if (!imprintWeb.isEmpty()) {
+                    openLinkInWebView(imprintWeb, R.string.prefs_imprint);
+                }
+                //ImprintDialog.newInstance(true).show(preference.get, "IMPRINT_DIALOG");
+                return true;
+            });
+        }
+
+    }
+
+    private void openLinkInWebView(String url, @StringRes int title) {
+        Intent externalWebViewIntent = new Intent(getApplicationContext(), ExternalSiteWebView.class);
+        externalWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_TITLE,
+                                       getResources().getString(title));
+        externalWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_URL, url);
+        externalWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false);
+        startActivity(externalWebViewIntent);
     }
 
     private void enableLock(String lock) {
@@ -869,10 +1033,20 @@ public class SettingsActivity extends PreferenceActivity
         }
     }
 
-    private void setupGeneralCategory() {
-        final PreferenceCategory preferenceCategoryGeneral = (PreferenceCategory) findPreference("general");
-        viewThemeUtils.files.themePreferenceCategory(preferenceCategoryGeneral);
+    private void setupAccountInfoCategory(int titleColor) {
+        PreferenceCategory preferenceCategoryAccountInfo = (PreferenceCategory) findPreference("account_info");
+        preferenceCategoryAccountInfo.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_account_info),
+                                                                          titleColor));
 
+        Preference autoUpload = findPreference("user_name");
+        autoUpload.setTitle(StringUtils.getColorSpan(accountManager.getUser().toOwnCloudAccount().getDisplayName(),
+                                                           titleColor));
+    }
+
+    private void setupGeneralCategory(int titleColor) {
+        PreferenceCategory preferenceCategoryGeneral = (PreferenceCategory) findPreference("general");
+        preferenceCategoryGeneral.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_general),
+                                                                          titleColor));
         readStoragePath();
 
         prefDataLoc = findPreference(AppPreferencesImpl.DATA_STORAGE_LOCATION);
@@ -884,16 +1058,6 @@ public class SettingsActivity extends PreferenceActivity
             });
         }
 
-        final var themePref = findPreference("darkMode");
-        if (themePref != null) {
-            updateThemePreferenceSummary(preferences.getDarkThemeMode().name());
-
-            themePref.setOnPreferenceClickListener(preference -> {
-                Intent intent = ExtendedSettingsActivity.Companion.createIntent(this, ExtendedSettingsActivityDialog.ThemeSelection);
-                startActivityForResult(intent, ExtendedSettingsActivityDialog.ThemeSelection.getResultId());
-                return true;
-            });
-        }
     }
 
     private void updateThemePreferenceSummary(String themeValue) {
@@ -918,18 +1082,6 @@ public class SettingsActivity extends PreferenceActivity
 
     private void setListBackground() {
         getListView().setBackgroundColor(ContextCompat.getColor(this, R.color.bg_default));
-    }
-
-    private String getAppVersion() {
-        String temp;
-        try {
-            PackageInfo pkg = getPackageManager().getPackageInfo(getPackageName(), 0);
-            temp = pkg.versionName;
-        } catch (NameNotFoundException e) {
-            temp = "";
-            Log_OC.e(TAG, "Error while showing about dialog", e);
-        }
-        return temp;
     }
 
     @Override
@@ -1069,7 +1221,7 @@ public class SettingsActivity extends PreferenceActivity
             }
         } else if (requestCode == REQ_ALL_FILES_ACCESS) {
             final PreferenceCategory preferenceCategorySync = (PreferenceCategory) findPreference("sync");
-            setupAllFilesAccessPreference(preferenceCategorySync);
+            setupAllFilesAccessPreference(preferenceCategorySync, getResources().getColor(R.color.fontAppbar, null));
         }
     }
 
