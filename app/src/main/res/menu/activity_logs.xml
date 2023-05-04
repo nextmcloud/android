@@ -28,9 +28,16 @@
         android:icon="@drawable/ic_send"/>
 
     <item
+        android:id="@+id/action_save_logs"
+        android:title="@string/logs_menu_save"
+        app:showAsAction="never"
+        android:orderInCategory="300"
+        android:icon="@drawable/ic_export"/>
+
+    <item
         android:id="@+id/action_delete_logs"
         android:title="@string/logs_menu_delete"
         app:showAsAction="never"
-        android:orderInCategory="300"
+        android:orderInCategory="400"
         android:icon="@drawable/ic_delete"/>
 </menu>

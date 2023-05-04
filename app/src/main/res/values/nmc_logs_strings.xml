@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2025 TSI-mc <surinder.kumar@t-systems.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<resources>
+    <string name="logs_menu_save">Save logs</string>
+    <string name="logs_export_success">Logs saved successfully</string>
+    <string name="logs_export_failed">Failed to save logs</string>
+</resources>
