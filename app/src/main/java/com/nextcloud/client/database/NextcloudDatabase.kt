@@ -118,7 +118,10 @@ abstract class NextcloudDatabase : RoomDatabase() {
     abstract fun capabilityDao(): CapabilityDao
 
     companion object {
-        const val FIRST_ROOM_DB_VERSION = 65
+        // NMC customization
+        // NMC play store version 7.21.9 had db version 64 before SqLite to Room migration
+        // Keeping it 65(as per NC) will lead to crash when user tried to upgrade the app
+        const val FIRST_ROOM_DB_VERSION = 64
         private var instance: NextcloudDatabase? = null
 
         @JvmStatic
@@ -139,6 +142,10 @@ abstract class NextcloudDatabase : RoomDatabase() {
                     .addMigrations(MIGRATION_88_89)
                     .addMigrations(MIGRATION_97_98)
                     .addMigrations(MIGRATION_99_100)
+                    // NMC-5368 & NMC-5364 fix
+                    // users upgrading from older sqlite or room version i.e. 62 or 64
+                    // the migration fails and app crashes
+                    .fallbackToDestructiveMigration(true)
                     .build()
             }
             return instance!!

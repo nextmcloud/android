@@ -103,7 +103,8 @@ class PreviewMediaFragment :
     private var user: User? = null
     private var savedPlaybackPosition: Long = 0
 
-    private var autoplay = true
+    // NMC-5564 fix: deactivate autoplay
+    private var autoplay = false
     private var isLivePhoto = false
     private val prepared = false
 
