@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.nextcloud.android.common.ui.theme.utils.ColorRole;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.utils.extensions.FileExtensionsKt;
@@ -154,8 +153,8 @@ public class TrashbinListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             // checkbox
             if (isCheckedFile(file)) {
-                trashbinFileViewHolder.binding.customCheckbox.setImageDrawable(
-                    viewThemeUtils.platform.tintDrawable(context, R.drawable.ic_checkbox_marked, ColorRole.PRIMARY));
+                // NMC Customization
+                trashbinFileViewHolder.binding.customCheckbox.setImageResource(R.drawable.ic_checkbox_marked);
             } else {
                 trashbinFileViewHolder.binding.customCheckbox.setImageResource(R.drawable.ic_checkbox_blank_outline);
             }
@@ -173,17 +172,9 @@ public class TrashbinListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             float cornerRadius = context.getResources().getDimension(R.dimen.selected_grid_container_radius);
 
-            boolean isDarkModeActive = (syncedFolderProvider.preferences.isDarkModeEnabled());
-            int selectedItemBackgroundColorId;
-            if (isDarkModeActive) {
-                selectedItemBackgroundColorId = R.color.action_mode_background;
-            } else {
-                selectedItemBackgroundColorId = R.color.selected_item_background;
-            }
-
             int itemLayoutBackgroundColorId;
             if (isCheckedFile(file)) {
-                itemLayoutBackgroundColorId = selectedItemBackgroundColorId;
+                itemLayoutBackgroundColorId = R.color.selected_item_background;
             } else {
                 itemLayoutBackgroundColorId = R.color.bg_default;
             }
