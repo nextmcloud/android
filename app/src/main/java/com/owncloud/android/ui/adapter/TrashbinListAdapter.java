@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.nextcloud.android.common.ui.theme.utils.ColorRole;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.utils.extensions.ViewExtensionsKt;
@@ -152,8 +151,8 @@ public class TrashbinListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             // checkbox
             if (isCheckedFile(file)) {
-                trashbinFileViewHolder.binding.customCheckbox.setImageDrawable(
-                    viewThemeUtils.platform.tintDrawable(context, R.drawable.ic_checkbox_marked, ColorRole.PRIMARY));
+                // NMC Customization
+                trashbinFileViewHolder.binding.customCheckbox.setImageResource(R.drawable.ic_checkbox_marked);
             } else {
                 trashbinFileViewHolder.binding.customCheckbox.setImageResource(R.drawable.ic_checkbox_blank_outline);
             }
