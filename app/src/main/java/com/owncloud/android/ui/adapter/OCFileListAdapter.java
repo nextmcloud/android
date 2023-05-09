@@ -193,6 +193,7 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                                     true,
                                                     true,
                                                     viewThemeUtils,
+                                                    false,
                                                     syncedFolderProvider);
 
         setHasStableIds(true);
@@ -390,17 +391,6 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
-            case VIEW_TYPE_IMAGE -> {
-                if (gridView) {
-                    return new OCFileListViewHolder(
-                        GridImageBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
-                    );
-                } else {
-                    return new OCFileListItemViewHolder(
-                        ListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
-                    );
-                }
-            }
             case VIEW_TYPE_FOOTER -> {
                 return new OCFileListFooterViewHolder(
                     ListFooterBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
@@ -414,6 +404,8 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                 return new OCFileListHeaderViewHolder(binding);
             }
+            // change required for NMC
+            // default case will be used for VIEW_TYPE_IMAGE & VIEWTYPE_ITEM also
             default -> {
                 if (gridView) {
                     return new OCFileListGridItemViewHolder(
@@ -433,7 +425,6 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof OCFileListFooterViewHolder footerViewHolder) {
             footerViewHolder.getFooterText().setText(getFooterText());
-            viewThemeUtils.platform.colorCircularProgressBar(footerViewHolder.getLoadingProgressBar(), ColorRole.ON_SURFACE_VARIANT);
             footerViewHolder.getLoadingProgressBar().setVisibility(
                 ocFileListFragmentInterface.isLoading() ? View.VISIBLE : View.GONE);
         } else if (holder instanceof OCFileListHeaderViewHolder headerViewHolder) {
@@ -576,15 +567,10 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private void bindListGridItemViewHolder(ListGridItemViewHolder holder, OCFile file) {
         holder.getFileName().setText(mStorageManager.getFilenameConsideringOfflineOperation(file));
 
-        boolean gridImage = MimeTypeUtil.isImage(file) || MimeTypeUtil.isVideo(file);
-        if (gridView && gridImage) {
+        if (gridView && ocFileListFragmentInterface.getColumnsCount() > showFilenameColumnThreshold) {
             holder.getFileName().setVisibility(View.GONE);
         } else {
-            if (gridView && ocFileListFragmentInterface.getColumnsCount() > showFilenameColumnThreshold) {
-                holder.getFileName().setVisibility(View.GONE);
-            } else {
-                holder.getFileName().setVisibility(View.VISIBLE);
-            }
+            holder.getFileName().setVisibility(View.VISIBLE);
         }
     }
 
@@ -797,7 +783,7 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return false;
         }
 
-        if (MainApp.isOnlyOnDevice()) {
+        if (MainApp.isOnlyOnDevice() || ocFileListFragmentInterface.isSearchFragment()) {
             return false;
         }
 
@@ -1196,6 +1182,7 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void setGridView(boolean bool) {
         gridView = bool;
+        ocFileListDelegate.setGridView(bool);
     }
 
     public void setShowMetadata(boolean bool) {
