@@ -12,10 +12,12 @@
         android:id="@+id/upload_list_actions"
         android:checkableBehavior="none">
 
+        <!-- NMC-5316: hide global upload pause -->
         <item
             android:id="@+id/action_toggle_global_pause"
             android:icon="@drawable/ic_global_pause"
             android:title="@string/upload_action_global_upload_pause"
+            android:visible="false"
             app:showAsAction="always" />
     </group>
 </menu>
