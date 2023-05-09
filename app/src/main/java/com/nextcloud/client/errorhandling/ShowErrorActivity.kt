@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.snackbar.Snackbar
 import com.nextcloud.client.utils.IntentUtil
 import com.nextcloud.utils.SnackbarUtil
 import com.owncloud.android.R
@@ -36,9 +35,11 @@ class ShowErrorActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbarInclude.toolbar)
         supportActionBar!!.title = createErrorTitle()
 
-        SnackbarUtil.create(binding.errorPageContainer, R.string.error_report_issue_text, Snackbar.LENGTH_INDEFINITE)
+        // NMC-4862
+        // deactivate github report snackbar
+        /*SnackbarUtil.create(binding.errorPageContainer, R.string.error_report_issue_text, Snackbar.LENGTH_INDEFINITE)
             ?.setAction(R.string.error_report_issue_action) { reportIssue() }
-            ?.show()
+            ?.show()*/
     }
 
     private fun createErrorTitle() = String.format(getString(R.string.error_crash_title), getString(R.string.app_name))
