@@ -231,9 +231,8 @@ public class LocalFileListAdapter extends RecyclerView.Adapter<RecyclerView.View
                 grid.itemLayout.setBackgroundColor(
                     ContextCompat.getColor(mContext, R.color.selected_item_background)
                                                   );
-                grid.checkbox.setImageDrawable(
-                    viewThemeUtils.platform.tintDrawable(mContext, R.drawable.ic_checkbox_marked, ColorRole.PRIMARY)
-                                              );
+                // NMC Customization
+                grid.checkbox.setImageResource(R.drawable.ic_checkbox_marked);
             } else {
                 grid.itemLayout.setBackgroundColor(
                     mContext.getResources().getColor(R.color.bg_default)
