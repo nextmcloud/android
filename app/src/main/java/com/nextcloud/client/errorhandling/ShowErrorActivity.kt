@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.snackbar.Snackbar
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ActivityShowErrorBinding
 import com.owncloud.android.utils.ClipboardUtil
@@ -35,14 +34,11 @@ class ShowErrorActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbarInclude.toolbar)
         supportActionBar!!.title = createErrorTitle()
 
-        val snackbar = DisplayUtils.createSnackbar(
-            binding.errorPageContainer,
-            R.string.error_report_issue_text,
-            Snackbar.LENGTH_INDEFINITE
-        )
-            .setAction(R.string.error_report_issue_action) { reportIssue() }
-
-        snackbar.show()
+        // NMC-4862
+        // deactivate github report snackbar
+        /*SnackbarUtil.create(binding.errorPageContainer, R.string.error_report_issue_text, Snackbar.LENGTH_INDEFINITE)
+            ?.setAction(R.string.error_report_issue_action) { reportIssue() }
+            ?.show()*/
     }
 
     private fun createErrorTitle() = String.format(getString(R.string.error_crash_title), getString(R.string.app_name))
