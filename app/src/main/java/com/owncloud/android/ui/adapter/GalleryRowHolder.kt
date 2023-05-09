@@ -75,8 +75,9 @@ class GalleryRowHolder(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                gravity = Gravity.TOP or Gravity.START
-                marginStart = checkBoxMargin.toInt()
+                // NMC Customization: align checkbox on top right
+                gravity = Gravity.TOP or Gravity.END
+                marginEnd = checkBoxMargin.toInt()
                 topMargin = checkBoxMargin.toInt()
             }
         }
@@ -99,10 +100,12 @@ class GalleryRowHolder(
             setImageDrawable(drawable)
         }
 
+        // NMC Customization: place the checkbox at the end in frame layout
+        // to make it visible properly when multiselect is on
         return FrameLayout(context).apply {
-            addView(checkbox)
             addView(shimmer)
             addView(rowCellImageView)
+            addView(checkbox)
         }
     }
 
@@ -173,13 +176,15 @@ class GalleryRowHolder(
         val width = ((fileWidth ?: defaultThumbnailSize) * shrinkRatio).toInt()
         val height = ((fileHeight ?: defaultThumbnailSize) * shrinkRatio).toInt()
 
+        // NMC Customization: change the index of the views in frame layout
+        // so that the checkbox should be added as last view
         val frameLayout = binding.rowLayout[index] as FrameLayout
-        val checkBoxImageView = frameLayout[0] as ImageView
-        val shimmer = frameLayout[1] as LoaderImageView
-        val thumbnail = (frameLayout[2] as ImageView).apply {
+        val shimmer = frameLayout[0] as LoaderImageView
+        val thumbnail = (frameLayout[1] as ImageView).apply {
             adjustViewBounds = true
             scaleType = ImageView.ScaleType.FIT_CENTER
         }
+        val checkBoxImageView = frameLayout[2] as ImageView
         val isChecked = ocFileListDelegate.isCheckedFile(file)
 
         adjustRowCell(thumbnail, isChecked)
@@ -216,10 +221,12 @@ class GalleryRowHolder(
 
     @Suppress("MagicNumber")
     private fun adjustRowCell(imageView: ImageView, isChecked: Boolean) {
+        // NMC Customization: no need to scaling and rounding
+        // we want a normal view without any corners
         imageView.apply {
-            scaleX = if (isChecked) 0.8f else 1.0f
+            scaleX = 1.0f
             scaleY = scaleX
-            makeRounded(context, if (isChecked) iconRadius else 0f)
+            makeRounded(context, 0f)
         }
     }
 
@@ -227,11 +234,8 @@ class GalleryRowHolder(
         if (ocFileListDelegate.isMultiSelect) {
             val checkboxDrawable = (
                 if (isChecked) {
-                    val drawable = ContextCompat.getDrawable(context, R.drawable.ic_checkbox_marked)
-                    drawable?.let {
-                        viewThemeUtils.platform.tintDrawable(context, drawable, ColorRole.PRIMARY)
-                    }
-                    drawable
+                    // NMC Customization: no need to tint the color
+                    ContextCompat.getDrawable(context, R.drawable.ic_checkbox_marked)
                 } else {
                     ContextCompat.getDrawable(context, R.drawable.ic_checkbox_blank_outline)
                 }
