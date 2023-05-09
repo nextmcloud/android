@@ -71,6 +71,9 @@ class FileThumbnailGenerator @Inject constructor(
     private val tasks = CopyOnWriteArrayList<ThumbnailGenerationTask>()
 
     fun setThumbnail(file: OCFile, view: ImageView, arguments: ThumbnailArguments) {
+        // NMC Customization
+        updateThumbnailViewSize(view, arguments.isGrid, arguments.isMediaGallery, R.dimen.standard_files_grid_item_size)
+
         if (file.remoteId == null) {
             setLocalThumbnail(file, view, arguments)
             return
@@ -118,13 +121,18 @@ class FileThumbnailGenerator @Inject constructor(
     }
 
     private fun show(bitmap: Bitmap, file: OCFile, view: ImageView, arguments: ThumbnailArguments) {
+        // NMC Customization
+        setThumbnailViewPadding(view, arguments.isGrid, arguments.isMediaGallery, R.dimen.alternate_padding)
+
         view.stopShimmer(arguments.shimmer)
 
+        // required for NMC
+        var thumbnail = bitmap
         if (MimeTypeUtil.isVideo(file) && !arguments.hideVideoOverlay) {
-            view.setImageBitmap(file.withVideoOverlay(bitmap))
-        } else {
-            BitmapUtils.setRoundedBitmapAccordingToListType(arguments.isGrid, bitmap, view)
+            thumbnail = file.withVideoOverlay(bitmap)
         }
+        // NMC: set the corner for both video and image thumbnail
+        BitmapUtils.setRoundedBitmapAccordingToListType(arguments.isGrid, thumbnail, view)
     }
 
     private fun OCFile.withVideoOverlay(thumbnail: Bitmap): Bitmap {
@@ -141,6 +149,8 @@ class FileThumbnailGenerator @Inject constructor(
 
         if (localFile == null || !MimeTypeUtil.isImageOrVideo(file)) {
             view.stopShimmer(arguments.shimmer)
+            // NMC Customization
+            setThumbnailViewPadding(view, arguments.isGrid, arguments.isMediaGallery, R.dimen.standard_quarter_padding)
             view.setImageDrawable(file.mimeIcon())
         } else if (ThumbnailsCacheManager.cancelPotentialThumbnailWork(localFile, view)) {
             startTask(
@@ -185,7 +195,8 @@ class FileThumbnailGenerator @Inject constructor(
         tag: Any
     ) {
         view.tag = tag
-
+        // NMC: set thumbnailView padding for no thumbnail
+        setThumbnailViewPadding(view, arguments.isGrid, arguments.isMediaGallery, R.dimen.standard_quarter_padding)
         try {
             val task = ThumbnailGenerationTask(
                 view,
@@ -223,10 +234,6 @@ class FileThumbnailGenerator @Inject constructor(
                 return@postDelayed
             }
 
-            if (isGrid) {
-                shimmer.resizeToGridCell(preferences.gridColumns)
-            }
-
             view.startShimmer(shimmer)
         }, SHIMMER_DELAY_MS)
     }
@@ -259,5 +266,31 @@ class FileThumbnailGenerator @Inject constructor(
         }
 
         view.setBackgroundColor(ContextCompat.getColor(context, R.color.bg_default))
+    }
+
+    /**
+     * method to set the padding to thumbnail view this is required for files so that there will be space between file
+     * and file name
+     */
+    fun setThumbnailViewPadding(
+        thumbnailView: ImageView, gridView: Boolean, isMediaGallery: Boolean, dimensPadding: Int
+    ) {
+        if (gridView && !isMediaGallery) {
+            val padding = context.resources.getDimensionPixelSize(dimensPadding)
+            thumbnailView.setPadding(0, 0, 0, padding)
+        }
+    }
+
+    /**
+     * method to set manual thumbnail view height and width for folders and files because we are using different size
+     * for both files and folders
+     */
+    fun updateThumbnailViewSize(
+        thumbnailView: ImageView, gridView: Boolean, isMediaGallery: Boolean, size: Int
+    ) {
+        if (gridView && !isMediaGallery) {
+            thumbnailView.layoutParams.width = context.resources.getDimensionPixelSize(size)
+            thumbnailView.layoutParams.height = context.resources.getDimensionPixelSize(size)
+        }
     }
 }
