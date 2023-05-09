@@ -22,7 +22,7 @@
     <dimen name="live_photo_indicator_margin">100dp</dimen>
     <dimen name="file_icon_size_grid">128dp</dimen>
     <dimen name="file_icon_rounded_corner_radius">8dp</dimen>
-    <dimen name="file_icon_rounded_corner_radius_for_grid_mode">3dp</dimen>
+    <dimen name="file_icon_rounded_corner_radius_for_grid_mode">4dp</dimen>
     <dimen name="file_avatar_size">128dp</dimen>
     <integer name="file_avatar_px">512</integer>
     <dimen name="drawer_content_horizontal_padding">28dp</dimen>
@@ -79,7 +79,7 @@
     <dimen name="alternate_fragment_margin">15dp</dimen>
     <dimen name="file_download_fragment_display_text_margin">40dp</dimen>
     <dimen name="drawer_width">240dp</dimen>
-    <dimen name="grid_item_text_size">16sp</dimen>
+    <dimen name="grid_item_text_size">14sp</dimen>
     <dimen name="search_users_groups_layout_width">200dp</dimen>
     <dimen name="search_users_groups_layout_list_view_margin">20dp</dimen>
     <dimen name="share_file_layout_text_size">12sp</dimen>
@@ -120,11 +120,13 @@
     <dimen name="contactlist_item_icon_layout_height">40dp</dimen>
     <dimen name="empty_list_icon_layout_width">72dp</dimen>
     <dimen name="empty_list_icon_layout_height">72dp</dimen>
+    <dimen name="grid_item_local_file_indicator_layout_width">24dp</dimen>
+    <dimen name="grid_item_local_file_indicator_layout_height">24dp</dimen>
     <dimen name="grid_sync_item_layout_counter_text_size">22sp</dimen>
     <dimen name="list_item_favorite_action_layout_width">14dp</dimen>
     <dimen name="list_item_favorite_action_layout_height">14dp</dimen>
-    <dimen name="list_item_local_file_indicator_layout_width">12dp</dimen>
-    <dimen name="list_item_local_file_indicator_layout_height">12dp</dimen>
+    <dimen name="list_item_local_file_indicator_layout_width">24dp</dimen>
+    <dimen name="list_item_local_file_indicator_layout_height">24dp</dimen>
     <dimen name="preview_error_image_layout_width">72dp</dimen>
     <dimen name="preview_error_image_layout_height">72dp</dimen>
     <dimen name="preview_error_text_size">26sp</dimen>

@@ -480,7 +480,8 @@ public class FileDisplayActivity extends FileActivity
             onOpenFileIntent(getIntent());
         } else if (RESTART.equals(getIntent().getAction())) {
             // most likely switched to different account
-            DisplayUtils.showSnackMessage(this, String.format(getString(R.string.logged_in_as), accountManager.getUser().getAccountName()));
+            // NMC-2576 --> Disabling switch account snackbar for NMC
+            /*DisplayUtils.showSnackMessage(this, String.format(getString(R.string.logged_in_as), accountManager.getUser().getAccountName()));*/
         }
 
         upgradeNotificationForInstantUpload();
@@ -557,6 +558,9 @@ public class FileDisplayActivity extends FileActivity
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted
                     getOCFileListFragmentFromFile().directCameraUpload();
+                } else if (!shouldShowRequestPermissionRationale(permissions[0])) {
+                    // user CHECKED "never ask again"
+                    DisplayUtils.showSnackMessage(this, R.string.camera_permission_rationale);
                 }
                 break;
             default:
