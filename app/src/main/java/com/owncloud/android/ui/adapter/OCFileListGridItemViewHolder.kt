@@ -62,8 +62,8 @@ class OCFileListGridItemViewHolder(var binding: GridItemBinding) :
         get() = null
     override val livePhotoIndicatorSeparator: TextView?
         get() = null
-    override val fileFeaturesLayout: LinearLayout
-        get() = binding.fileFeaturesLayout
+    override val fileFeaturesLayout: LinearLayout?
+        get() = null
     override val more: ImageButton
         get() = if (binding.bidiFilenameContainer.isVisible) {
             binding.bidiMore
