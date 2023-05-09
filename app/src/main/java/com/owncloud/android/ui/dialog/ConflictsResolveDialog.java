@@ -205,7 +205,8 @@ public class ConflictsResolveDialog extends DialogFragment implements Injectable
                                   null,
                                   syncedFolderProvider.getPreferences(),
                                   viewThemeUtils,
-                                  syncedFolderProvider);
+                                  syncedFolderProvider,
+                                  false);
 
         View.OnClickListener checkBoxClickListener = v ->
             positiveButton.setEnabled(binding.newCheckbox.isChecked() || binding.existingCheckbox.isChecked());
