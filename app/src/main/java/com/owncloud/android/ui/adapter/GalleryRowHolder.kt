@@ -40,15 +40,14 @@ class GalleryRowHolder(
     private val cells = mutableListOf<GalleryCellBinding>()
 
     private val selectedOutline by lazy {
-        val resources = context.resources
-        val radiusDp = resources.getDimension(R.dimen.activity_icon_radius) / resources.displayMetrics.density
-        createRoundedOutline(context, radiusDp)
+        // NMC Customization: no need for rounding
+        // we want a normal view without any corners
+        createRoundedOutline(context, 0f)
     }
 
     private val checkedDrawable by lazy {
-        ContextCompat.getDrawable(context, R.drawable.ic_checkbox_marked)?.also {
-            viewThemeUtils.platform.tintDrawable(context, it, ColorRole.PRIMARY)
-        }
+        // NMC Customization: no need to tint the color
+        ContextCompat.getDrawable(context, R.drawable.ic_checkbox_marked)
     }
 
     private val uncheckedDrawable by lazy {
