@@ -193,7 +193,8 @@ class ConflictsResolveDialog : DialogFragment(), Injectable {
             null,
             syncedFolderProvider.preferences,
             viewThemeUtils,
-            syncedFolderProvider
+            syncedFolderProvider,
+            false
         )
     }
 
