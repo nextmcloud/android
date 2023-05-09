@@ -163,9 +163,10 @@ class UnifiedSearchFragment :
         super.onViewCreated(view, savedInstanceState)
 
         setupAdapter()
-        if (supportsOpeningCalendarContactsLocally()) {
+        // NMC-4633 disable permission check
+        /*if (supportsOpeningCalendarContactsLocally()) {
             checkPermissions()
-        }
+        }*/
     }
 
     override fun onResume() {
