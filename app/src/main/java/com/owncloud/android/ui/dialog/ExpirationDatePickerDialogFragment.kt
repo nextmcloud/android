@@ -50,18 +50,25 @@ class ExpirationDatePickerDialogFragment : DialogFragment(), OnDateSetListener, 
         if (currentDialog != null) {
             val dialog = currentDialog as DatePickerDialog
 
-            val positiveButton = dialog.getButton(DatePickerDialog.BUTTON_POSITIVE) as MaterialButton?
-            if (positiveButton != null) {
-                viewThemeUtils?.material?.colorMaterialButtonPrimaryTonal(positiveButton)
-            }
-            val negativeButton = dialog.getButton(DatePickerDialog.BUTTON_NEGATIVE) as MaterialButton?
-            if (negativeButton != null) {
-                viewThemeUtils?.material?.colorMaterialButtonPrimaryBorderless(negativeButton)
-            }
-            val neutralButton = dialog.getButton(DatePickerDialog.BUTTON_NEUTRAL) as MaterialButton?
-            if (neutralButton != null) {
-                viewThemeUtils?.material?.colorMaterialButtonPrimaryBorderless(neutralButton)
-            }
+            // NMC Customization
+            (dialog.getButton(DatePickerDialog.BUTTON_POSITIVE) as MaterialButton?)?.setTextColor(
+                resources.getColor(
+                    R.color.primary,
+                    null
+                )
+            )
+            (dialog.getButton(DatePickerDialog.BUTTON_NEGATIVE) as MaterialButton?)?.setTextColor(
+                resources.getColor(
+                    R.color.text_color,
+                    null
+                )
+            )
+            (dialog.getButton(DatePickerDialog.BUTTON_NEUTRAL) as MaterialButton?)?.setTextColor(
+                resources.getColor(
+                    R.color.text_color,
+                    null
+                )
+            )
         }
     }
 
