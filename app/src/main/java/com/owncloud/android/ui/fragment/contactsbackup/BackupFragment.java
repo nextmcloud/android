@@ -550,7 +550,7 @@ public class BackupFragment extends FileFragment implements DatePickerDialog.OnD
         }
 
         if (backupFiles.size() > 0 && backupFiles.get(backupFiles.size() - 1) != null) {
-            datePickerDialog = new DatePickerDialog(contactsPreferenceActivity, this, year, month, day);
+            datePickerDialog = new DatePickerDialog(contactsPreferenceActivity, R.style.FallbackDatePickerDialogTheme, this, year, month, day);
             datePickerDialog.getDatePicker().setMaxDate(backupFiles.get(backupFiles.size() - 1)
                                                             .getModificationTimestamp());
             datePickerDialog.getDatePicker().setMinDate(backupFiles.get(0).getModificationTimestamp());

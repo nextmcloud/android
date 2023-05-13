@@ -33,6 +33,7 @@ import android.widget.Button;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.di.Injectable;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.SetupEncryptionDialogBinding;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -126,7 +127,6 @@ public class SetupEncryptionDialogFragment extends DialogFragment implements Inj
         if (alertDialog != null) {
             positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
             neutralButton = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-            viewThemeUtils.platform.colorTextButtons(positiveButton, neutralButton);
         }
 
         task = new DownloadKeysAsyncTask();
@@ -151,9 +151,6 @@ public class SetupEncryptionDialogFragment extends DialogFragment implements Inj
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         binding = SetupEncryptionDialogBinding.inflate(inflater, null, false);
 
-        // Setup layout
-        viewThemeUtils.material.colorTextInputLayout(binding.encryptionPasswordInputContainer);
-
         return createDialog(binding.getRoot());
     }
 
@@ -166,7 +163,8 @@ public class SetupEncryptionDialogFragment extends DialogFragment implements Inj
             })
             .setTitle(R.string.end_to_end_encryption_title);
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(v.getContext(), builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(v.getContext(), builder);
 
         Dialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
@@ -476,7 +474,6 @@ public class SetupEncryptionDialogFragment extends DialogFragment implements Inj
         positiveButton.setVisibility(View.VISIBLE);
 
         neutralButton.setVisibility(View.VISIBLE);
-        viewThemeUtils.platform.colorTextButtons(positiveButton, neutralButton);
 
         keyResult = KEY_GENERATE;
     }
@@ -490,7 +487,6 @@ public class SetupEncryptionDialogFragment extends DialogFragment implements Inj
         binding.encryptionPassphrase.setVisibility(View.GONE);
         positiveButton.setText(R.string.end_to_end_encryption_dialog_close);
         positiveButton.setVisibility(View.VISIBLE);
-        viewThemeUtils.platform.colorTextButtons(positiveButton);
     }
 
     @VisibleForTesting
