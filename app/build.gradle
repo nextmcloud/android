@@ -465,3 +465,14 @@ tasks.withType(SpotBugsTask) { task ->
         }
     }
 }
+
+
+//TODO: Find a solution for windows system as the below script works for linux machine
+/*task removeTranslations {
+    println 'Removing all translations except English and German'
+    exec {
+        workingDir "."
+        commandLine 'sh', '-c', 'find src/main/res/values-* | grep -v values-de | xargs rm -rf'
+    }
+}
+build.dependsOn removeTranslations*/
