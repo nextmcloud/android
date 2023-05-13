@@ -55,6 +55,7 @@ import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.nextcloud.utils.extensions.FileExtensionsKt;
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
 import com.nextcloud.utils.fileNameValidator.FileNameValidator;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.ReceiveExternalFilesBinding;
@@ -350,7 +351,8 @@ public class ReceiveExternalFilesActivity extends FileActivity
             });
             builder.setNeutralButton(R.string.uploader_wrn_no_account_quit_btn_text,
                                      (dialog, which) -> requireActivity().finish());
-            viewThemeUtils.dialog.colorMaterialAlertDialogBackground(requireContext(), builder);
+            // NMC customization: customize dialog bg color
+            DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(requireContext(), builder);
             return builder.create();
         }
     }
