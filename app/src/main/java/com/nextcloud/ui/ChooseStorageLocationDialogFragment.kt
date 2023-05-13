@@ -18,6 +18,7 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.preferences.AppPreferencesImpl
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.DialogDataStorageLocationBinding
@@ -25,7 +26,6 @@ import com.owncloud.android.datastorage.DataStorageProvider
 import com.owncloud.android.datastorage.StoragePoint
 import com.owncloud.android.datastorage.StoragePoint.PrivacyType
 import com.owncloud.android.datastorage.StoragePoint.StorageType
-import com.owncloud.android.ui.dialog.extensions.themeButtons
 import com.owncloud.android.ui.model.ExtendedSettingsActivityDialog
 import com.owncloud.android.utils.DisplayUtils
 import com.owncloud.android.utils.theme.ViewThemeUtils
@@ -48,11 +48,6 @@ class ChooseStorageLocationDialogFragment :
     private val selectedPrivacyType
         get() = if (binding.allowMediaIndexSwitch.isChecked) PrivacyType.PUBLIC else PrivacyType.PRIVATE
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.themeButtons(viewThemeUtils)
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = DialogDataStorageLocationBinding.inflate(layoutInflater)
 
@@ -66,7 +61,8 @@ class ChooseStorageLocationDialogFragment :
                 dialog.dismiss()
             }.setView(binding.root)
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(requireContext(), builder)
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireContext(), builder)
 
         binding.storageRadioGroup.setOnCheckedChangeListener { _, _ ->
             updateMediaIndexSwitch()
