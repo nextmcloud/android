@@ -20,7 +20,7 @@
         android:layout_marginBottom="@dimen/standard_margin"
         android:text="@string/prefs_lock_title"
         android:textAppearance="?attr/textAppearanceHeadlineSmall"
-        android:textColor="?attr/colorOnSurface" />
+        android:textColor="@color/primary" />
 
     <RadioGroup
         android:id="@+id/lock_radio_group"
