@@ -41,6 +41,7 @@ import com.nextcloud.client.account.CurrentAccountProvider;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.ChooseTemplateBinding;
@@ -127,8 +128,6 @@ public class ChooseRichDocumentsTemplateDialogFragment extends DialogFragment im
         AlertDialog alertDialog = (AlertDialog) getDialog();
 
         positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        viewThemeUtils.platform.colorTextButtons(positiveButton,
-                                                 alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL));
         positiveButton.setOnClickListener(this);
         positiveButton.setEnabled(false);
 
@@ -173,8 +172,6 @@ public class ChooseRichDocumentsTemplateDialogFragment extends DialogFragment im
         binding = ChooseTemplateBinding.inflate(inflater, null, false);
         View view = binding.getRoot();
 
-        viewThemeUtils.material.colorTextInputLayout(binding.filenameContainer);
-
         Type type = Type.valueOf(arguments.getString(ARG_TYPE));
         new FetchTemplateTask(this, client).execute(type);
 
@@ -212,7 +209,8 @@ public class ChooseRichDocumentsTemplateDialogFragment extends DialogFragment im
             .setNeutralButton(R.string.common_cancel, null)
             .setTitle(getTitle(type));
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(activity, builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(activity, builder);
 
         return builder.create();
     }

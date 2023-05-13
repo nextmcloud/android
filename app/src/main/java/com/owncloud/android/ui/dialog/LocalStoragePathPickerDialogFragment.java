@@ -29,6 +29,7 @@ import android.view.View;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.di.Injectable;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.StoragePathDialogBinding;
 import com.owncloud.android.ui.adapter.StoragePathAdapter;
@@ -75,17 +76,6 @@ public class LocalStoragePathPickerDialogFragment extends DialogFragment
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        AlertDialog alertDialog = (AlertDialog) getDialog();
-
-        if (alertDialog != null) {
-            viewThemeUtils.platform.colorTextButtons(alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE));
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
@@ -111,10 +101,12 @@ public class LocalStoragePathPickerDialogFragment extends DialogFragment
         // Build the dialog
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(binding.getRoot().getContext());
         builder.setView(view)
-            .setNegativeButton(R.string.common_cancel, this)
+            //NMC customisation to show primary color
+            .setPositiveButton(R.string.common_cancel, this)
             .setTitle(R.string.storage_choose_location);
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.getRoot().getContext(), builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(binding.getRoot().getContext(), builder);
 
         return builder.create();
     }

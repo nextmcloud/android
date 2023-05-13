@@ -29,6 +29,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.jobs.BackgroundJobManager;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
 
@@ -36,7 +37,6 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 public class AccountRemovalConfirmationDialog extends DialogFragment implements Injectable {
@@ -62,16 +62,6 @@ public class AccountRemovalConfirmationDialog extends DialogFragment implements 
         user = getArguments().getParcelable(KEY_USER);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        AlertDialog alertDialog = (AlertDialog) getDialog();
-
-        viewThemeUtils.platform.colorTextButtons(alertDialog.getButton(AlertDialog.BUTTON_POSITIVE),
-                                                 alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL));
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -84,7 +74,8 @@ public class AccountRemovalConfirmationDialog extends DialogFragment implements 
                                                                                                    false))
             .setNeutralButton(R.string.common_cancel, null);
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(requireActivity(), builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(requireActivity(), builder);
 
         return  builder.create();
     }

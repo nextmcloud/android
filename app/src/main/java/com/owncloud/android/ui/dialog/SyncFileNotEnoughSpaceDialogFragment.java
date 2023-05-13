@@ -37,7 +37,6 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 
 /**
  * Dialog requiring confirmation when a file/folder is too "big" to be synchronized/downloaded on device.
@@ -79,19 +78,6 @@ public class SyncFileNotEnoughSpaceDialogFragment extends ConfirmationDialogFrag
 
         frag.setArguments(args);
         return frag;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        AlertDialog alertDialog = (AlertDialog) getDialog();
-
-        if (alertDialog != null) {
-            viewThemeUtils.platform.colorTextButtons(alertDialog.getButton(AlertDialog.BUTTON_POSITIVE),
-                                                     alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL),
-                                                     alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE));
-        }
     }
 
     @NonNull

@@ -84,9 +84,10 @@ public class ExpirationDatePickerDialogFragment
         if (currentDialog != null) {
             final DatePickerDialog dialog = (DatePickerDialog) currentDialog;
 
-            viewThemeUtils.platform.colorTextButtons(dialog.getButton(DatePickerDialog.BUTTON_NEUTRAL),
-                                                     dialog.getButton(DatePickerDialog.BUTTON_NEGATIVE),
-                                                     dialog.getButton(DatePickerDialog.BUTTON_POSITIVE));
+            //NMC Customization
+            dialog.getButton(DatePickerDialog.BUTTON_NEUTRAL).setTextColor(getResources().getColor(R.color.text_color, null));
+            dialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.text_color, null));
+            dialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.primary, null));
         }
     }
 
