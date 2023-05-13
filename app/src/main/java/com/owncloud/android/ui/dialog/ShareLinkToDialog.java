@@ -37,6 +37,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.ui.activity.CopyToClipboardActivity;
@@ -143,6 +144,8 @@ public class ShareLinkToDialog  extends DialogFragment {
                             getActivity().startActivity(mIntent);
                         }
         });
+        // NMC Customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(requireContext(), builder);
         return builder.create();
     }
 

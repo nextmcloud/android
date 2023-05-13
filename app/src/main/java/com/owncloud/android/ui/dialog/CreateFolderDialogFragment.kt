@@ -33,6 +33,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.common.collect.Sets
 import com.nextcloud.client.di.Injectable
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.EditBoxDialogBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -77,10 +78,6 @@ class CreateFolderDialogFragment : DialogFragment(), DialogInterface.OnClickList
 
         if (dialog is AlertDialog) {
             positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE) as MaterialButton
-            val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE) as MaterialButton
-
-            viewThemeUtils?.material?.colorMaterialButtonPrimaryTonal(positiveButton!!)
-            viewThemeUtils?.material?.colorMaterialButtonPrimaryBorderless(negativeButton)
         }
     }
 
@@ -101,7 +98,6 @@ class CreateFolderDialogFragment : DialogFragment(), DialogInterface.OnClickList
 
         // Setup layout
         binding.userInput.setText("")
-        viewThemeUtils?.material?.colorTextInputLayout(binding.userInputContainer)
 
         val parentFolder = requireArguments().getParcelable<OCFile>(ARG_PARENT_FOLDER)
 
@@ -150,7 +146,8 @@ class CreateFolderDialogFragment : DialogFragment(), DialogInterface.OnClickList
 
         // Build the dialog
         val builder = buildMaterialAlertDialog(view)
-        viewThemeUtils?.dialog?.colorMaterialAlertDialogBackground(binding.userInputContainer.context, builder)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(binding.userInputContainer.context, builder)
         return builder.create()
     }
 

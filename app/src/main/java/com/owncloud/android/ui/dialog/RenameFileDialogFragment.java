@@ -119,7 +119,6 @@ public class RenameFileDialogFragment
         // Setup layout
         String currentName = mTargetFile.getFileName();
         binding.userInput.setText(currentName);
-        viewThemeUtils.material.colorTextInputLayout(binding.userInputContainer);
         int extensionStart = mTargetFile.isFolder() ? -1 : currentName.lastIndexOf('.');
         int selectionEnd = extensionStart >= 0 ? extensionStart : currentName.length();
         binding.userInput.setSelection(0, selectionEnd);
@@ -160,10 +159,6 @@ public class RenameFileDialogFragment
 
         if (alertDialog != null) {
             positiveButton = (MaterialButton) alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            MaterialButton negativeButton = (MaterialButton) alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-
-            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(positiveButton);
-            viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(negativeButton);
         }
     }
 
