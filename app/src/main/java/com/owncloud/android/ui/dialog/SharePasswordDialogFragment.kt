@@ -16,12 +16,12 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.utils.extensions.getParcelableArgument
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.PasswordDialogBinding
 import com.owncloud.android.datamodel.OCFile
@@ -59,38 +59,23 @@ class SharePasswordDialogFragment : DialogFragment(), Injectable {
         val alertDialog = dialog as AlertDialog?
 
         if (alertDialog != null) {
-            val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE) as MaterialButton?
-            if (positiveButton != null) {
-                viewThemeUtils?.material?.colorMaterialButtonPrimaryTonal(positiveButton)
-                positiveButton.setOnClickListener {
-                    val sharePassword = binding?.sharePassword?.text
+            (alertDialog.getButton(AlertDialog.BUTTON_POSITIVE) as MaterialButton?)?.setOnClickListener {
+                val sharePassword = binding?.sharePassword?.text
 
-                    if (sharePassword != null) {
-                        val password = sharePassword.toString()
-                        if (!askForPassword && TextUtils.isEmpty(password)) {
-                            DisplayUtils.showSnackMessage(binding?.root, R.string.share_link_empty_password)
-                            return@setOnClickListener
-                        }
-                        if (share == null) {
-                            setPassword(createShare, file, password)
-                        } else {
-                            setPassword(share!!, password)
-                        }
+                if (sharePassword != null) {
+                    val password = sharePassword.toString()
+                    if (!askForPassword && TextUtils.isEmpty(password)) {
+                        DisplayUtils.showSnackMessage(binding?.root, R.string.share_link_empty_password)
+                        return@setOnClickListener
                     }
-
-                    alertDialog.dismiss()
+                    if (share == null) {
+                        setPassword(createShare, file, password)
+                    } else {
+                        setPassword(share!!, password)
+                    }
                 }
-            }
 
-            val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE) as MaterialButton?
-            if (negativeButton != null) {
-                viewThemeUtils?.material?.colorMaterialButtonPrimaryBorderless(negativeButton)
-            }
-
-            val neutralButton = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL) as MaterialButton?
-            if (neutralButton != null) {
-                val warningColorId = ContextCompat.getColor(requireContext(), R.color.highlight_textColor_Warning)
-                viewThemeUtils?.platform?.colorTextButtons(warningColorId, neutralButton)
+                alertDialog.dismiss()
             }
         }
     }
@@ -113,7 +98,6 @@ class SharePasswordDialogFragment : DialogFragment(), Injectable {
 
         // Setup layout
         binding?.sharePassword?.setText("")
-        viewThemeUtils?.material?.colorTextInputLayout(binding!!.sharePasswordContainer)
 
         val neutralButtonTextId: Int
         val title: Int
@@ -137,7 +121,8 @@ class SharePasswordDialogFragment : DialogFragment(), Injectable {
             }
             .setTitle(title)
 
-        viewThemeUtils?.dialog?.colorMaterialAlertDialogBackground(requireContext(), builder)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireContext(), builder)
 
         return builder.create()
     }
