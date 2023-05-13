@@ -28,7 +28,6 @@ import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.ui.activity.FileActivity
 import com.owncloud.android.ui.activity.OnFilesRemovedListener
 import com.owncloud.android.ui.dialog.ConfirmationDialogFragment.ConfirmationDialogFragmentListener
-import com.owncloud.android.ui.dialog.extensions.themeButtons
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -49,11 +48,6 @@ class RemoveFilesDialogFragment :
 
     @Inject
     lateinit var userAccountManager: UserAccountManager
-
-    override fun onStart() {
-        super.onStart()
-        dialog?.themeButtons(viewThemeUtils)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
