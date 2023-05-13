@@ -8,13 +8,15 @@
  */
 package com.owncloud.android.ui.dialog
 
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.di.Injectable
+import com.owncloud.android.R
 import com.owncloud.android.databinding.LoadingDialogBinding
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import javax.inject.Inject
@@ -41,10 +43,10 @@ class LoadingDialog : DialogFragment(), Injectable {
 
         val loadingDrawable = binding.loadingBar.indeterminateDrawable
         if (loadingDrawable != null) {
-            viewThemeUtils?.platform?.tintDrawable(requireContext(), loadingDrawable)
+            // NMC Customisation
+            loadingDrawable.colorFilter =
+                PorterDuffColorFilter(resources.getColor(R.color.primary, null), PorterDuff.Mode.SRC_IN)
         }
-
-        viewThemeUtils?.platform?.colorViewBackground(binding.loadingLayout, ColorRole.SURFACE)
 
         return binding.root
     }
