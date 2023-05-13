@@ -69,6 +69,7 @@ import com.nextcloud.utils.extensions.slideHideBottomBehavior
 import com.nextcloud.utils.fileNameValidator.FileNameValidator
 import com.nextcloud.utils.thumbnail.ThumbnailGenerator
 import com.nextcloud.utils.view.FastScrollUtils
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.ArbitraryDataProvider
@@ -592,7 +593,8 @@ open class OCFileListFragment :
                 )
             }
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(fileDisplayActivity, builder)
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.colorMaterialAlertDialogBackground(fileDisplayActivity, builder)
         builder.show()
     }
 
