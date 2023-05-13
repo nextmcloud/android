@@ -39,6 +39,7 @@ import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.nextcloud.utils.extensions.searchFilesByName
 import com.nextcloud.utils.extensions.typedActivity
+import com.nmc.android.utils.SearchViewThemeUtils.themeSearchView
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ListFragmentBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -208,7 +209,8 @@ class UnifiedSearchFragment :
             // Required to align with TextView width.
             // Because this fragment is opened with TextView onClick on the previous screen
             maxWidth = Integer.MAX_VALUE
-            viewThemeUtils.androidx.themeToolbarSearchView(this)
+            // NMC Customization
+            themeSearchView(requireActivity(), this)
             setQuery(vm.query.value ?: initialQuery, false)
             setOnQueryTextListener(this@UnifiedSearchFragment)
             isIconified = false

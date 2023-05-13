@@ -83,6 +83,7 @@ import com.nextcloud.utils.extensions.navigateToAllFiles
 import com.nextcloud.utils.extensions.observeWorker
 import com.nextcloud.utils.fileNameValidator.FileNameValidator.checkFolderPath
 import com.nextcloud.utils.view.FastScrollUtils
+import com.nmc.android.utils.SearchViewThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FilesBinding
@@ -902,7 +903,10 @@ class FileDisplayActivity :
             }, SEARCH_VIEW_FOCUS_DELAY)
         }
 
-        searchView?.let { viewThemeUtils.androidx.themeToolbarSearchView(it) }
+        searchView?.let {
+            //NMC customization
+            SearchViewThemeUtils.themeSearchView(this, it)
+        }
 
         // populate list of menu items to show/hide when drawer is opened/closed
         mDrawerMenuItemstoShowHideList = ArrayList<MenuItem>(1)
