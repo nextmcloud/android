@@ -15,6 +15,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nextcloud.client.di.ViewModelFactory
+import com.nmc.android.utils.SearchViewThemeUtils.themeSearchView
 import com.owncloud.android.R
 import com.owncloud.android.databinding.LogsActivityBinding
 import com.owncloud.android.ui.activity.ToolbarActivity
@@ -73,7 +74,8 @@ class LogsActivity : ToolbarActivity() {
 
         (menu.findItem(R.id.action_search).actionView as SearchView).apply {
             setOnQueryTextListener(searchBoxListener)
-            viewThemeUtils.androidx.themeToolbarSearchView(this)
+            //NMC customization
+            themeSearchView(this@LogsActivity, this)
         }
         return super.onCreateOptionsMenu(menu)
     }
