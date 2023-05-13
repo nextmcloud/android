@@ -21,6 +21,7 @@ import android.view.View;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.account.User;
 import com.nextcloud.utils.AppConstants;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -107,7 +108,8 @@ public class StorageMigration {
 
             });
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(context, builder);
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(context, builder);
 
         AlertDialog alertDialog = builder.create();
 
@@ -158,7 +160,8 @@ public class StorageMigration {
                     progressDialog.getButton(ProgressDialog.BUTTON_POSITIVE).setVisibility(View.GONE);
                 });
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(mContext, builder);
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(mContext, builder);
         builder.create().show();
     }
 
@@ -251,7 +254,8 @@ public class StorageMigration {
                         }
                     });
 
-            viewThemeUtils.dialog.colorMaterialAlertDialogBackground(mContext, builder);
+            // NMC customization: customize dialog bg color
+            DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(mContext, builder);
             builder.create().show();
         }
 
