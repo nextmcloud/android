@@ -55,6 +55,7 @@ import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.nextcloud.utils.extensions.FileExtensionsKt;
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
+import com.nmc.android.utils.SearchViewThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.ReceiveExternalFilesBinding;
@@ -1052,7 +1053,8 @@ public class ReceiveExternalFilesActivity extends FileActivity
             }
         });
 
-        viewThemeUtils.androidx.themeToolbarSearchView(searchView);
+        //NMC customization
+        SearchViewThemeUtils.INSTANCE.themeSearchView(this, searchView);
     }
 
     @Override
