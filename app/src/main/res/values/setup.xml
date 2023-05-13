@@ -70,7 +70,7 @@
     <!-- Drawer options -->
     <bool name="recently_modified_enabled">false</bool>
     <bool name="shared_enabled">true</bool>
-    <bool name="show_drawer_logout">false</bool>
+    <bool name="show_drawer_logout">true</bool>
 
     <!-- Help, imprint and feedback, and other things -->
     <bool name="passcode_enabled">true</bool>
@@ -103,7 +103,7 @@
     <string name="mail_logger"></string>
 
     <!-- Determine is participate enabled -->
-    <bool name="participate_enabled">true</bool>
+    <bool name="participate_enabled">false</bool>
     <!-- Participate links -->
     <string name="fdroid_beta_link" translatable="false">https://f-droid.org/repository/browse/?fdid=com.nextcloud.android.beta</string>
     <string name="beta_apk_link" translatable="false">https://download.nextcloud.com/android/dev/latest.apk</string>
