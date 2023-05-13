@@ -583,7 +583,7 @@ class BackupFragment : FileFragment(), OnDateSetListener, Injectable {
             day = savedDate.day
         }
         if (backupFiles.size > 0 && backupFiles[backupFiles.size - 1] != null) {
-            datePickerDialog = DatePickerDialog(contactsPreferenceActivity, this, year, month, day)
+            datePickerDialog = DatePickerDialog(contactsPreferenceActivity, R.style.FallbackDatePickerDialogTheme, this, year, month, day)
             datePickerDialog?.datePicker?.maxDate = backupFiles[backupFiles.size - 1]!!
                 .modificationTimestamp
             datePickerDialog?.datePicker?.minDate = backupFiles[0]!!.modificationTimestamp
