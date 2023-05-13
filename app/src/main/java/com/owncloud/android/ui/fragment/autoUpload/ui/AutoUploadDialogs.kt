@@ -16,12 +16,12 @@ import com.nextcloud.client.account.User
 import com.nextcloud.client.jobs.BackgroundJobManager
 import com.nextcloud.utils.BatteryOptimizationHelper
 import com.nextcloud.utils.extensions.isDialogFragmentReady
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.SyncedFolderDisplayItem
 import com.owncloud.android.datamodel.SyncedFolderProvider
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.ui.dialog.ConfirmationDialogFragment
-import com.owncloud.android.ui.dialog.extensions.themeButtons
 import com.owncloud.android.utils.FilesSyncHelper
 import com.owncloud.android.utils.theme.ViewThemeUtils
 
@@ -39,7 +39,8 @@ class AutoUploadDialogs(
             .setTitle(R.string.autoupload_disable_power_save_check)
             .setMessage(context.getString(R.string.power_save_check_dialog_message))
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(context, builder)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(context, builder)
 
         return builder.create()
     }
@@ -141,7 +142,7 @@ class AutoUploadDialogs(
         }
 
         val context = fragment.requireContext()
-        val dialog = MaterialAlertDialogBuilder(context, R.style.Theme_ownCloud_Dialog)
+        val dialog = MaterialAlertDialogBuilder(context)
             .setTitle(R.string.battery_optimization_title)
             .setMessage(R.string.battery_optimization_message)
             .setPositiveButton(R.string.battery_optimization_disable) { _, _ ->
@@ -150,8 +151,9 @@ class AutoUploadDialogs(
             .setNeutralButton(R.string.battery_optimization_close, null)
             .setIcon(R.drawable.ic_battery_alert)
 
-        val alertDialog = dialog.show()
-        alertDialog.themeButtons(viewThemeUtils)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(this, dialog)
+        dialog.show()
     }
 
     private fun isActivityReadyFor(dialog: DialogFragment): Boolean =
