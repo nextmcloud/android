@@ -72,6 +72,7 @@ import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.client.utils.IntentUtil;
 import com.nextcloud.java.util.Optional;
 import com.nextcloud.utils.view.FastScrollUtils;
+import com.nmc.android.utils.SearchViewThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FilesBinding;
@@ -743,7 +744,8 @@ public class FileDisplayActivity extends FileActivity
             searchView.setIconified(false);
         });
 
-        viewThemeUtils.androidx.themeToolbarSearchView(searchView);
+        //NMC customization
+        SearchViewThemeUtils.INSTANCE.themeSearchView(this, searchView);
 
         // populate list of menu items to show/hide when drawer is opened/closed
         mDrawerMenuItemstoShowHideList = new ArrayList<>(1);

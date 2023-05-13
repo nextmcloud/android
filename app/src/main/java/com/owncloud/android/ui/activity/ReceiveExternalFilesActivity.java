@@ -50,6 +50,7 @@ import com.google.android.material.button.MaterialButton;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.preferences.AppPreferences;
+import com.nmc.android.utils.SearchViewThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.ReceiveExternalFilesBinding;
@@ -1023,8 +1024,8 @@ public class ReceiveExternalFilesActivity extends FileActivity
         MenuItem newFolderMenuItem = menu.findItem(R.id.action_create_dir);
         newFolderMenuItem.setEnabled(mFile.canWrite());
 
-        // hacky as no default way is provided
-        viewThemeUtils.androidx.themeToolbarSearchView(searchView);
+        //NMC customization
+        SearchViewThemeUtils.INSTANCE.themeSearchView(this, searchView);
 
         return true;
     }
