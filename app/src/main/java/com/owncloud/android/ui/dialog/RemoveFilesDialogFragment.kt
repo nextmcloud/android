@@ -14,8 +14,6 @@ package com.owncloud.android.ui.dialog
 import android.app.Dialog
 import android.os.Bundle
 import android.view.ActionMode
-import androidx.appcompat.app.AlertDialog
-import com.google.android.material.button.MaterialButton
 import com.nextcloud.client.di.Injectable
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.OCFile
@@ -29,27 +27,6 @@ import com.owncloud.android.ui.dialog.ConfirmationDialogFragment.ConfirmationDia
 class RemoveFilesDialogFragment : ConfirmationDialogFragment(), ConfirmationDialogFragmentListener, Injectable {
     private var mTargetFiles: Collection<OCFile>? = null
     private var actionMode: ActionMode? = null
-
-    override fun onStart() {
-        super.onStart()
-
-        val alertDialog = dialog as AlertDialog? ?: return
-
-        val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE) as? MaterialButton
-        positiveButton?.let {
-            viewThemeUtils?.material?.colorMaterialButtonPrimaryTonal(positiveButton)
-        }
-
-        val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE) as? MaterialButton
-        negativeButton?.let {
-            viewThemeUtils?.material?.colorMaterialButtonPrimaryBorderless(negativeButton)
-        }
-
-        val neutralButton = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL) as? MaterialButton
-        neutralButton?.let {
-            viewThemeUtils?.material?.colorMaterialButtonPrimaryBorderless(neutralButton)
-        }
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
