@@ -24,6 +24,8 @@
             android:ems="10"
             android:gravity="top"
             android:importantForAutofill="no"
+            android:backgroundTint="@color/secondary_text_color"
+            android:textColorHighlight="@color/et_highlight_color"
             android:inputType="textNoSuggestions|textCapSentences"
             android:scrollbars="vertical" />
 
