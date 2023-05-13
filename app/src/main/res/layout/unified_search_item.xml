@@ -100,7 +100,7 @@
         android:visibility="gone"
         android:background="@color/transparent"
         app:srcCompat="@drawable/ic_dots_vertical"
-        app:tint="@color/standard_grey"
+        app:tint="@color/list_icon_color"
         android:layout_gravity="center"
         android:layout_width="50dp"
         android:layout_height="50dp"
