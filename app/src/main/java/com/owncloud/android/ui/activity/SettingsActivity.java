@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -173,7 +174,7 @@ public class SettingsActivity extends PreferenceActivity
 
         // Sync
         setupSyncCategory();
-        
+
         // More
         setupMoreCategory();
 
@@ -313,7 +314,7 @@ public class SettingsActivity extends PreferenceActivity
             }
         }
     }
-    
+
     private void setupSyncCategory() {
         final PreferenceCategory preferenceCategorySync = (PreferenceCategory) findPreference("sync");
         viewThemeUtils.files.themePreferenceCategory(preferenceCategorySync);
@@ -557,10 +558,10 @@ public class SettingsActivity extends PreferenceActivity
             });
         }
     }
-    
+
     private void setupInternalTwoWaySyncPreference(PreferenceCategory preferenceCategorySync) {
         Preference twoWaySync = findPreference("internal_two_way_sync");
-        
+
         twoWaySync.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(this, InternalTwoWaySyncActivity.class);
             startActivity(intent);
@@ -876,20 +877,17 @@ public class SettingsActivity extends PreferenceActivity
 
     private void setupActionBar() {
         ActionBar actionBar = getDelegate().getSupportActionBar();
+        if (actionBar == null) return;
 
-        if (actionBar != null) {
-            viewThemeUtils.platform.themeStatusBar(this);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setDisplayShowTitleEnabled(true);
-            if (this.getResources() != null) {
-                viewThemeUtils.androidx.themeActionBar(this,
-                                                       actionBar,
-                                                       getString(R.string.actionbar_settings),
-                                                       ResourcesCompat.getDrawable(this.getResources(),
-                                                                                   R.drawable.ic_arrow_back,
-                                                                                   null));
-            }
-        }
+        viewThemeUtils.platform.themeStatusBar(this);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(true);
+
+        if (getResources() == null) return;
+        // custom color for back arrow for NMC
+        viewThemeUtils.files.themeActionBar(this, actionBar, getResources().getString(R.string.actionbar_settings));
+        // required for NMC
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.bg_default, null)));
     }
 
     private void launchDavDroidLogin() {
