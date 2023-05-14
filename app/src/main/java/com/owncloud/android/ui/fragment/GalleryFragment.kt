@@ -21,6 +21,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
@@ -81,7 +82,13 @@ class GalleryFragment :
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menuInflater.inflate(R.menu.fragment_gallery_three_dots, menu)
                     val menuItem = menu.findItem(R.id.action_three_dot_icon)
-                    viewThemeUtils.platform.colorMenuItemText(requireContext(), menuItem)
+                    // NMC customization
+                    menuItem.icon = menuItem.icon?.let {
+                        viewThemeUtils.platform.colorDrawable(
+                            it,
+                            ContextCompat.getColor(requireContext(), R.color.fontAppbar)
+                        )
+                    }
                 }
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
