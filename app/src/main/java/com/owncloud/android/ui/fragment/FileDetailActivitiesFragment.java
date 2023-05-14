@@ -23,6 +23,7 @@ import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.common.NextcloudClient;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
+import com.nmc.android.utils.SwipeRefreshThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileDetailsActivitiesFragmentBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -129,8 +130,9 @@ public class FileDetailActivitiesFragment extends Fragment implements
 
         setupView();
 
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingEmpty);
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingList);
+        //NMC Customisation
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(requireContext(), binding.swipeContainingEmpty);
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(requireContext(), binding.swipeContainingList);
 
         isLoadingActivities = true;
         fetchAndSetData(-1);
