@@ -380,20 +380,13 @@ open class FolderPickerActivity :
         mMoveBtn = findViewById(R.id.folder_picker_btn_move)
 
         if (mCopyBtn != null) {
-            viewThemeUtils.material.colorMaterialButtonPrimaryFilled(mCopyBtn!!)
             mCopyBtn!!.setOnClickListener(this)
         }
         if (mMoveBtn != null) {
-            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(mMoveBtn!!)
             mMoveBtn!!.setOnClickListener(this)
         }
 
         if (mCancelBtn != null) {
-            if (this is FilePickerActivity) {
-                viewThemeUtils.material.colorMaterialButtonPrimaryFilled(mCancelBtn!!)
-            } else {
-                viewThemeUtils.material.colorMaterialButtonText(mCancelBtn!!)
-            }
             mCancelBtn!!.setOnClickListener(this)
         }
     }
