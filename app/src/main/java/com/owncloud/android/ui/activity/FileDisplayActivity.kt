@@ -41,6 +41,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -1224,7 +1225,17 @@ class FileDisplayActivity :
         val drawerOpen = isDrawerOpen
         drawerMenuItemsToShowHide.forEach { it.isVisible = !drawerOpen }
 
-        menu?.findItem(R.id.action_current_folder_actions)?.isVisible = canShowCurrentFolderActions()
+        // NMC: custom overflow icon color
+        val item = menu?.findItem(R.id.action_current_folder_actions)
+        item?.isVisible = canShowCurrentFolderActions()
+        item?.icon?.let {
+            item.setIcon(
+                viewThemeUtils.platform.colorDrawable(
+                    it,
+                    ContextCompat.getColor(this, R.color.fontAppbar)
+                )
+            )
+        }
 
         return super.onPrepareOptionsMenu(menu)
     }
