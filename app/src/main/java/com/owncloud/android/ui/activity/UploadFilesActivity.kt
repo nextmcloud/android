@@ -222,10 +222,8 @@ class UploadFilesActivity :
             binding.uploadFilesBtnUpload.setText(R.string.uploader_btn_alternative_text)
         }
 
-        viewThemeUtils.material.colorMaterialButtonPrimaryOutlined(binding.uploadFilesBtnCancel)
         binding.uploadFilesBtnCancel.setOnClickListener(this)
 
-        viewThemeUtils.material.colorMaterialButtonPrimaryFilled(binding.uploadFilesBtnUpload)
         binding.uploadFilesBtnUpload.setOnClickListener(this)
         binding.uploadFilesBtnUpload.isEnabled = isFolderPickerMode
     }
