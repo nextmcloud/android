@@ -24,6 +24,7 @@ import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -250,7 +251,9 @@ class TrashbinFragment :
     }
 
     override fun onOverflowIconClicked(file: TrashbinFile, view: View) {
-        PopupMenu(requireContext(), view).apply {
+        // NMC Customization
+        val ctw = ContextThemeWrapper(requireContext(), R.style.CustomPopupTheme)
+        PopupMenu(ctw, view).apply {
             inflate(R.menu.item_trashbin)
             setOnMenuItemClickListener {
                 onFileActionChosen(it.itemId, setOf(file))
@@ -545,10 +548,11 @@ class TrashbinFragment :
             val item = menu.findItem(R.id.custom_menu_placeholder_item)
             item.icon?.let {
                 item.setIcon(
+                    // NMC Customization: color of menu
                     activity?.let { it1 ->
                         viewThemeUtils.platform.colorDrawable(
                             it,
-                            ContextCompat.getColor(it1, R.color.white)
+                            ContextCompat.getColor(it1, R.color.fontAppbar)
                         )
                     }
                 )
