@@ -33,9 +33,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.IdRes
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.core.view.isEmpty
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
@@ -44,7 +44,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.account.CurrentAccountProvider
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.di.ViewModelFactory
@@ -160,7 +159,11 @@ class FileActionsBottomSheet : BottomSheetDialogFragment(), Injectable {
 
     private fun setMultipleFilesThumbnail() {
         context?.let {
-            val drawable = viewThemeUtils.platform.tintDrawable(it, R.drawable.file_multiple, ColorRole.PRIMARY)
+            //NMC Customization
+            val drawable = viewThemeUtils.platform.colorDrawable(
+                ResourcesCompat.getDrawable(it.resources, R.drawable.file_multiple, null)!!,
+                it.resources.getColor(R.color.primary, null)
+            )
             binding.thumbnailLayout.thumbnail.setImageDrawable(drawable)
         }
     }
@@ -196,7 +199,6 @@ class FileActionsBottomSheet : BottomSheetDialogFragment(), Injectable {
         if (state is FileActionsViewModel.UiState.Loading) {
             binding.bottomSheetLoading.isVisible = true
             binding.bottomSheetContent.isVisible = false
-            viewThemeUtils.platform.colorCircularProgressBar(binding.bottomSheetLoading, ColorRole.PRIMARY)
         } else {
             binding.bottomSheetLoading.isVisible = false
             binding.bottomSheetContent.isVisible = true
@@ -293,12 +295,8 @@ class FileActionsBottomSheet : BottomSheetDialogFragment(), Injectable {
                 }
                 text.setText(action.title)
                 if (action.icon != null) {
-                    val drawable =
-                        viewThemeUtils.platform.tintDrawable(
-                            requireContext(),
-                            AppCompatResources.getDrawable(requireContext(), action.icon)!!
-                        )
-                    icon.setImageDrawable(drawable)
+                    //NMC customization
+                    icon.setImageResource(action.icon)
                 }
             }
         return itemBinding.root
