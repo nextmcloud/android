@@ -71,7 +71,7 @@
             android:layout_marginStart="@dimen/standard_half_margin"
             android:layout_weight="1"
             android:text="@string/uploader_btn_upload_text"
-            android:theme="@style/Button.Primary"
+            style="@style/Button.Primary"
             app:cornerRadius="@dimen/button_corner_radius" />
 
     </LinearLayout>
