@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.PopupMenu
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.annotation.VisibleForTesting
 import com.afollestad.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import com.afollestad.sectionedrecyclerview.SectionedViewHolder
@@ -287,7 +288,9 @@ class SyncedFolderAdapter(
     }
 
     private fun onOverflowIconClicked(section: Int, item: SyncedFolderDisplayItem, view: View) {
-        val popup = PopupMenu(context, view).apply {
+        // NMC Customisation
+        val ctw = ContextThemeWrapper(context, R.style.CustomPopupTheme)
+        val popup = PopupMenu(ctw, view).apply {
             inflate(R.menu.synced_folders_adapter)
             setOnMenuItemClickListener { i: MenuItem -> optionsItemSelected(i, section, item) }
             menu
