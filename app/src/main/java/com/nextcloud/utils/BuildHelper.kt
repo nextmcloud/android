@@ -9,7 +9,8 @@ package com.nextcloud.utils
 import com.owncloud.android.BuildConfig
 
 object BuildHelper {
-    fun isFlavourGPlay(): Boolean = BuildConfig.FLAVOR == "gplay"
+    // NMC Customization to have it false always
+    fun isFlavourGPlay(): Boolean = false
 
     fun isHuaweiFlavor(): Boolean = BuildConfig.FLAVOR == "huawei"
 }
