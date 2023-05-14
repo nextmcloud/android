@@ -50,6 +50,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.ContextThemeWrapper;
 
 /**
  * Adapter to display all auto-synced folders and/or instant upload media folders.
@@ -298,7 +299,9 @@ public class SyncedFolderAdapter extends SectionedRecyclerViewAdapter<SectionedV
     }
 
     private void onOverflowIconClicked(int section, SyncedFolderDisplayItem item, View view) {
-        PopupMenu popup = new PopupMenu(context, view);
+        //NMC Customisation
+        ContextThemeWrapper ctw = new ContextThemeWrapper(context, R.style.CustomPopupTheme);
+        PopupMenu popup = new PopupMenu(ctw, view);
         popup.inflate(R.menu.synced_folders_adapter);
         popup.setOnMenuItemClickListener(i -> optionsItemSelected(i, section, item));
         popup.getMenu()
