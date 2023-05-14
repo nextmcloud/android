@@ -18,6 +18,7 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.preferences.AppPreferencesImpl
+import com.nmc.android.utils.CheckableThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.DialogDataStorageLocationBinding
@@ -49,9 +50,7 @@ class ChooseStorageLocationDialogFragment :
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = DialogDataStorageLocationBinding.inflate(layoutInflater)
 
-        viewThemeUtils.material.colorMaterialSwitch(binding.allowMediaIndexSwitch)
-        viewThemeUtils.platform.themeRadioButton(binding.storageInternalRadio)
-        viewThemeUtils.platform.themeRadioButton(binding.storageExternalRadio)
+        CheckableThemeUtils.tintSwitch(binding.allowMediaIndexSwitch)
 
         val builder = MaterialAlertDialogBuilder(requireContext()).setTitle(R.string.storage_choose_location)
             .setPositiveButton(R.string.common_ok) { dialog: DialogInterface, _ ->
