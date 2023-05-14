@@ -41,6 +41,8 @@ import com.nextcloud.utils.extensions.getSelectedMenuItemId
 import com.nextcloud.utils.extensions.highlightNavigationView
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.nextcloud.utils.mdm.MDMConfig
+import com.nmc.android.utils.DrawableThemeUtils
+import com.nmc.android.utils.NavigationViewThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.authentication.PassCodeManager
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl
@@ -57,7 +59,6 @@ import com.owncloud.android.ui.activity.drawer.externallinks.DrawerExternalLinks
 import com.owncloud.android.ui.activity.drawer.externallinks.ExternalLinkOpener
 import com.owncloud.android.ui.activity.drawer.externallinks.ExternalLinksSynchronizer
 import com.owncloud.android.ui.activity.drawer.fragment.DrawerFragmentFinder
-import com.owncloud.android.ui.activity.drawer.header.DrawerHeaderController
 import com.owncloud.android.ui.activity.drawer.navigation.DrawerDeepLinkHandler
 import com.owncloud.android.ui.activity.drawer.navigation.DrawerMenuFilter
 import com.owncloud.android.ui.activity.drawer.navigation.DrawerMenuItemClickHandler
@@ -107,7 +108,6 @@ abstract class DrawerActivity :
         private set
 
     private var drawerLayout: DrawerLayout? = null
-    private var navigationViewHeader: View? = null
     private var pendingRunnable: Runnable? = null
     private lateinit var externalLinksSynchronizer: ExternalLinksSynchronizer
 
@@ -116,7 +116,6 @@ abstract class DrawerActivity :
     private val externalLinkOpener = ExternalLinkOpener(this)
     private val externalLinksMenu by lazy { DrawerExternalLinksMenu(this, externalLinkOpener) }
     private val quotaController by lazy { DrawerQuotaController(this, externalLinkOpener) }
-    private val headerController by lazy { DrawerHeaderController(this, drawerNavigator) }
     private val menuItemClickHandler by lazy { DrawerMenuItemClickHandler(this, drawerNavigator, externalLinksMenu) }
     private val deepLinkHandler by lazy { DrawerDeepLinkHandler(this, drawerNavigator, menuItemClickHandler) }
 
@@ -238,9 +237,10 @@ abstract class DrawerActivity :
     }
 
     private fun setupDrawerNavigationView(navigationView: NavigationView, id: Int) {
-        viewThemeUtils.files.colorNavigationView(navigationView)
-        navigationViewHeader = navigationView.getHeaderView(0)
-        updateHeader()
+        // NMC Customization: theme navigation view
+        drawerNavigationView?.let {
+            NavigationViewThemeUtils.colorNavigationView(this, it)
+        }
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
             drawerLayout?.closeDrawers()
@@ -281,7 +281,14 @@ abstract class DrawerActivity :
         toggle.isDrawerIndicatorEnabled = true
         toggle.isDrawerSlideAnimationEnabled = true
         ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_back, null)?.let { backArrow ->
-            viewThemeUtils.platform.tintToolbarArrowDrawable(this, toggle, backArrow)
+            // custom color for back arrow required for NMC
+            toggle.setHomeAsUpIndicator(
+                DrawableThemeUtils.tintDrawable(
+                    backArrow,
+                    resources.getColor(R.color.fontAppbar, null)
+                )
+            )
+            toggle.drawerArrowDrawable.color = resources.getColor(R.color.fontAppbar, null)
         }
     }
 
@@ -289,11 +296,6 @@ abstract class DrawerActivity :
         val runnable = pendingRunnable ?: return
         Handler(Looper.getMainLooper()).post(runnable)
         pendingRunnable = null
-    }
-
-    fun updateHeader() {
-        val header = navigationViewHeader ?: return
-        headerController.update(header)
     }
     // endregion
 
@@ -316,7 +318,8 @@ abstract class DrawerActivity :
     fun <T : Fragment> getFragment(tag: String?, clazz: Class<T>): Optional<T> = fragmentFinder.getFragment(tag, clazz)
 
     fun showBottomNavigationBar(show: Boolean) {
-        bottomNavigationView.setVisibleIf(show)
+        // NMC Customization: always hide bottom bar
+        bottomNavigationView.setVisibleIf(false)
     }
 
     protected fun handleDeepLink(uri: Uri) = deepLinkHandler.handle(uri)

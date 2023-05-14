@@ -18,7 +18,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -66,6 +65,7 @@ import com.owncloud.android.ui.fragment.GalleryFragment
 import com.owncloud.android.ui.fragment.GalleryFragmentBottomSheetDialog.MediaState
 import com.owncloud.android.ui.navigation.animator.NavigationAnimator
 import com.owncloud.android.ui.navigation.animator.SharedElementTransition
+import com.owncloud.android.ui.navigation.model.ActionBarStyle
 import com.owncloud.android.ui.preview.model.PreviewImageActivityState
 import com.owncloud.android.utils.MimeTypeUtil
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings
@@ -135,6 +135,7 @@ class PreviewMediaActivity :
         }
 
         setContentView(R.layout.preview_image_activity)
+        showActionBar(ActionBarStyle.Plain)
 
         setupDrawer(menuItemId)
 
@@ -145,7 +146,6 @@ class PreviewMediaActivity :
             updateActionBarTitleAndHomeButton(chosenFile)
             viewThemeUtils.files.setWhiteBackButton(this, it)
             it.setDisplayHomeAsUpEnabled(true)
-            it.setBackgroundDrawable(R.color.black.toDrawable())
         }
 
         setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
@@ -155,7 +155,9 @@ class PreviewMediaActivity :
             screenState = PreviewImageActivityState.WaitingForBinder
         }
 
-        applyDisplayCutOutTopPadding()
+        // NMC-4604 fix: we don't need to call this function
+        // as we using toolbar_standard directly inside the xml and no padding is required
+        // applyDisplayCutOutTopPadding()
 
         handleBackPress()
 
@@ -402,7 +404,8 @@ class PreviewMediaActivity :
             return
         }
 
-        updateActionBarTitle(file.fileName)
+        // NMC Customization
+        updateActionBarTitleAndHomeButton(file)
 
         if (pagerNeedsRebuild) {
             savedPosition = null
@@ -614,13 +617,10 @@ class PreviewMediaActivity :
         }
 
         if (currentFile != null) {
-            updateActionBarTitle(currentFile.fileName)
+            // NMC Customization
+            updateActionBarTitleAndHomeButton(currentFile)
             setDrawerIndicatorEnabled(false)
         }
-    }
-
-    private fun updateActionBarTitle(title: String?) {
-        supportActionBar?.title = title
     }
 
     /**
