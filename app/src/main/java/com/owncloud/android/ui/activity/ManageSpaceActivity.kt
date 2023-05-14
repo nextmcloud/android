@@ -18,6 +18,7 @@ import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.preferences.AppPreferences
 import com.owncloud.android.R
 import com.owncloud.android.lib.common.utils.Log_OC
+import com.owncloud.android.utils.theme.ViewThemeUtils
 import java.io.File
 import javax.inject.Inject
 import kotlin.system.exitProcess
@@ -30,13 +31,17 @@ class ManageSpaceActivity : AppCompatActivity(), Injectable {
     @Inject
     lateinit var userAccountManager: UserAccountManager
 
+    @Inject
+    lateinit var viewThemeUtils: ViewThemeUtils
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manage_space)
         val actionBar = supportActionBar
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.setTitle(R.string.manage_space_title)
+            //NMC Customisation
+            viewThemeUtils.files.themeActionBar(this, actionBar, R.string.manage_space_title)
         }
         val descriptionTextView = findViewById<TextView>(R.id.general_description)
         descriptionTextView.text = getString(R.string.manage_space_description, getString(R.string.app_name))
