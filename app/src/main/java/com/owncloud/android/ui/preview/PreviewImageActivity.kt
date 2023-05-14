@@ -11,14 +11,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.MenuItem
-import android.view.View
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import androidx.appcompat.app.ActionBar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -71,7 +67,6 @@ class PreviewImageActivity : FileActivity(), FileFragment.ContainerActivity, OnR
     private var savedPosition = 0
     private var hasSavedPosition = false
     private var downloadFinishReceiver: DownloadFinishReceiver? = null
-    private var fullScreenAnchorView: View? = null
 
     private var isDownloadWorkStarted = false
     private var screenState = PreviewImageActivityState.Idle
@@ -99,6 +94,7 @@ class PreviewImageActivity : FileActivity(), FileFragment.ContainerActivity, OnR
         }
 
         setContentView(R.layout.preview_image_activity)
+        setupToolbar()
 
         livePhotoFile = intent.getParcelableArgument(EXTRA_LIVE_PHOTO_FILE, OCFile::class.java)
 
@@ -112,7 +108,6 @@ class PreviewImageActivity : FileActivity(), FileFragment.ContainerActivity, OnR
             actionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
-        fullScreenAnchorView = window.decorView
         // to keep our UI controls visibility in line with system bars visibility
         setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
@@ -246,7 +241,8 @@ class PreviewImageActivity : FileActivity(), FileFragment.ContainerActivity, OnR
             if (file != null) {
                 // / Refresh the activity according to the Account and OCFile set
                 setFile(file) // reset after getting it fresh from storageManager
-                updateActionBarTitle(getFile().fileName)
+                // NMC Customization
+                updateActionBarTitleAndHomeButton(getFile())
                 // if (!stateWasRecovered) {
                 initViewPager(optionalUser.get())
 
@@ -423,13 +419,10 @@ class PreviewImageActivity : FileActivity(), FileFragment.ContainerActivity, OnR
         }
 
         if (currentFile != null) {
-            updateActionBarTitle(currentFile.fileName)
+            // NMC Customization
+            updateActionBarTitleAndHomeButton(currentFile)
             setDrawerIndicatorEnabled(false)
         }
-    }
-
-    private fun updateActionBarTitle(title: String?) {
-        supportActionBar?.title = title
     }
 
     /**
@@ -494,17 +487,7 @@ class PreviewImageActivity : FileActivity(), FileFragment.ContainerActivity, OnR
         get() = supportActionBar == null || supportActionBar?.isShowing == true
 
     fun toggleFullScreen() {
-        if (fullScreenAnchorView == null) return
-        val visible = (
-            fullScreenAnchorView!!.systemUiVisibility
-                and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            ) == 0
-
-        if (visible) {
-            hideSystemUI(fullScreenAnchorView!!)
-        } else {
-            showSystemUI(fullScreenAnchorView!!)
-        }
+        // do nothing for NMC
     }
 
     fun startImageEditor(file: OCFile) {
@@ -540,44 +523,6 @@ class PreviewImageActivity : FileActivity(), FileFragment.ContainerActivity, OnR
 
     override fun onTransferStateChanged(file: OCFile, downloading: Boolean, uploading: Boolean) {
         // TODO Auto-generated method stub
-    }
-
-    private fun hideSystemUI(anchorView: View) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.insetsController?.let { controller ->
-                controller.hide(WindowInsets.Type.systemBars())
-                controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            anchorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hides NAVIGATION BAR; Android >= 4.0
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN // hides STATUS BAR;     Android >= 4.1
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE // stays interactive;    Android >= 4.4
-                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE // draw full window;     Android >= 4.1
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN // draw full window;     Android >= 4.1
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                )
-        }
-    }
-
-    private fun showSystemUI(anchorView: View) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.insetsController?.let { controller ->
-                controller.show(WindowInsets.Type.systemBars())
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_DEFAULT
-                }
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            anchorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE // draw full window;     Android >= 4.1
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN // draw full window;     Android >= 4.1
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                )
-        }
     }
 
     companion object {
