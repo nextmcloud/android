@@ -10,6 +10,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bottom_sheet_bg_color"
     android:orientation="vertical"
     android:paddingBottom="@dimen/standard_half_padding"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -26,7 +27,8 @@
         android:paddingBottom="@dimen/standard_half_padding"
         android:text="@string/add_to_cloud"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-        android:textColor="@color/text_color" />
+        android:textColor="@color/text_color"
+        android:visibility="gone" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -48,7 +50,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/standard_padding"
-                android:paddingTop="@dimen/standard_half_padding"
+                android:paddingTop="@dimen/standard_padding"
                 android:paddingRight="@dimen/standard_padding"
                 android:paddingBottom="@dimen/standard_half_padding"
                 tools:ignore="UseCompoundDrawables">
@@ -58,8 +60,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_action_upload"
-                    app:tint="@color/primary" />
+                    android:src="@drawable/ic_upload_file"
+                    app:tint="@color/bottom_sheet_icon_color" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -67,7 +69,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
                     android:text="@string/upload_files"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/bottom_sheet_txt_color"
                     android:textSize="@dimen/bottom_sheet_text_size" />
 
             </LinearLayout>
@@ -90,8 +92,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_import"
-                    app:tint="@color/primary" />
+                    android:src="@drawable/ic_file_collection"
+                    app:tint="@color/bottom_sheet_icon_color" />
 
                 <TextView
                     android:id="@+id/upload_content_from_other_apps"
@@ -100,7 +102,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
                     android:text="@string/upload_content_from_other_apps"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/bottom_sheet_txt_color"
                     android:textSize="@dimen/bottom_sheet_text_size" />
 
             </LinearLayout>
@@ -124,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_camera"
-                    app:tint="@color/primary" />
+                    app:tint="@color/bottom_sheet_icon_color" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -132,7 +134,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
                     android:text="@string/upload_direct_camera_upload"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/bottom_sheet_txt_color"
                     android:textSize="@dimen/bottom_sheet_text_size" />
 
             </LinearLayout>
@@ -187,7 +189,7 @@
                     android:layout_height="wrap_content"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_action_create_dir"
-                    app:tint="@color/primary" />
+                    app:tint="@color/bottom_sheet_icon_color" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -195,9 +197,40 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
                     android:text="@string/create_new_folder"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/bottom_sheet_txt_color"
                     android:textSize="@dimen/bottom_sheet_text_size" />
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/menu_encrypted_mkdir"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_sheet_item_height"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/standard_padding"
+                android:paddingTop="@dimen/standard_half_padding"
+                android:paddingRight="@dimen/standard_padding"
+                android:paddingBottom="@dimen/standard_half_padding"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:id="@+id/menu_icon_encrypted_mkdir"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_encrypted_folder"
+                    app:tint="@color/bottom_sheet_icon_color" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
+                    android:text="@string/create_new_encrypted_folder"
+                    android:textColor="@color/bottom_sheet_txt_color"
+                    android:textSize="@dimen/bottom_sheet_text_size" />
             </LinearLayout>
 
             <LinearLayout
@@ -234,7 +267,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
                         android:text="@string/create_new_document"
-                        android:textColor="@color/text_color"
+                        android:textColor="@color/bottom_sheet_txt_color"
                         android:textSize="@dimen/bottom_sheet_text_size" />
                 </LinearLayout>
 
@@ -264,7 +297,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
                         android:text="@string/create_new_spreadsheet"
-                        android:textColor="@color/text_color"
+                        android:textColor="@color/bottom_sheet_txt_color"
                         android:textSize="@dimen/bottom_sheet_text_size" />
                 </LinearLayout>
 
@@ -294,7 +327,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
                         android:text="@string/create_new_presentation"
-                        android:textColor="@color/text_color"
+                        android:textColor="@color/bottom_sheet_txt_color"
                         android:textSize="@dimen/bottom_sheet_text_size" />
                 </LinearLayout>
             </LinearLayout>
@@ -321,7 +354,8 @@
                 android:layout_marginStart="@dimen/bottom_sheet_menu_item_divider_standard_margin"
                 android:layout_marginTop="@dimen/standard_half_margin"
                 android:layout_marginBottom="@dimen/standard_half_margin"
-                android:background="@color/list_divider_background" />
+                android:background="@color/list_divider_background"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/menu_create_rich_workspace"
@@ -331,7 +365,10 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/standard_padding"
+                android:paddingTop="@dimen/standard_half_padding"
                 android:paddingRight="@dimen/standard_padding"
+                android:paddingBottom="@dimen/standard_padding"
+                android:visibility="gone"
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
@@ -349,7 +386,7 @@
                     android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
                     android:contentDescription="@string/creates_rich_workspace"
                     android:text="@string/create_rich_workspace"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/bottom_sheet_txt_color"
                     android:textSize="@dimen/bottom_sheet_text_size" />
 
             </LinearLayout>
