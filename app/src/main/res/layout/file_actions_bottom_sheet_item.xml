@@ -7,6 +7,7 @@
   ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/menu_upload_files"
     android:layout_width="match_parent"
@@ -28,6 +29,7 @@
         android:layout_width="@dimen/iconized_single_line_item_icon_size"
         android:layout_height="@dimen/iconized_single_line_item_icon_size"
         android:contentDescription="@null"
+        app:tint="@color/bottom_sheet_icon_color"
         tools:src="@drawable/ic_delete" />
 
     <LinearLayout
@@ -42,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
-            android:textColor="@color/text_color"
+            android:textColor="@color/bottom_sheet_txt_color"
             android:textSize="@dimen/bottom_sheet_text_size"
             tools:text="@string/placeholder_delete_file" />
 
