@@ -423,7 +423,6 @@ public class ReceiveExternalFilesActivity extends FileActivity
 
             setFilename(binding.userInput, selectPos);
             binding.userInput.requestFocus();
-            viewThemeUtils.material.colorTextInputLayout(binding.userInputContainer);
 
             setupSpinner(adapter, selectPos, binding.userInput, binding.fileType);
             if (adapter.getCount() == SINGLE_SPINNER_ENTRY) {
@@ -781,14 +780,12 @@ public class ReceiveExternalFilesActivity extends FileActivity
                 binding.list.setVisibility(View.VISIBLE);
             }
             MaterialButton btnChooseFolder = binding.uploaderChooseFolder;
-            viewThemeUtils.material.colorMaterialButtonPrimaryFilled(btnChooseFolder);
             btnChooseFolder.setOnClickListener(this);
 
             btnChooseFolder.setEnabled(mFile.canWrite());
 
             viewThemeUtils.platform.themeStatusBar(this);
 
-            viewThemeUtils.material.colorMaterialButtonPrimaryOutlined(binding.uploaderCancel);
             binding.uploaderCancel.setOnClickListener(this);
 
             binding.list.setOnItemClickListener(this);
