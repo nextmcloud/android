@@ -19,7 +19,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.utils.IntentUtil.createSendIntent
 import com.owncloud.android.R
@@ -60,7 +59,6 @@ class SendFilesDialog : BottomSheetDialogFragment(R.layout.send_files_fragment),
         binding = SendFilesFragmentBinding.inflate(inflater, container, false)
 
         setupSendButtonRecyclerView()
-        viewThemeUtils?.platform?.colorViewBackground(binding.bottomSheet, ColorRole.SURFACE)
 
         return binding.root
     }
