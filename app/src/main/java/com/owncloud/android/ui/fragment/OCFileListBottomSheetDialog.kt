@@ -7,6 +7,7 @@
  */
 package com.owncloud.android.ui.fragment
 
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.view.ContextThemeWrapper
@@ -17,7 +18,6 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.gson.Gson
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.account.User
 import com.nextcloud.client.device.DeviceInfo
 import com.nextcloud.client.di.Injectable
@@ -59,7 +59,8 @@ class OCFileListBottomSheetDialog(
         binding = FileListActionsBottomSheetFragmentBinding.inflate(layoutInflater)
         setContentView(binding.getRoot())
 
-        applyBranding()
+        // NMC Customization
+        reorderUploadFromOtherAppsView()
         binding.addToCloud.text = context.resources.getString(
             R.string.add_to_cloud,
             themeUtils.getDefaultDisplayNameForRootFolder(context)
@@ -72,10 +73,8 @@ class OCFileListBottomSheetDialog(
             binding.menuDirectCameraUpload.visibility = View.GONE
         }
 
-        createRichWorkspace()
         setupClickListener()
         filterActionsForOfflineOperations()
-        checkCreateEncryptedFolderVisibility()
 
         if (MainApp.isClientBranded() && isFlavourGPlay()) {
             // this way we can have branded clients with that permission
@@ -89,38 +88,6 @@ class OCFileListBottomSheetDialog(
                 binding.menuUploadFiles.visibility = View.GONE
                 binding.menuUploadFromApp.text = context.getString(R.string.upload_files)
             }
-        }
-    }
-
-    private fun checkCreateEncryptedFolderVisibility() {
-        binding.menuEncryptedMkdir.setVisibleIf(file.isRootDirectory)
-    }
-
-    private fun applyBranding() {
-        viewThemeUtils.material.run {
-            binding.run {
-                colorMaterialButtonContent(menuUploadFiles, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuUploadFromApp, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuDirectCameraUpload, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuScanDocUpload, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuMkdir, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuEncryptedMkdir, ColorRole.PRIMARY)
-                colorMaterialButtonContent(menuCreateRichWorkspace, ColorRole.PRIMARY)
-            }
-        }
-
-        viewThemeUtils.platform.colorViewBackground(binding.bottomSheet, ColorRole.SURFACE)
-
-        val textColor = ContextCompat.getColor(context, R.color.text_color)
-
-        binding.run {
-            menuUploadFiles.setTextColor(textColor)
-            menuUploadFromApp.setTextColor(textColor)
-            menuDirectCameraUpload.setTextColor(textColor)
-            menuScanDocUpload.setTextColor(textColor)
-            menuMkdir.setTextColor(textColor)
-            menuEncryptedMkdir.setTextColor(textColor)
-            menuCreateRichWorkspace.setTextColor(textColor)
         }
     }
 
@@ -177,17 +144,26 @@ class OCFileListBottomSheetDialog(
                     gravity = Gravity.START or Gravity.CENTER_VERTICAL
                     setPaddingRelative(standardPadding, 0, standardPadding, 0)
 
-                    val buttonText = String.format(
+                    // for NMC we have different text and icon for Markdown(.md) menu
+                    val buttonText = if (creator.mimetype == MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN)
+                        fileActivity.getString(R.string.create_text_document)
+                    else String.format(
                         fileActivity.getString(R.string.editor_placeholder),
                         fileActivity.getString(R.string.create_new),
                         creator.name
                     )
                     text = buttonText
-                    setTextColor(ContextCompat.getColor(context, R.color.text_color))
+                    setTextColor(ContextCompat.getColor(context, R.color.bottom_sheet_txt_color))
                     textSize = 16f
                     isAllCaps = false
 
-                    icon = MimeTypeUtil.getFileTypeIcon(
+                    // for NMC we have different text and icon for Markdown(.md) menu
+                    icon = if (creator.mimetype == MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN)
+                        ContextCompat.getDrawable(
+                            context,
+                            R.drawable.ic_new_txt_doc
+                        )
+                    else MimeTypeUtil.getFileTypeIcon(
                         creator.mimetype,
                         creator.extension,
                         context,
@@ -196,7 +172,11 @@ class OCFileListBottomSheetDialog(
                     this.iconSize = iconSize
                     this.iconPadding = standardPadding
                     iconGravity = MaterialButton.ICON_GRAVITY_START
-                    iconTint = null
+                    // for NMC do not remove icon tinting for Markdown(.md) menu
+                    iconTint = if (creator.mimetype != MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN)
+                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.bottom_sheet_icon_color))
+                    else
+                        null
 
                     setOnClickListener {
                         actions.showTemplate(creator, buttonText)
@@ -206,25 +186,6 @@ class OCFileListBottomSheetDialog(
 
                 binding.creators.addView(creatorButton)
             }
-        }
-    }
-
-    private fun createRichWorkspace() {
-        if (editorUtils.isEditorAvailable(user, MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN) && !file.isEncrypted) {
-            // richWorkspace
-            // == "": no info set -> show button
-            // == null: disabled on server side -> hide button
-            // != "": info set -> hide button
-            if (file.richWorkspace == null || "" != file.richWorkspace) {
-                binding.menuCreateRichWorkspace.visibility = View.GONE
-                binding.menuCreateRichWorkspaceDivider.visibility = View.GONE
-            } else {
-                binding.menuCreateRichWorkspace.visibility = View.VISIBLE
-                binding.menuCreateRichWorkspaceDivider.visibility = View.VISIBLE
-            }
-        } else {
-            binding.menuCreateRichWorkspace.visibility = View.GONE
-            binding.menuCreateRichWorkspaceDivider.visibility = View.GONE
         }
     }
 
@@ -289,6 +250,17 @@ class OCFileListBottomSheetDialog(
                 dismiss()
             }
         }
+    }
+
+    private fun reorderUploadFromOtherAppsView() {
+        // move the upload from other app option
+        // below Create new folder or Create new e2ee folder
+        // NMC-3095 requirement
+        binding.actionLinear.removeView(binding.menuUploadFromApp)
+        binding.actionLinear.addView(
+            binding.menuUploadFromApp,
+            binding.actionLinear.indexOfChild(binding.menuEncryptedMkdir) + 1
+        )
     }
 
     private fun filterActionsForOfflineOperations() {
