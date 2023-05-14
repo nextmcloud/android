@@ -94,7 +94,6 @@ public class PreviewImageActivity extends FileActivity implements
     private boolean mRequestWaitingForBinder;
     private DownloadFinishReceiver mDownloadFinishReceiver;
     private UploadFinishReceiver mUploadFinishReceiver;
-    private View mFullScreenAnchorView;
     @Inject AppPreferences preferences;
     @Inject LocalBroadcastManager localBroadcastManager;
 
@@ -117,6 +116,7 @@ public class PreviewImageActivity extends FileActivity implements
         }
 
         setContentView(R.layout.preview_image_activity);
+        setupToolbar();
 
         // Navigation Drawer
         setupDrawer();
@@ -129,7 +129,6 @@ public class PreviewImageActivity extends FileActivity implements
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        mFullScreenAnchorView = getWindow().getDecorView();
         // to keep our UI controls visibility in line with system bars visibility
         setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
@@ -208,7 +207,7 @@ public class PreviewImageActivity extends FileActivity implements
             if (file != null) {
                 /// Refresh the activity according to the Account and OCFile set
                 setFile(file);  // reset after getting it fresh from storageManager
-                getSupportActionBar().setTitle(getFile().getFileName());
+                updateActionBarTitleAndHomeButton(getFile());
                 //if (!stateWasRecovered) {
                 initViewPager(optionalUser.get());
                 //}
@@ -414,9 +413,7 @@ public class PreviewImageActivity extends FileActivity implements
             OCFile currentFile = mPreviewImagePagerAdapter.getFileAt(position);
 
             if (currentFile != null) {
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setTitle(currentFile.getFileName());
-                }
+                updateActionBarTitleAndHomeButton(currentFile);
                 setDrawerIndicatorEnabled(false);
 
                 if (currentFile.isEncrypted() && !currentFile.isDown() &&
@@ -514,22 +511,7 @@ public class PreviewImageActivity extends FileActivity implements
     }
 
     public void toggleFullScreen() {
-        boolean visible = (mFullScreenAnchorView.getSystemUiVisibility()
-                & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
-
-        if (visible) {
-            hideSystemUI(mFullScreenAnchorView);
-            // actionBar.hide(); // propagated through
-            // OnSystemUiVisibilityChangeListener()
-        } else {
-            showSystemUI(mFullScreenAnchorView);
-            // actionBar.show(); // propagated through
-            // OnSystemUiVisibilityChangeListener()
-        }
-    }
-
-    public void switchToFullScreen() {
-        hideSystemUI(mFullScreenAnchorView);
+       //do nothing for NMC
     }
 
     public void startImageEditor(OCFile file) {
@@ -552,27 +534,5 @@ public class PreviewImageActivity extends FileActivity implements
     public void onTransferStateChanged(OCFile file, boolean downloading, boolean uploading) {
         // TODO Auto-generated method stub
 
-    }
-
-
-    @SuppressLint("InlinedApi")
-	private void hideSystemUI(View anchorView) {
-        anchorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION         // hides NAVIGATION BAR; Android >= 4.0
-            |   View.SYSTEM_UI_FLAG_FULLSCREEN              // hides STATUS BAR;     Android >= 4.1
-            |   View.SYSTEM_UI_FLAG_IMMERSIVE               // stays interactive;    Android >= 4.4
-            |   View.SYSTEM_UI_FLAG_LAYOUT_STABLE           // draw full window;     Android >= 4.1
-            |   View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN       // draw full window;     Android >= 4.1
-            |   View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // draw full window;     Android >= 4.1
-        );
-    }
-
-    @SuppressLint("InlinedApi")
-    private void showSystemUI(View anchorView) {
-        anchorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE           // draw full window;     Android >= 4.1
-            |   View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN       // draw full window;     Android >= 4.1
-            |   View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // draw full window;     Android >= 4.
-        );
     }
 }
