@@ -59,23 +59,35 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/folder_picker_btn_cancel"
-            style="@style/Widget.Material3.Button.TextButton"
+            style="@style/Widget.Material3.Button.IconButton.Outlined"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/common_cancel"
+            android:textColor="@color/text_color"
             android:layout_weight="1"
-            app:cornerRadius="@dimen/button_corner_radius" />
+            android:layout_marginEnd="@dimen/standard_half_margin"
+            app:cornerRadius="@dimen/button_corner_radius"
+            app:icon="@drawable/ic_close"
+            app:iconGravity="textStart"
+            app:iconTint="@color/text_color"
+            app:iconPadding="@dimen/standard_quarter_padding"
+            app:strokeColor="@color/text_color"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/folder_picker_btn_choose"
             android:visibility="gone"
             tools:visibility="visible"
-            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+            style="@style/Widget.Material3.Button.IconButton.Filled"
             android:layout_width="wrap_content"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="@string/folder_picker_choose_button_text"
-            app:cornerRadius="@dimen/button_corner_radius" />
+            app:cornerRadius="@dimen/button_corner_radius"
+            android:textColor="@color/primary_button_text_color_state"
+            app:icon="@drawable/ic_tick"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/standard_quarter_padding"
+            app:iconTint="@color/primary_button_text_color_state"/>
 
         <View
             android:id="@+id/move_or_copy_button_spacer"
@@ -90,16 +102,26 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="@string/folder_picker_copy_button_text"
-            app:cornerRadius="@dimen/button_corner_radius" />
+            android:textColor="@color/primary_button_text_color_state"
+            app:cornerRadius="@dimen/button_corner_radius"
+            app:icon="@drawable/ic_cut_paste"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/standard_quarter_padding"
+            app:iconTint="@color/primary_button_text_color_state"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/folder_picker_btn_move"
-            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+            style="@style/Widget.Material3.Button.IconButton.Filled"
             android:layout_width="wrap_content"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="@string/folder_picker_move_button_text"
-            app:cornerRadius="@dimen/button_corner_radius" />
+            android:textColor="@color/primary_button_text_color_state"
+            app:cornerRadius="@dimen/button_corner_radius"
+            app:icon="@drawable/ic_cut_paste"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/standard_quarter_padding"
+            app:iconTint="@color/primary_button_text_color_state"/>
 
 	</LinearLayout>
 
