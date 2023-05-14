@@ -75,6 +75,7 @@ import com.owncloud.android.ui.dialog.ConfirmationDialogFragment;
 import com.owncloud.android.ui.dialog.RemoveFilesDialogFragment;
 import com.owncloud.android.ui.fragment.FileFragment;
 import com.owncloud.android.utils.MimeTypeUtil;
+import com.owncloud.android.utils.theme.ViewThemeUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -89,6 +90,7 @@ import androidx.annotation.OptIn;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -138,6 +140,7 @@ public class PreviewMediaFragment extends FileFragment implements OnTouchListene
     @Inject ClientFactory clientFactory;
     @Inject UserAccountManager accountManager;
     @Inject BackgroundJobManager backgroundJobManager;
+    @Inject ViewThemeUtils viewThemeUtils;
     FragmentPreviewMediaBinding binding;
     private ViewGroup emptyListView;
     private ExoPlayer exoPlayer;
@@ -415,6 +418,9 @@ public class PreviewMediaFragment extends FileFragment implements OnTouchListene
         super.onCreateOptionsMenu(menu, inflater);
         menu.removeItem(R.id.action_search);
         inflater.inflate(R.menu.custom_menu_placeholder, menu);
+        //NMC customization
+        final MenuItem item = menu.findItem(R.id.custom_menu_placeholder_item);
+        item.setIcon(viewThemeUtils.platform.colorDrawable(item.getIcon(), ContextCompat.getColor(requireContext(), R.color.fontAppbar)));
     }
 
     @Override
