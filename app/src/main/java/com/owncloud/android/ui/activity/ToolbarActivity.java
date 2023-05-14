@@ -17,6 +17,7 @@ import android.animation.AnimatorInflater;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -33,6 +34,7 @@ import com.google.android.material.textview.MaterialTextView;
 import com.nextcloud.android.common.ui.theme.utils.ColorRole;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.systembars.SystemBarBackgroundCallbacks;
+import com.nmc.android.utils.ToolbarThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
@@ -40,6 +42,7 @@ import com.owncloud.android.datamodel.OCFileDepth;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.ui.fragment.OCFileListFragment;
 import com.owncloud.android.ui.fragment.SearchType;
+import com.owncloud.android.utils.StringUtils;
 import com.owncloud.android.utils.theme.ThemeColorUtils;
 import com.owncloud.android.utils.theme.ThemeUtils;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
@@ -72,6 +75,7 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
     private LinearLayout mInfoBox;
     private TextView mInfoBoxMessage;
     protected AppCompatSpinner mToolbarSpinner;
+    private View mDefaultToolbarDivider;
     private boolean isHomeSearchToolbarShow = false;
     private static final String TAG = "ToolbarActivity";
 
@@ -95,6 +99,7 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
         mSearchText = findViewById(R.id.search_text);
         mSwitchAccountButton = findViewById(R.id.switch_account_button);
         mNotificationButton = findViewById(R.id.notification_button);
+        mDefaultToolbarDivider = findViewById(R.id.default_toolbar_divider);
 
         if (showSortListButtonGroup) {
             findViewById(R.id.sort_list_button_group).setVisibility(View.VISIBLE);
@@ -111,8 +116,10 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
 
         mToolbarSpinner = findViewById(R.id.toolbar_spinner);
 
-        viewThemeUtils.material.themeToolbar(mToolbar);
-        viewThemeUtils.material.colorToolbarOverflowIcon(mToolbar);
+        // custom color for overflow icon required for NMC
+        if (mToolbar.getOverflowIcon() != null) {
+            mToolbar.getOverflowIcon().setColorFilter(getResources().getColor(R.color.fontAppbar, null), PorterDuff.Mode.SRC_ATOP);
+        }
         viewThemeUtils.platform.themeStatusBar(this);
         viewThemeUtils.material.colorMaterialTextButton(mSwitchAccountButton);
 
@@ -273,25 +280,11 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
             return;
         }
 
-        viewThemeUtils.material.themeToolbar(mToolbar);
-
-        if (isShow) {
-            viewThemeUtils.platform.resetStatusBar(this);
-            mAppBar.setStateListAnimator(AnimatorInflater.loadStateListAnimator(mAppBar.getContext(),
-                                                                                R.animator.appbar_elevation_off));
-            mDefaultToolbar.setVisibility(View.GONE);
-            mHomeSearchToolbar.setVisibility(View.VISIBLE);
-            viewThemeUtils.material.themeSearchCardView(mHomeSearchContainer);
-            viewThemeUtils.material.themeSearchBarText(mSearchText);
-        } else {
-            mAppBar.setStateListAnimator(AnimatorInflater.loadStateListAnimator(mAppBar.getContext(),
-                                                                                R.animator.appbar_elevation_on));
-            viewThemeUtils.platform.themeStatusBar(this);
-            mDefaultToolbar.setVisibility(View.VISIBLE);
-            mHomeSearchToolbar.setVisibility(View.GONE);
-        }
-
-        SystemBarBackgroundCallbacks.apply(this, viewThemeUtils);
+        mAppBar.setStateListAnimator(AnimatorInflater.loadStateListAnimator(mAppBar.getContext(),
+                                                                            R.animator.appbar_elevation_on));
+        viewThemeUtils.platform.themeStatusBar(this);
+        mDefaultToolbar.setVisibility(View.VISIBLE);
+        mHomeSearchToolbar.setVisibility(View.GONE);
     }
 
     public boolean isHomeSearchToolbarVisible() {
@@ -308,7 +301,8 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
         // set home button properties
         if (actionBar != null) {
             if (title != null) {
-                actionBar.setTitle(title);
+                //custom styling for action bar title required for NMC
+                ToolbarThemeUtils.setColoredTitle(this, actionBar, title);
                 actionBar.setDisplayShowTitleEnabled(true);
             } else {
                 actionBar.setDisplayShowTitleEnabled(false);
@@ -419,8 +413,8 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
     public void updateToolbarSubtitle(@NonNull String subtitle) {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setSubtitle(subtitle);
-            viewThemeUtils.androidx.themeActionBarSubtitle(this, actionBar);
+            //required for NMC
+            actionBar.setSubtitle(StringUtils.getColorSpan(subtitle, getResources().getColor(R.color.fontAppbar, null)));
         }
     }
 
