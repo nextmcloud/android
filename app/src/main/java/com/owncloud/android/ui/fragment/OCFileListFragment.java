@@ -819,7 +819,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
             final MenuItem item = menu.findItem(R.id.custom_menu_placeholder_item);
             if (item.getIcon() != null) {
-                item.setIcon(viewThemeUtils.platform.colorDrawable(item.getIcon(), ContextCompat.getColor(requireContext(), R.color.white)));
+                // NMC customization
+                item.setIcon(viewThemeUtils.platform.colorDrawable(item.getIcon(), ContextCompat.getColor(requireContext(), R.color.fontAppbar)));
             }
 
             mActiveActionMode.invalidate();
