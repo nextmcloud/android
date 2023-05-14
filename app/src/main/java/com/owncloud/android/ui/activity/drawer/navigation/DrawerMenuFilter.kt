@@ -17,7 +17,9 @@ object DrawerMenuFilter {
 
     fun filter(menu: Menu, user: User, capability: OCCapability?, resources: Resources) {
         capability?.let {
-            DrawerMenuUtil.filterTrashbinMenuItem(menu, it)
+            // NMC: trashbin icon is depending on capability due to this it doesn't appear in some of the devices
+            // so removing the check as we need this option always
+            // DrawerMenuUtil.filterTrashbinMenuItem(menu, it)
             DrawerMenuUtil.filterActivityMenuItem(menu, it)
             DrawerMenuUtil.filterGroupfoldersMenuItem(menu, it)
             DrawerMenuUtil.filterAssistantMenuItem(menu, it, resources)
