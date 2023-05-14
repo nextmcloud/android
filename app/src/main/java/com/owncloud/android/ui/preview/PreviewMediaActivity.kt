@@ -36,6 +36,7 @@ import android.widget.FrameLayout
 import androidx.annotation.OptIn
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -143,7 +144,8 @@ class PreviewMediaActivity :
         binding = ActivityPreviewMediaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.materialToolbar)
+        // NMC Customization: Customize toolbar
+        setupToolbar()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         applyWindowInsets()
         initArguments(savedInstanceState)
@@ -238,10 +240,6 @@ class PreviewMediaActivity :
             it.setDisplayHomeAsUpEnabled(true)
             viewThemeUtils.files.themeActionBar(this, it)
         }
-
-        viewThemeUtils.platform.themeStatusBar(
-            this
-        )
     }
 
     private fun showProgressLayout() {
@@ -442,7 +440,7 @@ class PreviewMediaActivity :
                     .displayCutout()
             )
 
-            binding.materialToolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            binding.mediaToolbar.appbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = insets.top
             }
             exoControls.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -453,7 +451,7 @@ class PreviewMediaActivity :
             }
             exoControls.updatePadding(left = insets.left, right = insets.right)
             exoProgress.updatePadding(left = insets.left, right = insets.right)
-            binding.materialToolbar.updatePadding(left = insets.left, right = insets.right)
+            binding.mediaToolbar.appbar.updatePadding(left = insets.left, right = insets.right)
             WindowInsetsCompat.CONSUMED
         }
     }
@@ -486,6 +484,15 @@ class PreviewMediaActivity :
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.custom_menu_placeholder, menu)
+        // NMC customization
+        menu?.findItem(R.id.custom_menu_placeholder_item)?.apply {
+            icon = icon?.let {
+                viewThemeUtils.platform.colorDrawable(
+                    it,
+                    ContextCompat.getColor(this@PreviewMediaActivity, R.color.fontAppbar)
+                )
+            }
+        }
         return true
     }
 
