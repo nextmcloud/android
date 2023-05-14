@@ -145,8 +145,9 @@ class PreviewMediaFragment :
         binding = PreviewImageFragmentBinding.inflate(inflater, container, false)
 
         binding.image.visibility = View.GONE
-        binding.root.setOnClickListener { togglePreviewImageFullScreen() }
-        binding.image.setOnClickListener { togglePreviewImageFullScreen() }
+        // NMC: no full screen for image preview
+        // binding.root.setOnClickListener { togglePreviewImageFullScreen() }
+        // binding.image.setOnClickListener { togglePreviewImageFullScreen() }
 
         checkLivePhotoAvailability()
         setMultiListLoadingMessage()

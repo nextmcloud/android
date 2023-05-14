@@ -18,7 +18,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -77,7 +76,6 @@ import kotlin.math.min
 /**
  * Holds a swiping gallery where image and video files contained in a Nextcloud directory are shown.
  */
-@Suppress("TooManyFunctions")
 class PreviewMediaActivity :
     FileActivity(),
     FileFragment.ContainerActivity,
@@ -136,6 +134,7 @@ class PreviewMediaActivity :
         }
 
         setContentView(R.layout.preview_image_activity)
+        setupToolbar()
 
         setupDrawer(menuItemId)
 
@@ -146,7 +145,6 @@ class PreviewMediaActivity :
             updateActionBarTitleAndHomeButton(chosenFile)
             viewThemeUtils.files.setWhiteBackButton(this, it)
             it.setDisplayHomeAsUpEnabled(true)
-            it.setBackgroundDrawable(R.color.black.toDrawable())
         }
 
         setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
@@ -156,7 +154,9 @@ class PreviewMediaActivity :
             screenState = PreviewImageActivityState.WaitingForBinder
         }
 
-        applyDisplayCutOutTopPadding()
+        // NMC-4604 fix: we don't need to call this function
+        // as we using toolbar_standard directly inside the xml and no padding is required
+        // applyDisplayCutOutTopPadding()
 
         handleBackPress()
 
@@ -402,7 +402,8 @@ class PreviewMediaActivity :
             return
         }
 
-        updateActionBarTitle(file.fileName)
+        // NMC Customization
+        updateActionBarTitleAndHomeButton(getFile())
 
         if (pagerNeedsRebuild) {
             savedPosition = null
@@ -614,13 +615,10 @@ class PreviewMediaActivity :
         }
 
         if (currentFile != null) {
-            updateActionBarTitle(currentFile.fileName)
+            // NMC Customization
+            updateActionBarTitleAndHomeButton(currentFile)
             setDrawerIndicatorEnabled(false)
         }
-    }
-
-    private fun updateActionBarTitle(title: String?) {
-        supportActionBar?.title = title
     }
 
     /**
