@@ -43,12 +43,12 @@
                 android:text="@string/menu_item_sort_by_date_newest_first"
                 android:textAlignment="textStart"
                 android:textAllCaps="false"
-                android:textColor="@color/fontAppbar"
+                android:textColor="@color/sort_text_color"
                 android:textSize="14sp"
                 app:icon="@drawable/ic_expand_more"
                 app:iconGravity="textEnd"
-                app:iconSize="16dp"
-                app:iconTint="@color/fontAppbar"
+                app:iconSize="12dp"
+                app:iconTint="@color/sort_text_color"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -61,11 +61,28 @@
                 android:layout_marginEnd="1dp"
                 android:contentDescription="@string/action_switch_grid_view"
                 app:cornerRadius="24dp"
+                app:iconSize="24dp"
                 app:icon="@drawable/ic_view_module"
-                app:iconTint="@color/fontAppbar"
+                app:iconTint="@color/icon_color"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/toolbarBarrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="switch_grid_view_button,sort_button" />
+
+            <View
+                android:id="@+id/toolbar_divider"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/divider_color"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/toolbarBarrier" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- default toolbar -->
@@ -86,6 +103,7 @@
                     android:id="@+id/preview_image"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/nav_drawer_header_height"
+                    android:background="@color/bg_default"
                     android:contentDescription="@string/preview_image_description"
                     android:scaleType="centerCrop" />
 
@@ -99,7 +117,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/appbar"
+                android:background="@color/bg_default"
                 android:theme="@style/Theme.ToolbarTheme"
                 tools:visibility="gone">
 
@@ -111,6 +129,14 @@
                     app:backgroundTint="@color/fontAppbar"
                     app:popupTheme="@style/Theme.AppCompat.DayNight.NoActionBar" />
             </com.google.android.material.appbar.MaterialToolbar>
+
+            <View
+                android:id="@+id/default_toolbar_divider"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:visibility="gone"
+                android:layout_below="@+id/toolbar"
+                android:background="@color/toolbar_divider_color" />
 
         </RelativeLayout>
 
