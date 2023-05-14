@@ -42,23 +42,6 @@ class GalleryFragmentBottomSheetDialog(
     }
 
     private fun setupLayout() {
-        viewThemeUtils.platform.colorViewBackground(binding.bottomSheet, ColorRole.SURFACE)
-
-        listOf(
-            binding.tickMarkShowImages,
-            binding.tickMarkShowVideos
-        ).forEach {
-            viewThemeUtils.platform.colorImageView(it, ColorRole.PRIMARY)
-        }
-
-        listOf(
-            binding.btnSelectMediaFolder,
-            binding.btnHideVideos,
-            binding.btnHideImages
-        ).forEach {
-            viewThemeUtils.material.colorMaterialButtonText(it)
-        }
-
         when (currentMediaState) {
             MediaState.MEDIA_STATE_PHOTOS_ONLY -> {
                 binding.tickMarkShowImages.visibility = View.VISIBLE
