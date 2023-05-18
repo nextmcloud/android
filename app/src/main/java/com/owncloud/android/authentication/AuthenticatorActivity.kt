@@ -60,6 +60,8 @@ import com.nextcloud.repository.ClientRepository
 import com.nextcloud.utils.SnackbarUtil
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.mdm.MDMConfig
+import com.nmc.android.marketTracking.AdjustSdkUtils
+import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.nextcloud.utils.text.LinkFormatter
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
@@ -970,6 +972,10 @@ open class AuthenticatorActivity :
     }
 
     private fun endSuccess() {
+        // NMC: track successful login event
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_SUCCESSFUL_LOGIN, preferences)
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_SUCCESSFUL_LOGIN, preferences)
+
         if (!onlyAdd) {
             startActivity(postLoginIntent())
         }
@@ -1115,6 +1121,12 @@ open class AuthenticatorActivity :
             checkOcServer()
         }
         return false // always return false to grant that the software keyboard is hidden anyway
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // track screen view when activity is visible
+        TealiumSdkUtils.trackView(TealiumSdkUtils.SCREEN_VIEW_LOGIN, preferences)
     }
 
     // region Operations service
