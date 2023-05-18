@@ -19,7 +19,8 @@ import java.util.Properties
 val shotTest = System.getenv("SHOT_TEST") == "true"
 val ciBuild = System.getenv("CI") == "true"
 val perfAnalysis = project.hasProperty("perfAnalysis")
-
+// apply marketing SDK for NMC
+apply (from = "${rootProject.projectDir}/nmc_marketing-dependencies.gradle")
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -519,4 +520,7 @@ dependencies {
 
     // kotlinx.serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // NMC: dependency required to capture Advertising ID for Adjust & MoEngage SDK
+    implementation("com.google.android.gms:play-services-ads-identifier:18.0.1")
 }
