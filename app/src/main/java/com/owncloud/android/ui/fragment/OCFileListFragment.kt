@@ -66,9 +66,13 @@ import com.nextcloud.utils.extensions.listenEncryptionDialogResult
 import com.nextcloud.utils.extensions.logFileSize
 import com.nextcloud.utils.extensions.resolveMimeType
 import com.nextcloud.utils.extensions.slideHideBottomBehavior
+import com.nmc.android.marketTracking.AdjustSdkUtils
+import com.nmc.android.marketTracking.TrackingScanInterfaceImpl
+import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.nextcloud.utils.fileNameValidator.FileNameValidator
 import com.nextcloud.utils.thumbnail.ThumbnailGenerator
 import com.nextcloud.utils.view.FastScrollUtils
+import com.nmc.android.marketTracking.TrackingScanInterface
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.ArbitraryDataProvider
@@ -170,6 +174,13 @@ open class OCFileListFragment :
     @Inject
     lateinit var deviceInfo: DeviceInfo
 
+    /**
+     * Things to note about both the branches. 1. nmc/1867-scanbot branch: --> interface won't be initialised -->
+     * calling of interface method will be done here 2. nmc/1925-market_tracking --> interface will be initialised -->
+     * calling of interface method won't be done here
+     */
+    private var trackingScanInterface: TrackingScanInterface? = null
+
     lateinit var e2eeDialogPresenter: E2EEDialogPresenter
         private set
 
@@ -263,6 +274,8 @@ open class OCFileListFragment :
             "Created ${javaClass.simpleName}: folder=${currentFile?.remotePath}, " +
                 "searchType=$currentSearchType, isSearchFragment=$isSearchFragment"
         )
+        // NMC customization will be initialized in nmc/1925-market_tracking
+        trackingScanInterface = TrackingScanInterfaceImpl()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -555,6 +568,10 @@ open class OCFileListFragment :
             Intent.createChooser(action, getString(R.string.upload_chooser_title)),
             FileDisplayActivity.REQUEST_CODE__SELECT_CONTENT_FROM_APPS
         )
+
+        // track event photo/video/any upload button click
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FAB_BOTTOM_PHOTO_VIDEO_UPLOAD, preferences)
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FAB_BOTTOM_PHOTO_VIDEO_UPLOAD, preferences)
     }
 
     override fun directCameraUpload() {
@@ -571,6 +588,10 @@ open class OCFileListFragment :
         }
 
         showCameraUploadTypeDialog(fileDisplayActivity)
+
+        // NMC: track event for camera upload button click
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FAB_BOTTOM_CAMERA_UPLOAD, preferences)
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FAB_BOTTOM_CAMERA_UPLOAD, preferences)
     }
 
     private fun showCameraUploadTypeDialog(fileDisplayActivity: FileDisplayActivity) {
@@ -647,6 +668,10 @@ open class OCFileListFragment :
             return
         }
 
+        // track event for uploading files button click
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FAB_BOTTOM_FILE_UPLOAD, preferences)
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FAB_BOTTOM_FILE_UPLOAD, preferences)
+
         UploadFilesActivity.startUploadActivityForResult(
             fileActivity,
             user,
@@ -695,6 +720,14 @@ open class OCFileListFragment :
     //region List item interaction
     override fun onShareIconClick(file: OCFile) {
         containerActivity?.showDetails(file, SHARING_TAB)
+
+        // track event on click of Share button
+        trackSharingClickEvent()
+    }
+
+    private fun trackSharingClickEvent() {
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FILE_BROWSER_SHARING, preferences)
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FILE_BROWSER_SHARING, preferences)
     }
 
     override fun showShareDetailView(file: OCFile) {
@@ -944,8 +977,11 @@ open class OCFileListFragment :
 
     private fun handleListAction(@IdRes itemId: Int, checkedFiles: Set<OCFile>): Boolean {
         when {
-            itemId == R.id.action_send_share_file && checkedFiles.size == SINGLE_SELECTION ->
+            itemId == R.id.action_send_share_file && checkedFiles.size == SINGLE_SELECTION -> {
                 containerActivity?.showDetails(checkedFiles.first(), SHARING_TAB)
+                // track event on click of Share button
+                trackSharingClickEvent()
+            }
 
             itemId == R.id.action_see_details && checkedFiles.size == SINGLE_SELECTION ->
                 showDetailsAndHideSortGroup(checkedFiles.first())
@@ -975,6 +1011,8 @@ open class OCFileListFragment :
             showDetails(file)
             showSortListGroup(false)
         }
+        // track event on click of Share button
+        trackSharingClickEvent()
     }
 
     private fun startMoveOrCopy(checkedFiles: Set<OCFile>) {
