@@ -86,6 +86,7 @@ import com.nextcloud.utils.extensions.navigateToAllFiles
 import com.nextcloud.utils.extensions.observeWorker
 import com.nextcloud.utils.fileNameValidator.FileNameValidator.checkFolderPath
 import com.nextcloud.utils.view.FastScrollUtils
+import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FilesBinding
@@ -2873,6 +2874,9 @@ class FileDisplayActivity :
         setNewLastDisplayedAccountName(existingAccountName)
         EventBus.getDefault().post(TokenPushEvent())
         checkForNewDevVersionNecessary(applicationContext)
+
+        // NMC: track screen view when activity is visible
+        TealiumSdkUtils.trackView(TealiumSdkUtils.SCREEN_VIEW_FILE_BROWSER, preferences)
     }
 
     private fun setNewLastDisplayedAccountName(accountName: String) {
