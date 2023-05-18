@@ -66,7 +66,11 @@ import com.nextcloud.utils.extensions.OCFileListFragmentExtensionsKt;
 import com.nextcloud.utils.extensions.ViewExtensionsKt;
 import com.nextcloud.utils.fileNameValidator.FileNameValidator;
 import com.nextcloud.utils.thumbnail.ThumbnailGenerator;
+import com.nmc.android.marketTracking.TrackingScanInterface;
 import com.nextcloud.utils.view.FastScrollUtils;
+import com.nmc.android.marketTracking.AdjustSdkUtils;
+import com.nmc.android.marketTracking.TrackingScanInterfaceImpl;
+import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -232,6 +236,13 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Inject DeviceInfo deviceInfo;
 
+    /**
+     * Things to note about both the branches. 1. nmc/1867-scanbot branch: --> interface won't be initialised -->
+     * calling of interface method will be done here 2. nmc/1925-market_tracking --> interface will be initialised -->
+     * calling of interface method won't be done here
+     */
+    private TrackingScanInterface trackingScanInterface;
+
     protected enum MenuItemAddRemove {
         DO_NOTHING,
         REMOVE_SORT,
@@ -259,6 +270,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
         folderEncryption = new FolderEncryption(this);
         clickHandler = new EncryptedFolderClickHandler(this);
         e2eeDialogPresenter = new E2EEDialogPresenter(this);
+
+        //NMC customization will be initialised in nmc/1925-market_tracking
+        trackingScanInterface = new TrackingScanInterfaceImpl();
     }
 
     @Override
@@ -581,6 +595,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
             Intent.createChooser(action, getString(R.string.upload_chooser_title)),
             FileDisplayActivity.REQUEST_CODE__SELECT_CONTENT_FROM_APPS
                                             );
+
+        //track event photo/video/any upload button click
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FAB_BOTTOM_PHOTO_VIDEO_UPLOAD, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FAB_BOTTOM_PHOTO_VIDEO_UPLOAD, preferences);
     }
 
     @Override
@@ -598,6 +616,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
         }
 
         showDirectCameraUploadAlertDialog(fileDisplayActivity);
+
+        // NMC: track event for camera upload button click
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FAB_BOTTOM_CAMERA_UPLOAD, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FAB_BOTTOM_CAMERA_UPLOAD, preferences);
     }
 
     private void showDirectCameraUploadAlertDialog(FileDisplayActivity fileDisplayActivity) {
@@ -667,6 +689,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
         boolean isWithinEncryptedFolder = file.isEncrypted();
         UploadFilesActivity.startUploadActivityForResult(fileActivity, user.get(), FileDisplayActivity.REQUEST_CODE__SELECT_FILES_FROM_FILE_SYSTEM, isWithinEncryptedFolder);
+
+        // track event for uploading files button click
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FAB_BOTTOM_FILE_UPLOAD, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FAB_BOTTOM_FILE_UPLOAD, preferences);
     }
 
     @Override
@@ -687,6 +713,14 @@ public class OCFileListFragment extends ExtendedListFragment implements
     @Override
     public void onShareIconClick(OCFile file) {
         mContainerActivity.showDetails(file, 1);
+
+        //track event on click of Share button
+        trackSharingClickEvent();
+    }
+
+    private void trackSharingClickEvent() {
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FILE_BROWSER_SHARING, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FILE_BROWSER_SHARING, preferences);
     }
 
     @Override
@@ -1306,6 +1340,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
             if (itemId == R.id.action_send_share_file) {
                 mContainerActivity.showDetails(singleFile, 1);
+                //track event on click of Share button
+                trackSharingClickEvent();
                 return true;
             } else if (itemId == R.id.action_open_file_with) {
                 mContainerActivity.getFileOperationsHelper().openFile(singleFile);
@@ -1338,6 +1374,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
                 mContainerActivity.showDetails(singleFile);
                 mContainerActivity.showSortListGroup(false);
+
+                //track event on click of Share button
+                trackSharingClickEvent();
                 return true;
             } else if (itemId == R.id.action_set_as_wallpaper) {
                 mContainerActivity.getFileOperationsHelper().setPictureAs(singleFile, getView());
