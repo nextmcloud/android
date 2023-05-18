@@ -59,6 +59,7 @@ import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.client.network.ConnectivityService;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.client.utils.IntentUtil;
+import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.nextcloud.model.WorkerState;
 import com.nextcloud.model.WorkerStateLiveData;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
@@ -2289,6 +2290,9 @@ public class FileDisplayActivity extends FileActivity
 
         EventBus.getDefault().post(new TokenPushEvent());
         checkForNewDevVersionNecessary(getApplicationContext());
+
+        //track screen view when activity is visible
+        TealiumSdkUtils.trackView(TealiumSdkUtils.SCREEN_VIEW_FILE_BROWSER, preferences);
     }
 
     private void registerRefreshFolderEventReceiver() {

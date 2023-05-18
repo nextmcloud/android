@@ -177,6 +177,7 @@
     <string name="request_account_deletion_button">Request deletion</string>
     <string name="request_account_deletion_details">Request permanent deletion of account by service provider</string>
     <string name="delete_account">Remove account</string>
+    <string name="delete_account_warning">Remove account %s and delete all local files?\n\nDeletion cannot be undone.</string>
     <string name="avatar">Avatar</string>
     <string name="active_user">Active user</string>
     <string name="upload_chooser_title">Upload from…</string>
