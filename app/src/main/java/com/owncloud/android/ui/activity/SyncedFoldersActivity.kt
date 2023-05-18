@@ -37,6 +37,8 @@ import com.nextcloud.utils.BatteryOptimizationHelper
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.extensions.isDialogFragmentReady
 import com.nextcloud.utils.extensions.setVisibleIf
+import com.nmc.android.marketTracking.AdjustSdkUtils
+import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.StoragePermissionWarningBannerBinding
@@ -701,6 +703,14 @@ class SyncedFoldersActivity :
         if (syncedFolder.isEnabled) {
             showBatteryOptimizationDialogIfNeeded()
         }
+
+        //track event when user enable/disable auto upload on/off
+        trackAutoUploadEvent(syncedFolder.isEnabled)
+    }
+
+    private fun trackAutoUploadEvent(enabled: Boolean) {
+        AdjustSdkUtils.trackEvent(if (enabled) AdjustSdkUtils.EVENT_TOKEN_SETTINGS_AUTO_UPLOAD_ON else AdjustSdkUtils.EVENT_TOKEN_SETTINGS_AUTO_UPLOAD_OFF, preferences)
+        TealiumSdkUtils.trackEvent(if (enabled) TealiumSdkUtils.EVENT_SETTINGS_AUTO_UPLOAD_ON else TealiumSdkUtils.EVENT_SETTINGS_AUTO_UPLOAD_OFF, preferences)
     }
 
     override fun showSubFolderWarningDialog() {
@@ -780,6 +790,9 @@ class SyncedFoldersActivity :
         lifecycleScope.launch(Dispatchers.IO) {
             fileUploadHelper.removeEntityFromUploadEntities(item.id)
         }
+
+        //track event when user enable/disable auto upload on/off
+        trackAutoUploadEvent(item.isEnabled)
     }
 
     override fun onDeleteSyncedFolderPreference(syncedFolder: SyncedFolderParcelable?) {
