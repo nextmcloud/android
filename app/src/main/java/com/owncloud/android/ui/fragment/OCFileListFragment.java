@@ -19,12 +19,14 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
+import android.util.DisplayMetrics;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -47,6 +49,7 @@ import com.nextcloud.client.documentscan.DocumentScanActivity;
 import com.nextcloud.client.editimage.EditImageActivity;
 import com.nextcloud.client.jobs.BackgroundJobManager;
 import com.nextcloud.client.network.ClientFactory;
+import com.nextcloud.client.preferences.AppPreferencesImpl;
 import com.nextcloud.client.utils.Throttler;
 import com.nextcloud.common.NextcloudClient;
 import com.nextcloud.ui.fileactions.FileAction;
@@ -87,6 +90,8 @@ import com.owncloud.android.ui.activity.OnEnforceableRefreshListener;
 import com.owncloud.android.ui.activity.UploadFilesActivity;
 import com.owncloud.android.ui.adapter.CommonOCFileListAdapterInterface;
 import com.owncloud.android.ui.adapter.OCFileListAdapter;
+import com.owncloud.android.ui.decoration.MediaGridItemDecoration;
+import com.owncloud.android.ui.decoration.SimpleListItemDividerDecoration;
 import com.owncloud.android.ui.dialog.ChooseRichDocumentsTemplateDialogFragment;
 import com.owncloud.android.ui.dialog.ChooseTemplateDialogFragment;
 import com.owncloud.android.ui.dialog.ConfirmationDialogFragment;
@@ -224,6 +229,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
     private FloatingActionButton mFabMain;
     public static boolean isMultipleFileSelectedForCopyOrMove = false;
 
+    private SimpleListItemDividerDecoration simpleListItemDividerDecoration;
+    private MediaGridItemDecoration mediaGridItemDecoration;
+
     @Inject DeviceInfo deviceInfo;
 
     protected enum MenuItemAddRemove {
@@ -238,6 +246,13 @@ public class OCFileListFragment extends ExtendedListFragment implements
     private List<MenuItem> mOriginalMenuItems = new ArrayList<>();
 
     private static OCFileDepth fileDepth = OCFileDepth.Root;
+
+    private int maxColumnSizeLandscape = 5;
+
+    //this variable will help us to provide number of span count for grid view
+    //the width for single item is approx to 180
+    private static final int GRID_ITEM_DEFAULT_WIDTH = 180;
+    private static final int DEFAULT_FALLBACK_SPAN_COUNT = 4;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -457,6 +472,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
             isGridViewPreferred(mFile),
             viewThemeUtils
         );
+
+        simpleListItemDividerDecoration = new SimpleListItemDividerDecoration(getContext(), R.drawable.item_divider, true);
+        int spacing = getResources().getDimensionPixelSize(R.dimen.media_grid_spacing);
+        mediaGridItemDecoration = new MediaGridItemDecoration(spacing);
 
         setRecyclerViewAdapter(mAdapter);
 
@@ -1647,6 +1666,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
         if (isGridEnabled()) {
             switchLayoutManager(false);
         }
+        addRemoveRecyclerViewItemDecorator();
     }
 
     public void setGridAsPreferred() {
@@ -1657,6 +1677,33 @@ public class OCFileListFragment extends ExtendedListFragment implements
     public void switchToGridView() {
         if (!isGridEnabled()) {
             switchLayoutManager(true);
+        }
+        addRemoveRecyclerViewItemDecorator();
+    }
+
+    private void addRemoveRecyclerViewItemDecorator() {
+        if (getRecyclerView().getLayoutManager() instanceof GridLayoutManager) {
+            removeItemDecorator();
+            if (getRecyclerView().getItemDecorationCount() == 0) {
+                getRecyclerView().addItemDecoration(mediaGridItemDecoration);
+                int padding = getResources().getDimensionPixelSize(R.dimen.grid_recyclerview_padding);
+                getRecyclerView().setPadding(padding, padding, padding, padding);
+            }
+        } else {
+            removeItemDecorator();
+            if (getRecyclerView().getItemDecorationCount() == 0 && com.nmc.android.utils.DisplayUtils.isShowDividerForList()) {
+                getRecyclerView().addItemDecoration(simpleListItemDividerDecoration);
+                getRecyclerView().setPadding(0, 0, 0, 0);
+            }
+        }
+    }
+
+    /**
+     * method to remove the item decorator
+     */
+    private void removeItemDecorator() {
+        while (getRecyclerView().getItemDecorationCount() > 0) {
+            getRecyclerView().removeItemDecorationAt(0);
         }
     }
 
@@ -1697,10 +1744,32 @@ public class OCFileListFragment extends ExtendedListFragment implements
         }
 
         recyclerView.setLayoutManager(layoutManager);
+        updateSpanCount(getResources().getConfiguration());
         recyclerView.scrollToPosition(position);
         adapter.setGridView(grid);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * method will calculate the number of spans required for grid item and will update the span accordingly
+     *
+     */
+    private void calculateAndUpdateSpanCount() {
+        // NMC-4667 fix
+        // use display metrics to calculate the span count
+        DisplayMetrics displayMetrics = requireContext().getResources().getDisplayMetrics();
+        float screenWidthDp = displayMetrics.widthPixels / displayMetrics.density;
+        int newSpanCount = (int) (screenWidthDp / GRID_ITEM_DEFAULT_WIDTH);
+        RecyclerView.LayoutManager layoutManager = getRecyclerView().getLayoutManager();
+        if (layoutManager instanceof GridLayoutManager) {
+            if (newSpanCount < 1) {
+                newSpanCount = DEFAULT_FALLBACK_SPAN_COUNT;
+            }
+            ((GridLayoutManager) layoutManager).setSpanCount(newSpanCount);
+            layoutManager.requestLayout();
+        }
+
     }
 
     public CommonOCFileListAdapterInterface getCommonAdapter() {
@@ -2240,5 +2309,53 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     public boolean shouldNavigateBackToAllFiles() {
         return ((this instanceof GalleryFragment) || isSearchEventFavorite() || DrawerActivity.menuItemId == R.id.nav_favorites);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (getAdapter() != null) {
+            getAdapter().notifyDataSetChanged();
+        }
+        updateSpanCount(newConfig);
+    }
+
+    /**
+     * method will update the span count on basis of device orientation for the file listing
+     *
+     * @param newConfig current configuration
+     */
+    private void updateSpanCount(Configuration newConfig) {
+        //this should only run when current view is not media gallery
+        if (getAdapter() != null) {
+            int maxColumnSize = (int) AppPreferencesImpl.DEFAULT_GRID_COLUMN;
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                //add the divider item decorator when orientation is landscape and device is not tablet
+                //because we don't have to add divider again as it is already added
+                if (!com.nmc.android.utils.DisplayUtils.isTablet()) {
+                    addRemoveRecyclerViewItemDecorator();
+                }
+                maxColumnSize = maxColumnSizeLandscape;
+            } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                //remove the divider item decorator when orientation is portrait and when device is not tablet
+                //because we have to show divider in both landscape and portrait mode
+                if (!com.nmc.android.utils.DisplayUtils.isTablet()) {
+                    removeItemDecorator();
+                }
+                maxColumnSize = (int) AppPreferencesImpl.DEFAULT_GRID_COLUMN;
+            }
+
+            if (isGridEnabled()) {
+                //for tablet calculate size on the basis of screen width
+                if (com.nmc.android.utils.DisplayUtils.isTablet()) {
+                    calculateAndUpdateSpanCount();
+                } else {
+                    //and for phones directly show the hardcoded column size
+                    if (getRecyclerView().getLayoutManager() instanceof GridLayoutManager) {
+                        ((GridLayoutManager) getRecyclerView().getLayoutManager()).setSpanCount(maxColumnSize);
+                    }
+                }
+            }
+        }
     }
 }
