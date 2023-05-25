@@ -439,7 +439,8 @@ public final class AppPreferencesImpl implements AppPreferences {
 
     @Override
     public int getUploaderBehaviour() {
-        return preferences.getInt(AUTO_PREF__UPLOADER_BEHAVIOR, 1);
+        // NMC Customization
+        return preferences.getInt(AUTO_PREF__UPLOADER_BEHAVIOR, 0);
     }
 
     @Override

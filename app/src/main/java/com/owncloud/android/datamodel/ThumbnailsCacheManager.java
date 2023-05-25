@@ -67,6 +67,7 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -157,9 +158,19 @@ public final class ThumbnailsCacheManager {
      * @return int
      */
     public static int getThumbnailDimension() {
+        return getThumbnailDimension(R.dimen.file_icon_size_grid);
+    }
+
+    /**
+     * Converts size of file icon from dp to pixel
+     * this function is required for custom thumbnail sizes
+     * @param thumbnailDimension dimension to be converted
+     * @return int
+     */
+    public static int getThumbnailDimension(@DimenRes int thumbnailDimension) {
         // Converts dp to pixel
         Resources r = MainApp.getAppContext().getResources();
-        return Math.round(r.getDimension(R.dimen.file_icon_size_grid));
+        return Math.round(r.getDimension(thumbnailDimension));
     }
 
     /**
@@ -827,14 +838,25 @@ public final class ThumbnailsCacheManager {
         private String mImageKey;
         private final Context mContext;
         private final ViewThemeUtils viewThemeUtils;
+        @DimenRes
+        private final int thumbnailDimension;
 
         public MediaThumbnailGenerationTask(ImageView imageView,
                                             Context context,
+                                            ViewThemeUtils viewThemeUtils) {
+            this(imageView, context, R.dimen.file_icon_size_grid, viewThemeUtils);
+        }
+
+        // constructor to generate thumbnails for the requested size
+        public MediaThumbnailGenerationTask(ImageView imageView,
+                                            Context context,
+                                            @DimenRes int thumbnailDimension,
                                             ViewThemeUtils viewThemeUtils) {
             // Use a WeakReference to ensure the ImageView can be garbage collected
             mImageViewReference = new WeakReference<>(imageView);
             mContext = context;
             this.viewThemeUtils = viewThemeUtils;
+            this.thumbnailDimension = thumbnailDimension;
         }
 
         @Override
@@ -849,9 +871,9 @@ public final class ThumbnailsCacheManager {
                     }
 
                     if (MimeTypeUtil.isImage(mFile)) {
-                        thumbnail = doFileInBackground(mFile, Type.IMAGE);
+                        thumbnail = doFileInBackground(mFile, Type.IMAGE, thumbnailDimension);
                     } else if (MimeTypeUtil.isVideo(mFile)) {
-                        thumbnail = doFileInBackground(mFile, Type.VIDEO);
+                        thumbnail = doFileInBackground(mFile, Type.VIDEO, thumbnailDimension);
                     }
                 }
             } // the app should never break due to a problem with thumbnails
@@ -897,7 +919,7 @@ public final class ThumbnailsCacheManager {
             }
         }
 
-        private Bitmap doFileInBackground(File file, Type type) {
+        private Bitmap doFileInBackground(File file, Type type, @DimenRes int thumbnailDimension) {
             final String imageKey;
 
             if (mImageKey != null) {
@@ -913,7 +935,7 @@ public final class ThumbnailsCacheManager {
             if (thumbnail == null) {
 
                 if (Type.IMAGE == type) {
-                    int px = getThumbnailDimension();
+                    int px = getThumbnailDimension(thumbnailDimension);
 
                     Bitmap bitmap = BitmapUtils.decodeSampledBitmapFromFile(file.getAbsolutePath(), px, px);
 
@@ -939,7 +961,7 @@ public final class ThumbnailsCacheManager {
 
                     if (thumbnail != null) {
                         // Scale down bitmap if too large.
-                        int px = getThumbnailDimension();
+                        int px = getThumbnailDimension(thumbnailDimension);
                         int width = thumbnail.getWidth();
                         int height = thumbnail.getHeight();
                         int max = Math.max(width, height);
