@@ -23,7 +23,6 @@ package com.owncloud.android.ui.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,6 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.nextcloud.client.account.User;
-import com.nextcloud.client.preferences.DarkMode;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
@@ -46,6 +44,8 @@ import com.owncloud.android.utils.theme.ViewThemeUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import androidx.core.content.ContextCompat;
 
 public class UploaderAdapter extends SimpleAdapter {
 
@@ -107,11 +107,10 @@ public class UploaderAdapter extends SimpleAdapter {
 
         if (file.isFolder()) {
             boolean isAutoUploadFolder = SyncedFolderProvider.isAutoUploadFolder(syncedFolderProvider, file, user);
-            boolean isDarkModeActive = syncedFolderProvider.getPreferences().isDarkModeEnabled();
 
             Integer overlayIconId = file.getFileOverlayIconId(isAutoUploadFolder);
-            final LayerDrawable icon = MimeTypeUtil.getFileIcon(isDarkModeActive, overlayIconId, mContext, viewThemeUtils);
-            fileIcon.setImageDrawable(icon);
+            // NMC Customization: No overlay icon will be used. Directly using folder icons
+            fileIcon.setImageDrawable(ContextCompat.getDrawable(mContext, overlayIconId));
         } else {
             // get Thumbnail if file is image
             if (MimeTypeUtil.isImage(file) && file.getRemoteId() != null) {
