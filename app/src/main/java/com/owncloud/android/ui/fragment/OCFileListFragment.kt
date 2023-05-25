@@ -21,6 +21,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -1474,6 +1475,14 @@ open class OCFileListFragment :
 
             showFavoriteChange(event)
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // NMC Customization
+        adapter?.notifyDataSetChanged()
+        fileListLayoutManager?.updateSpanCount(newConfig)
     }
 
     private fun showFavoriteChange(event: FavoriteEvent) {
