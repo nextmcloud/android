@@ -1128,6 +1128,7 @@
     <string name="write_email">E-Mail senden</string>
     <string name="wrong_storage_path">Speicherordner existiert nicht!</string>
     <string name="wrong_storage_path_desc">Ursache könnte die Wiederherstellung einer Sicherungskopie auf einem anderen Gerät sein. Der Standard-Ordner wird jetzt wieder verwendet. Bitte überprüfen Sie die Einstellungen bezüglich des Speicherortes.</string>
+    <string name="storage_sd_card">SD-Karte</string>
     <plurals name="hours">
         <item quantity="one">%d Stunde</item>
         <item quantity="other">%d Stunden</item>
