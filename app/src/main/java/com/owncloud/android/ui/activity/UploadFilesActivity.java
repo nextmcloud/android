@@ -195,8 +195,9 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
 
         // file upload spinner
         List<String> behaviours = new ArrayList<>();
-        behaviours.add(getString(R.string.uploader_upload_files_behaviour_move_to_nextcloud_folder,
-                                 themeUtils.getDefaultDisplayNameForRootFolder(this)));
+        // Not required this option for NMC
+        // behaviours.add(getString(R.string.uploader_upload_files_behaviour_move_to_nextcloud_folder,
+        //                        themeUtils.getDefaultDisplayNameForRootFolder(this)));
         behaviours.add(getString(R.string.uploader_upload_files_behaviour_only_upload));
         behaviours.add(getString(R.string.uploader_upload_files_behaviour_upload_and_delete_from_source));
 
@@ -205,6 +206,19 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
         behaviourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.uploadFilesSpinnerBehaviour.setAdapter(behaviourAdapter);
         binding.uploadFilesSpinnerBehaviour.setSelection(localBehaviour);
+        //NMC Customization
+        binding.uploadFilesSpinnerBehaviour.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                // store behaviour
+                preferences.setUploaderBehaviour(binding.uploadFilesSpinnerBehaviour.getSelectedItemPosition());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         // setup the toolbar
         setupToolbar();
@@ -269,7 +283,12 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
     private void fillDirectoryDropdown() {
         File currentDir = mCurrentDir;
         while (currentDir != null && currentDir.getParentFile() != null) {
-            mDirectories.add(currentDir.getName());
+            //NMC Customization
+            if (currentDir.getName().equals("0")) {
+                mDirectories.add(getResources().getString(R.string.storage_internal_storage));
+            } else {
+                mDirectories.add(currentDir.getName());
+            }
             currentDir = currentDir.getParentFile();
         }
         mDirectories.add(File.separator);
@@ -500,15 +519,16 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
 
                 // set result code
                 switch (binding.uploadFilesSpinnerBehaviour.getSelectedItemPosition()) {
-                    case 0: // move to nextcloud folder
+                    // Not required for NMC
+                    /*case 0: // move to nextcloud folder
                         setResult(RESULT_OK_AND_MOVE, data);
-                        break;
+                        break;*/
 
-                    case 1: // only upload
+                    case 0: // only upload
                         setResult(RESULT_OK_AND_DO_NOTHING, data);
                         break;
 
-                    case 2: // upload and delete from source
+                    case 1: // upload and delete from source
                         setResult(RESULT_OK_AND_DELETE, data);
                         break;
 
@@ -574,7 +594,8 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
             int localBehaviour = preferences.getUploaderBehaviour();
             binding.uploadFilesSpinnerBehaviour.setSelection(localBehaviour);
         } else {
-            binding.uploadFilesSpinnerBehaviour.setSelection(1);
+            //NMC Customization
+            binding.uploadFilesSpinnerBehaviour.setSelection(0);
             textView.setText(new StringBuilder().append(getString(R.string.uploader_upload_files_behaviour))
                                  .append(' ')
                                  .append(getString(R.string.uploader_upload_files_behaviour_not_writable))
