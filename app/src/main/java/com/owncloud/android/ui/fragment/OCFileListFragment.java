@@ -609,12 +609,13 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
             List<Integer> toHide = new ArrayList<>();
             if (isAPKorAAB(checkedFiles)) {
-                toHide.add(R.id.action_send_share_file);
                 toHide.add(R.id.action_export_file);
                 toHide.add(R.id.action_sync_file);
                 toHide.add(R.id.action_download_file);
             }
-            
+            // need to hide the share menu because we have renamed another menu for sharing (NMC)
+            toHide.add(R.id.action_send_share_file);
+
             FileActionsBottomSheet.newInstance(filesCount, checkedFiles, isOverflow, toHide)
                 .setResultListener(childFragmentManager, this, (id) -> {
                     onFileActionChosen(id, checkedFiles);
@@ -1047,7 +1048,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
                                       Snackbar.LENGTH_LONG).show();
                         return;
                     }
-                    
+
                     // Click on a file
                     if (PreviewImageFragment.canBePreviewed(file)) {
                         // preview image - it handles the download, if needed
