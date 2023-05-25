@@ -149,6 +149,7 @@
             android:exported="false" />
         <activity
             android:name="com.nextcloud.client.widget.DashboardWidgetConfigurationActivity"
+            android:enabled="false"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
@@ -163,6 +164,7 @@
             android:exported="false" />
         <receiver
             android:name="com.nextcloud.client.widget.DashboardWidgetProvider"
+            android:enabled="false"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -248,6 +250,7 @@
         <service
             android:name="com.nextcloud.client.widget.DashboardWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:enabled="false"
             android:exported="true" />
 
         <provider
