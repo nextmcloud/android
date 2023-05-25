@@ -6,6 +6,8 @@
  */
 package com.owncloud.android.ui.activity.uploadfiles
 
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.nextcloud.client.preferences.AppPreferences
@@ -23,11 +25,12 @@ class UploadBehaviourSelector(
     private val spinner get() = binding.uploadFilesSpinnerBehaviour
 
     val isMoveSelected: Boolean
-        get() = spinner.selectedItemPosition == POSITION_MOVE
+        get() = spinner.selectedItemPosition == POSITION_ONLY_UPLOAD
 
     val resultCode: Int?
         get() = when (spinner.selectedItemPosition) {
-            POSITION_MOVE -> UploadFilesActivity.RESULT_OK_AND_MOVE
+            // Not required for NMC
+            // POSITION_MOVE -> UploadFilesActivity.RESULT_OK_AND_MOVE
             POSITION_ONLY_UPLOAD -> UploadFilesActivity.RESULT_OK_AND_DO_NOTHING
             POSITION_DELETE -> UploadFilesActivity.RESULT_OK_AND_DELETE
             else -> null
@@ -35,7 +38,8 @@ class UploadBehaviourSelector(
 
     fun setup(rootFolderName: String) {
         val behaviours = listOf(
-            activity.getString(R.string.uploader_upload_files_behaviour_move_to_nextcloud_folder, rootFolderName),
+            // Not required this option for NMC
+           // activity.getString(R.string.uploader_upload_files_behaviour_move_to_nextcloud_folder, rootFolderName),
             activity.getString(R.string.uploader_upload_files_behaviour_only_upload),
             activity.getString(R.string.uploader_upload_files_behaviour_upload_and_delete_from_source)
         )
@@ -44,6 +48,17 @@ class UploadBehaviourSelector(
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
         spinner.setSelection(preferences.uploaderBehaviour)
+
+        // NMC Customization
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, i: Int, l: Long) {
+                // store behaviour
+                preferences.uploaderBehaviour = spinner.selectedItemPosition
+            }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>?) {
+            }
+        }
     }
 
     fun saveSelection() {
@@ -68,9 +83,11 @@ class UploadBehaviourSelector(
     }
 
     companion object {
-        private const val POSITION_MOVE = 0
-        private const val POSITION_ONLY_UPLOAD = 1
-        private const val POSITION_DELETE = 2
+        // private const val POSITION_MOVE = 0
+
+        // NMC Customization only 2 options
+        private const val POSITION_ONLY_UPLOAD = 0
+        private const val POSITION_DELETE = 1
         private const val LABEL_SEPARATOR = " "
     }
 }
