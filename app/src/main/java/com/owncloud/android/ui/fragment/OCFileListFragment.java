@@ -669,11 +669,12 @@ public class OCFileListFragment extends ExtendedListFragment implements
             }
 
             if (isAPKorAAB(checkedFiles)) {
-                toHide.add(R.id.action_send_share_file);
                 toHide.add(R.id.action_export_file);
                 toHide.add(R.id.action_sync_file);
                 toHide.add(R.id.action_download_file);
             }
+            // NMC: always hide the share menu because we have renamed another menu for sharing (NMC)
+            toHide.add(R.id.action_send_share_file);
 
             final var childFragmentManager = getChildFragmentManager();
             final var actionBottomSheet = FileActionsBottomSheet.newInstance(filesCount, checkedFiles, isOverflow, toHide)
