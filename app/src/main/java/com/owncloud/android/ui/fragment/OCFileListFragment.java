@@ -20,6 +20,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -2273,5 +2274,15 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     public FileListLayoutManager getFileListLayoutManager() {
         return fileListLayoutManager;
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (getAdapter() != null) {
+            getAdapter().notifyDataSetChanged();
+        }
+        fileListLayoutManager.updateSpanCount(newConfig);
     }
 }
