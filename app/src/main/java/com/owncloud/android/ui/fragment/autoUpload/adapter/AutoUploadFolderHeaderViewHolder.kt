@@ -11,12 +11,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.afollestad.sectionedrecyclerview.SectionedViewHolder
 import com.google.android.material.button.MaterialButton
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.core.Clock
 import com.nextcloud.client.device.PowerManagementService
 import com.nextcloud.client.network.ConnectivityService
@@ -147,7 +147,14 @@ class AutoUploadFolderHeaderViewHolder(
 
     private fun MaterialButton.showSyncState(enabled: Boolean) {
         icon = if (enabled) {
-            viewThemeUtils.platform.tintDrawable(context, R.drawable.ic_cloud_sync_on, ColorRole.PRIMARY)
+            // NMC Customization theme color icon
+            val drawable = ResourcesCompat.getDrawable(context.resources, R.drawable.ic_cloud_sync_on, null)
+            drawable?.let {
+                viewThemeUtils.platform.colorDrawable(
+                    it,
+                    ResourcesCompat.getColor(context.resources, R.color.primary, null)
+                )
+            }
         } else {
             ContextCompat.getDrawable(context, R.drawable.ic_cloud_sync_off)
         }

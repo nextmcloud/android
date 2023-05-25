@@ -11,6 +11,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.widget.ImageView
+import androidx.annotation.DimenRes
+import com.owncloud.android.R
 import com.owncloud.android.datamodel.ThumbnailsCacheManager
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.utils.BitmapUtils
@@ -24,6 +26,8 @@ import java.io.File
 class MediaThumbnailGenerationJob(
     private val context: Context,
     private val viewThemeUtils: ViewThemeUtils,
+    @DimenRes
+    private val thumbnailDimension: Int = R.dimen.file_icon_size_grid,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
     companion object {
@@ -64,7 +68,7 @@ class MediaThumbnailGenerationJob(
     }
 
     private fun generateImageThumbnail(file: File, key: String): Bitmap? {
-        val px = ThumbnailsCacheManager.getThumbnailDimension()
+        val px = ThumbnailsCacheManager.getThumbnailDimension(thumbnailDimension)
         val bitmap = BitmapUtils.decodeSampledBitmapFromFile(file.absolutePath, px, px) ?: return null
         return ThumbnailsCacheManager.addThumbnailToCache(key, bitmap, file.path, px, px)
     }
@@ -75,7 +79,7 @@ class MediaThumbnailGenerationJob(
             return null
         }
 
-        val px = ThumbnailsCacheManager.getThumbnailDimension()
+        val px = ThumbnailsCacheManager.getThumbnailDimension(thumbnailDimension)
         val retriever = MediaMetadataRetriever()
         return try {
             retriever.setDataSource(file.absolutePath)

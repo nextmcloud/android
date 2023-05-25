@@ -58,6 +58,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -150,9 +151,19 @@ public final class ThumbnailsCacheManager {
      * @return int
      */
     public static int getThumbnailDimension() {
+        return getThumbnailDimension(R.dimen.file_icon_size_grid);
+    }
+
+    /**
+     * Converts size of file icon from dp to pixel
+     * this function is required for custom thumbnail sizes
+     * @param thumbnailDimension dimension to be converted
+     * @return int
+     */
+    public static int getThumbnailDimension(@DimenRes int thumbnailDimension) {
         // Converts dp to pixel
         Resources r = MainApp.getAppContext().getResources();
-        return Math.round(r.getDimension(R.dimen.file_icon_size_grid));
+        return Math.round(r.getDimension(thumbnailDimension));
     }
 
     /**
