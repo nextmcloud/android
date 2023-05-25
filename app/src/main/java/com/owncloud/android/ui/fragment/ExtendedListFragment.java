@@ -16,6 +16,7 @@
 package com.owncloud.android.ui.fragment;
 
 import android.animation.LayoutTransition;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -326,20 +327,7 @@ public class ExtendedListFragment extends Fragment implements
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mScale = preferences.getGridColumns();
         setGridViewColumns(1f);
-
-        mScaleGestureDetector = new ScaleGestureDetector(MainApp.getAppContext(), new ScaleListener());
-
-        getRecyclerView().setOnTouchListener((view, motionEvent) -> {
-            mScaleGestureDetector.onTouchEvent(motionEvent);
-
-            if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                view.performClick();
-            }
-
-            return false;
-        });
 
         // Pull-down to refresh layout
         mRefreshListLayout = binding.swipeContainingList;
@@ -362,6 +350,26 @@ public class ExtendedListFragment extends Fragment implements
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    /**
+     * method to enable recyclerview zooming for grid view
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    public void enableRecyclerViewGridZooming() {
+        mScale = preferences.getGridColumns();
+
+        mScaleGestureDetector = new ScaleGestureDetector(MainApp.getAppContext(), new ScaleListener());
+
+        getRecyclerView().setOnTouchListener((view, motionEvent) -> {
+            mScaleGestureDetector.onTouchEvent(motionEvent);
+
+            if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                view.performClick();
+            }
+
+            return false;
+        });
     }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {

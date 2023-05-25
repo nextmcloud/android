@@ -141,6 +141,8 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
             }
         });
 
+        enableRecyclerViewGridZooming();
+
         Log_OC.i(this, "onCreateView() in GalleryFragment end");
         return v;
     }
