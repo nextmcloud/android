@@ -113,7 +113,8 @@ class GeneratePdfFromImagesWork(
             .setContentText(message)
             .setAutoCancel(true)
 
-        viewThemeUtils.androidx.themeNotificationCompatBuilder(appContext, notificationBuilder)
+        //NMC Customization
+        notificationBuilder.color = appContext.resources.getColor(R.color.primary, null)
 
         notificationManager.notify(notificationId, notificationBuilder.build())
 
