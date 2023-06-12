@@ -109,7 +109,6 @@ abstract class EditorWebView : ExternalSiteWebView() {
         ) ?: return
 
         snackbar.setAction(R.string.common_cancel) { closeView() }
-        viewThemeUtils.material.themeSnackbar(snackbar)
         loadingSnackbar = snackbar
         snackbar.show()
     }
