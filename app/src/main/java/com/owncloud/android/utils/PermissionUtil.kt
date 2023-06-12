@@ -188,7 +188,7 @@ object PermissionUtil {
                     Snackbar.LENGTH_INDEFINITE
                 ).setAction(R.string.common_ok) {
                     doRequest()
-                }.also { viewThemeUtils.material.themeSnackbar(it) }.show()
+                }.show()
             } else {
                 // No explanation needed, request the permission.
                 doRequest()
