@@ -63,6 +63,7 @@ import com.owncloud.android.ui.events.FavoriteEvent;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.EncryptionUtils;
 import com.owncloud.android.utils.MimeTypeUtil;
+import com.nmc.android.utils.ProgressBarThemeUtils;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -271,7 +272,8 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         if (getFile() != null && user != null) {
-            viewThemeUtils.platform.themeHorizontalProgressBar(binding.progressBar);
+            //NMC Customization
+            ProgressBarThemeUtils.themeHorizontalProgressBar(binding.progressBar, getResources().getColor(R.color.primary, null));
             progressListener = new DownloadProgressListener(binding.progressBar);
             binding.cancelBtn.setOnClickListener(this);
             binding.favorite.setOnClickListener(this);
