@@ -54,6 +54,7 @@ import com.nextcloud.common.NextcloudClient;
 import com.nextcloud.ui.fileactions.FileAction;
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet;
 import com.nextcloud.utils.EditorUtils;
+import com.nmc.android.utils.FabThemeUtils;
 import com.nextcloud.utils.ShortcutUtil;
 import com.nextcloud.utils.e2ee.E2EEActionResolver;
 import com.nextcloud.utils.e2ee.E2EEDialogPresenter;
@@ -381,7 +382,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
         if (mFabMain != null) {
             // is not available in FolderPickerActivity
-            viewThemeUtils.material.themeFAB(mFabMain);
+            //NMC customization
+            FabThemeUtils.colorFloatingActionButton(requireContext(), mFabMain);
         }
 
         Log_OC.i(TAG, "onCreateView() end");
@@ -545,7 +547,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
         }
 
         // is not available in FolderPickerActivity
-        viewThemeUtils.material.themeFAB(mFabMain);
+        //NMC customization
+        FabThemeUtils.colorFloatingActionButton(requireContext(), mFabMain);
         mFabMain.setOnClickListener(v -> {
             var currentDir = getCurrentFile();
             if (currentDir == null) {
@@ -789,7 +792,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
     @Override
     public void showTemplate(Creator creator, String headline) {
         ChooseTemplateDialogFragment.newInstance(mFile, creator, headline).show(requireActivity()
-                                                                                    .getSupportFragmentManager(), 
+                                                                                    .getSupportFragmentManager(),
                                                                                 DIALOG_CREATE_DOCUMENT);
     }
 
@@ -931,8 +934,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
             final int checkedCount = checkedFiles.size();
 
             if (mActiveActionMode != null) {
-                String title = getResources().getQuantityString(R.plurals.items_selected_count, 
-                                                                checkedCount, 
+                String title = getResources().getQuantityString(R.plurals.items_selected_count,
+                                                                checkedCount,
                                                                 checkedCount);
                 mActiveActionMode.setTitle(title);
             }
@@ -1155,8 +1158,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     private void folderOnItemClick(OCFile file, int position) {
         if (requireActivity() instanceof FolderPickerActivity fpa) {
-            String filenameErrorMessage = FileNameValidator.INSTANCE.checkFileName(file.getFileName(), 
-                                                                                   getCapabilities(), 
+            String filenameErrorMessage = FileNameValidator.INSTANCE.checkFileName(file.getFileName(),
+                                                                                   getCapabilities(),
                                                                                    requireContext());
             if (filenameErrorMessage != null) {
                 DisplayUtils.showSnackMessage(fpa, filenameErrorMessage);
@@ -2122,7 +2125,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
         activity.runOnUiThread(() -> {
             if (visible) {
                 mFabMain.show();
-                viewThemeUtils.material.themeFAB(mFabMain);
+                // NMC customization
+                FabThemeUtils.colorFloatingActionButton(requireContext(), mFabMain);
             } else {
                 mFabMain.hide();
             }
@@ -2159,10 +2163,12 @@ public class OCFileListFragment extends ExtendedListFragment implements
         activity.runOnUiThread(() -> {
             if (enabled) {
                 fabMain.setEnabled(true);
-                viewThemeUtils.material.themeFAB(fabMain);
+                //NMC customization
+                FabThemeUtils.colorFloatingActionButton(requireContext(), mFabMain);
             } else {
                 fabMain.setEnabled(false);
-                viewThemeUtils.material.themeFAB(fabMain);
+                //NMC customization
+                FabThemeUtils.colorFloatingActionButton(requireContext(), mFabMain);
             }
         });
     }
