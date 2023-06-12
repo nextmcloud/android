@@ -34,6 +34,7 @@ import com.nextcloud.client.network.ClientFactory
 import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.client.utils.Throttler
 import com.nextcloud.ui.trashbinFileActions.TrashbinFileActionsBottomSheet
+import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.TrashbinActivityBinding
 import com.owncloud.android.datamodel.SyncedFolderProvider
@@ -159,7 +160,8 @@ class TrashbinActivity :
         recyclerView.setHasFooter(true)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        viewThemeUtils?.androidx?.themeSwipeRefreshLayout(binding.swipeContainingList)
+        // NMC Customisation
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(this, binding.swipeContainingList)
         binding.swipeContainingList.setOnRefreshListener { loadFolder() }
         viewThemeUtils?.material?.colorMaterialTextButton(findViewById(R.id.sort_button))
 
