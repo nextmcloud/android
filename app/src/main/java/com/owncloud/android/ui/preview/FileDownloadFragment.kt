@@ -23,6 +23,7 @@ import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.jobs.download.FileDownloadHelper.Companion.instance
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.extensions.getTypedActivity
+import com.nmc.android.utils.ProgressBarThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FileDownloadFragmentBinding
 import com.owncloud.android.datamodel.OCFile
@@ -66,8 +67,10 @@ class FileDownloadFragment :
 
         _binding = FileDownloadFragmentBinding.inflate(inflater, container, false)
 
+        // NMC Customization
+        ProgressBarThemeUtils.themeHorizontalProgressBar(binding.progressBar, resources.getColor(R.color.primary, null))
+
         viewThemeUtils.material.run {
-            colorProgressBar(binding.progressBar)
             colorMaterialTextButton(binding.cancelBtn)
             themeCardView(binding.progressCard)
             themeCardView(binding.errorCard)
