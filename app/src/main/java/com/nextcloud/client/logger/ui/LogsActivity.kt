@@ -20,6 +20,7 @@ import com.nextcloud.client.di.ViewModelFactory
 import com.owncloud.android.R
 import com.owncloud.android.databinding.LogsActivityBinding
 import com.owncloud.android.ui.activity.ToolbarActivity
+import com.nmc.android.utils.ProgressBarThemeUtils
 import javax.inject.Inject
 
 class LogsActivity : ToolbarActivity() {
@@ -49,7 +50,8 @@ class LogsActivity : ToolbarActivity() {
         }
 
         findViewById<ProgressBar>(R.id.logs_loading_progress).apply {
-            viewThemeUtils.platform.themeHorizontalProgressBar(this)
+            //NMC Customization
+            ProgressBarThemeUtils.themeHorizontalProgressBar(this, resources.getColor(R.color.primary, null))
         }
 
         logsAdapter = LogsAdapter(this)
