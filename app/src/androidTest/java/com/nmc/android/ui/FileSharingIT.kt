@@ -340,7 +340,7 @@ class FileSharingIT : AbstractIT() {
             )
         )
 
-        val permissionList = permissionList(isFolder, ocShare.shareType)
+        val permissionList = permissionList(isFolder, ocShare.shareType!!)
 
         for (i in permissionList.indices) {
             // Scroll to the item at position i

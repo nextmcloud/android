@@ -149,6 +149,11 @@ public class CreateShareWithShareeOperation extends SyncOperation {
             updateShareInfoOperation.setHideFileDownload(hideFileDownload);
             updateShareInfoOperation.setLabel(label);
 
+            //update the permission using update info api
+            //because for external share the selected permission is not getting updated
+            //instead default Read/View Only permission is getting updated
+            updateShareInfoOperation.setPermissions(permissions);
+
             //execute and save the result in database
             RemoteOperationResult updateShareInfoResult = updateShareInfoOperation.execute(client);
             if (updateShareInfoResult.isSuccess() && updateShareInfoResult.getData().size() > 0) {
