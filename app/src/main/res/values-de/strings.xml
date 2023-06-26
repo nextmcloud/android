@@ -963,6 +963,7 @@
     <string name="share_permission_file_drop">Sammelbox</string>
     <string name="permissions">Berechtigungen</string>
     <string name="advance_permissions">Erweiterte Berechtigungen</string>
+    <string name="your_message">Ihre Nachricht</string>
     <string name="send_share">Freigabe senden</string>
     <string name="no_share_permission_selected">Bitte wählen Sie mindestens eine Berechtigung zum Teilen aus.</string>
     <string name="share_link_empty_exp_date">Sie müssen das Ablaufdatum auswählen.</string>
@@ -974,7 +975,7 @@
     <string name="link_download_limit">Download Limit</string>
     <string name="download_limit_empty">Das Feld für das Download-Limit darf nicht leer sein.</string>
     <string name="hint_download_limit">Downlimit eingeben</string>
-    <string name="download_text">Downloads:\u0020</string>
+    <string name="download_text">Downloads: %s</string>
     <string name="download_limit_zero">Der Wert für das Download limit sollte größer als 0 sein.</string>
     <string name="allow_resharing_info">Sie teilen mit einer/einem MagentaCLOUD Nutzer(in). Sie können ihr oder ihm erlauben, den Ordner oder die Dateien weiterzuteilen.</string>
     <string name="sharing_email_warning">Der Passwortschutz ist aktiviert. Sie müssen dem Empfänger das Passwort
