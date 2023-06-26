@@ -1005,7 +1005,7 @@
     <string name="link_download_limit">Download Limit</string>
     <string name="download_limit_empty">Download limit cannot be empty.</string>
     <string name="hint_download_limit">Enter download limit</string>
-    <string name="download_text">Downloads:\u0020</string>
+    <string name="download_text">Downloads: %s</string>
     <string name="download_limit_zero">Download limit should be greater than 0.</string>
     <string name="allow_resharing_info">You are sharing with a MagentaCLOUD user and you can allow her or him to reshare.</string>
     <string name="sharing_email_warning">Password protection has been enabled. You have to provide the password to
