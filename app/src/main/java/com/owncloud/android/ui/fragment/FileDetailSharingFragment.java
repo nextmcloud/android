@@ -769,6 +769,8 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
                                boolean isExpiryDateShown);
 
         void onShareProcessClosed();
+
+        void onLinkShareDownloadLimitFetched(long downloadLimit, long downloadCount);
     }
 
     @Override
