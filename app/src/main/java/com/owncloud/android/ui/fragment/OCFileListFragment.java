@@ -513,6 +513,18 @@ public class OCFileListFragment extends ExtendedListFragment implements
     }
 
     @Override
+    public void createEncryptedFolder() {
+        // NMC: create e2ee folder from fab
+        // Using thread as the api calls are happening and we don't want to show any lag
+        new Thread(() -> {
+            if (checkEncryptionIsSetup(null)) {
+                requireActivity().runOnUiThread(() -> CreateFolderDialogFragment.newInstance(mFile, true)
+                    .show(getActivity().getSupportFragmentManager(), DIALOG_CREATE_FOLDER));
+            }
+        }).start();
+    }
+
+    @Override
     public void uploadFromApp() {
         Intent action = new Intent(Intent.ACTION_GET_CONTENT);
         action = action.setType("*/*").addCategory(Intent.CATEGORY_OPENABLE);
@@ -1161,10 +1173,11 @@ public class OCFileListFragment extends ExtendedListFragment implements
             int position = data.getIntExtra(SetupEncryptionDialogFragment.ARG_POSITION, -1);
             OCFile file = mAdapter.getItem(position);
 
-            if (file != null) {
-                mContainerActivity.getFileOperationsHelper().toggleEncryption(file, true);
-                mAdapter.setEncryptionAttributeForItemID(file.getRemoteId(), true);
+            if (file == null) {
+                return;
             }
+            mContainerActivity.getFileOperationsHelper().toggleEncryption(file, true);
+            mAdapter.setEncryptionAttributeForItemID(file.getRemoteId(), true);
 
             // update state and view of this fragment
             searchFragment = false;
@@ -1779,57 +1792,68 @@ public class OCFileListFragment extends ExtendedListFragment implements
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EncryptionEvent event) {
         new Thread(() -> {{
-            final User user = accountManager.getUser();
+            // NMC: customized NC code to checkE2EESetup in single function
+            // changes required for creating e2ee folder from fab
+            if (checkEncryptionIsSetup(event.remoteId)) {
+                encryptFolder(event.localId, event.remoteId, event.remotePath, event.shouldBeEncrypted);
+            }
+        }}).start();
+    }
 
-            // check if keys are stored
-            String publicKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PUBLIC_KEY);
-            String privateKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PRIVATE_KEY);
+    // NMC: single function to check e2ee setup
+    // required for creating e2ee folder from fab
+    private boolean checkEncryptionIsSetup(@Nullable String remoteId) {
+        final User user = accountManager.getUser();
+
+        // check if keys are stored
+        String publicKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PUBLIC_KEY);
+        String privateKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PRIVATE_KEY);
+
+        if (publicKey.isEmpty() || privateKey.isEmpty()) {
+            Log_OC.d(TAG, "no public key for " + user.getAccountName());
 
             FileDataStorageManager storageManager = mContainerActivity.getStorageManager();
-            OCFile file = storageManager.getFileByRemoteId(event.getRemoteId());
-
-            if (publicKey.isEmpty() || privateKey.isEmpty()) {
-                Log_OC.d(TAG, "no public key for " + user.getAccountName());
-
-                int position;
+            int position;
+            if (remoteId != null) {
+                OCFile file = storageManager.getFileByRemoteId(remoteId);
                 if (file != null) {
                     position = mAdapter.getItemPosition(file);
                 } else {
                     position = -1;
                 }
-
-                requireActivity().runOnUiThread(() -> {
-                    SetupEncryptionDialogFragment dialog = SetupEncryptionDialogFragment.newInstance(user, position);
-                    dialog.setTargetFragment(OCFileListFragment.this, SETUP_ENCRYPTION_REQUEST_CODE);
-                    dialog.show(getParentFragmentManager(), SETUP_ENCRYPTION_DIALOG_TAG);
-                });
             } else {
-                // TODO E2E: if encryption fails, to not set it as encrypted!
-                encryptFolder(file,
-                              event.getLocalId(),
-                              event.getRemoteId(),
-                              event.getRemotePath(),
-                              event.getShouldBeEncrypted(),
-                              publicKey,
-                              privateKey,
-                              storageManager);
+                position = -1;
             }
-        }}).start();
+
+            requireActivity().runOnUiThread(() -> {
+                SetupEncryptionDialogFragment dialog = SetupEncryptionDialogFragment.newInstance(user, position);
+                dialog.setTargetFragment(OCFileListFragment.this, SETUP_ENCRYPTION_REQUEST_CODE);
+                dialog.show(getParentFragmentManager(), SETUP_ENCRYPTION_DIALOG_TAG);
+            });
+
+            return false;
+        } else {
+            return true;
+        }
     }
 
-    private void encryptFolder(OCFile folder,
-                               long localId,
+    // NMC: customized NC code
+    // required for creating e2ee folder from fab
+    private void encryptFolder(long localId,
                                String remoteId,
                                String remotePath,
-                               boolean shouldBeEncrypted,
-                               String publicKeyString,
-                               String privateKeyString,
-                               FileDataStorageManager storageManager) {
+                               boolean shouldBeEncrypted) {
         try {
-            Log_OC.d(TAG, "encrypt folder " + folder.getRemoteId());
+            Log_OC.d(TAG, "encrypt folder " + remoteId);
             User user = accountManager.getUser();
+            String publicKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PUBLIC_KEY);
+            String privateKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PRIVATE_KEY);
+
+            FileDataStorageManager storageManager = mContainerActivity.getStorageManager();
+            OCFile folder = storageManager.getFileByRemoteId(remoteId);
+
             OwnCloudClient client = clientFactory.create(user);
-            RemoteOperationResult remoteOperationResult = new ToggleEncryptionRemoteOperation(localId,
+            final var remoteOperationResult = new ToggleEncryptionRemoteOperation(localId,
                                                                                               remotePath,
                                                                                               shouldBeEncrypted)
                 .execute(client);
@@ -1844,8 +1868,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
                     // Update metadata
                     Pair<Boolean, DecryptedFolderMetadataFile> metadataPair = EncryptionUtils.retrieveMetadata(folder,
                                                                                                                client,
-                                                                                                               privateKeyString,
-                                                                                                               publicKeyString,
+                                                                                                               privateKey,
+                                                                                                               publicKey,
                                                                                                                storageManager,
                                                                                                                user,
                                                                                                                requireContext(),
