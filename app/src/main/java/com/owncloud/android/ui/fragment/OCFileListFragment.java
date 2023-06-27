@@ -513,6 +513,14 @@ public class OCFileListFragment extends ExtendedListFragment implements
     }
 
     @Override
+    public void createEncryptedFolder() {
+        if (checkEncryptionIsSetup(null)) {
+            CreateFolderDialogFragment.newInstance(mFile, true)
+                .show(getActivity().getSupportFragmentManager(), DIALOG_CREATE_FOLDER);
+        }
+    }
+
+    @Override
     public void uploadFromApp() {
         Intent action = new Intent(Intent.ACTION_GET_CONTENT);
         action = action.setType("*/*").addCategory(Intent.CATEGORY_OPENABLE);
@@ -1161,10 +1169,11 @@ public class OCFileListFragment extends ExtendedListFragment implements
             int position = data.getIntExtra(SetupEncryptionDialogFragment.ARG_POSITION, -1);
             OCFile file = mAdapter.getItem(position);
 
-            if (file != null) {
-                mContainerActivity.getFileOperationsHelper().toggleEncryption(file, true);
-                mAdapter.setEncryptionAttributeForItemID(file.getRemoteId(), true);
+            if (file == null) {
+                return;
             }
+            mContainerActivity.getFileOperationsHelper().toggleEncryption(file, true);
+            mAdapter.setEncryptionAttributeForItemID(file.getRemoteId(), true);
 
             // update state and view of this fragment
             searchFragment = false;
@@ -1786,7 +1795,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
             String privateKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PRIVATE_KEY);
 
             FileDataStorageManager storageManager = mContainerActivity.getStorageManager();
-            OCFile file = storageManager.getFileByRemoteId(event.getRemoteId());
+            OCFile file = storageManager.getFileByRemoteId(event.remoteId);
 
             if (publicKey.isEmpty() || privateKey.isEmpty()) {
                 Log_OC.d(TAG, "no public key for " + user.getAccountName());
@@ -1806,10 +1815,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
             } else {
                 // TODO E2E: if encryption fails, to not set it as encrypted!
                 encryptFolder(file,
-                              event.getLocalId(),
-                              event.getRemoteId(),
-                              event.getRemotePath(),
-                              event.getShouldBeEncrypted(),
+                              event.localId,
+                              event.remoteId,
+                              event.remotePath,
+                              event.shouldBeEncrypted,
                               publicKey,
                               privateKey,
                               storageManager);
@@ -1826,15 +1835,15 @@ public class OCFileListFragment extends ExtendedListFragment implements
                                String privateKeyString,
                                FileDataStorageManager storageManager) {
         try {
-            Log_OC.d(TAG, "encrypt folder " + folder.getRemoteId());
-            User user = accountManager.getUser();
-            OwnCloudClient client = clientFactory.create(user);
-            RemoteOperationResult remoteOperationResult = new ToggleEncryptionRemoteOperation(localId,
-                                                                                              remotePath,
-                                                                                              shouldBeEncrypted)
-                .execute(client);
+                Log_OC.d(TAG, "encrypt folder " + folder.getRemoteId());
+                User user = accountManager.getUser();
+                OwnCloudClient client = clientFactory.create(user);
+                RemoteOperationResult remoteOperationResult = new ToggleEncryptionRemoteOperation(localId,
+                                                                                                  remotePath,
+                                                                                                  shouldBeEncrypted)
+                    .execute(client);
 
-            if (remoteOperationResult.isSuccess()) {
+                if (remoteOperationResult.isSuccess()) {
                 // lock folder
                 String token = EncryptionUtils.lockFolder(folder, client);
 
