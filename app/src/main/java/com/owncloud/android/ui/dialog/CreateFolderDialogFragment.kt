@@ -68,6 +68,7 @@ class CreateFolderDialogFragment : DialogFragment(), DialogInterface.OnClickList
 
     private var parentFolder: OCFile? = null
     private var positiveButton: MaterialButton? = null
+    private var encrypted = false
 
     private lateinit var binding: EditBoxDialogBinding
 
@@ -102,6 +103,7 @@ class CreateFolderDialogFragment : DialogFragment(), DialogInterface.OnClickList
     @Suppress("EmptyFunctionBlock")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         parentFolder = arguments?.getParcelableArgument(ARG_PARENT_FOLDER, OCFile::class.java)
+        encrypted = arguments?.getBoolean(ARG_ENCRYPTED) ?: false
 
         val inflater = requireActivity().layoutInflater
         binding = EditBoxDialogBinding.inflate(inflater, null, false)
@@ -185,7 +187,7 @@ class CreateFolderDialogFragment : DialogFragment(), DialogInterface.OnClickList
             val path = parentFolder?.decryptedRemotePath + newFolderName + OCFile.PATH_SEPARATOR
             lifecycleScope.launch(Dispatchers.IO) {
                 if (connectivityService.isNetworkAndServerAvailable()) {
-                    (requireActivity() as ComponentsGetter).fileOperationsHelper.createFolder(path)
+                    (requireActivity() as ComponentsGetter).fileOperationsHelper.createFolder(path, encrypted)
                 } else {
                     Log_OC.d(TAG, "Network not available, creating offline operation")
                     fileDataStorageManager.addCreateFolderOfflineOperation(
@@ -207,8 +209,13 @@ class CreateFolderDialogFragment : DialogFragment(), DialogInterface.OnClickList
     companion object {
         private const val TAG = "CreateFolderDialogFragment"
         private const val ARG_PARENT_FOLDER = "PARENT_FOLDER"
+        private const val ARG_ENCRYPTED = "ENCRYPTED"
         const val CREATE_FOLDER_FRAGMENT = "CREATE_FOLDER_FRAGMENT"
 
+        @JvmStatic
+        fun newInstance(parentFolder: OCFile?): CreateFolderDialogFragment {
+            return newInstance(parentFolder, false)
+        }
         /**
          * Public factory method to create new CreateFolderDialogFragment instances.
          *
@@ -216,9 +223,10 @@ class CreateFolderDialogFragment : DialogFragment(), DialogInterface.OnClickList
          * @return Dialog ready to show.
          */
         @JvmStatic
-        fun newInstance(parentFolder: OCFile?): CreateFolderDialogFragment {
+        fun newInstance(parentFolder: OCFile?, encrypted: Boolean): CreateFolderDialogFragment {
             val bundle = Bundle().apply {
                 putParcelable(ARG_PARENT_FOLDER, parentFolder)
+                putBoolean(ARG_ENCRYPTED, encrypted)
             }
 
             return CreateFolderDialogFragment().apply {
