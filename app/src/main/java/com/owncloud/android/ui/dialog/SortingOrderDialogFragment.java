@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.di.Injectable;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.SortingOrderFragmentBinding;
 import com.owncloud.android.lib.common.utils.Log_OC;
@@ -86,8 +87,6 @@ public class SortingOrderDialogFragment extends DialogFragment implements Inject
      * @param binding the parent binding
      */
     private void setupDialogElements(SortingOrderFragmentBinding binding) {
-        viewThemeUtils.platform.colorTextButtons(binding.cancel);
-
         mTaggedViews = new View[12];
         mTaggedViews[0] = binding.sortByNameAscending;
         mTaggedViews[0].setTag(FileSortOrder.sort_a_to_z);
@@ -126,11 +125,13 @@ public class SortingOrderDialogFragment extends DialogFragment implements Inject
                 continue;
             }
             if (view instanceof ImageButton) {
-                viewThemeUtils.platform.themeImageButton((ImageButton) view);
+                //NMC customization
+                viewThemeUtils.platform.colorImageButton((ImageButton) view, requireContext().getResources().getColor(R.color.primary, null));
                 ((ImageButton) view).setSelected(true);
             }
             if (view instanceof TextView) {
-                viewThemeUtils.platform.colorPrimaryTextViewElement((TextView) view);
+                //NMC customization
+                ((TextView) view).setTextColor(requireContext().getResources().getColor(R.color.primary, null));
                 ((TextView) view).setTypeface(Typeface.DEFAULT_BOLD);
             }
         }
@@ -160,7 +161,8 @@ public class SortingOrderDialogFragment extends DialogFragment implements Inject
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(binding.getRoot().getContext());
         builder.setView(binding.getRoot());
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.getRoot().getContext(), builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(binding.getRoot().getContext(), builder);
 
         return builder.create();
     }
