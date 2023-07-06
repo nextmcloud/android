@@ -21,6 +21,7 @@
 package com.owncloud.android.ui;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.preference.SwitchPreference;
 import android.util.AttributeSet;
 import android.view.View;
@@ -28,10 +29,12 @@ import android.view.ViewGroup;
 import android.widget.Switch;
 
 import com.owncloud.android.MainApp;
+import com.owncloud.android.R;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
 
 import javax.inject.Inject;
 
+import androidx.core.graphics.drawable.DrawableCompat;
 
 /**
  * Themeable switch preference TODO Migrate to androidx
@@ -65,13 +68,60 @@ public class ThemeableSwitchPreference extends SwitchPreference {
     }
 
     private void findSwitch(ViewGroup viewGroup) {
+        ColorStateList thumbColorStateList;
+        ColorStateList trackColorStateList;
+
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View child = viewGroup.getChildAt(i);
 
             if (child instanceof Switch) {
                 Switch switchView = (Switch) child;
 
-                viewThemeUtils.platform.colorSwitch(switchView);
+                int thumbColorCheckedEnabled =  getContext().getResources().getColor(R.color.switch_thumb_checked_enabled, null);
+                int thumbColorUncheckedEnabled =  getContext().getResources().getColor(R.color.switch_thumb_unchecked_enabled, null);
+                int thumbColorCheckedDisabled =
+                    getContext().getResources().getColor(R.color.switch_thumb_checked_disabled, null);
+                int thumbColorUncheckedDisabled =
+                    getContext().getResources().getColor(R.color.switch_thumb_unchecked_disabled, null);
+
+                int[][] states = new int[][]{
+                    new int[]{android.R.attr.state_enabled, android.R.attr.state_checked}, // enabled and checked
+                    new int[]{-android.R.attr.state_enabled, android.R.attr.state_checked}, // disabled and checked
+                    new int[]{android.R.attr.state_enabled, -android.R.attr.state_checked}, // enabled and unchecked
+                    new int[]{-android.R.attr.state_enabled, -android.R.attr.state_checked}  // disabled and unchecked
+                };
+
+                int[] thumbColors = new int[]{
+                    thumbColorCheckedEnabled,
+                    thumbColorCheckedDisabled,
+                    thumbColorUncheckedEnabled,
+                    thumbColorUncheckedDisabled
+                };
+
+                thumbColorStateList = new ColorStateList(states, thumbColors);
+
+
+                int trackColorCheckedEnabled =
+                    getContext().getResources().getColor(R.color.switch_track_checked_enabled, null);
+                int trackColorUncheckedEnabled = getContext().getResources().getColor(R.color.switch_track_unchecked_enabled, null);
+                int trackColorCheckedDisabled =
+                     getContext().getResources().getColor(R.color.switch_track_checked_disabled, null);
+                int trackColorUncheckedDisabled =
+                     getContext().getResources().getColor(R.color.switch_track_unchecked_disabled, null);
+
+                int[] trackColors = new int[]{
+                    trackColorCheckedEnabled,
+                    trackColorCheckedDisabled,
+                    trackColorUncheckedEnabled,
+                    trackColorUncheckedDisabled
+                };
+                trackColorStateList = new ColorStateList(states, trackColors);
+
+                // setting the thumb color
+                DrawableCompat.setTintList(switchView.getThumbDrawable(), thumbColorStateList);
+
+                // setting the track color
+                DrawableCompat.setTintList(switchView.getTrackDrawable(), trackColorStateList);
 
                 break;
             } else if (child instanceof ViewGroup) {
