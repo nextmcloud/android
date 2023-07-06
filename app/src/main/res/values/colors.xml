@@ -41,6 +41,9 @@
     <color name="grey_400">#BDBDBD</color>
     <color name="grey_600">#666666</color>
 
+    <!-- Notification Colors -->
+    <color name="notification_icon_color">#191919</color>
+
     <!-- standard material color definitions -->
 
     <!-- level colors for info notifications/visualisations -->
