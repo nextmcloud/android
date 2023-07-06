@@ -143,9 +143,16 @@ public class CreateShareWithShareeOperation extends SyncOperation {
 
             //once creating share link update other information
             UpdateShareInfoOperation updateShareInfoOperation = new UpdateShareInfoOperation(share, getStorageManager());
-            updateShareInfoOperation.setExpirationDateInMillis(expirationDateInMillis);
+            if (expirationDateInMillis > 0) {
+                updateShareInfoOperation.setExpirationDateInMillis(expirationDateInMillis);
+            }
             updateShareInfoOperation.setHideFileDownload(hideFileDownload);
             updateShareInfoOperation.setLabel(label);
+
+            //update the permission using update info api
+            //because for external share the selected permission is not getting updated
+            //instead default Read/View Only permission is getting updated
+            updateShareInfoOperation.setPermissions(permissions);
 
             //execute and save the result in database
             RemoteOperationResult updateShareInfoResult = updateShareInfoOperation.execute(client);
