@@ -390,6 +390,10 @@ public interface AppPreferences {
 
     void setCalendarLastBackup(long timestamp);
 
+    void setOnBoardingComplete(boolean isCompleted);
+
+    boolean getOnBoardingComplete();
+
     void setPdfZoomTipShownCount(int count);
 
     int getPdfZoomTipShownCount();
