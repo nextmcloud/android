@@ -180,7 +180,6 @@ object PermissionUtil {
                     .setAction(R.string.common_ok) {
                         doRequest()
                     }
-                    .also { viewThemeUtils.material.themeSnackbar(it) }
                     .show()
             } else {
                 // No explanation needed, request the permission.
