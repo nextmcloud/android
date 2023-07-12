@@ -26,8 +26,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import com.nmc.android.ui.utils.Log_NMC;
 import com.owncloud.android.MainApp;
-import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.utils.PermissionUtil;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
 
@@ -121,7 +121,7 @@ public final class MediaProvider {
                                                                    MediaStore.Images.Media.DATE_TAKEN,
                                                                    ContentResolverHelper.SORT_DIRECTION_DESCENDING,
                                                                    itemLimit);
-                Log_OC.d(TAG, "Reading images for " + mediaFolder.folderName);
+                Log_NMC.d(TAG, "Reading images for " + mediaFolder.folderName);
 
                 if (cursorImages != null) {
                     String filePath;
@@ -231,7 +231,7 @@ public final class MediaProvider {
                                                                    ContentResolverHelper.SORT_DIRECTION_DESCENDING,
                                                                    itemLimit);
 
-                Log_OC.d(TAG, "Reading videos for " + mediaFolder.folderName);
+                Log_NMC.d(TAG, "Reading videos for " + mediaFolder.folderName);
 
                 if (cursorVideos != null) {
                     String filePath;
