@@ -1507,11 +1507,21 @@ public class OCFileListFragment extends ExtendedListFragment implements
                     setTitle(R.string.drawer_item_shared);
                     break;
                 default:
-                    setTitle(themeUtils.getDefaultDisplayNameForRootFolder(getContext()));
+                    setTitle(themeUtils.getDefaultDisplayNameForRootFolder(getContext()), isRoot());
                     break;
             }
         }
 
+    }
+
+    //NMC Customization
+    //for NMC we are using defaultToolbar instead searchToolbar for which we needed customization
+    private boolean isRoot() {
+        Activity activity;
+        if ((activity = getActivity()) != null && activity instanceof FileDisplayActivity) {
+            return ((FileDisplayActivity) activity).isRoot(getCurrentFile());
+        }
+        return false;
     }
 
     protected void prepareActionBarItems(SearchEvent event) {
@@ -1574,7 +1584,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 ((FileDisplayActivity) activity).initSyncBroadcastReceiver();
             }
 
-            setTitle(themeUtils.getDefaultDisplayNameForRootFolder(getContext()));
+            setTitle(themeUtils.getDefaultDisplayNameForRootFolder(getContext()), isRoot());
             activity.getIntent().removeExtra(OCFileListFragment.SEARCH_EVENT);
         }
 
@@ -1826,18 +1836,30 @@ public class OCFileListFragment extends ExtendedListFragment implements
         }
     }
 
+    /**
+     * Theme default action bar according to provided parameters.
+     * Replaces back arrow with hamburger menu icon.
+     *
+     * @param title string res id of title to be shown in action bar
+     */
     protected void setTitle(@StringRes final int title) {
-        setTitle(getContext().getString(title));
+        setTitle(requireContext().getString(title), true);
     }
 
-    protected void setTitle(final String title) {
-        getActivity().runOnUiThread(() -> {
+    /**
+     * Theme default action bar according to provided parameters.
+     *
+     * @param title title to be shown in action bar
+     * @param showBackAsMenu iff true replace back arrow with hamburger menu icon
+     */
+    protected void setTitle(final String title, Boolean showBackAsMenu) {
+        requireActivity().runOnUiThread(() -> {
             if (getActivity() != null) {
                 final ActionBar actionBar = ((FileDisplayActivity) getActivity()).getSupportActionBar();
                 final Context context = getContext();
 
                 if (actionBar != null && context != null) {
-                    viewThemeUtils.files.themeActionBar(context, actionBar, title, true);
+                    viewThemeUtils.files.themeActionBar(context, actionBar, title, showBackAsMenu);
                 }
             }
         });

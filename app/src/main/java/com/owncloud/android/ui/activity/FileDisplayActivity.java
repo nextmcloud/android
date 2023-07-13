@@ -1096,6 +1096,8 @@ public class FileDisplayActivity extends FileActivity
             }
         } else if (leftFragment instanceof PreviewTextStringFragment) {
             createMinFragments(null);
+        } else if (leftFragment instanceof PreviewPdfFragment) {
+            super.onBackPressed();
         } else {
             // pop back
             resetScrolling(true);
