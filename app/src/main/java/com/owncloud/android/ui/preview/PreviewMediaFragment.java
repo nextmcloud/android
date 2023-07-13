@@ -410,7 +410,7 @@ public class PreviewMediaFragment extends FileFragment implements OnTouchListene
 
                 final OCFile fileNew = getFile();
                 if (fileNew != null) {
-                    showFileActions(file);
+                    showFileActions(fileNew);
                 }
             }
         }
