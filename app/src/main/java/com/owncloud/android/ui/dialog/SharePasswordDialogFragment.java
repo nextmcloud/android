@@ -29,6 +29,7 @@ import android.view.View;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.di.Injectable;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.PasswordDialogBinding;
 import com.owncloud.android.datamodel.OCFile;
@@ -72,11 +73,6 @@ public class SharePasswordDialogFragment extends DialogFragment implements Dialo
 
         AlertDialog alertDialog = (AlertDialog) getDialog();
         if (alertDialog != null) {
-            viewThemeUtils.platform.colorTextButtons(alertDialog.getButton(AlertDialog.BUTTON_POSITIVE),
-                                                     alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE));
-            viewThemeUtils.platform.colorTextButtons(getResources().getColor(R.color.highlight_textColor_Warning),
-                                                     alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL));
-
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                 String password = binding.sharePassword.getText().toString();
 
@@ -164,7 +160,6 @@ public class SharePasswordDialogFragment extends DialogFragment implements Dialo
 
         // Setup layout
         binding.sharePassword.setText("");
-        viewThemeUtils.material.colorTextInputLayout(binding.sharePasswordContainer);
 
         int negativeButtonCaption;
         int title;
@@ -185,7 +180,8 @@ public class SharePasswordDialogFragment extends DialogFragment implements Dialo
             .setNeutralButton(R.string.common_delete, this)
             .setTitle(title);
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(view.getContext(), builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(view.getContext(), builder);
 
         return builder.create();
     }
