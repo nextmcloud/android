@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.di.Injectable;
+import com.nmc.android.utils.CheckableThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.SyncedFoldersSettingsLayoutBinding;
 import com.owncloud.android.datamodel.MediaFolderType;
@@ -167,7 +168,7 @@ public class SyncedFolderPreferencesDialogFragment extends DialogFragment implem
 
         // find/saves UI elements
         mEnabledSwitch = binding.syncEnabled;
-        viewThemeUtils.androidx.colorSwitchCompat(mEnabledSwitch);
+        CheckableThemeUtils.tintSwitch(mEnabledSwitch);
 
         mLocalFolderPath = binding.syncedFoldersSettingsLocalFolderPath;
 
@@ -182,10 +183,10 @@ public class SyncedFolderPreferencesDialogFragment extends DialogFragment implem
 
         mUploadUseSubfoldersCheckbox = binding.settingInstantUploadPathUseSubfoldersCheckbox;
 
-        viewThemeUtils.platform.themeCheckbox(mUploadOnWifiCheckbox,
-                                              mUploadOnChargingCheckbox,
-                                              mUploadExistingCheckbox,
-                                              mUploadUseSubfoldersCheckbox);
+        CheckableThemeUtils.tintCheckbox(mUploadOnWifiCheckbox,
+                                         mUploadOnChargingCheckbox,
+                                         mUploadExistingCheckbox,
+                                         mUploadUseSubfoldersCheckbox);
 
         mUploadBehaviorSummary = binding.settingInstantBehaviourSummary;
 
