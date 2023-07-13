@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Process;
 
+import com.owncloud.android.R;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
 
 import java.security.SecureRandom;
@@ -63,7 +64,8 @@ public final class NotificationUtils {
      */
     public static NotificationCompat.Builder newNotificationBuilder(Context context, final ViewThemeUtils viewThemeUtils) {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        viewThemeUtils.androidx.themeNotificationCompatBuilder(context, builder);
+        //NMC Customization
+        builder.setColor(context.getResources().getColor(R.color.primary, null));
         return builder;
     }
 
