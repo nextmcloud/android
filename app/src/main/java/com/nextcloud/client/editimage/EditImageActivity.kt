@@ -21,6 +21,7 @@
 package com.nextcloud.client.editimage
 
 import android.graphics.Bitmap
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -29,7 +30,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import com.canhub.cropper.CropImageView
 import com.nextcloud.client.di.Injectable
 import com.owncloud.android.R
@@ -82,17 +82,23 @@ class EditImageActivity :
 
         file = intent.extras?.getParcelable(EXTRA_FILE) ?: throw IllegalArgumentException("Missing file argument")
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.apply {
-            title = file.fileName
-            setDisplayHomeAsUpEnabled(true)
-        }
-
-        window.statusBarColor = ContextCompat.getColor(this, R.color.black)
-        window.navigationBarColor = getColor(R.color.black)
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        //NMC Customization
+        setupToolbar()
+        setupActionBar()
 
         setupCropper()
+    }
+
+    //NMC Customization
+    private fun setupActionBar() {
+        supportActionBar?.let {
+            viewThemeUtils.platform.themeStatusBar(this)
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setDisplayShowTitleEnabled(true)
+            //custom color for back arrow for NMC
+            viewThemeUtils.files.themeActionBar(this, it, file.fileName)
+            it.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.bg_default, null)))
+        }
     }
 
     override fun onCropImageComplete(view: CropImageView, result: CropImageView.CropResult) {
@@ -129,13 +135,19 @@ class EditImageActivity :
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         // add save button to action bar
         menuInflater.inflate(R.menu.custom_menu_placeholder, menu)
-        val saveIcon = AppCompatResources.getDrawable(this, R.drawable.ic_check)?.also {
-            DrawableCompat.setTint(it, resources.getColor(R.color.white, theme))
-        }
+        //No need to apply NC tint here as we will be doing it later in code
+        val saveIcon = AppCompatResources.getDrawable(this, R.drawable.ic_tick)
         menu?.findItem(R.id.custom_menu_placeholder_item)?.apply {
             icon = saveIcon
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 contentDescription = getString(R.string.common_save)
+            }
+            //NMC customization
+            icon = icon?.let {
+                viewThemeUtils.platform.colorDrawable(
+                    it,
+                    ContextCompat.getColor(this@EditImageActivity, R.color.fontAppbar)
+                )
             }
         }
         return true
