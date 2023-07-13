@@ -176,6 +176,7 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                                         .getVersion()
                                                         .isShareesOnDavSupported(),
                                                     viewThemeUtils,
+                                                    false,
                                                     syncedFolderProvider);
 
         // initialise thumbnails cache on background thread
@@ -312,21 +313,12 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             default:
+            // change required for NMC
+            case VIEWTYPE_IMAGE:
             case VIEWTYPE_ITEM:
                 if (gridView) {
                     return new OCFileListGridItemViewHolder(
                         GridItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
-                    );
-                } else {
-                    return new OCFileListItemViewHolder(
-                        ListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
-                    );
-                }
-
-            case VIEWTYPE_IMAGE:
-                if (gridView) {
-                    return new OCFileListGridImageViewHolder(
-                        GridImageBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
                     );
                 } else {
                     return new OCFileListItemViewHolder(
@@ -359,7 +351,6 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (holder instanceof OCFileListFooterViewHolder) {
             OCFileListFooterViewHolder footerViewHolder = (OCFileListFooterViewHolder) holder;
             footerViewHolder.getFooterText().setText(getFooterText());
-            viewThemeUtils.platform.colorCircularProgressBar(footerViewHolder.getLoadingProgressBar());
             footerViewHolder.getLoadingProgressBar().setVisibility(
                 ocFileListFragmentInterface.isLoading() ? View.VISIBLE : View.GONE);
         } else if (holder instanceof OCFileListHeaderViewHolder) {
@@ -505,15 +496,10 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private void bindListGridItemViewHolder(ListGridItemViewHolder holder, OCFile file) {
         holder.getFileName().setText(file.getDecryptedFileName());
 
-        boolean gridImage = MimeTypeUtil.isImage(file) || MimeTypeUtil.isVideo(file);
-        if (gridView && gridImage) {
+        if (gridView && ocFileListFragmentInterface.getColumnsCount() > showFilenameColumnThreshold) {
             holder.getFileName().setVisibility(View.GONE);
         } else {
-            if (gridView && ocFileListFragmentInterface.getColumnsCount() > showFilenameColumnThreshold) {
-                holder.getFileName().setVisibility(View.GONE);
-            } else {
-                holder.getFileName().setVisibility(View.VISIBLE);
-            }
+            holder.getFileName().setVisibility(View.VISIBLE);
         }
     }
 
@@ -592,7 +578,7 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return false;
         }
 
-        if (MainApp.isOnlyOnDevice()) {
+        if (MainApp.isOnlyOnDevice() || ocFileListFragmentInterface.isSearchFragment()) {
             return false;
         }
 
@@ -980,6 +966,7 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void setGridView(boolean bool) {
         gridView = bool;
+        ocFileListDelegate.setGridView(bool);
     }
 
     public void setShowMetadata(boolean bool) {

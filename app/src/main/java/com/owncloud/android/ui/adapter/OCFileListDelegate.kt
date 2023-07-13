@@ -55,11 +55,12 @@ class OCFileListDelegate(
     private val storageManager: FileDataStorageManager,
     private val hideItemOptions: Boolean,
     private val preferences: AppPreferences,
-    private val gridView: Boolean,
+    private var gridView: Boolean,
     private val transferServiceGetter: ComponentsGetter,
     private val showMetadata: Boolean,
     private var showShareAvatar: Boolean,
     private var viewThemeUtils: ViewThemeUtils,
+    private val isMediaGallery: Boolean,
     private val syncFolderProvider: SyncedFolderProvider? = null
 ) {
     private val checkedFiles: MutableSet<OCFile> = HashSet()
@@ -216,7 +217,8 @@ class OCFileListDelegate(
             gridViewHolder.shimmerThumbnail,
             preferences,
             viewThemeUtils,
-            syncFolderProvider
+            syncFolderProvider,
+            isMediaGallery
         )
         // item layout + click listeners
         bindGridItemLayout(file, gridViewHolder)
@@ -273,9 +275,8 @@ class OCFileListDelegate(
                 context.resources
                     .getColor(R.color.selected_item_background)
             )
-            gridViewHolder.checkbox.setImageDrawable(
-                viewThemeUtils.platform.tintPrimaryDrawable(context, R.drawable.ic_checkbox_marked)
-            )
+            gridViewHolder.checkbox.setImageResource(R.drawable.ic_checkbox_marked)
+
         } else {
             gridViewHolder.itemLayout.setBackgroundColor(context.resources.getColor(R.color.bg_default))
             gridViewHolder.checkbox.setImageResource(R.drawable.ic_checkbox_blank_outline)
@@ -364,6 +365,10 @@ class OCFileListDelegate(
 
     fun setShowShareAvatar(bool: Boolean) {
         showShareAvatar = bool
+    }
+
+    fun setGridView(bool: Boolean){
+        gridView = bool
     }
 
     companion object {

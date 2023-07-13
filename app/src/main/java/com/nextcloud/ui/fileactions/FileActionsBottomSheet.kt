@@ -153,7 +153,8 @@ class FileActionsBottomSheet : BottomSheetDialogFragment(), Injectable {
                 binding.thumbnailLayout.thumbnailShimmer,
                 null,
                 viewThemeUtils,
-                syncedFolderProvider
+                syncedFolderProvider,
+                false
             )
         }
     }
