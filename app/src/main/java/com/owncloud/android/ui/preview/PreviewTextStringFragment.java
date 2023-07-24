@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.nmc.android.utils.SearchViewThemeUtils;
 import com.nextcloud.android.lib.richWorkspace.RichWorkspaceDirectEditingRemoteOperation;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nmc.android.utils.FabThemeUtils;
@@ -121,7 +122,8 @@ public class PreviewTextStringFragment extends PreviewTextFragment {
         searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setOnQueryTextListener(this);
         searchView.setMaxWidth(Integer.MAX_VALUE);
-        viewThemeUtils.androidx.themeToolbarSearchView(searchView);
+        //NMC customization
+        SearchViewThemeUtils.INSTANCE.themeSearchView(requireActivity(), searchView);
 
         if (searchOpen) {
             searchView.setIconified(false);
