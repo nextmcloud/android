@@ -28,6 +28,9 @@ import android.os.Bundle;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.di.Injectable;
+import com.nextcloud.client.preferences.AppPreferences;
+import com.nmc.android.marketTracking.AdjustSdkUtils;
+import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.nextcloud.client.jobs.BackgroundJobManager;
 import com.owncloud.android.R;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
@@ -44,6 +47,7 @@ public class AccountRemovalConfirmationDialog extends DialogFragment implements 
 
     @Inject BackgroundJobManager backgroundJobManager;
     @Inject ViewThemeUtils viewThemeUtils;
+    @Inject AppPreferences appPreferences;
     private User user;
 
     public static AccountRemovalConfirmationDialog newInstance(User user) {
@@ -80,8 +84,13 @@ public class AccountRemovalConfirmationDialog extends DialogFragment implements 
             .setMessage(getResources().getString(R.string.delete_account_warning, user.getAccountName()))
             .setIcon(R.drawable.ic_warning)
             .setPositiveButton(R.string.common_ok,
-                               (dialogInterface, i) -> backgroundJobManager.startAccountRemovalJob(user.getAccountName(),
-                                                                                                   false))
+                               (dialogInterface, i) -> {
+                                   // track adjust and tealium events on logout confirmed
+                                   AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_SETTINGS_LOGOUT, appPreferences);
+                                   TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_SETTINGS_LOGOUT, appPreferences);
+
+                                   backgroundJobManager.startAccountRemovalJob(user.getAccountName(), false);
+                               })
             .setNeutralButton(R.string.common_cancel, null);
 
         viewThemeUtils.dialog.colorMaterialAlertDialogBackground(requireActivity(), builder);
