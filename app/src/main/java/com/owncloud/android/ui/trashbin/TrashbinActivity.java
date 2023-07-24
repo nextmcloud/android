@@ -40,6 +40,7 @@ import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.java.util.Optional;
+import com.nmc.android.utils.SwipeRefreshThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.TrashbinActivityBinding;
 import com.owncloud.android.lib.resources.trashbin.model.TrashbinFile;
@@ -159,7 +160,8 @@ public class TrashbinActivity extends DrawerActivity implements
         simpleListItemDividerDecoration = new SimpleListItemDividerDecoration(this, R.drawable.item_divider, true);
         addListItemDecorator();
 
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingList);
+        //NMC Customisation
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(this, binding.swipeContainingList);
         binding.swipeContainingList.setOnRefreshListener(this::loadFolder);
 
         viewThemeUtils.material.colorMaterialTextButton(findViewById(R.id.sort_button));

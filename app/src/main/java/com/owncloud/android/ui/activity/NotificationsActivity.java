@@ -35,6 +35,7 @@ import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.jobs.NotificationWork;
 import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.java.util.Optional;
+import com.nmc.android.utils.SwipeRefreshThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.NotificationsLayoutBinding;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -100,8 +101,9 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
 
         updateActionBarTitleAndHomeButtonByString(getString(R.string.drawer_item_notifications));
 
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingList);
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingEmpty);
+        //NMC Customisation
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(this, binding.swipeContainingList);
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(this, binding.swipeContainingEmpty);
 
         // setup drawer
         setupDrawer(R.id.nav_notifications);
