@@ -1449,29 +1449,6 @@ public class OCFileListFragment extends ExtendedListFragment implements
                         return; // no files, wait for sync
                     }
                 }
-                mAdapter.swapDirectory(
-                    accountManager.getUser(),
-                    directory,
-                    storageManager,
-                    onlyOnDevice,
-                    mLimitToMimeType
-                                      );
-
-                if (searchView != null && !searchView.isIconified() && !fromSearch) {
-                    searchView.post(() -> {
-                        searchView.setQuery("", false);
-                        searchView.onActionViewCollapsed();
-                        Activity activity;
-                        if ((activity = getActivity()) != null && activity instanceof FileDisplayActivity) {
-                            FileDisplayActivity fileDisplayActivity = (FileDisplayActivity) activity;
-                            fileDisplayActivity.hideSearchView(fileDisplayActivity.getCurrentDir());
-                            if (getCurrentFile() != null) {
-                                fileDisplayActivity
-                                    .setDrawerIndicatorEnabled(fileDisplayActivity.isRoot(getCurrentFile()));
-                            }
-                        }
-                    });
-                }
 
                 if(mShowOnlyFolder) {
                     mAdapter.showOnlyFolder(
