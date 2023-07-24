@@ -71,7 +71,6 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
     private GalleryAdapter mAdapter;
 
     private static final int SELECT_LOCATION_REQUEST_CODE = 212;
-    private OCFile remoteFile;
     private GalleryFragmentBottomSheetDialog galleryFragmentBottomSheetDialog;
 
     @Inject FileDataStorageManager fileDataStorageManager;
@@ -121,8 +120,6 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
-
-        remoteFile = fileDataStorageManager.getDefaultRootPath();
 
         getRecyclerView().addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -294,7 +291,7 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
         if (requestCode == SELECT_LOCATION_REQUEST_CODE && data != null) {
             OCFile chosenFolder = data.getParcelableExtra(FolderPickerActivity.EXTRA_FOLDER);
             if (chosenFolder != null) {
-                remoteFile = chosenFolder;
+                preferences.setLastSelectedMediaFolder(chosenFolder.getRemotePath());
                 searchAndDisplayAfterChangingFolder();
             }
         }
@@ -377,7 +374,7 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
     }
 
     public void showAllGalleryItems() {
-        mAdapter.showAllGalleryItems(remoteFile.getRemotePath(),
+        mAdapter.showAllGalleryItems(preferences.getLastSelectedMediaFolder(),
                                      galleryFragmentBottomSheetDialog.getCurrMediaState(),
                                      this);
 
