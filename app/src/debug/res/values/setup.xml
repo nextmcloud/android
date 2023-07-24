@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- webview_login_url should be empty in debug mode to show login url input screen
+    this will be useful in switching the environments during testing -->
+    <string name="webview_login_url" translatable="false" />
+</resources>
