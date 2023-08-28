@@ -70,7 +70,10 @@ abstract class NextcloudDatabase : RoomDatabase() {
     abstract fun fileDao(): FileDao
 
     companion object {
-        const val FIRST_ROOM_DB_VERSION = 65
+        // NMC customization
+        // NMC play store version 7.21.9 had db version 64 before SqLite to Room migration
+        // Keeping it 65(as per NC) will lead to crash when user tried to upgrade the app
+        const val FIRST_ROOM_DB_VERSION = 64
         private var instance: NextcloudDatabase? = null
 
         @JvmStatic
