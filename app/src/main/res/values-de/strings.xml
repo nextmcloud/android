@@ -15,6 +15,7 @@
     <string name="action_switch_grid_view">Rasteransicht</string>
     <string name="action_switch_list_view">Listenansicht</string>
     <string name="actionbar_calendar_contacts_restore">Kontakte &amp; Kalender wiederherstellen</string>
+    <string name="actionbar_contacts">Kontakte sichern</string>
     <string name="actionbar_copy">Kopieren</string>
     <string name="actionbar_mkdir">Neuer Ordner</string>
     <string name="actionbar_move">Verschieben</string>
@@ -593,6 +594,7 @@
     <string name="prefs_e2e_active">Ende-zu-Ende-Verschlüsselung ist eingerichtet!</string>
     <string name="prefs_e2e_mnemonic">Ende-zu-Ende Verschlüsselung</string>
     <string name="prefs_e2e_no_device_credentials">Um die Gedächtnisstütze anzuzeigen, aktivieren Sie bitte Geräte-Zugangsdaten</string>
+    <string name="prefs_mnemonic_summary">12-Wort-Schlüssel anzeigen (Passphrase)</string>
     <string name="prefs_enable_media_scan_notifications">Benachrichtigungen der Mediensuche anzeigen</string>
     <string name="prefs_enable_media_scan_notifications_summary">Über neu gefundene Medienordner informieren</string>
     <string name="prefs_gpl_v2">GNU General Public Lizenz, version 2</string>
@@ -889,6 +891,14 @@
     <string name="uploader_error_title_file_cannot_be_uploaded">Diese Datei kann nicht hochgeladen werden</string>
     <string name="uploader_error_title_no_file_to_upload">Keine Datei zum Hochladen</string>
     <string name="uploader_info_dirname">Ordnername</string>
+    <string name="prefs_category_account_info">Kontoinformationen</string>
+    <string name="prefs_category_data_privacy">Datenschutz</string>
+    <string name="privacy_settings">Datenschutz</string>
+    <string name="privacy_policy">Datenschutzbestimmungen</string>
+    <string name="prefs_open_source">Verwendete OpenSource Software</string>
+    <string name="prefs_category_info">Info</string>
+    <string name="prefs_category_service">Bedienung</string>
+    <string name="prefs_keys_exist_summary">Die Ende-zu-Ende Verschlüsselung wurde bereits auf einem anderen Gerät eingerichtet. Bitte geben Sie Ihre Passphrase ein, damit die Dateien synchronisiert und entschlüsselt werden.</string>
     <string name="uploader_top_message">Hochladeordner auswählen</string>
     <string name="uploader_upload_failed_content_single">Konnte %1$s nicht hochladen</string>
     <string name="uploader_upload_failed_credentials_error">Hochladen fehlgeschlagen, bitte erneut anmelden</string>
