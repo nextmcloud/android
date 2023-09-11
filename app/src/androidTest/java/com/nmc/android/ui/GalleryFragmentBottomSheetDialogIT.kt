@@ -13,7 +13,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.nextcloud.test.TestActivity
 import com.owncloud.android.AbstractIT
 import com.owncloud.android.R
-import com.owncloud.android.datamodel.ImageDimension
+import com.owncloud.android.lib.resources.files.model.ImageDimension
 import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.datamodel.ThumbnailsCacheManager
 import com.owncloud.android.datamodel.ThumbnailsCacheManager.PREFIX_RESIZED_IMAGE
