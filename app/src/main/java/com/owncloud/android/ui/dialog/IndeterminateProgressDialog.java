@@ -73,7 +73,9 @@ public class IndeterminateProgressDialog extends DialogFragment implements Injec
         progressDialog.setIndeterminate(true);
         progressDialog.setOnShowListener(dialog -> {
             ProgressBar v = progressDialog.findViewById(android.R.id.progress);
-            viewThemeUtils.platform.tintDrawable(requireContext(), v.getIndeterminateDrawable());
+            //NMC Customization
+            viewThemeUtils.platform.colorDrawable(v.getIndeterminateDrawable(),
+                                                  requireContext().getResources().getColor(R.color.white, null));
         });
 
         /// set message

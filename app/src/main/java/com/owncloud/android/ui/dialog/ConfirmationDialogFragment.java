@@ -22,13 +22,13 @@ import android.os.Bundle;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.di.Injectable;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
 
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 
@@ -76,19 +76,6 @@ public class ConfirmationDialogFragment extends DialogFragment implements Inject
         args.putInt(ARG_NEGATIVE_BTN_RES, negBtn);
         frag.setArguments(args);
         return frag;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        AlertDialog alertDialog = (AlertDialog) getDialog();
-
-        if(alertDialog != null) {
-            viewThemeUtils.platform.colorTextButtons(alertDialog.getButton(AlertDialog.BUTTON_POSITIVE),
-                                                     alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE),
-                                                     alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL));
-        }
     }
 
     public void setOnConfirmationListener(ConfirmationDialogFragmentListener listener) {
@@ -157,7 +144,8 @@ public class ConfirmationDialogFragment extends DialogFragment implements Inject
             });
         }
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(activity, builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(activity, builder);
 
         return builder.create();
     }
