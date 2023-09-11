@@ -472,6 +472,9 @@ public class FileDisplayActivity extends FileActivity
                     // permission was granted
                     getFileOperationsHelper()
                         .uploadFromCamera(this, FileDisplayActivity.REQUEST_CODE__UPLOAD_FROM_CAMERA);
+                } else if (!shouldShowRequestPermissionRationale(permissions[0])) {
+                    // user CHECKED "never ask again"
+                    DisplayUtils.showSnackMessage(this, R.string.camera_permission_rationale);
                 }
                 break;
             default:
