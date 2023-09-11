@@ -59,16 +59,6 @@ class GalleryFragmentBottomSheetDialog(
     }
 
     fun setupLayout() {
-        listOf(
-            binding.tickMarkShowImages,
-            binding.tickMarkShowVideo,
-            binding.hideImagesImageview,
-            binding.hideVideoImageView,
-            binding.selectMediaFolderImageView
-        ).forEach {
-            viewThemeUtils.platform.colorImageView(it)
-        }
-
         when (currentMediaState) {
             MediaState.MEDIA_STATE_PHOTOS_ONLY -> {
                 binding.tickMarkShowImages.visibility = View.VISIBLE
