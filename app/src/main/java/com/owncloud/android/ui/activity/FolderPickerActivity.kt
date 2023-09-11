@@ -124,6 +124,7 @@ open class FolderPickerActivity :
                     caption = resources.getText(R.string.choose_location).toString()
                     mSearchOnlyFolders = true
                     isDoNotEnterEncryptedFolder = true
+                    mShowOnlyFolder = true
                     mChooseBtn!!.text = resources.getString(R.string.common_select)
                     mChooseBtn?.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_tick,
                             null)
