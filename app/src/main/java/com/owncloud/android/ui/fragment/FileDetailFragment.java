@@ -192,6 +192,9 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
      * @return reference to the {@link FileDetailActivitiesFragment}
      */
     public FileDetailActivitiesFragment getFileDetailActivitiesFragment() {
+        if (binding == null) {
+            return null;
+        }
         return ((FileDetailTabAdapter) binding.pager.getAdapter()).getFileDetailActivitiesFragment();
     }
 

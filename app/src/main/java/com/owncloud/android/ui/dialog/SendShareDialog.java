@@ -270,7 +270,7 @@ public class SendShareDialog extends BottomSheetDialogFragment implements Inject
         dismiss();
 
         if (getActivity() instanceof FileDisplayActivity) {
-            ((FileDisplayActivity) getActivity()).showDetails(file, 1);
+            ((FileDisplayActivity) getActivity()).showDetails(file, 0);
         } else {
             fileOperationsHelper.showShareFile(file);
         }

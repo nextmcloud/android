@@ -20,6 +20,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/commentsContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -27,8 +28,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/standard_padding"
-        android:layout_marginEnd="@dimen/zero"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginEnd="@dimen/standard_margin"
         android:orientation="horizontal">
 
         <ImageView
@@ -40,26 +41,26 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="@dimen/standard_half_margin"
             android:contentDescription="@null"
+            android:visibility="gone"
             tools:src="@drawable/ic_user" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/commentInputField_container"
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/commentInputField"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginTop="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
             android:layout_weight="1"
-            android:paddingTop="@dimen/standard_padding"
-            android:hint="@string/new_comment">
+            android:background="@drawable/share_search_background"
+            android:hint="@string/new_comment"
+            android:imeOptions="actionDone"
+            android:inputType="textNoSuggestions|textCapSentences"
+            android:paddingLeft="@dimen/standard_padding"
+            android:paddingRight="@dimen/standard_padding"
+            android:textColor="@color/text_color"
+            android:textColorHint="@color/secondary_text_color"
+            android:textSize="@dimen/txt_size_17sp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/commentInputField"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textNoSuggestions|textCapSentences"
-                android:scrollbars="vertical">
-
-            </com.google.android.material.textfield.TextInputEditText>
-
-        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/submitComment"
@@ -67,9 +68,10 @@
             android:layout_width="@dimen/minimum_size_for_touchable_area"
             android:layout_height="@dimen/minimum_size_for_touchable_area"
             android:contentDescription="@string/common_send"
+            android:visibility="gone"
             app:cornerRadius="24dp"
             app:icon="@drawable/ic_send"
-            app:iconTint="@color/grey_600"/>
+            app:iconTint="@color/grey_60"/>
 
     </LinearLayout>
 
@@ -80,6 +82,7 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipe_containing_list"
             android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/standard_half_margin"
             android:layout_height="match_parent"
             android:footerDividersEnabled="false"
             android:visibility="visible">
@@ -88,15 +91,12 @@
                 android:id="@android:id/list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="-3dp"
-                android:layout_marginRight="-3dp"
-                android:layout_marginBottom="-3dp"
                 android:background="@color/bg_default"
                 android:clipToPadding="false"
                 android:scrollbarStyle="outsideOverlay"
                 android:scrollbars="vertical"
                 android:visibility="visible"
-                tools:listitem="@layout/activity_list_item" />
+                tools:listitem="@layout/comment_list_item" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -109,7 +109,8 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/standard_half_margin">
 
                 <LinearLayout
                     android:id="@+id/loading_content"
@@ -118,11 +119,13 @@
                     android:orientation="vertical"
                     android:visibility="visible">
 
-                    <include layout="@layout/activity_list_item_shimmer" />
+                    <include layout="@layout/comment_list_item_shimmer" />
 
-                    <include layout="@layout/activity_list_item_shimmer" />
+                    <include layout="@layout/comment_list_item_shimmer" />
 
-                    <include layout="@layout/activity_list_item_shimmer" />
+                    <include layout="@layout/comment_list_item_shimmer" />
+
+                    <include layout="@layout/comment_list_item_shimmer" />
 
                 </LinearLayout>
 

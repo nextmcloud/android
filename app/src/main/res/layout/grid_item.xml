@@ -101,7 +101,7 @@
                 android:layout_gravity="top|end"
                 android:layout_marginTop="@dimen/grid_item_shared_icon_layout_top_margin"
                 android:layout_marginEnd="@dimen/standard_quarter_margin"
-                android:src="@drawable/ic_comment_grid"
+                android:src="@drawable/ic_comment"
                 android:visibility="gone" />
 
             <ImageView
