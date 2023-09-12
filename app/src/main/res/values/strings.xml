@@ -1018,7 +1018,7 @@
     <string name="restore">Restore file</string>
     <string name="restore_item">Restore</string>
     <string name="new_version_was_created">New version was created</string>
-    <string name="new_comment">New comment…</string>
+    <string name="new_comment">Write a message…</string>
     <string name="error_comment_file">Error commenting file</string>
     <string name="file_version_restored_error">Error restoring file version!</string>
     <string name="notification_channel_general_name">General notifications</string>

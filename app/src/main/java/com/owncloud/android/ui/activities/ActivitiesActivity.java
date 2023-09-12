@@ -21,6 +21,7 @@ import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.activities.model.RichObject;
 import com.owncloud.android.lib.resources.files.FileUtils;
+import com.owncloud.android.operations.comments.Comments;
 import com.owncloud.android.ui.activities.data.activities.ActivitiesRepository;
 import com.owncloud.android.ui.activities.data.files.FilesRepository;
 import com.owncloud.android.ui.activity.DrawerActivity;
@@ -109,7 +110,8 @@ public class ActivitiesActivity extends DrawerActivity implements ActivityListIn
                                           this,
                                           clientFactory,
                                           false,
-                                          viewThemeUtils);
+                                          viewThemeUtils,
+                                          null);
         binding.list.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -167,6 +169,11 @@ public class ActivitiesActivity extends DrawerActivity implements ActivityListIn
     public void onActivityClicked(RichObject richObject) {
         String path = FileUtils.PATH_SEPARATOR + richObject.getPath();
         actionListener.openActivity(path, this);
+    }
+
+    @Override
+    public void onCommentsOverflowMenuClicked(Comments comments) {
+        //nothing to be done here
     }
 
     @Override

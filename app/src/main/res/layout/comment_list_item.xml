@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  Nextcloud Android client application
+
+  Copyright (C) 2017 Andy Scherzinger
+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE
+  License as published by the Free Software Foundation; either
+  version 3 of the License, or any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU AFFERO GENERAL PUBLIC LICENSE for more details.
+
+  You should have received a copy of the GNU Affero General Public
+  License along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/bg_default"
+    android:paddingStart="@dimen/standard_padding"
+    android:paddingBottom="@dimen/standard_padding">
+
+
+    <TextView
+        android:id="@+id/subject"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:paddingTop="@dimen/standard_half_padding"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/txt_size_17sp"
+        app:layout_constraintEnd_toStartOf="@id/overflowMenu"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="John Doe" />
+
+    <TextView
+        android:id="@+id/datetime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/standard_eighth_margin"
+        android:gravity="start|center_vertical"
+        android:layout_marginRight="@dimen/standard_margin"
+        android:textColor="@color/secondary_text_color"
+        android:textSize="@dimen/txt_size_17sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subject"
+        tools:text="3 seconds ago" />
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/standard_quarter_margin"
+        android:layout_marginRight="@dimen/standard_margin"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/txt_size_17sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/datetime"
+        tools:text="Lorem ipsum dolor sit ame" />
+
+    <ImageView
+        android:id="@+id/overflowMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:paddingTop="@dimen/standard_half_padding"
+        android:paddingRight="@dimen/standard_padding"
+        android:src="@drawable/ic_dots_vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/subject"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/subject"
+        app:layout_constraintTop_toTopOf="@id/subject"
+        app:tint="@color/primary"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

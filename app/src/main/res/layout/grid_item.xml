@@ -97,7 +97,7 @@
             android:clickable="true"
             android:contentDescription="@string/unread_comments"
             android:focusable="true"
-            android:src="@drawable/ic_comment_grid"
+            android:src="@drawable/ic_comment"
             android:visibility="gone"
             app:tint="@color/grid_file_features_icon_color"
             tools:ignore="TouchTargetSizeCheck"

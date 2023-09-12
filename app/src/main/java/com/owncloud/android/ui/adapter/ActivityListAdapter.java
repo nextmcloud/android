@@ -44,11 +44,13 @@ import com.owncloud.android.R;
 import com.owncloud.android.databinding.ActivityListItemBinding;
 import com.owncloud.android.databinding.ActivityListItemHeaderBinding;
 import com.owncloud.android.lib.common.OwnCloudClientManagerFactory;
+import com.owncloud.android.databinding.CommentListItemBinding;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.activities.model.Activity;
 import com.owncloud.android.lib.resources.activities.model.RichElement;
 import com.owncloud.android.lib.resources.activities.model.RichObject;
 import com.owncloud.android.lib.resources.activities.models.PreviewObject;
+import com.owncloud.android.operations.comments.Comments;
 import com.owncloud.android.ui.interfaces.ActivityListInterface;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.MimeTypeUtil;
@@ -60,6 +62,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
@@ -69,6 +72,7 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     static final int HEADER_TYPE = 100;
     static final int ACTIVITY_TYPE = 101;
+    static final int COMMENT_TYPE = 103;
     private final ActivityListInterface activityListInterface;
     private final int px;
     private static final String TAG = ActivityListAdapter.class.getSimpleName();
@@ -81,6 +85,8 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private boolean isDetailView;
     private ViewThemeUtils viewThemeUtils;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    @Nullable
+    private final String userId; //it will be null if coming from activities
 
     public ActivityListAdapter(
         Context context,
@@ -88,7 +94,8 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         ActivityListInterface activityListInterface,
         ClientFactory clientFactory,
         boolean isDetailView,
-        ViewThemeUtils viewThemeUtils) {
+        ViewThemeUtils viewThemeUtils,
+        @Nullable String userId) {
         this.values = new ArrayList<>();
         this.context = context;
         this.currentAccountProvider = currentAccountProvider;
@@ -97,6 +104,7 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         px = getThumbnailDimension();
         this.isDetailView = isDetailView;
         this.viewThemeUtils = viewThemeUtils;
+        this.userId = userId;
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -130,6 +138,10 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (viewType == ACTIVITY_TYPE) {
             return new ActivityViewHolder(
                 ActivityListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
+            );
+        } else if (viewType == COMMENT_TYPE) {
+            return new CommentViewHolder(
+                CommentListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
             );
         } else {
             return new ActivityViewHeaderHolder(
@@ -218,6 +230,38 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 activityViewHolder.binding.list.removeAllViews();
                 activityViewHolder.binding.list.setVisibility(View.GONE);
             }
+        } else if (holder instanceof CommentViewHolder) {
+            final CommentViewHolder commentViewHolder = (CommentViewHolder) holder;
+
+            Comments comments = (Comments) values.get(position);
+
+            if (comments.getCreationDateTime() != null) {
+                String date = DisplayUtils.getRelativeDateTimeString(context, comments.getCreationDateTime().getTime());
+                commentViewHolder.binding.datetime.setText(date);
+                commentViewHolder.binding.datetime.setVisibility(View.VISIBLE);
+            } else {
+                commentViewHolder.binding.datetime.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(comments.getActorDisplayName())) {
+                commentViewHolder.binding.subject.setVisibility(View.VISIBLE);
+                commentViewHolder.binding.subject.setText(comments.getActorDisplayName());
+            } else {
+                commentViewHolder.binding.subject.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(comments.getMessage())) {
+                commentViewHolder.binding.message.setText(comments.getMessage());
+                commentViewHolder.binding.message.setVisibility(View.VISIBLE);
+            } else {
+                commentViewHolder.binding.message.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(comments.getActorId()) && userId != null && comments.getActorId().equals(userId)) {
+                commentViewHolder.binding.overflowMenu.setVisibility(View.VISIBLE);
+                commentViewHolder.binding.overflowMenu.setOnClickListener(v -> activityListInterface.onCommentsOverflowMenuClicked(comments));
+            }
+
         } else {
             ActivityViewHeaderHolder activityViewHeaderHolder = (ActivityViewHeaderHolder) holder;
             activityViewHeaderHolder.binding.header.setText((String) values.get(position));
@@ -329,6 +373,8 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public int getItemViewType(int position) {
         if (values.get(position) instanceof Activity) {
             return ACTIVITY_TYPE;
+        } else if (values.get(position) instanceof Comments) {
+            return COMMENT_TYPE;
         } else {
             return HEADER_TYPE;
         }
@@ -358,7 +404,9 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     CharSequence getHeaderDateString(Context context, long modificationTimestamp) {
         if ((System.currentTimeMillis() - modificationTimestamp) < DateUtils.WEEK_IN_MILLIS) {
             return DisplayUtils.getRelativeDateTimeString(context, modificationTimestamp, DateUtils.DAY_IN_MILLIS,
-                                                          DateUtils.WEEK_IN_MILLIS, 0);
+                                                          DateUtils.WEEK_IN_MILLIS, 0,
+                                                          //true to avoid creating wrong header date if date is 1sec future in case of comments
+                                                          true);
         } else {
             return DateFormat.format(DateFormat.getBestDateTimePattern(
                 Locale.getDefault(), "EEEE, MMMM d"), modificationTimestamp);
@@ -401,6 +449,16 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         ActivityListItemBinding binding;
 
         ActivityViewHolder(ActivityListItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+    }
+
+    protected class CommentViewHolder extends RecyclerView.ViewHolder {
+
+        CommentListItemBinding binding;
+
+        CommentViewHolder(CommentListItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }

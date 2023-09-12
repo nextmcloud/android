@@ -744,6 +744,7 @@ class FileDetailsSharingProcessFragment :
     private fun removeCurrentFragment() {
         onEditShareListener.onShareProcessClosed()
         fileActivity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
+        requireActivity().supportFragmentManager.popBackStack()
     }
 
     /**

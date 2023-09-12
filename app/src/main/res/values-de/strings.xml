@@ -621,7 +621,7 @@
     <string name="network_error_socket_exception">Es ist ein Fehler beim Verbinden mit dem Server aufgetreten.</string>
     <string name="network_error_socket_timeout_exception">Es ist ein Fehler beim Warten auf den Server aufgetreten, die Operation konnte nicht abgeschlossen werden</string>
     <string name="network_host_not_available">Die Operation kann nicht abgeschlossen werden, der Server ist nicht erreichbar.</string>
-    <string name="new_comment">Neuer Kommentar…</string>
+    <string name="new_comment">Schreiben Sie eine Nachricht…</string>
     <string name="new_media_folder_detected">Neuer Medienordner %1$s gefunden.</string>
     <string name="new_media_folder_photos">Foto</string>
     <string name="new_media_folder_videos">Video</string>
@@ -1041,7 +1041,7 @@
     <string name="unified_search_fragment_search_in_this_folder">In diesem Ordner</string>
     <string name="unknown">Unbekannt</string>
     <string name="unlock_file">Datei entsperren</string>
-    <string name="unread_comments">Es gibt  ungelesene Kommentare</string>
+    <string name="unread_comments">Es gibt ungelesene Kommentare</string>
     <string name="unset_encrypted">Verschlüsselung aufheben</string>
     <string name="unset_favorite">Von Favoriten entfernen</string>
     <string name="unset_internal_two_way_sync_description">Ordner aus der internen 2-Wege-Synchronisierung entfernen</string>

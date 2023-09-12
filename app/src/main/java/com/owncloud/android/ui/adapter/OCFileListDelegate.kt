@@ -245,6 +245,12 @@ class OCFileListDelegate(
     }
 
     private fun bindUnreadComments(file: OCFile, gridViewHolder: ListViewHolder) {
+        //NMC: no need to show comment icon in grid view
+        if (gridView) {
+            gridViewHolder.unreadComments.visibility = View.GONE
+            return
+        }
+
         if (file.unreadCommentsCount > 0) {
             gridViewHolder.unreadComments.visibility = View.VISIBLE
             gridViewHolder.unreadComments.setOnClickListener {

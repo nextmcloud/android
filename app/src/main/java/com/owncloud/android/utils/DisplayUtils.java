@@ -85,6 +85,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -354,6 +355,54 @@ public final class DisplayUtils {
             // dateString contains unexpected format. fallback: use relative date time string from android api as is.
             return dateString.toString();
         }
+    }
+
+    /**
+     * Code from: https://stackoverflow.com/questions/35858608/how-to-convert-time-to-time-ago-in-android
+     *
+     * method convert the passed time into human readable like into seconds, minutes, days, weeks, years
+     *
+     * @param context
+     * @param time
+     * @return
+     */
+    public static String getRelativeDateTimeString(Context context, long time) {
+
+        String convTime = null;
+
+        Date nowTime = new Date();
+
+        long dateDiff = nowTime.getTime() - time;
+
+        long second = TimeUnit.MILLISECONDS.toSeconds(dateDiff);
+        long minute = TimeUnit.MILLISECONDS.toMinutes(dateDiff);
+        long hour = TimeUnit.MILLISECONDS.toHours(dateDiff);
+        long day = TimeUnit.MILLISECONDS.toDays(dateDiff);
+
+        if (second == 0) {
+            convTime = context.getResources().getString(R.string.just_now);
+        } else if (second < 60) {
+            convTime = context.getResources().getQuantityString(R.plurals.seconds_ago, (int) second, (int) second);
+        } else if (minute < 60) {
+            convTime = context.getResources().getQuantityString(R.plurals.minutes_ago, (int) minute, (int) minute);
+        } else if (hour < 24) {
+            convTime = context.getResources().getQuantityString(R.plurals.hours_ago, (int) hour, (int) hour);
+        } else if (day >= 7) {
+            if (day > 360) {
+                long year = (day / 360);
+                convTime = context.getResources().getQuantityString(R.plurals.years_ago, (int) year, (int) year);
+            } else if (day > 30) {
+                long month = (day / 30);
+                convTime = context.getResources().getQuantityString(R.plurals.months_ago, (int) month, (int) month);
+            } else {
+                long week = (day / 7);
+                convTime = context.getResources().getQuantityString(R.plurals.weeks_ago, (int) week, (int) week);
+            }
+        } else {
+            convTime = context.getResources().getQuantityString(R.plurals.days_ago, (int) day, (int) day);
+        }
+
+        return convTime;
     }
 
     /**
