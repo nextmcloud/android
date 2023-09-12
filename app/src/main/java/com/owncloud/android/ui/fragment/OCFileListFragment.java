@@ -645,7 +645,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
     @Override
     public void onShareIconClick(OCFile file) {
         if (file.isFolder()) {
-            mContainerActivity.showDetails(file, 1);
+            // NMC: use 0 as activeTab
+            mContainerActivity.showDetails(file, 0);
         } else {
             throttler.run("shareIconClick", () -> {
                 mContainerActivity.getFileOperationsHelper().sendShareFile(file);
@@ -660,7 +661,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Override
     public void showActivityDetailView(OCFile file) {
-        mContainerActivity.showDetails(file, 0);
+        // NMC: use 1 as activeTab
+        mContainerActivity.showDetails(file, 1);
     }
 
     @Override
