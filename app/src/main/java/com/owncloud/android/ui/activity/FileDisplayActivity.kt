@@ -1099,7 +1099,8 @@ class FileDisplayActivity :
     }
 
     override fun showDetails(file: OCFile?) {
-        showDetails(file, 0)
+        // NMC: use 1 as activeTab
+        showDetails(file, 1)
     }
 
     override fun showDetails(file: OCFile?, activeTab: Int) {

@@ -16,6 +16,7 @@ import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
 object DisplayTextFormatter {
 
@@ -81,5 +82,49 @@ object DisplayTextFormatter {
             firstHasTime && !secondHasTime -> second
             else -> this
         }
+    }
+
+    // NMC function
+    fun formatRelativeDateTime(context: Context, time: Long): String {
+        var convTime: String?
+
+        val nowTime = Date()
+
+        val dateDiff = nowTime.time - time
+
+        val second: Long = TimeUnit.MILLISECONDS.toSeconds(dateDiff)
+        val minute: Long = TimeUnit.MILLISECONDS.toMinutes(dateDiff)
+        val hour: Long = TimeUnit.MILLISECONDS.toHours(dateDiff)
+        val day: Long = TimeUnit.MILLISECONDS.toDays(dateDiff)
+
+        if (second == 0L) {
+            convTime = context.resources.getString(R.string.just_now)
+        } else if (second < 60) {
+            convTime =
+                context.resources.getQuantityString(R.plurals.seconds_ago, second.toInt(), second.toInt())
+        } else if (minute < 60) {
+            convTime =
+                context.resources.getQuantityString(R.plurals.minutes_ago, minute.toInt(), minute.toInt())
+        } else if (hour < 24) {
+            convTime = context.resources.getQuantityString(R.plurals.hours_ago, hour.toInt(), hour.toInt())
+        } else if (day >= 7) {
+            if (day > 360) {
+                val year = (day / 360)
+                convTime =
+                    context.resources.getQuantityString(R.plurals.years_ago, year.toInt(), year.toInt())
+            } else if (day > 30) {
+                val month = (day / 30)
+                convTime =
+                    context.resources.getQuantityString(R.plurals.months_ago, month.toInt(), month.toInt())
+            } else {
+                val week = (day / 7)
+                convTime =
+                    context.resources.getQuantityString(R.plurals.weeks_ago, week.toInt(), week.toInt())
+            }
+        } else {
+            convTime = context.resources.getQuantityString(R.plurals.days_ago, day.toInt(), day.toInt())
+        }
+
+        return convTime
     }
 }

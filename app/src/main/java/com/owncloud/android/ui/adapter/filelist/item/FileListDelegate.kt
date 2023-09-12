@@ -231,7 +231,7 @@ class FileListDelegate(
         bindGridItemLayout(file, viewHolder)
 
         // unread comments
-        bindUnreadComments(file, viewHolder)
+        bindUnreadComments(file, viewHolder, isGrid)
 
         // multiSelect (Checkbox)
         val isFolderPickerActivity = (context is FolderPickerActivity)
@@ -272,7 +272,13 @@ class FileListDelegate(
         }
     }
 
-    private fun bindUnreadComments(file: OCFile, gridViewHolder: FileViewHolder) {
+    private fun bindUnreadComments(file: OCFile, gridViewHolder: FileViewHolder, isGrid: Boolean) {
+        // NMC: no need to show comment icon in grid view
+        if (isGrid) {
+            gridViewHolder.unreadComments.visibility = View.GONE
+            return
+        }
+
         if (file.unreadCommentsCount > 0) {
             gridViewHolder.unreadComments.visibility = View.VISIBLE
             gridViewHolder.unreadComments.setOnClickListener {
