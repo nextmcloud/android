@@ -112,7 +112,7 @@ class ShareActivity :
     }
 
     override fun onShareProcessClosed() {
-        finish()
+        // nothing to do here
     }
 
     private fun setupHeader(binding: ShareActivityBinding, file: OCFile, user: User) {

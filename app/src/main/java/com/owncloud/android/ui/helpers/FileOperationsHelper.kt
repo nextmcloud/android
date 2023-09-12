@@ -537,6 +537,14 @@ class FileOperationsHelper(
     }
     // endregion
 
+    fun getComments(fileId: Long) {
+        val commentsIntent = operationIntent(OperationsService.ACTION_GET_COMMENTS).apply {
+            putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.account)
+            putExtra(OperationsService.EXTRA_FILE_ID, fileId)
+        }
+        queueOperationAndShowWaitDialog(commentsIntent)
+    }
+
     // region Send and set as
     fun sendShareFile(file: OCFile) {
         sendShareFile(file, !file.canReshare())
