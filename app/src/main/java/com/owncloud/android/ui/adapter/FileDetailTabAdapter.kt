@@ -25,8 +25,9 @@ class FileDetailTabAdapter(
 ) : FragmentStateAdapter(fragmentActivity) {
 
     private enum class Tab(val position: Int) {
-        Activities(0),
-        Sharing(1),
+        Activities(1),
+        // NMC: Sharing will be 1st tab and comments will be 2nd tab
+        Sharing(0),
         Details(2)
     }
 
