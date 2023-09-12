@@ -14,6 +14,7 @@ import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextPaint
+import android.text.TextUtils
 import android.text.format.DateFormat
 import android.text.format.DateUtils
 import android.text.method.LinkMovementMethod
@@ -37,12 +38,14 @@ import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ActivityListItemBinding
 import com.owncloud.android.databinding.ActivityListItemHeaderBinding
+import com.owncloud.android.databinding.CommentListItemBinding
 import com.owncloud.android.lib.common.OwnCloudClientManagerFactory
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.lib.resources.activities.model.Activity
 import com.owncloud.android.lib.resources.activities.model.RichElement
 import com.owncloud.android.lib.resources.activities.model.RichObject
 import com.owncloud.android.lib.resources.activities.models.PreviewObject
+import com.owncloud.android.operations.comments.Comments
 import com.owncloud.android.ui.activities.StickyHeaderAdapter
 import com.owncloud.android.ui.interfaces.ActivityListInterface
 import com.owncloud.android.utils.DisplayUtils
@@ -62,7 +65,9 @@ open class ActivityListAdapter(
     private val currentAccountProvider: CurrentAccountProvider,
     private val activityListInterface: ActivityListInterface,
     private val isDetailView: Boolean,
-    private val viewThemeUtils: ViewThemeUtils
+    private val viewThemeUtils: ViewThemeUtils,
+    // it will be null if coming from activities
+    private val userId: String? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
     StickyHeaderAdapter {
 
@@ -92,6 +97,8 @@ open class ActivityListAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return if (viewType == ACTIVITY_TYPE) {
             ActivityViewHolder(ActivityListItemBinding.inflate(inflater, parent, false))
+        } else if (viewType == COMMENT_TYPE) {
+            CommentViewHolder(CommentListItemBinding.inflate(inflater, parent, false))
         } else {
             ActivityViewHeaderHolder(ActivityListItemHeaderBinding.inflate(inflater, parent, false))
         }
@@ -100,6 +107,7 @@ open class ActivityListAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ActivityViewHolder -> bindActivityViewHolder(holder, position)
+            is CommentViewHolder -> bindCommentViewHolder(holder, position)
             is ActivityViewHeaderHolder -> holder.binding.header.text = values[position] as String
         }
     }
@@ -175,6 +183,41 @@ open class ActivityListAdapter(
                 removeAllViews()
                 visibility = View.GONE
             }
+        }
+    }
+
+    private fun bindCommentViewHolder(holder: CommentViewHolder, position: Int){
+        val comments =  values[position] as Comments
+
+        if (comments.creationDateTime != null) {
+            val date = DisplayUtils.getRelativeDateTimeString(context, comments.creationDateTime.time)
+            holder.binding.datetime.text = date
+            holder.binding.datetime.visibility = View.VISIBLE
+        } else {
+            holder.binding.datetime.visibility = View.GONE
+        }
+
+        if (!TextUtils.isEmpty(comments.actorDisplayName)) {
+            holder.binding.subject.visibility = View.VISIBLE
+            holder.binding.subject.text = comments.actorDisplayName
+        } else {
+            holder.binding.subject.visibility = View.GONE
+        }
+
+        if (!TextUtils.isEmpty(comments.message)) {
+            holder.binding.message.text = comments.message
+            holder.binding.message.visibility = View.VISIBLE
+        } else {
+            holder.binding.message.visibility = View.GONE
+        }
+
+        if (!TextUtils.isEmpty(comments.actorId) && userId != null && comments.actorId == userId) {
+            holder.binding.overflowMenu.visibility = View.VISIBLE
+            holder.binding.overflowMenu.setOnClickListener({ _ ->
+                activityListInterface.onCommentsOverflowMenuClicked(
+                    comments
+                )
+            })
         }
     }
 
@@ -267,7 +310,11 @@ open class ActivityListAdapter(
         return ssb
     }
 
-    override fun getItemViewType(position: Int) = if (values[position] is Activity) ACTIVITY_TYPE else HEADER_TYPE
+    override fun getItemViewType(position: Int): Int {
+        return if (values[position] is Activity) ACTIVITY_TYPE
+        else if (values[position] is Comments) COMMENT_TYPE
+        else HEADER_TYPE
+    }
 
     override fun getItemCount() = values.size
 
@@ -285,7 +332,9 @@ open class ActivityListAdapter(
                 modificationTimestamp,
                 DateUtils.DAY_IN_MILLIS,
                 DateUtils.WEEK_IN_MILLIS,
-                0
+                0,
+                // NMC: true to avoid creating wrong header date if date is 1sec future in case of comments
+                true
             )
         } else {
             DateFormat.format(
@@ -312,12 +361,16 @@ open class ActivityListAdapter(
     protected class ActivityViewHolder(val binding: ActivityListItemBinding) :
         RecyclerView.ViewHolder(binding.root)
 
+    protected class CommentViewHolder (val binding: CommentListItemBinding ) :
+        RecyclerView.ViewHolder(binding.root)
+
     protected class ActivityViewHeaderHolder(val binding: ActivityListItemHeaderBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     companion object {
         const val HEADER_TYPE = 100
         const val ACTIVITY_TYPE = 101
+        const val COMMENT_TYPE  = 103
         private val TAG: String = ActivityListAdapter::class.java.simpleName
     }
 }

@@ -190,6 +190,11 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
      * @return reference to the {@link FileDetailActivitiesFragment}
      */
     public FileDetailActivitiesFragment getFileDetailActivitiesFragment() {
+        // NMC: uncomment below code if any crash is happening during testing
+        // else remove the code
+       /* if (binding == null) {
+            return null;
+        }*/
         if (binding.pager.getAdapter() instanceof FileDetailTabAdapter adapter) {
             return adapter.getFileDetailActivitiesFragment();
         }
@@ -307,17 +312,13 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     private void setupViewPager() {
         binding.tabLayout.removeAllTabs();
 
-        binding.tabLayout.addTab(
-            binding
-                .tabLayout
-                .newTab()
-                .setText(R.string.drawer_item_activities)
-                .setIcon(R.drawable.selector_tab_activities)
-                                );
-
         if (showSharingTab()) {
-            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.share_dialog_title).setIcon(R.drawable.selector_tab_share));
+            // NMC: no icon required for tabs
+            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.share_dialog_title));
         }
+
+        // NMC: 2nd tab will be comments and without icon
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.comments_tab_title));
 
         if (MimeTypeUtil.isImage(getFile())) {
             binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.filedetails_details).setIcon(R.drawable.selector_media));
