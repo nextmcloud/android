@@ -57,6 +57,7 @@ import com.owncloud.android.lib.resources.status.OCCapability
 import com.owncloud.android.operations.RefreshFolderOperation
 import com.owncloud.android.providers.UsersAndGroupsSearchConfig
 import com.owncloud.android.ui.activity.FileActivity
+import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.adapter.ShareeListAdapter
 import com.owncloud.android.ui.adapter.ShareeListAdapterListener
 import com.owncloud.android.ui.asynctasks.RetrieveHoverCardAsyncTask
@@ -142,6 +143,8 @@ class FileDetailSharingFragment :
 
         fetchSharees()
         setupView()
+
+        showHideSharingTitle()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -249,6 +252,16 @@ class FileDetailSharingFragment :
 
             stopLoadingAnimationAndShowShareContainer()
             DisplayUtils.showSnackMessage(this@FileDetailSharingFragment, R.string.error_fetching_sharees)
+        }
+    }
+
+    // if FileDetailSharingFragment is launched from OCFileListFragment(FileDisplayActivity)
+    // i.e by clicking on 3 dot menu item -> Comments
+    // then we have to hide the title
+    private fun showHideSharingTitle() {
+        if (requireActivity() is FileDisplayActivity) {
+            // need to fix when merged with sharing feature
+            // binding.sharingTitle.setVisibility(View.GONE);
         }
     }
 

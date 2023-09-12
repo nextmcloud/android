@@ -27,6 +27,7 @@ import com.owncloud.android.lib.resources.files.FileUtils
 import com.owncloud.android.ui.activities.ActivitiesContract
 import com.owncloud.android.ui.activities.ActivitiesPresenter
 import com.owncloud.android.ui.activities.adapter.ActivityListAdapter
+import com.owncloud.android.operations.comments.Comments
 import com.owncloud.android.ui.activities.data.activities.ActivitiesRepository
 import com.owncloud.android.ui.activities.data.files.FilesRepository
 import com.owncloud.android.ui.activity.FileActivity
@@ -133,6 +134,8 @@ class ActivitiesFragment :
         val baseActivity = requireActivity() as NavigatorActivity
         actionListener?.openActivity(path, baseActivity)
     }
+
+    override fun onCommentsOverflowMenuClicked(comments: Comments?) = Unit
 
     override fun showActivities(activities: List<Any>, client: NextcloudClient, lastGiven: Long) {
         val binding = binding ?: return

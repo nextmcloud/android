@@ -9,21 +9,25 @@
  */
 package com.owncloud.android.ui.fragment
 
+import android.accounts.AccountManager
 import android.content.ContentResolver
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.VisibleForTesting
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
@@ -32,6 +36,7 @@ import com.nextcloud.client.network.ClientFactory
 import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.common.NextcloudClient
 import com.nextcloud.utils.extensions.getParcelableArgument
+import com.nmc.android.ui.CommentsActionsBottomSheetDialog
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FileDetailsActivitiesFragmentBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -45,8 +50,13 @@ import com.owncloud.android.lib.resources.comments.MarkCommentsAsReadRemoteOpera
 import com.owncloud.android.lib.resources.files.ReadFileVersionsRemoteOperation
 import com.owncloud.android.lib.resources.files.model.FileVersion
 import com.owncloud.android.operations.CommentFileOperation
+import com.owncloud.android.operations.comments.Comments
+import com.owncloud.android.operations.comments.DeleteCommentRemoteOperation
+import com.owncloud.android.operations.comments.GetCommentsRemoteOperation
+import com.owncloud.android.operations.comments.UpdateCommentRemoteOperation
 import com.owncloud.android.ui.activities.adapter.ActivityAndVersionListAdapter
 import com.owncloud.android.ui.activity.ComponentsGetter
+import com.owncloud.android.ui.dialog.EditCommentDialogFragment
 import com.owncloud.android.ui.events.CommentsEvent
 import com.owncloud.android.ui.helpers.FileOperationsHelper
 import com.owncloud.android.ui.interfaces.ActivityListInterface
@@ -54,6 +64,7 @@ import com.owncloud.android.ui.interfaces.VersionListInterface
 import com.owncloud.android.utils.DisplayUtils
 import com.owncloud.android.utils.DisplayUtils.AvatarGenerationListener
 import com.owncloud.android.utils.theme.ViewThemeUtils
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -68,6 +79,7 @@ class FileDetailActivitiesFragment :
     ActivityListInterface,
     AvatarGenerationListener,
     VersionListInterface.View,
+    CommentsActionsBottomSheetDialog.CommentsBottomSheetActions,
     Injectable {
 
     private var adapter: ActivityAndVersionListAdapter? = null
@@ -123,7 +135,19 @@ class FileDetailActivitiesFragment :
         callback = createCommentCallback()
 
         binding.submitComment.setOnClickListener { submitComment() }
-        viewThemeUtils.material.colorTextInputLayout(binding.commentInputFieldContainer)
+        binding.commentInputField.setOnEditorActionListener(object : TextView.OnEditorActionListener {
+            override fun onEditorAction(
+                p0: TextView?,
+                actionId: Int,
+                p2: KeyEvent?
+            ): Boolean {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    submitComment()
+                    return true
+                }
+                return false
+            }
+        })
 
         DisplayUtils.setAvatar(
             user!!,
@@ -165,26 +189,16 @@ class FileDetailActivitiesFragment :
             ResourcesCompat.getDrawable(resources, R.drawable.ic_activity, null)
         )
         binding.emptyList.emptyListView.visibility = View.GONE
-
-        adapter = ActivityAndVersionListAdapter(requireActivity(), accountManager, this, this, viewThemeUtils)
+        val acctManager = AccountManager.get(context)
+        val userId = acctManager.getUserData(
+            user?.toPlatformAccount(),
+            com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_USER_ID
+        )
+        adapter = ActivityAndVersionListAdapter(requireActivity(), accountManager, this, this, viewThemeUtils, userId)
         binding.list.adapter = adapter
 
         val layoutManager = LinearLayoutManager(context)
         binding.list.layoutManager = layoutManager
-        binding.list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-
-                val visibleItemCount = recyclerView.childCount
-                val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemIndex = layoutManager.findFirstVisibleItemPosition()
-
-                val reachedEnd = (totalItemCount - visibleItemCount) <= (firstVisibleItemIndex + LOAD_MORE_THRESHOLD)
-                if (!isLoadingActivities && reachedEnd && lastGiven > 0) {
-                    fetchAndSetData(lastGiven)
-                }
-            }
-        })
     }
 
     private fun setupRefreshListeners(binding: FileDetailsActivitiesFragmentBinding) {
@@ -224,9 +238,74 @@ class FileDetailActivitiesFragment :
         fetchAndSetData(-1)
     }
 
+    private fun fetchAndSetData(lastGiven: Int) {
+        val activity = getActivity()
+
+        if (activity == null) {
+            Log_OC.e(this, "Activity is null, aborting!")
+            return;
+        }
+
+        val user = accountManager.user;
+
+        if (user.isAnonymous) {
+            activity.runOnUiThread {
+                setEmptyContent(getString(R.string.common_error), getString(R.string.file_detail_comment_error))
+            }
+            return
+        }
+
+        val t = Thread({
+            try {
+                ownCloudClient = clientFactory.create(user)
+                nextcloudClient = clientFactory.createNextcloudClient(user)
+
+                isLoadingActivities = true
+
+                val getCommentsRemoteOperation = GetCommentsRemoteOperation(file!!.localId, 0, 0)
+
+                Log_OC.d(TAG, "BEFORE getCommentsRemoteOperation.execute")
+                val result = getCommentsRemoteOperation.execute(ownCloudClient)
+
+
+                if (result.isSuccess && result.getResultData() != null) {
+                    val commentsList = result.getResultData() as List<*>
+
+                    activity.runOnUiThread({
+                        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                            populateList(commentsList, lastGiven == -1)
+                        }
+                    })
+                } else {
+                    Log_OC.d(TAG, result.logMessage)
+                    // show error
+                    var logMessage = result.logMessage
+                    if (result.httpCode == HttpStatus.SC_NOT_MODIFIED) {
+                        logMessage = getString(R.string.activities_no_results_message)
+                    }
+                    val finalLogMessage = logMessage
+                    activity.runOnUiThread({
+                        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                            setErrorContent(finalLogMessage)
+                            isLoadingActivities = false
+                        }
+                    })
+                }
+
+                hideRefreshLayoutLoader()
+            } catch (e: CreationException) {
+                Log_OC.e(TAG, "Error fetching file details comments", e)
+            }
+        })
+
+        t.start()
+    }
+
+    // NMC: Not using this method as we don't have to show the activities
+    /* */
     /**
      * @param lastGiven long; -1 to disable
-     */
+     *//*
     @Suppress("DEPRECATION")
     private fun fetchAndSetData(lastGiven: Long) {
         val activity = activity
@@ -262,7 +341,7 @@ class FileDetailActivitiesFragment :
                 Log_OC.e(TAG, "Error fetching file details activities", e)
             }
         }
-    }
+    }*/
 
     @Suppress("DEPRECATION")
     private fun loadActivities(
@@ -401,8 +480,8 @@ class FileDetailActivitiesFragment :
 
         if (adapter?.itemCount == 0) {
             setEmptyContent(
-                getString(R.string.activities_no_results_headline),
-                getString(R.string.activities_no_results_message)
+                getString(R.string.comments_no_results_headline),
+                getString(R.string.comments_no_results_message)
             )
         } else {
             binding.swipeContainingList.visibility = View.VISIBLE
@@ -413,7 +492,8 @@ class FileDetailActivitiesFragment :
     }
 
     private fun setEmptyContent(headline: String?, message: String?) {
-        setInfoContent(R.drawable.ic_activity, headline, message)
+        // NMC: no icon required for empty state
+        setInfoContent(0, headline, message)
     }
 
     @VisibleForTesting
@@ -424,9 +504,20 @@ class FileDetailActivitiesFragment :
     private fun setInfoContent(@DrawableRes icon: Int, headline: String?, message: String?) {
         val binding = binding ?: return
 
-        binding.emptyList.emptyListIcon.setImageDrawable(
-            ResourcesCompat.getDrawable(requireContext().resources, icon, null)
-        )
+        // NMC: to handle no icon visibility
+        if (icon != 0) {
+            binding.emptyList.emptyListIcon.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                    requireContext().resources,
+                    icon,
+                    null
+                )
+            )
+            binding.emptyList.emptyListIcon.visibility = View.VISIBLE
+        } else {
+            binding.emptyList.emptyListIcon.visibility = View.GONE
+        }
+
         binding.emptyList.emptyListViewHeadline.text = headline
         binding.emptyList.emptyListViewText.text = message
 
@@ -435,7 +526,6 @@ class FileDetailActivitiesFragment :
 
         binding.emptyList.emptyListViewHeadline.visibility = View.VISIBLE
         binding.emptyList.emptyListViewText.visibility = View.VISIBLE
-        binding.emptyList.emptyListIcon.visibility = View.VISIBLE
         binding.emptyList.emptyListView.visibility = View.VISIBLE
         binding.swipeContainingEmpty.visibility = View.VISIBLE
     }
@@ -456,6 +546,12 @@ class FileDetailActivitiesFragment :
         // TODO implement activity click
     }
 
+    override fun onCommentsOverflowMenuClicked(comments: Comments?) {
+        comments?.let {
+            CommentsActionsBottomSheetDialog(requireContext(), it, this).show()
+        }
+    }
+
     override fun onRestoreClicked(fileVersion: FileVersion?) {
         operationsHelper?.restoreFileVersion(fileVersion)
     }
@@ -470,6 +566,31 @@ class FileDetailActivitiesFragment :
     @VisibleForTesting
     fun disableLoadingActivities() {
         isLoadingActivities = false
+    }
+
+    override fun onUpdateComment(comments: Comments) {
+        val dialog = EditCommentDialogFragment.newInstance(comments)
+        dialog.setOnEditCommentListener { comments1, message ->
+            UpdateCommentTask(message, file!!.localId, comments1.commentId, callback, ownCloudClient!!)
+                .execute(lifecycleScope)
+        }
+        dialog.show(requireActivity().supportFragmentManager, EditCommentDialogFragment.EDIT_COMMENT_FRAGMENT_TAG)
+    }
+
+    override fun onDeleteComment(comments: Comments) {
+        val builder = AlertDialog.Builder(requireActivity())
+        builder.setPositiveButton(
+            R.string.common_yes
+        ) { _, _ ->
+            DeleteCommentTask(
+                file!!.localId, comments.commentId,
+                callback, ownCloudClient!!
+            ).execute(lifecycleScope)
+        }
+            .setNegativeButton(R.string.common_no, null)
+            .setMessage(R.string.delete_comment_dialog_message);
+        val dialog = builder.create()
+        dialog.show()
     }
 
     companion object {
@@ -488,5 +609,61 @@ class FileDetailActivitiesFragment :
                     putParcelable(ARG_USER, user)
                 }
             }
+    }
+
+    class UpdateCommentTask(
+        private val message: String,
+        private val fileId: Long,
+        private val commentId: Int,
+        private val callback: VersionListInterface.CommentCallback?,
+        private val client: OwnCloudClient
+    ) {
+
+        fun execute(scope: CoroutineScope) {
+            scope.launch {
+                val success = withContext(Dispatchers.IO) {
+                    val operation =
+                        UpdateCommentRemoteOperation(fileId, commentId, message)
+
+                    val result = operation.execute(client)
+                    result.isSuccess
+                }
+
+                if (success) {
+                    callback?.onSuccess()
+                    // Call error to show success message
+                    callback?.onError(R.string.success_update_comment_file)
+                } else {
+                    callback?.onError(R.string.error_update_comment_file)
+                }
+            }
+        }
+    }
+
+    class DeleteCommentTask(
+        private val fileId: Long,
+        private val commentId: Int,
+        private val callback: VersionListInterface.CommentCallback?,
+        private val client: OwnCloudClient
+    ) {
+
+        fun execute(scope: CoroutineScope) {
+            scope.launch {
+                val success = withContext(Dispatchers.IO) {
+                    val operation = DeleteCommentRemoteOperation(fileId, commentId)
+
+                    val result = operation.execute(client)
+                    result.isSuccess
+                }
+
+                if (success) {
+                    callback?.onSuccess()
+                    // Call error to show success message
+                    callback?.onError(R.string.success_delete_comment_file)
+                } else {
+                    callback?.onError(R.string.error_delete_comment_file)
+                }
+            }
+        }
     }
 }
