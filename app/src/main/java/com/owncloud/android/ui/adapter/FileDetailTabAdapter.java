@@ -56,13 +56,14 @@ public class FileDetailTabAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         return switch (position) {
+            // NMC: Sharing will be 1st tab and comments will be 2nd tab
             default -> {
-                fileDetailActivitiesFragment = FileDetailActivitiesFragment.newInstance(file, user);
-                yield fileDetailActivitiesFragment;
-            }
-            case 1 -> {
                 fileDetailSharingFragment = FileDetailSharingFragment.newInstance(file, user);
                 yield fileDetailSharingFragment;
+            }
+            case 1 -> {
+                fileDetailActivitiesFragment = FileDetailActivitiesFragment.newInstance(file, user);
+                yield fileDetailActivitiesFragment;
             }
             case 2 -> {
                 imageDetailFragment = ImageDetailFragment.newInstance(file, user);
