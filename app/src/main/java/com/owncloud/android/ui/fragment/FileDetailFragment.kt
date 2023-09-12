@@ -629,10 +629,13 @@ class FileDetailFragment :
 
     private fun setupTabs(tabLayout: TabLayout, showSharingTab: Boolean, showDetailsTab: Boolean) {
         tabLayout.removeAllTabs()
-        tabLayout.addIconTab(R.string.drawer_item_activities, R.drawable.selector_tab_activities)
         if (showSharingTab) {
             tabLayout.addIconTab(R.string.share_dialog_title, R.drawable.selector_tab_share)
         }
+
+        // NMC: 2nd tab will be comments
+        tabLayout.addIconTab(R.string.comments_tab_title, R.drawable.selector_tab_activities)
+
         if (showDetailsTab) {
             tabLayout.addIconTab(R.string.filedetails_details, R.drawable.info_24)
         }
@@ -640,7 +643,8 @@ class FileDetailFragment :
     }
 
     private fun TabLayout.addIconTab(@StringRes text: Int, @DrawableRes icon: Int) {
-        addTab(newTab().setText(text).setIcon(icon))
+        // NMC: no icon required for tabs
+        addTab(newTab().setText(text))
     }
 
     private fun createPageChangeCallback() = object : ViewPager2.OnPageChangeCallback() {
