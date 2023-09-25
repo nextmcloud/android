@@ -135,12 +135,10 @@
     <!-- Switch Compat Colors -->
     <color name="switch_thumb_checked_enabled">@color/primary</color>
     <color name="switch_track_checked_enabled">#F399C7</color>
-    <color name="switch_thumb_checked_disabled">@color/grey_0</color>
-    <color name="switch_track_checked_disabled">@color/grey_0</color>
     <color name="switch_thumb_unchecked_enabled">#FFFFFF</color>
     <color name="switch_track_unchecked_enabled">@color/grey_30</color>
-    <color name="switch_thumb_unchecked_disabled">@color/grey_0</color>
-    <color name="switch_track_unchecked_disabled">@color/grey_0</color>
+    <color name="switch_thumb_disabled">@color/grey_10</color>
+    <color name="switch_track_disabled">@color/grey_0</color>
 
     <!-- Checkbox Colors -->
     <color name="checkbox_checked_enabled">@color/primary</color>

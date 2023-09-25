@@ -30,6 +30,7 @@ package com.owncloud.android.ui.fragment;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -94,6 +95,7 @@ import javax.inject.Inject;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentManager;
 
@@ -544,11 +546,17 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
 
     private void setFavoriteIconStatus(boolean isFavorite) {
         if (isFavorite) {
-            binding.favorite.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_star, null));
+            binding.favorite.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.favorite, null));
         } else {
             binding.favorite.setImageDrawable(ResourcesCompat.getDrawable(getResources(),
                                                                       R.drawable.ic_star_outline,
                                                                       null));
+
+            //NMC Customization
+            binding.favorite.getDrawable().mutate().setColorFilter(requireContext()
+                                                                       .getResources()
+                                                                       .getColor(R.color.list_item_lastmod_and_filesize_text, null),
+                                                                   PorterDuff.Mode.SRC_IN);
         }
     }
 
@@ -571,13 +579,12 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
 
         if (toolbarActivity != null) {
             if (file.isFolder()) {
-                toolbarActivity.setPreviewImageDrawable(MimeTypeUtil
-                                                            .getFolderTypeIcon(file.isSharedWithMe() || file.isSharedWithSharee(),
-                                                                               file.isSharedViaLink(), file.isEncrypted(),
-                                                                               file.isGroupFolder(),
-                                                                               syncedFolderProvider.findByRemotePathAndAccount(file.getRemotePath(), user),
-                                                                               file.getMountType(), requireContext(),
-                                                                               viewThemeUtils));
+                boolean isAutoUploadFolder = SyncedFolderProvider.isAutoUploadFolder(syncedFolderProvider, file, user);
+
+                Integer overlayIconId = file.getFileOverlayIconId(isAutoUploadFolder);
+                // NMC Customization: No overlay icon will be used. Directly using folder icons
+                toolbarActivity.setPreviewImageDrawable(ContextCompat.getDrawable(requireContext(), overlayIconId));
+
                 int leftRightPadding = requireContext().getResources().getDimensionPixelSize(R.dimen.standard_padding);
                 updatePreviewImageUI(leftRightPadding);
 

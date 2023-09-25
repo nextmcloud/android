@@ -28,12 +28,16 @@ package com.owncloud.android.ui.fragment;
 import android.Manifest;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -184,6 +188,8 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
         binding.sharesList.setLayoutManager(new LinearLayoutManager(requireContext()));
 
+        binding.pickContactEmailBtn.setOnClickListener(v -> checkContactPermission());
+
         binding.shareCreateNewLink.setOnClickListener(v -> createPublicShareLink());
 
         //remove focus from search view on click of root view
@@ -234,6 +240,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         binding.searchView.setQueryHint(getResources().getString(R.string.share_search));
         binding.searchView.setVisibility(View.VISIBLE);
         binding.labelPersonalShare.setVisibility(View.VISIBLE);
+        binding.pickContactEmailBtn.setVisibility(View.VISIBLE);
 
         binding.searchView.setOnQueryTextFocusChangeListener((view, hasFocus) -> {
             isSearchViewFocused = hasFocus;
@@ -349,9 +356,10 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
             String note = file.getNote();
 
+            //NMC Customization --> Share with me note container is not required
             if (!TextUtils.isEmpty(note)) {
                 binding.sharedWithYouNote.setText(file.getNote());
-                binding.sharedWithYouNoteContainer.setVisibility(View.VISIBLE);
+                binding.sharedWithYouNoteContainer.setVisibility(View.GONE);
             } else {
                 binding.sharedWithYouNoteContainer.setVisibility(View.GONE);
             }
@@ -362,6 +370,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
             } else {
                 binding.searchView.setVisibility(View.GONE);
                 binding.labelPersonalShare.setVisibility(View.GONE);
+                binding.pickContactEmailBtn.setVisibility(View.GONE);
                 binding.shareCreateNewLink.setVisibility(View.GONE);
                 binding.tvSharingDetailsMessage.setText(getResources().getString(R.string.reshare_not_allowed));
             }
