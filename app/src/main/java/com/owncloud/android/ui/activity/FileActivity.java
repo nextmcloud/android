@@ -945,7 +945,7 @@ public abstract class FileActivity extends DrawerActivity
             //if user sharing from Preview Image Fragment
             fragment = getSupportFragmentManager().findFragmentByTag(ShareActivity.TAG_SHARE_FRAGMENT);
             if (fragment != null) {
-                ((FileDetailSharingFragment) fragment).initiateSharingProcess(shareeName, shareType);
+                ((FileDetailSharingFragment) fragment).initiateSharingProcess(shareeName, shareType, usersAndGroupsSearchConfig.getSearchOnlyUsers());
             }
         }
     }
