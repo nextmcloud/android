@@ -99,11 +99,12 @@ class FileSharingIT : AbstractIT() {
         onView(withId(R.id.tv_sharing_details_message)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.tv_sharing_details_message)).check(matches(withText("You can create links or send shares by mail. If you invite MagentaCLOUD users, you have more opportunities for collaboration.")))
         onView(withId(R.id.searchView)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.pick_contact_email_btn)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.label_personal_share)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.label_personal_share)).check(matches(withText("Personal share by mail")))
 
         onView(withId(R.id.share_create_new_link)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.share_create_new_link)).check(matches(withText("Add link")))
+        onView(withId(R.id.share_create_new_link)).check(matches(withText("Create Link")))
 
         onView(withId(R.id.tv_your_shares)).check(matches(not(isDisplayed())))
         onView(withId(R.id.sharesList)).check(matches(not(isDisplayed())))
@@ -155,11 +156,12 @@ class FileSharingIT : AbstractIT() {
         onView(withId(R.id.tv_sharing_details_message)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.tv_sharing_details_message)).check(matches(withText("You can create links or send shares by mail. If you invite MagentaCLOUD users, you have more opportunities for collaboration.")))
         onView(withId(R.id.searchView)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.pick_contact_email_btn)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.label_personal_share)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.label_personal_share)).check(matches(withText("Personal share by mail")))
 
         onView(withId(R.id.share_create_new_link)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.share_create_new_link)).check(matches(withText("Add link")))
+        onView(withId(R.id.share_create_new_link)).check(matches(withText("Create Link")))
 
         onView(withId(R.id.tv_your_shares)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.tv_your_shares)).check(matches(withText("Your Shares")))
@@ -185,6 +187,7 @@ class FileSharingIT : AbstractIT() {
         onView(withId(R.id.shared_with_you_avatar)).check(matches(isCompletelyDisplayed()))
 
         onView(withId(R.id.searchView)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.pick_contact_email_btn)).check(matches(not(isDisplayed())))
         onView(withId(R.id.label_personal_share)).check(matches(not(isDisplayed())))
         onView(withId(R.id.share_create_new_link)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tv_your_shares)).check(matches(not(isDisplayed())))
@@ -208,6 +211,7 @@ class FileSharingIT : AbstractIT() {
         onView(withId(R.id.shared_with_you_note_container)).check(matches(not(isDisplayed())))
 
         onView(withId(R.id.searchView)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.pick_contact_email_btn)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.label_personal_share)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.share_create_new_link)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.tv_your_shares)).check(matches(not(isDisplayed())))

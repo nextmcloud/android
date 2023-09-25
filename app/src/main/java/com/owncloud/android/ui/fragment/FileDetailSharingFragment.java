@@ -25,13 +25,19 @@
 
 package com.owncloud.android.ui.fragment;
 
+import android.Manifest;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +56,7 @@ import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.OwnCloudAccount;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
+import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.shares.OCShare;
 import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.lib.resources.status.NextcloudVersion;
@@ -67,6 +74,7 @@ import com.owncloud.android.ui.fragment.util.SharingMenuHelper;
 import com.owncloud.android.ui.helpers.FileOperationsHelper;
 import com.owncloud.android.utils.ClipboardUtil;
 import com.owncloud.android.utils.DisplayUtils;
+import com.owncloud.android.utils.PermissionUtil;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -76,6 +84,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -178,6 +188,8 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
                                                             file.isEncrypted()));
         binding.sharesList.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        binding.pickContactEmailBtn.setOnClickListener(v -> checkContactPermission());
+
         binding.shareCreateNewLink.setOnClickListener(v -> createPublicShareLink());
 
         //remove focus from search view on click of root view
@@ -228,6 +240,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         binding.searchView.setQueryHint(getResources().getString(R.string.share_search));
         binding.searchView.setVisibility(View.VISIBLE);
         binding.labelPersonalShare.setVisibility(View.VISIBLE);
+        binding.pickContactEmailBtn.setVisibility(View.VISIBLE);
 
         binding.searchView.setOnQueryTextFocusChangeListener((view, hasFocus) -> {
             isSearchViewFocused = hasFocus;
@@ -356,6 +369,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
             } else {
                 binding.searchView.setVisibility(View.GONE);
                 binding.labelPersonalShare.setVisibility(View.GONE);
+                binding.pickContactEmailBtn.setVisibility(View.GONE);
                 binding.shareCreateNewLink.setVisibility(View.GONE);
                 binding.tvSharingDetailsMessage.setText(getResources().getString(R.string.reshare_not_allowed));
             }
@@ -574,6 +588,52 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         binding.tvEmptyShares.setVisibility(isEmptyList ? View.VISIBLE : View.GONE);
     }
 
+    private void checkContactPermission() {
+        if (PermissionUtil.checkSelfPermission(requireActivity(), Manifest.permission.READ_CONTACTS)) {
+            pickContactEmail();
+        } else {
+            requestContactPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
+        }
+    }
+
+    private void pickContactEmail() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setDataAndType(ContactsContract.Contacts.CONTENT_URI, ContactsContract.CommonDataKinds.Email.CONTENT_TYPE);
+        onContactSelectionResultLauncher.launch(intent);
+    }
+
+    private void handleContactResult(@NonNull Uri contactUri) {
+        // Define the projection to get all email addresses.
+        String[] projection = {ContactsContract.CommonDataKinds.Email.ADDRESS};
+
+        Cursor cursor = fileActivity.getContentResolver().query(contactUri, projection, null, null, null);
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                // The contact has only one email address, use it.
+                int columnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
+                if (columnIndex != -1) {
+                    // Use the email address as needed.
+                    // email variable contains the selected contact's email address.
+                    String email = cursor.getString(columnIndex);
+                    binding.searchView.post(() -> {
+                        binding.searchView.setQuery(email, false);
+                        binding.searchView.requestFocus();
+                    });
+                } else {
+                    DisplayUtils.showSnackMessage(binding.getRoot(), R.string.email_pick_failed);
+                    Log_OC.e(FileDetailSharingFragment.class.getSimpleName(), "Failed to pick email address.");
+                }
+            } else {
+                DisplayUtils.showSnackMessage(binding.getRoot(), R.string.email_pick_failed);
+                Log_OC.e(FileDetailSharingFragment.class.getSimpleName(), "Failed to pick email address as no Email found.");
+            }
+            cursor.close();
+        } else {
+            DisplayUtils.showSnackMessage(binding.getRoot(), R.string.email_pick_failed);
+            Log_OC.e(FileDetailSharingFragment.class.getSimpleName(), "Failed to pick email address as Cursor is null.");
+        }
+    }
 
     private boolean containsNoNewPublicShare(List<OCShare> shares) {
         for (OCShare share : shares) {
@@ -659,6 +719,38 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     public void onQuickPermissionChanged(OCShare share, int permission) {
         fileOperationsHelper.setPermissionsToShare(share, permission);
     }
+
+    //launcher for contact permission
+    private final ActivityResultLauncher<String> requestContactPermissionLauncher =
+        registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                pickContactEmail();
+            } else {
+                DisplayUtils.showSnackMessage(binding.getRoot(), R.string.contact_no_permission);
+            }
+        });
+
+    //launcher to handle contact selection
+    private final ActivityResultLauncher<Intent> onContactSelectionResultLauncher =
+        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                                  result -> {
+                                      if (result.getResultCode() == Activity.RESULT_OK) {
+                                          Intent intent = result.getData();
+                                          if (intent == null) {
+                                              DisplayUtils.showSnackMessage(binding.getRoot(), R.string.email_pick_failed);
+                                              return;
+                                          }
+
+                                          Uri contactUri = intent.getData();
+                                          if (contactUri == null) {
+                                              DisplayUtils.showSnackMessage(binding.getRoot(), R.string.email_pick_failed);
+                                              return;
+                                          }
+
+                                          handleContactResult(contactUri);
+
+                                      }
+                                  });
 
     public interface OnEditShareListener {
         void editExistingShare(OCShare share, int screenTypePermission, boolean isReshareShown,
