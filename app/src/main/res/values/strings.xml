@@ -605,6 +605,8 @@
     <string name="actionbar_calendar_contacts_restore">Restore contacts &amp; calendar</string>
     <string name="contacts_backup_button">Back up now</string>
     <string name="contactlist_no_permission">No permission given, nothing imported.</string>
+    <string name="contact_no_permission">Contact permission is required.</string>
+    <string name="contact_permission_rationale">Please navigate to App info in settings and give permission manually.</string>
     <string name="restore_backup">Restore backup</string>
     <string name="contacts_preferences_no_file_found">No file found</string>
     <string name="contacts_preferences_something_strange_happened">Could not find your last backup!</string>
@@ -954,6 +956,7 @@
     <string name="link_share_allow_upload_and_editing">Allow upload and editing</string>
     <string name="link_share_file_drop">File drop (upload only)</string>
     <string name="could_not_retrieve_shares">Could not retrieve shares</string>
+    <string name="email_pick_failed">Failed to pick email address.</string>
     <string name="failed_update_ui">Failed to update UI</string>
     <string name="remote">(remote)</string>
     <string name="set_status">Set status</string>
@@ -994,7 +997,7 @@
     <string name="sharing_description">You can create links or send shares by mail. If you invite MagentaCLOUD users, you have more opportunities for collaboration.</string>
     <string name="your_message">Your Message</string>
     <string name="personal_share_email">Personal share by mail</string>
-    <string name="create_link">Add link</string>
+    <string name="create_link">Create Link</string>
     <string name="your_shares">Your Shares</string>
     <string name="link_label">Link Label</string>
     <string name="hint_link_label">Your custom link label</string>
