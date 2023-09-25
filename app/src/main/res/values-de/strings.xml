@@ -95,7 +95,6 @@
     <string name="check_back_later_or_reload">Schauen Sie später noch einmal vorbei oder laden Sie neu.</string>
     <string name="checkbox">Checkbox</string>
     <string name="choose_local_folder">Wähle einen lokalen Ordner…</string>
-    <string name="choose_location">Ort wählen</string>
     <string name="choose_remote_folder">Wähle einen entfernten Ordner …</string>
     <string name="choose_template_helper_text">Bitte eine Vorlage auswählen und einen Dateinamen eingeben.</string>
     <string name="choose_which_file">Wählen Sie, welche Datei behalten werden soll!</string>
@@ -111,21 +110,20 @@
     <string name="common_cancel">Abbrechen</string>
     <string name="common_cancel_sync">Synchronisierung abbrechen</string>
     <string name="common_choose_account">Konto auswählen</string>
-    <string name="common_confirm">Übernehmen</string>
+    <string name="common_confirm">Bestätigen</string>
     <string name="common_copy">Kopieren</string>
     <string name="common_delete">Löschen</string>
     <string name="common_error">Fehler</string>
     <string name="common_error_out_memory">Nicht genügend Speicher</string>
     <string name="common_error_unknown">Unbekannter Fehler</string>
     <string name="common_loading">Lade…</string>
-    <string name="common_next">Weiter</string>
+    <string name="common_next">Nächste</string>
     <string name="common_no">Nein</string>
     <string name="common_ok">OK</string>
     <string name="common_pending">Ausstehend</string>
     <string name="common_remove">Löschen</string>
     <string name="common_rename">Umbenennen</string>
     <string name="common_save">Speichern</string>
-    <string name="common_select">Auswählen</string>
     <string name="common_send">Senden</string>
     <string name="common_share">Teilen</string>
     <string name="common_skip">Überspringen</string>
@@ -195,7 +193,6 @@
     <string name="data_to_back_up">Zu sichernde Daten</string>
     <string name="default_credentials_wrong">Zugangsdaten falsch</string>
     <string name="delete_account">Benutzerkonto löschen</string>
-    <string name="delete_account_warning">Konto %s und alle lokalen Dateien löschen?\n\nLöschung kann nicht rückgängig gemacht werden.</string>
     <string name="delete_entries">Einträgen entfernen</string>
     <string name="delete_link">Link löschen</string>
     <string name="deselect_all">Auswahl aufheben</string>
@@ -527,7 +524,6 @@
     <string name="no_mutliple_accounts_allowed">Nur ein Konto zulässig</string>
     <string name="no_pdf_app_available">Keine App verfügbar um PDFs anzuzeigen</string>
     <string name="no_send_app">Keine App zum Senden der ausgewählten Dateien verfügbar</string>
-    <string name="note_confirm">Senden</string>
     <string name="note_could_not_sent">Notiz konnte nicht versandt werden</string>
     <string name="note_icon_hint">Notiz-Symbol</string>
     <string name="notification_action_failed">Ausführen der Aktion fehlgeschlagen.</string>
@@ -700,7 +696,6 @@
     <string name="select_one_template">Bitte eine Vorlage auswählen</string>
     <string name="select_template">Vorlage auswählen</string>
     <string name="send">Senden</string>
-    <string name="send_note">Notiz an Empfänger senden</string>
     <string name="sendbutton_description">Icon für den Senden-Button</string>
     <string name="set_as">Setze als</string>
     <string name="set_note">Notiz setzen</string>
