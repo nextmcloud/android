@@ -30,6 +30,7 @@ package com.owncloud.android.ui.fragment;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -545,11 +546,17 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
 
     private void setFavoriteIconStatus(boolean isFavorite) {
         if (isFavorite) {
-            binding.favorite.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_star, null));
+            binding.favorite.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.favorite, null));
         } else {
             binding.favorite.setImageDrawable(ResourcesCompat.getDrawable(getResources(),
                                                                       R.drawable.ic_star_outline,
                                                                       null));
+
+            //NMC Customization
+            binding.favorite.getDrawable().mutate().setColorFilter(requireContext()
+                                                                       .getResources()
+                                                                       .getColor(R.color.list_item_lastmod_and_filesize_text, null),
+                                                                   PorterDuff.Mode.SRC_IN);
         }
     }
 
