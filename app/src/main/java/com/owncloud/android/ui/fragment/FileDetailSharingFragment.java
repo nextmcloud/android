@@ -25,27 +25,38 @@
 
 package com.owncloud.android.ui.fragment;
 
+import android.Manifest;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.text.InputType;
+import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
+import com.nextcloud.utils.EditorUtils;
+import com.nmc.android.utils.SearchViewThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileDetailsSharingFragmentBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.OwnCloudAccount;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
+import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.shares.OCShare;
 import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.lib.resources.status.NextcloudVersion;
@@ -60,17 +71,24 @@ import com.nextcloud.client.preferences.AppPreferences;
 import com.nmc.android.marketTracking.AdjustSdkUtils;
 import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.ui.dialog.SharePasswordDialogFragment;
+import com.owncloud.android.ui.events.ShareSearchViewFocusEvent;
 import com.owncloud.android.ui.fragment.util.FileDetailSharingFragmentHelper;
+import com.owncloud.android.ui.fragment.util.SharingMenuHelper;
 import com.owncloud.android.ui.helpers.FileOperationsHelper;
 import com.owncloud.android.utils.ClipboardUtil;
 import com.owncloud.android.utils.DisplayUtils;
+import com.owncloud.android.utils.PermissionUtil;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -84,7 +102,6 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
     private static final String ARG_FILE = "FILE";
     private static final String ARG_USER = "USER";
-    public static final int PERMISSION_EDITING_ALLOWED = 17;
 
     private OCFile file;
     private User user;
@@ -98,8 +115,11 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
     private OnEditShareListener onEditShareListener;
 
+    private boolean isSearchViewFocused;
+
     @Inject UserAccountManager accountManager;
     @Inject ClientFactory clientFactory;
+    @Inject EditorUtils editorUtils;
     @Inject ViewThemeUtils viewThemeUtils;
     @Inject AppPreferences appPreferences;
 
@@ -150,6 +170,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         refreshSharesFromDB();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FileDetailsSharingFragmentBinding.inflate(inflater, container, false);
@@ -170,6 +191,19 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
                                                             viewThemeUtils,
                                                             file.isEncrypted()));
         binding.sharesList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        binding.pickContactEmailBtn.setOnClickListener(v -> checkContactPermission());
+
+        binding.shareCreateNewLink.setOnClickListener(v -> createPublicShareLink());
+
+        //remove focus from search view on click of root view
+        binding.shareContainer.setOnClickListener(v -> binding.searchView.clearFocus());
+
+        //enable-disable scrollview scrolling
+        binding.fileDetailsNestedScrollView.setOnTouchListener((view1, motionEvent) -> {
+            //true means disable the scrolling and false means enable the scrolling
+            return com.nmc.android.utils.DisplayUtils.isLandscapeOrientation() && isSearchViewFocused;
+        });
 
         setupView();
 
@@ -197,45 +231,124 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
     private void setupView() {
         setShareWithYou();
+    }
 
-        if (file.isEncrypted()) {
-            binding.searchContainer.setVisibility(View.GONE);
-        } else {
-            FileDetailSharingFragmentHelper.setupSearchView(
-                (SearchManager) fileActivity.getSystemService(Context.SEARCH_SERVICE),
-                binding.searchView,
-                fileActivity.getComponentName());
-            viewThemeUtils.androidx.themeToolbarSearchView(binding.searchView);
+    private void setUpSearchView() {
+        FileDetailSharingFragmentHelper.setupSearchView(
+            (SearchManager) fileActivity.getSystemService(Context.SEARCH_SERVICE),
+            binding.searchView,
+            fileActivity.getComponentName());
 
-            if (file.canReshare()) {
-                binding.searchView.setQueryHint(getResources().getString(R.string.share_search));
+        SearchViewThemeUtils.INSTANCE.themeSearchView(requireContext(), binding.searchView);
+
+        binding.searchView.setQueryHint(getResources().getString(R.string.share_search));
+        binding.searchView.setVisibility(View.VISIBLE);
+        binding.labelPersonalShare.setVisibility(View.VISIBLE);
+        binding.pickContactEmailBtn.setVisibility(View.VISIBLE);
+
+        binding.searchView.setOnQueryTextFocusChangeListener((view, hasFocus) -> {
+            isSearchViewFocused = hasFocus;
+            scrollToSearchViewPosition(false);
+        });
+
+    }
+
+    /**
+     * @param isDeviceRotated true when user rotated the device and false when user is already in landscape mode
+     */
+    private void scrollToSearchViewPosition(boolean isDeviceRotated) {
+        if (com.nmc.android.utils.DisplayUtils.isLandscapeOrientation()) {
+            if (isSearchViewFocused) {
+                binding.fileDetailsNestedScrollView.post(() -> {
+                    //ignore the warning because there can be case that the scrollview can be null
+                    if (binding.fileDetailsNestedScrollView == null) {
+                        return;
+                    }
+
+                    //need to hide app bar to have more space in landscape mode while search view is focused
+                    hideAppBar();
+
+                    //send the event to hide the share top view to have more space
+                    //need to use this here else white view will be visible for sometime
+                    EventBus.getDefault().post(new ShareSearchViewFocusEvent(isSearchViewFocused));
+
+                    if (isDeviceRotated) {
+                        //during the rotation we need to use getTop() method for proper alignment of search view
+                        //-25 just to avoid blank space at top
+                        binding.fileDetailsNestedScrollView.smoothScrollTo(0, binding.searchView.getTop() - 20);
+                    } else {
+                        //when user is already in landscape mode and search view gets focus
+                        //we need to user getBottom() method for proper alignment of search view
+                        //-100 just to avoid blank space at top
+                        binding.fileDetailsNestedScrollView.smoothScrollTo(0, binding.searchView.getBottom() - 100);
+                    }
+                });
             } else {
-                binding.searchView.setQueryHint(getResources().getString(R.string.reshare_not_allowed));
-                binding.searchView.setInputType(InputType.TYPE_NULL);
-                disableSearchView(binding.searchView);
+                //send the event to show the share top view again
+                EventBus.getDefault().post(new ShareSearchViewFocusEvent(isSearchViewFocused));
+            }
+        } else {
+            //in portrait mode we need to see the layout everytime
+            //send the event to show the share top view
+            EventBus.getDefault().post(new ShareSearchViewFocusEvent(false));
+        }
+    }
+
+    private void hideAppBar() {
+        if (requireActivity() instanceof FileDisplayActivity) {
+            AppBarLayout appBarLayout = requireActivity().findViewById(R.id.appbar);
+
+            if (appBarLayout != null) {
+                appBarLayout.setExpanded(false, true);
             }
         }
     }
 
-    private void disableSearchView(View view) {
-        view.setEnabled(false);
+    /**
+     * will be called from FileActivity when user is sharing from PreviewImageFragment
+     *
+     * @param shareeName
+     * @param shareType
+     */
+    public void initiateSharingProcess(String shareeName, ShareType shareType) {
+        requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.share_fragment_container,
+                                                                                 FileDetailsSharingProcessFragment.newInstance(file,
+                                                                                                                               shareeName,
+                                                                                                                               shareType,
+                                                                                                                               SharingMenuHelper.canEditFile(requireActivity(), user, capabilities, file, editorUtils)),
+                                                                                 FileDetailsSharingProcessFragment.TAG)
+            .addToBackStack(null)
+            .commit();
+    }
 
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
-
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                disableSearchView(viewGroup.getChildAt(i));
-            }
-        }
+    /**
+     * open the new sharing screen process to modify the created share this will be called from PreviewImageFragment
+     *
+     * @param share
+     * @param screenTypePermission
+     * @param isReshareShown
+     * @param isExpiryDateShown
+     */
+    public void editExistingShare(OCShare share, int screenTypePermission, boolean isReshareShown,
+                                  boolean isExpiryDateShown) {
+        requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.share_fragment_container,
+                                                                                 FileDetailsSharingProcessFragment.newInstance(share, screenTypePermission, isReshareShown,
+                                                                                                                               isExpiryDateShown, SharingMenuHelper.canEditFile(requireActivity(), user, capabilities, file, editorUtils)),
+                                                                                 FileDetailsSharingProcessFragment.TAG)
+            .addToBackStack(null)
+            .commit();
     }
 
     private void setShareWithYou() {
         if (accountManager.userOwnsFile(file, user)) {
             binding.sharedWithYouContainer.setVisibility(View.GONE);
+            binding.shareCreateNewLink.setVisibility(View.VISIBLE);
+            binding.tvSharingDetailsMessage.setText(getResources().getString(R.string.sharing_description));
+            setUpSearchView();
         } else {
             binding.sharedWithYouUsername.setText(
                 String.format(getString(R.string.shared_with_you_by), file.getOwnerDisplayName()));
-            DisplayUtils.setAvatar(user,
+          /*  DisplayUtils.setAvatar(user,
                                    file.getOwnerId(),
                                    this,
                                    getResources().getDimension(
@@ -243,7 +356,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
                                    getResources(),
                                    binding.sharedWithYouAvatar,
                                    getContext());
-            binding.sharedWithYouAvatar.setVisibility(View.VISIBLE);
+            binding.sharedWithYouAvatar.setVisibility(View.VISIBLE);*/
 
             String note = file.getNote();
 
@@ -252,6 +365,17 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
                 binding.sharedWithYouNoteContainer.setVisibility(View.VISIBLE);
             } else {
                 binding.sharedWithYouNoteContainer.setVisibility(View.GONE);
+            }
+
+            if (file.canReshare()) {
+                binding.tvSharingDetailsMessage.setText(getResources().getString(R.string.reshare_allowed) + " " + getResources().getString(R.string.sharing_description));
+                setUpSearchView();
+            } else {
+                binding.searchView.setVisibility(View.GONE);
+                binding.labelPersonalShare.setVisibility(View.GONE);
+                binding.pickContactEmailBtn.setVisibility(View.GONE);
+                binding.shareCreateNewLink.setVisibility(View.GONE);
+                binding.tvSharingDetailsMessage.setText(getResources().getString(R.string.reshare_not_allowed));
             }
         }
     }
@@ -428,6 +552,10 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         }
         adapter.getShares().clear();
 
+        //update flag in adapter
+        adapter.setTextFile(SharingMenuHelper.canEditFile(requireActivity(), user,
+                                                          capabilities, file, editorUtils));
+
         // to show share with users/groups info
         List<OCShare> shares = fileDataStorageManager.getSharesWithForAFile(file.getRemotePath(),
                                                                             user.getAccountName());
@@ -457,17 +585,66 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 //            adapter.removeNewPublicShare();
 //        }
 
-        if (publicShares.isEmpty() && containsNoNewPublicShare(adapter.getShares())) {
-            final OCShare ocShare = new OCShare();
-            ocShare.setShareType(ShareType.NEW_PUBLIC_LINK);
-            publicShares.add(ocShare);
-        } else {
-            adapter.removeNewPublicShare();
-        }
-
         adapter.addShares(publicShares);
+
+        showHideView((shares == null || shares.isEmpty()) && (publicShares == null || publicShares.isEmpty()));
     }
 
+    private void showHideView(boolean isEmptyList) {
+        binding.sharesList.setVisibility(isEmptyList ? View.GONE : View.VISIBLE);
+        binding.tvYourShares.setVisibility(isEmptyList ? View.GONE : View.VISIBLE);
+        binding.tvEmptyShares.setVisibility(isEmptyList ? View.VISIBLE : View.GONE);
+    }
+
+    private void checkContactPermission() {
+        if (PermissionUtil.checkSelfPermission(requireActivity(), Manifest.permission.READ_CONTACTS)) {
+            pickContactEmail();
+        } else if (!PermissionUtil.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.READ_CONTACTS)) {
+            // handle rationale permission
+            DisplayUtils.showSnackMessage(binding.getRoot(), R.string.contact_permission_rationale);
+        } else {
+            requestContactPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
+        }
+    }
+
+    private void pickContactEmail() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setDataAndType(ContactsContract.Contacts.CONTENT_URI, ContactsContract.CommonDataKinds.Email.CONTENT_TYPE);
+        onContactSelectionResultLauncher.launch(intent);
+    }
+
+    private void handleContactResult(@NonNull Uri contactUri) {
+        // Define the projection to get all email addresses.
+        String[] projection = {ContactsContract.CommonDataKinds.Email.ADDRESS};
+
+        Cursor cursor = fileActivity.getContentResolver().query(contactUri, projection, null, null, null);
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                // The contact has only one email address, use it.
+                int columnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
+                if (columnIndex != -1) {
+                    // Use the email address as needed.
+                    // email variable contains the selected contact's email address.
+                    String email = cursor.getString(columnIndex);
+                    binding.searchView.post(() -> {
+                        binding.searchView.setQuery(email, false);
+                        binding.searchView.requestFocus();
+                    });
+                } else {
+                    DisplayUtils.showSnackMessage(binding.getRoot(), R.string.email_pick_failed);
+                    Log_OC.e(FileDetailSharingFragment.class.getSimpleName(), "Failed to pick email address.");
+                }
+            } else {
+                DisplayUtils.showSnackMessage(binding.getRoot(), R.string.email_pick_failed);
+                Log_OC.e(FileDetailSharingFragment.class.getSimpleName(), "Failed to pick email address as no Email found.");
+            }
+            cursor.close();
+        } else {
+            DisplayUtils.showSnackMessage(binding.getRoot(), R.string.email_pick_failed);
+            Log_OC.e(FileDetailSharingFragment.class.getSimpleName(), "Failed to pick email address as Cursor is null.");
+        }
+    }
 
     private boolean containsNoNewPublicShare(List<OCShare> shares) {
         for (OCShare share : shares) {
@@ -509,6 +686,11 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     }
 
     @Override
+    public void openIn(OCShare share) {
+        fileOperationsHelper.sendShareFile(file, true);
+    }
+
+    @Override
     public void advancedPermissions(OCShare share) {
         modifyExistingShare(share, FileDetailsSharingProcessFragment.SCREEN_TYPE_PERMISSION);
     }
@@ -539,11 +721,6 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         }
     }
 
-    @Override
-    public void addAnotherLink(OCShare share) {
-        createPublicShareLink();
-    }
-
     private void modifyExistingShare(OCShare share, int screenTypePermission) {
         onEditShareListener.editExistingShare(share, screenTypePermission, !isReshareForbidden(share),
                                               capabilities.getVersion().isNewerOrEqual(OwnCloudVersion.nextcloud_18));
@@ -554,10 +731,53 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         fileOperationsHelper.setPermissionsToShare(share, permission);
     }
 
+    //launcher for contact permission
+    private final ActivityResultLauncher<String> requestContactPermissionLauncher =
+        registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                pickContactEmail();
+            } else {
+                DisplayUtils.showSnackMessage(binding.getRoot(), R.string.contact_no_permission);
+            }
+        });
+
+    //launcher to handle contact selection
+    private final ActivityResultLauncher<Intent> onContactSelectionResultLauncher =
+        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                                  result -> {
+                                      if (result.getResultCode() == Activity.RESULT_OK) {
+                                          Intent intent = result.getData();
+                                          if (intent == null) {
+                                              DisplayUtils.showSnackMessage(binding.getRoot(), R.string.email_pick_failed);
+                                              return;
+                                          }
+
+                                          Uri contactUri = intent.getData();
+                                          if (contactUri == null) {
+                                              DisplayUtils.showSnackMessage(binding.getRoot(), R.string.email_pick_failed);
+                                              return;
+                                          }
+
+                                          handleContactResult(contactUri);
+
+                                      }
+                                  });
+
     public interface OnEditShareListener {
         void editExistingShare(OCShare share, int screenTypePermission, boolean isReshareShown,
                                boolean isExpiryDateShown);
 
         void onShareProcessClosed();
+
+        void onLinkShareDownloadLimitFetched(long downloadLimit, long downloadCount);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        //when user is in portrait mode and search view is focused and keyboard is open
+        //so when user rotate the device we have to fix the search view properly in landscape mode
+        scrollToSearchViewPosition(true);
     }
 }
