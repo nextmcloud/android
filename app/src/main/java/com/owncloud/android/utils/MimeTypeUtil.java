@@ -103,13 +103,8 @@ public final class MimeTypeUtil {
                                            ViewThemeUtils viewThemeUtils) {
         if (context != null) {
             int iconId = MimeTypeUtil.getFileTypeIconId(mimetype, filename);
-            Drawable icon = ContextCompat.getDrawable(context, iconId);
-
-            if (R.drawable.file_zip == iconId) {
-                viewThemeUtils.platform.tintPrimaryDrawable(context, icon);
-            }
-
-            return icon;
+            //NMC Customization
+            return ContextCompat.getDrawable(context, iconId);
         } else {
             return null;
         }
@@ -154,7 +149,7 @@ public final class MimeTypeUtil {
         if (WebdavEntry.MountType.GROUP == mountType || isGroupFolder) {
             drawableId = R.drawable.folder_group;
         } else if (isSharedViaLink && !isEncrypted) {
-            drawableId = R.drawable.folder_shared_link;
+            drawableId = R.drawable.folder_shared_users;
         } else if (isSharedViaUsers) {
             drawableId = R.drawable.folder_shared_users;
         } else if (isEncrypted) {
@@ -167,9 +162,7 @@ public final class MimeTypeUtil {
             drawableId = R.drawable.folder;
         }
 
-        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
-        viewThemeUtils.platform.tintPrimaryDrawable(context, drawable);
-        return drawable;
+        return ContextCompat.getDrawable(context, drawableId);
     }
 
     public static Drawable getDefaultFolderIcon(Context context,
