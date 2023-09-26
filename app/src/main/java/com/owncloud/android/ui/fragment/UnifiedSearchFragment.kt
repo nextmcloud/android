@@ -40,6 +40,7 @@ import com.nextcloud.client.core.AsyncRunner
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.di.ViewModelFactory
 import com.nextcloud.client.network.ClientFactory
+import com.nmc.android.utils.SearchViewThemeUtils.themeSearchView
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ListFragmentBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -224,7 +225,10 @@ class UnifiedSearchFragment : Fragment(), Injectable, UnifiedSearchListInterface
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         val item = menu.findItem(R.id.action_search)
         searchView = MenuItemCompat.getActionView(item) as SearchView
-        viewThemeUtils.androidx.themeToolbarSearchView(searchView!!)
+        //NMC customization
+        searchView?.let {
+            themeSearchView(requireActivity(), it)
+        }
         searchView?.setQuery(vm.query.value, false)
         searchView?.setOnQueryTextListener(this)
         searchView?.isIconified = false
