@@ -49,6 +49,7 @@ import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.annotation.NonNull;
 
 /**
@@ -452,7 +453,9 @@ public class SyncedFolderAdapter extends SectionedRecyclerViewAdapter<SectionedV
     private void setSyncButtonActiveIcon(ImageButton syncStatusButton, boolean enabled) {
         if (enabled) {
             syncStatusButton.setImageDrawable(
-                viewThemeUtils.platform.tintPrimaryDrawable(context, R.drawable.ic_cloud_sync_on)
+                viewThemeUtils.platform.colorDrawable(ResourcesCompat.getDrawable(context.getResources(),
+                                                                                  R.drawable.ic_cloud_sync_on, null),
+                                                      ResourcesCompat.getColor(context.getResources(), R.color.primary, null))
                                              );
         } else {
             syncStatusButton.setImageResource(R.drawable.ic_cloud_sync_off);
