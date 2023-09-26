@@ -1147,6 +1147,19 @@
     <string name="document_scan_export_dialog_images">Multiple images</string>
     <string name="download_cannot_create_file">Cannot create local file</string>
     <string name="download_download_invalid_local_file_name">Invalid filename for local file</string>
+    <!-- conflict dialog strings start -->
+    <string name="conflict_replace">Replace</string>
+    <string name="conflict_replace_all">Replace all</string>
+    <string name="conflict_keep_both">Keep both</string>
+    <string name="conflict_keep_both_all">Keep both for all</string>
+    <string name="conflict_more_details">More details</string>
+    <string name="conflict_cancel_keep_existing">Cancel and keep existing</string>
+    <string name="conflict_dialog_title">File conflict</string>
+    <string name="conflict_dialog_title_multiple">%d File conflicts</string>
+    <string name="conflict_dialog_message">%1$s already exists in this location. Do you want to replace it with the
+        file you are moving?</string>
+    <string name="conflict_dialog_message_multiple">The files already exist in this location. Do you want to replace them with the files you are moving?</string>
+    <!-- conflict dialog strings end -->
     <string name="drawer_item_groupfolders">Groupfolders</string>
     <string name="tags_more" translatable="false">+%1$d</string>
     <string name="pdf_password_protected">Unable to open password-protected PDF. Please use an external PDF viewer.</string>
