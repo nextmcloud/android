@@ -59,6 +59,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -222,7 +223,9 @@ public class TrashbinActivity extends DrawerActivity implements
 
     @Override
     public void onOverflowIconClicked(TrashbinFile file, View view) {
-        PopupMenu popup = new PopupMenu(this, view);
+        //NMC Customisation
+        ContextThemeWrapper ctw = new ContextThemeWrapper(this, R.style.CustomPopupTheme);
+        PopupMenu popup = new PopupMenu(ctw, view);
         popup.inflate(R.menu.item_trashbin);
 
         popup.setOnMenuItemClickListener(item -> {
