@@ -19,6 +19,7 @@ buildscript {
         exoplayerVersion = "2.19.1"
         documentScannerVersion = "1.1.1"
         roomVersion = "2.5.2"
+        scanbotSdkVersion = "1.89.0"
 
         ciBuild = System.getenv("CI") == "true"
     }
@@ -36,6 +37,14 @@ subprojects {
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
+
+        // Scanbot SDK maven repos:
+        maven {
+            url 'https://nexus.scanbot.io/nexus/content/repositories/releases/'
+        }
+        maven {
+            url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/'
+        }
     }
 }
 
