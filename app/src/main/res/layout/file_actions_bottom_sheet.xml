@@ -26,6 +26,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/bottom_sheet_bg_color"
     android:minHeight="@dimen/bottom_sheet_min_height"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
@@ -63,18 +64,19 @@
                 layout="@layout/file_thumbnail" />
         </FrameLayout>
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:ellipsize="middle"
-            android:lines="1"
-            android:padding="@dimen/standard_padding"
-            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/thumbnail_container"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Test file name which is very very very very very long.pdf" />
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="middle"
+                android:lines="1"
+                android:padding="@dimen/standard_padding"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/thumbnail_container"
+                app:layout_constraintTop_toTopOf="parent"
+                android:textColor="@color/bottom_sheet_txt_color"
+                tools:text="Test file name which is very very very very very long.pdf" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
