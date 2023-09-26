@@ -19,6 +19,9 @@
     <string name="default_display_name_for_root_folder">MagentaCLOUD</string>
     <string name="nextcloud_user_agent">Mozilla/5.0 (Android) Nextcloud-android/%1$s</string>
     <string name="only_office_user_agent">Mozilla/5.0 (Android %1$s) Mobile Nextcloud-android/%2$s</string>
+    <!-- todo need to enabled the below code later for NMC -->
+    <!-- <string name="nextcloud_user_agent">Mozilla/5.0 (Android) MagentaCLOUD-android/%1$s</string>
+        <string name="only_office_user_agent">Mozilla/5.0 (Android %1$s) Mobile MagentaCLOUD-android/%2$s</string>-->
 
     <!-- URLs and flags related -->
     <bool name="show_server_url_input">false</bool>
