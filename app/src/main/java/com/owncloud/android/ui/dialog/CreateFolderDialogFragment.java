@@ -34,6 +34,7 @@ import android.widget.TextView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.collect.Sets;
 import com.nextcloud.client.di.Injectable;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.EditBoxDialogBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -111,9 +112,6 @@ public class CreateFolderDialogFragment
             AlertDialog alertDialog = (AlertDialog) dialog;
 
             positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-
-            viewThemeUtils.platform.colorTextButtons(positiveButton,
-                                                     alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL));
         }
     }
 
@@ -138,7 +136,6 @@ public class CreateFolderDialogFragment
 
         // Setup layout
         binding.userInput.setText("");
-        viewThemeUtils.material.colorTextInputLayout(binding.userInputContainer);
 
         OCFile parentFolder = requireArguments().getParcelable(ARG_PARENT_FOLDER);
         List<OCFile> folderContent = fileDataStorageManager.getFolderContent(parentFolder, false);
@@ -199,7 +196,8 @@ public class CreateFolderDialogFragment
             .setNeutralButton(R.string.common_cancel, this)
             .setTitle(R.string.uploader_info_dirname);
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.userInputContainer.getContext(), builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(binding.userInputContainer.getContext(), builder);
 
         return builder.create();
     }

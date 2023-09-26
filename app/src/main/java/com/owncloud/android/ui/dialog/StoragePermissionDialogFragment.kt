@@ -26,11 +26,11 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.StoragePermissionDialogBinding
 import com.owncloud.android.utils.theme.ViewThemeUtils
@@ -60,14 +60,6 @@ class StoragePermissionDialogFragment :
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.let {
-            val alertDialog = it as AlertDialog
-            viewThemeUtils.platform.colorTextButtons(alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE))
-        }
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // Inflate the layout for the dialog
         val inflater = requireActivity().layoutInflater
@@ -81,7 +73,6 @@ class StoragePermissionDialogFragment :
         binding.storagePermissionExplanation.text = getString(explanationResource, getString(R.string.app_name))
 
         // Setup layout
-        viewThemeUtils.material.colorMaterialButtonPrimaryFilled(binding.btnFullAccess)
         binding.btnFullAccess.setOnClickListener {
             setResult(Result.FULL_ACCESS)
             dismiss()
@@ -106,7 +97,8 @@ class StoragePermissionDialogFragment :
                 dismiss()
             }
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.btnReadOnly.context, builder)
+        //NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(binding.btnReadOnly.context, builder)
 
         return builder.create()
     }

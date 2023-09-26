@@ -32,6 +32,7 @@ import android.widget.Button;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.di.Injectable;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.SslUntrustedCertLayoutBinding;
 import com.owncloud.android.lib.common.network.CertificateCombinedException;
@@ -162,7 +163,8 @@ public class SslUntrustedCertDialog extends DialogFragment implements Injectable
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(binding.getRoot().getContext());
         builder.setView(binding.getRoot());
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.getRoot().getContext(), builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(binding.getRoot().getContext(), builder);
 
         final Dialog dialog = builder.create();
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
