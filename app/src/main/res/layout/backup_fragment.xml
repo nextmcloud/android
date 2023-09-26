@@ -137,7 +137,7 @@
                 android:layout_weight="0.5"
                 android:minHeight="@dimen/minimum_size_for_touchable_area"
                 android:text="@string/contacts_backup_button"
-                android:theme="@style/Button.Primary"
+                style="@style/Button.Primary"
                 app:cornerRadius="@dimen/button_corner_radius" />
 
         </LinearLayout>
