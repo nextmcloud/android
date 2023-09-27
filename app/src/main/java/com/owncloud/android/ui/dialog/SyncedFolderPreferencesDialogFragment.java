@@ -430,6 +430,8 @@ public class SyncedFolderPreferencesDialogFragment extends DialogFragment implem
 
         binding.remoteFolderContainer.setOnClickListener(v -> {
             Intent action = new Intent(getActivity(), FolderPickerActivity.class);
+            action.putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true);
+            action.putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true);
             getActivity().startActivityForResult(action, REQUEST_CODE__SELECT_REMOTE_FOLDER);
         });
 
