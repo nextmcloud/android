@@ -184,7 +184,7 @@ open class FolderPickerActivity :
                 listFragment.setMessageForEmptyList(
                     R.string.folder_list_empty_headline,
                     R.string.file_list_empty_moving,
-                    R.drawable.ic_list_empty_create_folder,
+                    R.drawable.ic_list_empty_folder,
                     true
                 )
             } else {
