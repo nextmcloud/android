@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nmc.android.utils.DrawableThemeUtils;
 import com.owncloud.android.BuildConfig;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -53,6 +54,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -265,7 +267,8 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
         MenuItem menuItem = menu.findItem(R.id.action_three_dot_icon);
 
         if (menuItem != null) {
-            viewThemeUtils.platform.colorMenuItemText(requireContext(), menuItem);
+            //NMC customization
+            menuItem.setIcon(viewThemeUtils.platform.colorDrawable(menuItem.getIcon(), ContextCompat.getColor(requireContext(), R.color.fontAppbar)));
         }
 
     }
