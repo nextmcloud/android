@@ -32,6 +32,7 @@ import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.button.MaterialButton
 import com.nextcloud.client.di.Injectable
@@ -118,6 +119,8 @@ open class FolderPickerActivity :
                     mSearchOnlyFolders = true
                     isDoNotEnterEncryptedFolder = true
                     mChooseBtn!!.text = resources.getString(R.string.common_select)
+                    mChooseBtn?.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_tick,
+                            null)
                 }
                 else -> caption = themeUtils.getDefaultDisplayNameForRootFolder(this)
             }
@@ -387,15 +390,9 @@ open class FolderPickerActivity :
         mCancelBtn = findViewById(R.id.folder_picker_btn_cancel)
         mChooseBtn = findViewById(R.id.folder_picker_btn_choose)
         if (mChooseBtn != null) {
-            viewThemeUtils.material.colorMaterialButtonPrimaryFilled(mChooseBtn!!)
             mChooseBtn!!.setOnClickListener(this)
         }
         if (mCancelBtn != null) {
-            if (this is FilePickerActivity) {
-                viewThemeUtils.material.colorMaterialButtonPrimaryFilled(mCancelBtn!!)
-            } else {
-                viewThemeUtils.material.colorMaterialButtonPrimaryOutlined(mCancelBtn!!)
-            }
             mCancelBtn!!.setOnClickListener(this)
         }
     }
