@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.nextcloud.client.account.User;
 import com.nextcloud.java.util.Optional;
+import com.nmc.android.ui.conflict.ConflictsResolveConsentDialog;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.datamodel.UploadsStorageManager;
@@ -35,7 +36,6 @@ import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.files.ReadFileRemoteOperation;
 import com.owncloud.android.lib.resources.files.model.RemoteFile;
-import com.owncloud.android.ui.dialog.ConflictsResolveDialog;
 import com.owncloud.android.ui.dialog.ConflictsResolveDialog.Decision;
 import com.owncloud.android.ui.dialog.ConflictsResolveDialog.OnConflictDecisionMadeListener;
 import com.owncloud.android.utils.FileStorageUtils;
@@ -60,7 +60,10 @@ public class ConflictsResolveActivity extends FileActivity implements OnConflict
      */
     public static final String EXTRA_LOCAL_BEHAVIOUR = "LOCAL_BEHAVIOUR";
     public static final String EXTRA_EXISTING_FILE = "EXISTING_FILE";
-
+    /**
+     * variable to tell activity that it has been launched from test class
+     */
+    public static final String EXTRA_LAUNCHED_FROM_TEST = "LAUNCHED_FROM_TEST";
     private static final String TAG = ConflictsResolveActivity.class.getSimpleName();
 
     @Inject UploadsStorageManager uploadsStorageManager;
@@ -69,7 +72,7 @@ public class ConflictsResolveActivity extends FileActivity implements OnConflict
     private OCFile existingFile;
     private OCFile newFile;
     private int localBehaviour = FileUploader.LOCAL_BEHAVIOUR_FORGET;
-    protected OnConflictDecisionMadeListener listener;
+    public OnConflictDecisionMadeListener listener;
 
     public static Intent createIntent(OCFile file,
                                       User user,
@@ -81,6 +84,7 @@ public class ConflictsResolveActivity extends FileActivity implements OnConflict
             intent.setFlags(intent.getFlags() | flag);
         }
         intent.putExtra(EXTRA_FILE, file);
+        intent.putExtra(EXTRA_EXISTING_FILE, file);
         intent.putExtra(EXTRA_USER, user);
         intent.putExtra(EXTRA_CONFLICT_UPLOAD_ID, conflictUploadId);
 
@@ -141,6 +145,10 @@ public class ConflictsResolveActivity extends FileActivity implements OnConflict
                     uploadsStorageManager.removeUpload(upload);
                     break;
                 case KEEP_SERVER: // Download
+                    if (newFile.isEncrypted()) {
+                        // NMC-2361 fix
+                        break;
+                    }
                     if (!shouldDeleteLocal()) {
                         // Overwrite local file
                         Intent intent = new Intent(getBaseContext(), FileDownloader.class);
@@ -231,10 +239,12 @@ public class ConflictsResolveActivity extends FileActivity implements OnConflict
             fragmentTransaction.remove(prev);
         }
 
-        if (existingFile != null && getStorageManager().fileExists(newFile.getRemotePath())) {
-            ConflictsResolveDialog dialog = ConflictsResolveDialog.newInstance(existingFile,
-                                                                               newFile,
-                                                                               userOptional.get());
+        // TODO renaming does not work?
+        // TODO check all three conflict options
+        if (existingFile != null && getStorageManager().getFileByDecryptedRemotePath(newFile.getRemotePath()) != null) {
+            ConflictsResolveConsentDialog dialog = ConflictsResolveConsentDialog.newInstance(existingFile,
+                                                                                             newFile,
+                                                                                             userOptional.get());
             dialog.show(fragmentTransaction, "conflictDialog");
         } else {
             // Account was changed to a different one - just finish
@@ -244,8 +254,13 @@ public class ConflictsResolveActivity extends FileActivity implements OnConflict
     }
 
     private void showErrorAndFinish() {
-        runOnUiThread(() -> Toast.makeText(this, R.string.conflict_dialog_error, Toast.LENGTH_LONG).show());
-        finish();
+        //if activity is launched from test case then don't finish the activity as it is required to show the dialog
+        //but during normal app run activity should finish during error so we have to pass it false or don't pass
+        // anything
+        if (!getIntent().getBooleanExtra(EXTRA_LAUNCHED_FROM_TEST, false)) {
+            runOnUiThread(() -> Toast.makeText(this, R.string.conflict_dialog_error, Toast.LENGTH_LONG).show());
+            finish();
+        }
     }
 
     /**
