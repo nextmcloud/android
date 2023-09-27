@@ -325,6 +325,11 @@ public class DialogFragmentIT extends AbstractIT {
             }
 
             @Override
+            public void createEncryptedFolder() {
+
+            }
+
+            @Override
             public void uploadFromApp() {
 
             }
