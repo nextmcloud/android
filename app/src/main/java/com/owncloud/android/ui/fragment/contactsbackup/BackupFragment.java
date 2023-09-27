@@ -40,6 +40,7 @@ import com.nextcloud.client.account.User;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.jobs.BackgroundJobManager;
 import com.nextcloud.java.util.Optional;
+import com.nmc.android.utils.CheckableThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.BackupFragmentBinding;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -161,9 +162,10 @@ public class BackupFragment extends FileFragment implements DatePickerDialog.OnD
         }
 
 
-        viewThemeUtils.androidx.colorSwitchCompat(binding.contacts);
-        viewThemeUtils.androidx.colorSwitchCompat(binding.calendar);
-        viewThemeUtils.androidx.colorSwitchCompat(binding.dailyBackup);
+        //NMC Customisation
+        CheckableThemeUtils.tintSwitch(binding.calendar);
+        CheckableThemeUtils.tintSwitch(binding.contacts);
+        CheckableThemeUtils.tintSwitch(binding.dailyBackup);
         binding.dailyBackup.setChecked(arbitraryDataProvider.getBooleanValue(user,
                                                                              PREFERENCE_CONTACTS_AUTOMATIC_BACKUP));
 
