@@ -203,11 +203,10 @@ public class BackupFragment extends FileFragment implements DatePickerDialog.OnD
             calendarPickerOpen = true;
         }
 
-        viewThemeUtils.material.colorMaterialButtonPrimaryFilled(binding.backupNow);
-        viewThemeUtils.material.colorMaterialButtonPrimaryOutlined(binding.contactsDatepicker);
-
-        viewThemeUtils.platform.colorTextView(binding.dataToBackUpTitle);
-        viewThemeUtils.platform.colorTextView(binding.backupSettingsTitle);
+        //NMC Customization
+        int primaryAccentColor = requireContext().getResources().getColor(R.color.primary, null);
+        binding.dataToBackUpTitle.setTextColor(primaryAccentColor);
+        binding.backupSettingsTitle.setTextColor(primaryAccentColor);
 
         return view;
     }
@@ -562,8 +561,9 @@ public class BackupFragment extends FileFragment implements DatePickerDialog.OnD
             datePickerDialog.setTitle("");
             datePickerDialog.show();
 
-            viewThemeUtils.platform.colorTextButtons(datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE),
-                                                     datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE));
+            //NMC Customisation
+            datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.text_color, null));
+            datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.primary, null));
 
             // set background to transparent
             datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setBackgroundColor(0x00000000);
