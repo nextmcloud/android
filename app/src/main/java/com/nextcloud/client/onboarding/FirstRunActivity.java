@@ -26,31 +26,32 @@ package com.nextcloud.client.onboarding;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.nextcloud.android.common.ui.theme.utils.ColorRole;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.appinfo.AppInfo;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.preferences.AppPreferences;
+import com.nmc.android.helper.OnBoardingUtils;
+import com.nmc.android.helper.OnBoardingPagerAdapter;
 import com.owncloud.android.BuildConfig;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.AuthenticatorActivity;
 import com.owncloud.android.databinding.FirstRunActivityBinding;
-import com.owncloud.android.features.FeatureItem;
 import com.owncloud.android.ui.activity.BaseActivity;
 import com.owncloud.android.ui.activity.FileDisplayActivity;
-import com.owncloud.android.ui.adapter.FeaturesViewAdapter;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 
 /**
@@ -71,7 +72,9 @@ public class FirstRunActivity extends BaseActivity implements ViewPager.OnPageCh
 
     private FirstRunActivityBinding binding;
     private ViewThemeUtils defaultViewThemeUtils;
+    private int selectedPosition = 0;
 
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         enableAccountHandling = false;
@@ -79,13 +82,15 @@ public class FirstRunActivity extends BaseActivity implements ViewPager.OnPageCh
         super.onCreate(savedInstanceState);
         defaultViewThemeUtils = viewThemeUtilsFactory.withPrimaryAsBackground();
         defaultViewThemeUtils.platform.themeStatusBar(this, ColorRole.PRIMARY);
+
+        //if device is not tablet then we have to lock it to Portrait mode
+        //as we don't have images for that
+        if (!com.nmc.android.utils.DisplayUtils.isTablet()) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+
         this.binding = FirstRunActivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        boolean isProviderOrOwnInstallationVisible = getResources().getBoolean(R.bool.show_provider_or_own_installation);
-
-        setSlideshowSize(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
-
 
         defaultViewThemeUtils.material.colorMaterialButtonFilledOnPrimary(binding.login);
         binding.login.setOnClickListener(v -> {
@@ -94,65 +99,52 @@ public class FirstRunActivity extends BaseActivity implements ViewPager.OnPageCh
                 authenticatorActivityIntent.putExtra(AuthenticatorActivity.EXTRA_USE_PROVIDER_AS_WEBLOGIN, false);
                 startActivityForResult(authenticatorActivityIntent, FIRST_RUN_RESULT_CODE);
             } else {
+                preferences.setOnBoardingComplete(true);
                 finish();
             }
         });
-
-
-        defaultViewThemeUtils.material.colorMaterialButtonOutlinedOnPrimary(binding.signup);
-        binding.signup.setVisibility(isProviderOrOwnInstallationVisible ? View.VISIBLE : View.GONE);
-        binding.signup.setOnClickListener(v -> {
-            Intent authenticatorActivityIntent = new Intent(this, AuthenticatorActivity.class);
-            authenticatorActivityIntent.putExtra(AuthenticatorActivity.EXTRA_USE_PROVIDER_AS_WEBLOGIN, true);
-
-            if (getIntent().getBooleanExtra(EXTRA_ALLOW_CLOSE, false)) {
-                startActivityForResult(authenticatorActivityIntent, FIRST_RUN_RESULT_CODE);
-            } else {
-                authenticatorActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(authenticatorActivityIntent);
-            }
-        });
-
-        defaultViewThemeUtils.platform.colorTextView(binding.hostOwnServer, ColorRole.ON_PRIMARY);
-        binding.hostOwnServer.setVisibility(isProviderOrOwnInstallationVisible ? View.VISIBLE : View.GONE);
-
-        if (isProviderOrOwnInstallationVisible) {
-            binding.hostOwnServer.setOnClickListener(v -> DisplayUtils.startLinkIntent(this, R.string.url_server_install));
-        }
-
 
         // Sometimes, accounts are not deleted when you uninstall the application so we'll do it now
         if (onboarding.isFirstRun()) {
             userAccountManager.removeAllAccounts();
         }
 
-        FeaturesViewAdapter featuresViewAdapter = new FeaturesViewAdapter(getSupportFragmentManager(), getFirstRun());
-        binding.progressIndicator.setNumberOfSteps(featuresViewAdapter.getCount());
-        binding.contentPanel.setAdapter(featuresViewAdapter);
+        updateLoginButtonMargin();
+        updateOnBoardingPager(selectedPosition);
 
         binding.contentPanel.addOnPageChangeListener(this);
     }
 
-    private void setSlideshowSize(boolean isLandscape) {
-        boolean isProviderOrOwnInstallationVisible = getResources().getBoolean(R.bool.show_provider_or_own_installation);
+    private void updateOnBoardingPager(int selectedPosition) {
+        OnBoardingPagerAdapter featuresViewAdapter = new OnBoardingPagerAdapter(this, OnBoardingUtils.Companion.getOnBoardingItems());
+        binding.progressIndicator.setNumberOfSteps(featuresViewAdapter.getCount());
+        binding.contentPanel.setAdapter(featuresViewAdapter);
+        binding.contentPanel.setCurrentItem(selectedPosition);
+    }
 
-        LinearLayout.LayoutParams layoutParams;
-
-        binding.buttonLayout.setOrientation(isLandscape ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
-
-        if (isProviderOrOwnInstallationVisible) {
-            layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    private void updateLoginButtonMargin() {
+        if (com.nmc.android.utils.DisplayUtils.isLandscapeOrientation()) {
+            if (binding.login.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                ((ViewGroup.MarginLayoutParams) binding.login.getLayoutParams()).setMargins(
+                    0, 0, 0, getResources().getDimensionPixelOffset(
+                        R.dimen.login_btn_bottom_margin_land));
+                binding.login.requestLayout();
+            }
         } else {
-            layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DisplayUtils.convertDpToPixel(isLandscape ? 100f : 150f, this));
+            if (binding.login.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                ((ViewGroup.MarginLayoutParams) binding.login.getLayoutParams()).setMargins(
+                    0, 0, 0, getResources().getDimensionPixelOffset(
+                        R.dimen.login_btn_bottom_margin));
+                binding.login.requestLayout();
+            }
         }
-
-        binding.bottomLayout.setLayoutParams(layoutParams);
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        setSlideshowSize(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE);
+        updateLoginButtonMargin();
+        updateOnBoardingPager(selectedPosition);
     }
 
     @Override
@@ -162,11 +154,7 @@ public class FirstRunActivity extends BaseActivity implements ViewPager.OnPageCh
         if (getIntent().getBooleanExtra(EXTRA_ALLOW_CLOSE, false)) {
             super.onBackPressed();
         } else {
-            Intent intent = new Intent(getApplicationContext(), AuthenticatorActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putExtra(EXTRA_EXIT, true);
-            startActivity(intent);
-            finish();
+            finishAffinity();
         }
     }
 
@@ -188,7 +176,11 @@ public class FirstRunActivity extends BaseActivity implements ViewPager.OnPageCh
 
     @Override
     public void onPageSelected(int position) {
-        binding.progressIndicator.animateToStep(position + 1);
+        //-1 to position because this position doesn't start from 0
+        selectedPosition = position - 1;
+
+        //pass directly the position here because this position will doesn't start from 0
+        binding.progressIndicator.animateToStep(position);
     }
 
     @Override
@@ -219,14 +211,5 @@ public class FirstRunActivity extends BaseActivity implements ViewPager.OnPageCh
 
             finish();
         }
-    }
-
-
-    public static FeatureItem[] getFirstRun() {
-        return new FeatureItem[]{
-            new FeatureItem(R.drawable.logo, R.string.first_run_1_text, R.string.empty, true, false),
-            new FeatureItem(R.drawable.first_run_files, R.string.first_run_2_text, R.string.empty, true, false),
-            new FeatureItem(R.drawable.first_run_groupware, R.string.first_run_3_text, R.string.empty, true, false),
-            new FeatureItem(R.drawable.first_run_talk, R.string.first_run_4_text, R.string.empty, true, false)};
     }
 }
