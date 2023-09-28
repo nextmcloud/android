@@ -867,16 +867,17 @@ public class MainApp extends MultiDexApplication implements HasAndroidInjector {
 
 
     public static void setAppTheme(DarkMode mode) {
-        switch (mode) {
+      /*  switch (mode) {
             case LIGHT:
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;
             case DARK:
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 break;
-            case SYSTEM:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                break;
-        }
+            case SYSTEM:*/
+        //NMC Customization --> always follow system default
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+       /*         break;
+        }*/
     }
 }
