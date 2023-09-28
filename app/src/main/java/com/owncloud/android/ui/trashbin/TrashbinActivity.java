@@ -139,7 +139,7 @@ public class TrashbinActivity extends DrawerActivity implements
         EmptyRecyclerView recyclerView = binding.list;
         recyclerView.setEmptyView(binding.emptyList.emptyListView);
         binding.emptyList.emptyListView.setVisibility(View.GONE);
-        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_delete);
+        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_list_empty_trashbin);
         binding.emptyList.emptyListIcon.setVisibility(View.VISIBLE);
         binding.emptyList.emptyListViewHeadline.setText(getString(R.string.trashbin_empty_headline));
         binding.emptyList.emptyListViewText.setText(getString(R.string.trashbin_empty_message));
@@ -294,7 +294,7 @@ public class TrashbinActivity extends DrawerActivity implements
             trashbinListAdapter.setTrashbinFiles(trashbinFiles, true);
             binding.swipeContainingList.setRefreshing(false);
             binding.loadingContent.setVisibility(View.GONE);
-            binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_delete);
+            binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_list_empty_trashbin);
             binding.emptyList.emptyListViewHeadline.setText(getString(R.string.trashbin_empty_headline));
             binding.emptyList.emptyListViewText.setText(getString(R.string.trashbin_empty_message));
             binding.list.setVisibility(View.VISIBLE);
