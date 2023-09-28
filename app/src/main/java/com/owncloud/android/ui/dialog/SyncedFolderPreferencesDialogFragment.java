@@ -36,6 +36,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.preferences.SubFolderRule;
@@ -204,8 +205,6 @@ public class SyncedFolderPreferencesDialogFragment extends DialogFragment implem
 
         mCancel = binding.cancel;
         mSave = binding.save;
-
-        viewThemeUtils.platform.colorTextButtons(mCancel, mSave);
 
         // Set values
         setEnabled(mSyncedFolder.isEnabled());
@@ -490,7 +489,8 @@ public class SyncedFolderPreferencesDialogFragment extends DialogFragment implem
             });
         behaviourDialogShown = true;
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(getActivity(), builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(getActivity(), builder);
 
         behaviourDialog = builder.create();
         behaviourDialog.show();
@@ -507,7 +507,8 @@ public class SyncedFolderPreferencesDialogFragment extends DialogFragment implem
 
         nameCollisionPolicyDialogShown = true;
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(getActivity(), builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(getActivity(), builder);
 
         behaviourDialog = builder.create();
         behaviourDialog.show();
@@ -526,7 +527,8 @@ public class SyncedFolderPreferencesDialogFragment extends DialogFragment implem
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(binding.getRoot().getContext());
         builder.setView(binding.getRoot());
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.getRoot().getContext(), builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(binding.getRoot().getContext(), builder);
 
         return builder.create();
     }
