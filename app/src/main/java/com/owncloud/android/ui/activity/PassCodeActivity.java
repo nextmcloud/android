@@ -92,16 +92,10 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
         setContentView(binding.getRoot());
 
 
-        viewThemeUtils.platform.colorTextButtons(binding.cancel);
-
         passCodeEditTexts[0] = binding.txt0;
         passCodeEditTexts[1] = binding.txt1;
         passCodeEditTexts[2] = binding.txt2;
         passCodeEditTexts[3] = binding.txt3;
-
-        for (EditText passCodeEditText : passCodeEditTexts) {
-            viewThemeUtils.platform.colorEditText(passCodeEditText);
-        }
 
         passCodeEditTexts[0].requestFocus();
 
