@@ -140,12 +140,14 @@ public class LocalStoragePathPickerDialogFragment extends DialogFragment
                         Environment.getExternalStoragePublicDirectory(standardDirectory.getName()).getAbsolutePath());
         }
 
-        String sdCard = getString(R.string.storage_internal_storage);
         for (String dir : FileStorageUtils.getStorageDirectories(requireActivity())) {
+            //NMC Customisation
             if (internalStoragePaths.contains(dir)) {
-                addIfExists(storagePathItems, R.drawable.ic_sd_grey600, sdCard, dir);
+                String internalStorage = getString(R.string.storage_internal_storage);
+                addIfExists(storagePathItems, R.drawable.ic_sd_grey600, internalStorage, dir);
             } else {
-                addIfExists(storagePathItems, R.drawable.ic_sd_grey600, new File(dir).getName(), dir);
+                String sdCard = getString(R.string.storage_sd_card);
+                addIfExists(storagePathItems, R.drawable.ic_sd, sdCard, dir);
             }
         }
 
