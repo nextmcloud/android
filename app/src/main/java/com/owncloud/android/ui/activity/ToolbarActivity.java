@@ -15,6 +15,7 @@ package com.owncloud.android.ui.activity;
 
 import android.animation.AnimatorInflater;
 import android.annotation.SuppressLint;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -31,6 +32,8 @@ import com.nextcloud.android.common.ui.theme.utils.ColorRole;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.systembars.SystemBarBackgroundCallbacks;
 import com.owncloud.android.R;
+import com.nmc.android.appupdate.InAppUpdateHelper;
+import com.nmc.android.appupdate.InAppUpdateHelperImpl;
 import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.datamodel.OCFileDepth;
@@ -75,6 +78,13 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
     @Inject public ThemeColorUtils themeColorUtils;
     @Inject public ThemeUtils themeUtils;
     @Inject public ViewThemeUtils viewThemeUtils;
+    private InAppUpdateHelper inAppUpdateHelper;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        inAppUpdateHelper = new InAppUpdateHelperImpl(this);
+    }
 
     /**
      * Toolbar setup that must be called in implementer's {@link #onCreate} after {@link #setContentView} if they want
@@ -392,5 +402,20 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
         if (actionBar != null) {
             actionBar.setSubtitle(null);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Checks that the update is not stalled during 'onResume()'.
+        // However, you should execute this check at all entry points into the app.
+        inAppUpdateHelper.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        inAppUpdateHelper.onDestroy();
+        inAppUpdateHelper = null;
     }
 }
