@@ -338,6 +338,9 @@ public class SyncedFolderAdapter extends SectionedRecyclerViewAdapter<SectionedV
             ThumbnailsCacheManager.MediaThumbnailGenerationTask task =
                 new ThumbnailsCacheManager.MediaThumbnailGenerationTask(holder.binding.thumbnail,
                                                                         context,
+                                                                        // due to 512dp(NMC) thumb size there was scroll lagging in auto upload
+                                                                        // so for auto upload we have to use different thumb size (NMC-2589)
+                                                                        R.dimen.auto_upload_file_thumb_size,
                                                                         viewThemeUtils);
 
             ThumbnailsCacheManager.AsyncMediaThumbnailDrawable asyncDrawable =

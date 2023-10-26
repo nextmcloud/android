@@ -127,10 +127,11 @@ public class SyncedFolderParcelable implements Parcelable {
         switch (uploadAction) {
             case FileUploadWorker.LOCAL_BEHAVIOUR_FORGET:
                 return 0;
-            case FileUploadWorker.LOCAL_BEHAVIOUR_MOVE:
-                return 1;
+            // NMC customization: No required move
+            /*case FileUploadWorker.LOCAL_BEHAVIOUR_MOVE:
+                return 1;*/
             case FileUploadWorker.LOCAL_BEHAVIOUR_DELETE:
-                return 2;
+                return 1;
         }
         return 0;
     }
