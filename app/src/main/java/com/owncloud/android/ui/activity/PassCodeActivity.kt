@@ -21,7 +21,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.preferences.AppPreferences
 import com.owncloud.android.R
@@ -79,16 +78,10 @@ class PassCodeActivity : AppCompatActivity(), Injectable {
         binding = PasscodelockBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        applyTint()
         setupPasscodeEditTexts()
         setSoftInputMode()
         setupUI(savedInstanceState)
         setTextListeners()
-    }
-
-    private fun applyTint() {
-        viewThemeUtils.platform.colorViewBackground(binding.cardViewContent, ColorRole.SURFACE_VARIANT)
-        viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(binding.cancel)
     }
 
     private fun setupPasscodeEditTexts() {
@@ -96,12 +89,6 @@ class PassCodeActivity : AppCompatActivity(), Injectable {
         passCodeEditTexts[1] = binding.txt1
         passCodeEditTexts[2] = binding.txt2
         passCodeEditTexts[3] = binding.txt3
-
-        passCodeEditTexts.forEach {
-            it?.let { editText ->
-                viewThemeUtils.platform.colorEditText(editText)
-            }
-        }
 
         passCodeEditTexts[0]?.requestFocus()
 
