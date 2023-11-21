@@ -147,7 +147,7 @@ public class ScanPagerFragment extends Fragment {
         binding.editScannedImageView.rotateClockwise();
         lastRotationEventTs = System.currentTimeMillis();
         executorService.execute(() -> {
-            Bitmap rotatedBitmap = scanbotSDK.imageProcessor().process(originalBitmap,
+            Bitmap rotatedBitmap = scanbotSDK.imageProcessor().processBitmap(originalBitmap,
                                                                        new ArrayList<>(Collections.singletonList(new RotateOperation(rotationDegrees))), false);
             onDocScanListener.replaceScannedDoc(index, rotatedBitmap, false);
         });
@@ -193,7 +193,7 @@ public class ScanPagerFragment extends Fragment {
                 for (ImageFilterType filters : imageFilterType) {
                     filterOperationList.add(new FilterOperation(filters));
                 }
-                previewBitmap = scanbotSDK.imageProcessor().process(originalBitmap, filterOperationList, false);
+                previewBitmap = scanbotSDK.imageProcessor().processBitmap(originalBitmap, filterOperationList, false);
             } else {
                 previewBitmap = ScanActivity.originalScannedImages.get(index);
             }

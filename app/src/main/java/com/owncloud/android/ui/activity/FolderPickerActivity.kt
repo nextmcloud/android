@@ -33,7 +33,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.res.ResourcesCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nextcloud.client.di.Injectable
 import com.owncloud.android.R
@@ -168,17 +167,15 @@ open class FolderPickerActivity :
             folderPickerBinding.folderPickerBtnCopy.visibility = View.GONE
             folderPickerBinding.folderPickerBtnMove.visibility = View.GONE
             folderPickerBinding.folderPickerBtnChoose.visibility = View.VISIBLE
-            folderPickerBinding.chooseButtonSpacer.visibility = View.VISIBLE
             folderPickerBinding.moveOrCopyButtonSpacer.visibility = View.GONE
+
+            // NMC Customization
+            folderPickerBinding.folderPickerBtnChoose.text = resources.getString(R.string.common_select)
         }
     }
 
+    // NMC Customization
     private fun configureDefaultCase() {
-        // NMC Customization
-        folderPickerBinding.folderPickerBtnCopy.text = resources.getString(R.string.folder_picker_choose_button_text)
-        folderPickerBinding.folderPickerBtnMove.visibility = View.GONE
-        folderPickerBinding.moveOrCopyButtonSpacer.visibility = View.GONE
-
         captionText = themeUtils.getDefaultDisplayNameForRootFolder(this)
     }
 
@@ -398,7 +395,7 @@ open class FolderPickerActivity :
         }
 
     private fun refreshListOfFilesFragment(fromSearch: Boolean) {
-        listOfFilesFragment?.listDirectoryFolder(false, fromSearch)
+        listOfFilesFragment?.listDirectoryFolder(false, fromSearch, mShowOnlyFolder, mHideEncryptedFolder)
     }
 
     fun browseToRoot() {
@@ -456,18 +453,23 @@ open class FolderPickerActivity :
 
     private fun initControls() {
         if (this is FilePickerActivity) {
+            viewThemeUtils.material.colorMaterialButtonPrimaryFilled(filesPickerBinding.folderPickerBtnCancel)
             filesPickerBinding.folderPickerBtnCancel.setOnClickListener { finish() }
         } else {
+            viewThemeUtils.material.colorMaterialButtonText(folderPickerBinding.folderPickerBtnCancel)
             folderPickerBinding.folderPickerBtnCancel.setOnClickListener { finish() }
 
+            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(folderPickerBinding.folderPickerBtnChoose)
             folderPickerBinding.folderPickerBtnChoose.setOnClickListener { processOperation(null) }
 
+            viewThemeUtils.material.colorMaterialButtonPrimaryFilled(folderPickerBinding.folderPickerBtnCopy)
             folderPickerBinding.folderPickerBtnCopy.setOnClickListener {
                 processOperation(
                     OperationsService.ACTION_COPY_FILE
                 )
             }
 
+            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(folderPickerBinding.folderPickerBtnMove)
             folderPickerBinding.folderPickerBtnMove.setOnClickListener {
                 processOperation(
                     OperationsService.ACTION_MOVE_FILE

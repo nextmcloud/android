@@ -40,7 +40,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <io.scanbot.sdk.camera.ScanbotCameraView
+    <io.scanbot.sdk.docdetection.ui.DocumentScannerView
         android:id="@+id/camera"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -60,7 +60,7 @@
             app:polygonStrokeColorOK="@color/neptune"
             app:polygonStrokeWidth="1dp" />
 
-    </io.scanbot.sdk.camera.ScanbotCameraView>
+    </io.scanbot.sdk.docdetection.ui.DocumentScannerView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/scan_doc_btn_cancel"
