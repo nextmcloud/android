@@ -192,7 +192,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scan_save_without_txt_recognition_text" />
 
-            <androidx.appcompat.widget.AppCompatCheckBox
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/scan_save_without_txt_recognition_pdf_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -216,7 +216,7 @@
                 app:layout_constraintStart_toEndOf="@+id/scan_save_without_txt_recognition_pdf_check_label"
                 app:layout_constraintTop_toBottomOf="@+id/scan_save_without_txt_recognition_text" />
 
-            <androidx.appcompat.widget.AppCompatCheckBox
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/scan_save_without_txt_recognition_jpg_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -240,7 +240,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scan_save_without_txt_recognition_text" />
 
-            <androidx.appcompat.widget.AppCompatCheckBox
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/scan_save_without_txt_recognition_png_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -290,7 +290,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scan_save_with_txt_recognition_text" />
 
-            <androidx.appcompat.widget.AppCompatCheckBox
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/scan_save_with_txt_recognition_pdf_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -315,7 +315,7 @@
                 app:layout_constraintStart_toEndOf="@id/scan_save_with_txt_recognition_pdf_check_label"
                 app:layout_constraintTop_toBottomOf="@+id/scan_save_with_txt_recognition_text" />
 
-            <androidx.appcompat.widget.AppCompatCheckBox
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/scan_save_with_txt_recognition_txt_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -335,7 +335,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scan_save_with_txt_recognition_txt_checkbox" />
 
-            <androidx.appcompat.widget.SwitchCompat
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/scan_save_pdf_password_switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

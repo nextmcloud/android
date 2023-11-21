@@ -20,14 +20,15 @@ import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.operations.UploadFileOperation
 import com.owncloud.android.ui.notifications.NotificationUtils
 import com.owncloud.android.utils.StringUtils
+import io.scanbot.ocr.model.OcrPage
+import io.scanbot.pdf.model.PageSize
+import io.scanbot.pdf.model.PdfConfig
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.contourdetector.DetectionResult
-import io.scanbot.sdk.entity.Language
+import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
 import io.scanbot.sdk.ocr.process.OcrResult
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
-import io.scanbot.sdk.process.PDFPageSize
 import io.scanbot.sdk.process.PDFRenderer
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission
@@ -78,15 +79,19 @@ class ScanDocUploadWorker constructor(
                 SaveScannedDocumentFragment.SAVE_TYPE_JPG -> {
                     saveJPGImageFiles(docFileName, bitmapList)
                 }
+
                 SaveScannedDocumentFragment.SAVE_TYPE_PNG -> {
                     savePNGImageFiles(docFileName, bitmapList)
                 }
+
                 SaveScannedDocumentFragment.SAVE_TYPE_PDF -> {
                     saveNonOCRPDFFile(docFileName, bitmapList, scanDocPdfPwd)
                 }
+
                 SaveScannedDocumentFragment.SAVE_TYPE_PDF_OCR -> {
                     savePDFWithOCR(docFileName, bitmapList, scanDocPdfPwd)
                 }
+
                 SaveScannedDocumentFragment.SAVE_TYPE_TXT -> {
                     saveTextFile(docFileName, bitmapList)
                 }
@@ -148,7 +153,8 @@ class ScanDocUploadWorker constructor(
     private fun saveNonOCRPDFFile(fileName: String?, bitmapList: List<Bitmap>, pdfPassword: String?) {
 
         val pageList = getScannedPages(bitmapList)
-        val pdfFile: File? = pdfRenderer.renderDocumentFromPages(pageList, PDFPageSize.A4)
+        val pdfFile: File? =
+            pdfRenderer.renderDocumentFromPages(pageList, PdfConfig.defaultConfig().copy(pageSize = PageSize.A4))
         if (pdfFile != null) {
             val renamedFile = File(pdfFile.parent + OCFile.PATH_SEPARATOR + fileName + ".pdf")
             if (pdfFile.renameTo(renamedFile)) {
@@ -200,21 +206,19 @@ class ScanDocUploadWorker constructor(
     private fun getScannedPages(bitmapList: List<Bitmap>): List<Page> {
         val pageList: MutableList<Page> = ArrayList()
         for (bitmap in bitmapList) {
-            val page = Page(pageFileStorage.add(bitmap), emptyList(), DetectionResult.OK)
+            val page = Page(pageFileStorage.add(bitmap), listOf(), DetectionStatus.OK)
             pageList.add(page)
         }
         return pageList
     }
 
     private fun savePDFWithOCR(fileName: String?, bitmapList: List<Bitmap>, pdfPassword: String?) {
-        val languages = setOf(Language.ENG)
         val ocrResult: OcrResult =
             opticalCharacterRecognizer.recognizeTextWithPdfFromPages(
                 getScannedPages(bitmapList),
-                PDFPageSize.A4,
-                languages
+                PdfConfig.defaultConfig().copy(pageSize = PageSize.A4)
             )
-        val ocrPageList: List<OcrResult.OCRPage> = ocrResult.ocrPages
+        val ocrPageList: List<OcrPage> = ocrResult.ocrPages
         if (ocrPageList.isNotEmpty()) {
             val ocrText = ocrResult.recognizedText
         }
@@ -229,18 +233,17 @@ class ScanDocUploadWorker constructor(
     }
 
     private fun saveTextFile(fileName: String?, bitmapList: List<Bitmap>) {
-        val languages = setOf(Language.ENG)
         for (i in bitmapList.indices) {
             var newFileName = fileName
             val bitmap = bitmapList[i]
             if (i > 0) {
                 newFileName += "($i)"
             }
-            val page = Page(pageFileStorage.add(bitmap), emptyList(), DetectionResult.OK)
+            val page = Page(pageFileStorage.add(bitmap), emptyList(), DetectionStatus.OK)
             val pageList: MutableList<Page> = ArrayList()
             pageList.add(page)
-            val ocrResult: OcrResult = opticalCharacterRecognizer.recognizeTextFromPages(pageList, languages)
-            val ocrPageList: List<OcrResult.OCRPage> = ocrResult.ocrPages
+            val ocrResult: OcrResult = opticalCharacterRecognizer.recognizeTextFromPages(pageList)
+            val ocrPageList: List<OcrPage> = ocrResult.ocrPages
             if (ocrPageList.isNotEmpty()) {
                 val ocrText = ocrResult.recognizedText
                 val txtFile = FileUtils.writeTextToFile(context, ocrText, newFileName)

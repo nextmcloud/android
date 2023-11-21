@@ -903,7 +903,7 @@ public class MainApp extends MultiDexApplication implements HasAndroidInjector {
      */
     private void initialiseScanBotSDK() {
         new ScanbotSDKInitializer()
-            .withLogging(BuildConfig.DEBUG)
+            .withLogging(BuildConfig.DEBUG, BuildConfig.DEBUG)
             .license(this, ScanBotSdkUtils.LICENSE_KEY)
             .contourDetectorType(ContourDetector.Type.ML_BASED) // ML_BASED is default. Set it to EDGE_BASED to use the edge-based approach
             .licenceErrorHandler((status, sdkFeature, statusMessage) -> {
