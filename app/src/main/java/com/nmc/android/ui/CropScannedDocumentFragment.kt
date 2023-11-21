@@ -18,9 +18,11 @@ import com.nmc.android.utils.ScanBotSdkUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FragmentCropScanBinding
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.core.contourdetector.ContourDetector
+import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.core.contourdetector.Line2D
 import io.scanbot.sdk.process.CropOperation
+import io.scanbot.sdk.process.ImageProcessor
 import java.util.concurrent.Executors
 import kotlin.math.absoluteValue
 
@@ -29,11 +31,12 @@ class CropScannedDocumentFragment : Fragment() {
     private lateinit var onFragmentChangeListener: OnFragmentChangeListener
     private lateinit var onDocScanListener: OnDocScanListener
 
-    private var scannedDocIndex: Int = -1
     private lateinit var scanbotSDK: ScanbotSDK
+    private lateinit var imageProcessor: ImageProcessor
+    private lateinit var contourDetector: ContourDetector
 
+    private var scannedDocIndex: Int = -1
     private lateinit var originalBitmap: Bitmap
-
     private var rotationDegrees = 0
     private var polygonPoints: List<PointF>? = null
 
@@ -72,6 +75,9 @@ class CropScannedDocumentFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         scanbotSDK = (requireActivity() as ScanActivity).scanbotSDK
+        contourDetector = scanbotSDK.createContourDetector()
+        imageProcessor = scanbotSDK.imageProcessor()
+
         detectDocument()
         binding.cropBtnResetBorders.setOnClickListener {
             onClickListener(it)
@@ -155,28 +161,26 @@ class CropScannedDocumentFragment : Fragment() {
         InitImageViewTask().executeOnExecutor(Executors.newSingleThreadExecutor())
     }
 
-    // We use AsyncTask only for simplicity here. Avoid using it in your production app due to memory leaks, etc!
     @SuppressLint("StaticFieldLeak")
     internal inner class InitImageViewTask : AsyncTask<Void?, Void?, InitImageResult>() {
         private var previewBitmap: Bitmap? = null
 
         override fun doInBackground(vararg params: Void?): InitImageResult {
-            //originalBitmap = FileUtils.convertFileToBitmap(File(scannedDocPath))
             originalBitmap = onDocScanListener.scannedDocs[scannedDocIndex]
             previewBitmap = ScanBotSdkUtils.resizeForPreview(originalBitmap)
 
-            val detector = scanbotSDK.createContourDetector()
-            val detectionResult = detector.detect(originalBitmap)
-            val linesPair = Pair(detector.horizontalLines, detector.verticalLines)
-            val polygon = detector.polygonF
+            val result = contourDetector.detect(originalBitmap)
+            return when (result?.status) {
+                DetectionStatus.OK,
+                DetectionStatus.OK_BUT_BAD_ANGLES,
+                DetectionStatus.OK_BUT_TOO_SMALL,
+                DetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
+                    val linesPair = Pair(result.horizontalLines, result.verticalLines)
+                    val polygon = result.polygonF
 
-            return when (detectionResult) {
-                DetectionResult.OK,
-                DetectionResult.OK_BUT_BAD_ANGLES,
-                DetectionResult.OK_BUT_TOO_SMALL,
-                DetectionResult.OK_BUT_BAD_ASPECT_RATIO -> {
-                    InitImageResult(linesPair, polygon!!)
+                    InitImageResult(linesPair, polygon)
                 }
+
                 else -> InitImageResult(Pair(listOf(), listOf()), listOf())
             }
         }
@@ -190,7 +194,7 @@ class CropScannedDocumentFragment : Fragment() {
             binding.cropPolygonView.polygon = initImageResult.polygon
             binding.cropPolygonView.setLines(initImageResult.linesPair.first, initImageResult.linesPair.second)
 
-            if (initImageResult.polygon.isNullOrEmpty()) {
+            if (initImageResult.polygon.isEmpty()) {
                 resetCrop()
             } else {
                 onCropDragListener()
@@ -204,7 +208,7 @@ class CropScannedDocumentFragment : Fragment() {
         // crop & warp image by selected polygon (editPolygonView.getPolygon())
         val operations = listOf(CropOperation(binding.cropPolygonView.polygon))
 
-        var documentImage = scanbotSDK.imageProcessor().processBitmap(originalBitmap, operations, false)
+        var documentImage = imageProcessor.processBitmap(originalBitmap, operations, false)
         documentImage?.let {
             if (rotationDegrees > 0) {
                 // rotate the final cropped image result based on current rotation value:
@@ -213,17 +217,11 @@ class CropScannedDocumentFragment : Fragment() {
                 documentImage = Bitmap.createBitmap(it, 0, 0, it.width, it.height, matrix, true)
             }
             onDocScanListener.replaceScannedDoc(scannedDocIndex, documentImage, false)
-            /* onDocScanListener.replaceScannedDoc(
-                 scannedDocIndex, FileUtils.saveImage(
-                     requireContext(),
-                     documentImage, null
-                 )
-             )*/
+
             onFragmentChangeListener.onReplaceFragment(
                 EditScannedDocumentFragment.newInstance(scannedDocIndex), ScanActivity
-                .FRAGMENT_EDIT_SCAN_TAG, false
+                    .FRAGMENT_EDIT_SCAN_TAG, false
             )
-            // resultImageView.setImageBitmap(resizeForPreview(documentImage!!))
         }
     }
 

@@ -396,7 +396,7 @@ dependencies {
     // splash screen dependency ref: https://developer.android.com/develop/ui/views/launch/splash-screen/migrate
     implementation 'androidx.core:core-splashscreen:1.0.1'
 
-    //scanbot sdk
+    //scanbot sdk: https://github.com/doo/scanbot-sdk-example-android
     implementation "io.scanbot:sdk-package-2:$scanbotSdkVersion"
 
     //apache pdf-box for encrypting pdf files

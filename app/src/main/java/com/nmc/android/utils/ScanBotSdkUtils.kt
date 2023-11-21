@@ -10,23 +10,23 @@ object ScanBotSdkUtils {
     private val TAG = ScanBotSdkUtils::class.java.simpleName
 
     //license key will be valid for application id: com.t_systems.android.webdav & com.t_systems.android.webdav.beta
-    //License validity till 25th March 2024
-    const val LICENSE_KEY = "GzN70Lmov04uA+JL3wHMlhg+x+sy5Q" +
-        "CLm9W96N5/8skCHz15FqQ877gGhi46" +
-        "PLtmjDq+jIzfHoavmlF/q982ZazqB7" +
-        "mKZY/6K2RsS4Tq5REDmPBPNlGZUDia" +
-        "/7glnwvPOmamfA4DNwWPTSNi8Eh4xR" +
-        "vIDnloBZsxCK+2tu2toahVXCt5Lvlc" +
-        "C5BJ2CTcpdjlyr/8vkOy+Ao7ap7wmi" +
-        "+xwMjnTl8H5wkcIjoAFzeo4v2IIoNG" +
-        "4MZsmDXP7w93GbS6X7JGGYf9JA1gbC" +
-        "TLngPkl4hvRGs+d6xcpIideMFhM4po" +
-        "UqLxiGiLucNyZYpWWWn/5iUDJ/EmMb" +
-        "hK8p9RHzCdmw==\nU2NhbmJvdFNESw" +
+    //License validity till 25th March 2025
+    const val LICENSE_KEY = "Z+GkfzcfWnNtCoGp4OsH9EJg4OuN5v" +
+        "BDhPFzHkhecpQaOS4s/r3qRPvKtgpG" +
+        "Q89KqfbvPC9Bwx/rPE7GYMmh+YnFIV" +
+        "wMD3HcGr4X0ETbH8JdsVP7njFJ5+yi" +
+        "xqlS3aSBh3GWtKT+umoTAzXbqF0ZS/" +
+        "EGXg0AhwWpQ7Fp+fyNMLwJTxt9/6Ya" +
+        "MZ2C0+MVwZyauKjeglILGZrcfenFR+" +
+        "a1LjBexcBigcqpMqsd6pDIBwtdp8RY" +
+        "spCuYgyQ6Vfb+DYbPts6ynFxXR1bsq" +
+        "TRcWBfkVMXIyCSNqgGStHCOZlVvqKo" +
+        "anolbemQEGz9lDtigeQN/4txtKX0L9" +
+        "2PLfqq6rOh/w==\nU2NhbmJvdFNESw" +
         "pjb20udF9zeXN0ZW1zLmFuZHJvaWQu" +
         "d2ViZGF2fGNvbS50X3N5c3RlbXMuYW" +
-        "5kcm9pZC53ZWJkYXYuYmV0YQoxNzE0" +
-        "MDg5NTk5CjExNTU2NzgKMg==\n"
+        "5kcm9pZC53ZWJkYXYuYmV0YQoxNzQ1" +
+        "NjI1NTk5CjExNTU2NzgKMg==\n"
 
     @JvmStatic
     fun isScanBotLicenseValid(activity: Activity): Boolean {

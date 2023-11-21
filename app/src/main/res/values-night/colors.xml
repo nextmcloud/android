@@ -89,10 +89,8 @@
     <color name="overflow_bg_color">@color/grey_80</color>
 
     <!-- Switch Compat Colors -->
-    <color name="switch_thumb_checked_disabled">@color/grey_70</color>
-    <color name="switch_track_checked_disabled">@color/grey_60</color>
-    <color name="switch_thumb_unchecked_disabled">@color/grey_70</color>
-    <color name="switch_track_unchecked_disabled">@color/grey_60</color>
+    <color name="switch_thumb_disabled">@color/grey_70</color>
+    <color name="switch_track_disabled">@color/grey_60</color>
 
     <!-- Checkbox Colors -->
     <color name="checkbox_checked_disabled">@color/grey_70</color>
