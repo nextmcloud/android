@@ -50,6 +50,7 @@ import com.nextcloud.client.network.ConnectivityService;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet;
 import com.nextcloud.utils.MenuUtils;
+import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileDetailsFragmentBinding;
@@ -364,6 +365,8 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
         super.onStart();
         listenForTransferProgress();
         EventBus.getDefault().register(this);
+        //track screen view when fragment is visible
+        TealiumSdkUtils.trackView(TealiumSdkUtils.SCREEN_VIEW_SHARING, preferences);
     }
 
     @Override
