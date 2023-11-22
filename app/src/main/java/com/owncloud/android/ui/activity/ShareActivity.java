@@ -27,7 +27,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 
 import com.nextcloud.client.account.User;
-import com.nextcloud.client.preferences.DarkMode;
 import com.nextcloud.java.util.Optional;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.ShareActivityBinding;
@@ -101,8 +100,6 @@ public class ShareActivity extends FileActivity {
 
         // Name
         binding.shareFileName.setText(getResources().getString(R.string.share_file, file.getFileName()));
-
-        viewThemeUtils.platform.colorViewBackground(binding.shareHeaderDivider);
 
         // Size
         binding.shareFileSize.setText(DisplayUtils.bytesToHumanReadable(file.getFileLength()));

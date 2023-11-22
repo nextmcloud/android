@@ -74,6 +74,7 @@ import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.common.NextcloudClient;
 import com.nextcloud.java.util.Optional;
 import com.nextcloud.ui.ChooseAccountDialogFragment;
+import com.nmc.android.utils.DrawableThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.PassCodeManager;
@@ -283,8 +284,11 @@ public abstract class DrawerActivity extends ToolbarActivity
         Drawable backArrow = ResourcesCompat.getDrawable(getResources(),
                                                          R.drawable.ic_arrow_back,
                                                          null);
-
-        viewThemeUtils.platform.tintToolbarArrowDrawable(this, mDrawerToggle, backArrow);
+        // custom color for back arrow required for NMC
+        if (backArrow != null) {
+            mDrawerToggle.setHomeAsUpIndicator(DrawableThemeUtils.tintDrawable(backArrow, getResources().getColor(R.color.fontAppbar, null)));
+            mDrawerToggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.fontAppbar, null));
+        }
     }
 
     /**
