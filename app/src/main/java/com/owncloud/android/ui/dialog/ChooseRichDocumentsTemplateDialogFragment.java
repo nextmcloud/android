@@ -42,6 +42,7 @@ import com.nextcloud.client.account.CurrentAccountProvider;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.ChooseTemplateBinding;
@@ -129,17 +130,9 @@ public class ChooseRichDocumentsTemplateDialogFragment extends DialogFragment im
 
         if (alertDialog != null) {
             positiveButton = (MaterialButton) alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(positiveButton);
-
-            MaterialButton negativeButton = (MaterialButton) alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-            if (negativeButton != null) {
-                viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(negativeButton);
-            }
-
             positiveButton.setOnClickListener(this);
             positiveButton.setEnabled(false);
         }
-
         checkEnablingCreateButton();
     }
 
@@ -181,8 +174,6 @@ public class ChooseRichDocumentsTemplateDialogFragment extends DialogFragment im
         binding = ChooseTemplateBinding.inflate(inflater, null, false);
         View view = binding.getRoot();
 
-        viewThemeUtils.material.colorTextInputLayout(binding.filenameContainer);
-
         Type type = Type.valueOf(arguments.getString(ARG_TYPE));
         new FetchTemplateTask(this, client).execute(type);
 
@@ -222,7 +213,8 @@ public class ChooseRichDocumentsTemplateDialogFragment extends DialogFragment im
             .setNegativeButton(R.string.common_cancel, null)
             .setTitle(titleTextId);
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(activity, builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(activity, builder);
 
         return builder.create();
     }

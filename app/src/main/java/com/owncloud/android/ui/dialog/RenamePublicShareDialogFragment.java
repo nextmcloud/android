@@ -31,6 +31,7 @@ import android.view.View;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nextcloud.client.di.Injectable;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.EditBoxDialogBinding;
 import com.owncloud.android.lib.resources.shares.OCShare;
@@ -68,20 +69,6 @@ public class RenamePublicShareDialogFragment
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        AlertDialog alertDialog = (AlertDialog) getDialog();
-
-        if (alertDialog != null) {
-            MaterialButton positiveButton = (MaterialButton) alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            MaterialButton negativeButton = (MaterialButton) alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(positiveButton);
-            viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(negativeButton);
-        }
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         keyboardUtils.showKeyboardForEditText(requireDialog().getWindow(), binding.userInput);
@@ -98,7 +85,6 @@ public class RenamePublicShareDialogFragment
         View view = binding.getRoot();
 
         // Setup layout
-        viewThemeUtils.material.colorTextInputLayout(binding.userInputContainer);
         binding.userInput.setText(publicShare.getLabel());
 
         // Build the dialog
@@ -108,7 +94,8 @@ public class RenamePublicShareDialogFragment
             .setNegativeButton(R.string.common_cancel, this)
             .setTitle(R.string.public_share_name);
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.userInput.getContext(), builder);
+        //NMC customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(binding.userInput.getContext(), builder);
 
         return builder.create();
     }

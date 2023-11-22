@@ -24,9 +24,7 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.account.User
 import com.nextcloud.client.di.Injectable
@@ -34,6 +32,7 @@ import com.nextcloud.client.preferences.AppPreferences
 import com.nmc.android.marketTracking.AdjustSdkUtils
 import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.nextcloud.client.jobs.BackgroundJobManager
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import javax.inject.Inject
@@ -64,20 +63,6 @@ class AccountRemovalConfirmationDialog : DialogFragment(), Injectable {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        val alertDialog = dialog as AlertDialog?
-
-        if (alertDialog != null) {
-            val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE) as MaterialButton
-            viewThemeUtils?.material?.colorMaterialButtonPrimaryTonal(positiveButton)
-
-            val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE) as MaterialButton
-            viewThemeUtils?.material?.colorMaterialButtonPrimaryBorderless(negativeButton)
-        }
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.delete_account)
@@ -92,7 +77,8 @@ class AccountRemovalConfirmationDialog : DialogFragment(), Injectable {
             }
             .setNegativeButton(R.string.common_cancel, null)
 
-        viewThemeUtils?.dialog?.colorMaterialAlertDialogBackground(requireActivity(), builder)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireActivity(), builder)
 
         return builder.create()
     }
