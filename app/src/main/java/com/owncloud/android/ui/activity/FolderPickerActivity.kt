@@ -33,6 +33,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.res.ResourcesCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.button.MaterialButton
 import com.nextcloud.client.di.Injectable
@@ -79,6 +80,7 @@ open class FolderPickerActivity :
     private var mCancelBtn: MaterialButton? = null
     private var mCopyBtn: MaterialButton? = null
     private var mMoveBtn: MaterialButton? = null
+    private var mButtonDivider: View? = null
 
     private var caption: String? = null
 
@@ -114,11 +116,26 @@ open class FolderPickerActivity :
         mAction = intent.getStringExtra(EXTRA_ACTION)
 
         if (mAction != null) {
-            caption = resources.getText(R.string.folder_picker_choose_caption_text).toString()
-            mSearchOnlyFolders = true
-            isDoNotEnterEncryptedFolder = true
+            when (mAction) {
+                MOVE_OR_COPY -> {
+                    caption = resources.getText(R.string.folder_picker_choose_caption_text).toString()
+                    mSearchOnlyFolders = true
+                    isDoNotEnterEncryptedFolder = true
+                }
+                CHOOSE_LOCATION -> {
+                    caption = resources.getText(R.string.choose_location).toString()
+                    mSearchOnlyFolders = true
+                    isDoNotEnterEncryptedFolder = true
+                    mShowOnlyFolder = true
+                    mCopyBtn!!.text = resources.getString(R.string.common_select)
+                    mCopyBtn?.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_tick, null)
+                    mMoveBtn?.visibility = View.GONE
+                    mButtonDivider?.visibility = View.GONE
+                }
+                else -> configureDefaultCase()
+            }
         } else {
-            caption = themeUtils.getDefaultDisplayNameForRootFolder(this)
+            configureDefaultCase()
         }
 
         mTargetFilePaths = intent.getStringArrayListExtra(EXTRA_FILE_PATHS)
@@ -136,6 +153,15 @@ open class FolderPickerActivity :
         handleOnBackPressed()
 
         Log_OC.d(TAG, "onCreate() end")
+    }
+
+    private fun configureDefaultCase() {
+        // NMC Customization
+        mCopyBtn?.text = resources.getString(R.string.folder_picker_choose_button_text)
+        mMoveBtn?.visibility = View.GONE
+        mButtonDivider?.visibility = View.GONE
+
+        caption = themeUtils.getDefaultDisplayNameForRootFolder(this)
     }
 
     private fun handleOnBackPressed() {
@@ -395,6 +421,7 @@ open class FolderPickerActivity :
         mCancelBtn = findViewById(R.id.folder_picker_btn_cancel)
         mCopyBtn = findViewById(R.id.folder_picker_btn_copy)
         mMoveBtn = findViewById(R.id.folder_picker_btn_move)
+        mButtonDivider = findViewById(R.id.folder_picker_divider)
 
         if (mCopyBtn != null) {
             mCopyBtn!!.setOnClickListener(this)
@@ -425,13 +452,14 @@ open class FolderPickerActivity :
         }
 
         mTargetFilePaths?.let {
-            val action = when (v) {
-                mCopyBtn -> OperationsService.ACTION_COPY_FILE
-                mMoveBtn -> OperationsService.ACTION_MOVE_FILE
-                else -> throw IllegalArgumentException("Unknown operation")
+            // NMC Customization
+            if (mAction == MOVE_OR_COPY) {
+                if (v == mCopyBtn) {
+                    fileOperationsHelper.moveOrCopyFiles(OperationsService.ACTION_COPY_FILE, it, file)
+                } else {
+                    fileOperationsHelper.moveOrCopyFiles(OperationsService.ACTION_MOVE_FILE, it, file)
+                }
             }
-
-            fileOperationsHelper.moveOrCopyFiles(action, it, file)
             resultData.putStringArrayListExtra(EXTRA_FILE_PATHS, it)
         }
 
