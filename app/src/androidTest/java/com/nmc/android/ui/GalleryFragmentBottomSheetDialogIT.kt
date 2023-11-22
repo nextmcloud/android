@@ -51,18 +51,15 @@ class GalleryFragmentBottomSheetDialogIT : AbstractIT() {
     @Test
     fun validateUIElements() {
 
-        onView(withId(R.id.hideImagesImageview)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.hideImagesTextview)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.btn_hide_images)).check(matches(isCompletelyDisplayed()))
         onView(withId(R.id.tickMarkShowImages)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.hideImagesTextview)).check(matches(withText("Show images")))
+        onView(withId(R.id.btn_hide_images)).check(matches(withText("Show images")))
 
-        onView(withId(R.id.hideVideoImageView)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.hideVideoTextview)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.tickMarkShowVideo)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.hideVideoTextview)).check(matches(withText("Show videos")))
+        onView(withId(R.id.btn_hide_videos)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.tickMarkShowVideos)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.btn_hide_videos)).check(matches(withText("Show videos")))
 
-        onView(withId(R.id.selectMediaFolder)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.selectMediaFolderImageView)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.btn_select_media_folder)).check(matches(isCompletelyDisplayed()))
     }
 
     private fun showGalleryWithBottomSheet(): GalleryFragmentBottomSheetDialog {
