@@ -59,9 +59,9 @@ configurations.configureEach {
 }
 
 // semantic versioning for version code
-def versionMajor = 3
-def versionMinor = 27
-def versionPatch = 0
+def versionMajor = 7
+def versionMinor = 26
+def versionPatch = 21
 def versionBuild = 0 // 0-50=Alpha / 51-98=RC / 90-99=stable
 
 
@@ -105,15 +105,9 @@ android {
 
         multiDexEnabled true
 
-        versionCode versionMajor * 10000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
-
-        if (versionBuild > 89) {
-            versionName "${versionMajor}.${versionMinor}.${versionPatch}"
-        } else if (versionBuild > 50) {
-            versionName "${versionMajor}.${versionMinor}.${versionPatch} RC" + (versionBuild - 50)
-        } else {
-            versionName "${versionMajor}.${versionMinor}.${versionPatch} Alpha" + (versionBuild + 1)
-        }
+        //using short version number for more readability for NMC
+        versionCode Integer.parseInt("${versionMajor}${versionMinor}${versionPatch}")
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 
         // adapt structure from Eclipse to Gradle/Android Studio expectations;
         // see http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Configuring-the-Structure
@@ -146,15 +140,15 @@ android {
             versionDev {
                 applicationId 'com.t_systems.android.webdav'
                 dimension "default"
-                versionCode 20220322
-                versionName "20220322"
+                versionCode 71200129
+                versionName "71200129"
             }
 
             qa {
                 applicationId 'com.t_systems.android.webdav'
                 dimension "default"
-                versionCode 1
-                versionName "1"
+                versionCode 74
+                versionName "1.74"
             }
         }
 
