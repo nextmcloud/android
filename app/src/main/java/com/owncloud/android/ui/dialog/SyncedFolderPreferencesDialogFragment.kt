@@ -36,6 +36,7 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.preferences.SubFolderRule
+import com.nmc.android.utils.CheckableThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.SyncedFoldersSettingsLayoutBinding
 import com.owncloud.android.datamodel.MediaFolderType
@@ -155,9 +156,9 @@ class SyncedFolderPreferencesDialogFragment : DialogFragment(), Injectable {
     }
 
     private fun applyUserColor(binding: SyncedFoldersSettingsLayoutBinding) {
-        viewThemeUtils?.androidx?.colorSwitchCompat(binding.syncEnabled)
+        CheckableThemeUtils.tintSwitch(binding.syncEnabled)
 
-        viewThemeUtils?.platform?.themeCheckbox(
+        CheckableThemeUtils.tintCheckbox(
             binding.settingInstantUploadOnWifiCheckbox,
             binding.settingInstantUploadOnChargingCheckbox,
             binding.settingInstantUploadExistingCheckbox,
