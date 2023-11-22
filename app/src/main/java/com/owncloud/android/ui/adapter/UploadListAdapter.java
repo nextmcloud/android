@@ -73,6 +73,7 @@ import java.io.File;
 import java.util.Arrays;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.ContextThemeWrapper;
 
 /**
  * This Adapter populates a ListView with following types of uploads: pending, active, completed. Filtering possible.
@@ -542,7 +543,9 @@ public class UploadListAdapter extends SectionedRecyclerViewAdapter<SectionedVie
                                        OCUpload item,
                                        String status,
                                        View view) {
-        PopupMenu popup = new PopupMenu(MainApp.getAppContext(), view);
+        //NMC Customisation
+        ContextThemeWrapper ctw = new ContextThemeWrapper(MainApp.getAppContext(), R.style.CustomPopupTheme);
+        PopupMenu popup = new PopupMenu(ctw, view);
         popup.inflate(R.menu.upload_list_item_file_conflict);
         popup.setOnMenuItemClickListener(i -> {
             int itemId = i.getItemId();
