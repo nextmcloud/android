@@ -506,11 +506,11 @@ public class UploadListAdapter extends SectionedRecyclerViewAdapter<SectionedVie
                                                          OCUpload item,
                                                          String status) {
         String remotePath = item.getRemotePath();
-        OCFile localFile = storageManager.getFileByEncryptedRemotePath(remotePath);
+        OCFile localFile = storageManager.getFileByDecryptedRemotePath(remotePath);
 
         if (localFile == null) {
             // Remote file doesn't exist, try to refresh folder
-            OCFile folder = storageManager.getFileByEncryptedRemotePath(new File(remotePath).getParent() + "/");
+            OCFile folder = storageManager.getFileByDecryptedRemotePath(new File(remotePath).getParent() + "/");
 
             if (folder != null && folder.isFolder()) {
                 refreshFolderAndUpdateUI(itemViewHolder, user, folder, remotePath, item, status);
