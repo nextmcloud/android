@@ -49,6 +49,7 @@ import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.annotation.NonNull;
 
 /**
@@ -344,6 +345,9 @@ public class SyncedFolderAdapter extends SectionedRecyclerViewAdapter<SectionedV
             ThumbnailsCacheManager.MediaThumbnailGenerationTask task =
                 new ThumbnailsCacheManager.MediaThumbnailGenerationTask(holder.binding.thumbnail,
                                                                         context,
+                                                                        // due to 512dp(NMC) thumb size there was scroll lagging in auto upload
+                                                                        // so for auto upload we have to use different thumb size (NMC-2589)
+                                                                        R.dimen.auto_upload_file_thumb_size,
                                                                         viewThemeUtils);
 
             ThumbnailsCacheManager.AsyncMediaThumbnailDrawable asyncDrawable =
@@ -452,7 +456,9 @@ public class SyncedFolderAdapter extends SectionedRecyclerViewAdapter<SectionedV
     private void setSyncButtonActiveIcon(ImageButton syncStatusButton, boolean enabled) {
         if (enabled) {
             syncStatusButton.setImageDrawable(
-                viewThemeUtils.platform.tintPrimaryDrawable(context, R.drawable.ic_cloud_sync_on)
+                viewThemeUtils.platform.colorDrawable(ResourcesCompat.getDrawable(context.getResources(),
+                                                                                  R.drawable.ic_cloud_sync_on, null),
+                                                      ResourcesCompat.getColor(context.getResources(), R.color.primary, null))
                                              );
         } else {
             syncStatusButton.setImageResource(R.drawable.ic_cloud_sync_off);
