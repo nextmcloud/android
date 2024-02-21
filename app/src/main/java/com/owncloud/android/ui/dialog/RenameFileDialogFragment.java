@@ -40,6 +40,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.collect.Sets;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.EditBoxDialogBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -120,7 +121,6 @@ public class RenameFileDialogFragment
         // Setup layout
         String currentName = mTargetFile.getFileName();
         binding.userInput.setText(currentName);
-        viewThemeUtils.material.colorTextInputLayout(binding.userInputContainer);
         int extensionStart = mTargetFile.isFolder() ? -1 : currentName.lastIndexOf('.');
         int selectionEnd = extensionStart >= 0 ? extensionStart : currentName.length();
         binding.userInput.setSelection(0, selectionEnd);
@@ -139,7 +139,8 @@ public class RenameFileDialogFragment
         // Build the dialog
         MaterialAlertDialogBuilder builder = buildMaterialAlertDialog(view);
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.userInputContainer.getContext(), builder);
+        // NMC Customization
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(requireContext(), builder);
 
         return builder.create();
     }
@@ -161,10 +162,6 @@ public class RenameFileDialogFragment
 
         if (alertDialog != null) {
             positiveButton = (MaterialButton) alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            MaterialButton negativeButton = (MaterialButton) alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-
-            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(positiveButton);
-            viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(negativeButton);
         }
     }
 
