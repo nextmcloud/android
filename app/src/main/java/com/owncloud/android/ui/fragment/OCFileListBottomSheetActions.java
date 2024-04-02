@@ -48,6 +48,11 @@ public interface OCFileListBottomSheetActions {
     void uploadFiles();
 
     /**
+     * offers a file scanner
+     */
+    void scanDocument();
+
+    /**
      * opens template selection for documents
      */
     void newDocument();

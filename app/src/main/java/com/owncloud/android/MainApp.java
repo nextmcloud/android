@@ -67,6 +67,7 @@ import com.nmc.android.marketTracking.AdjustSdkUtils;
 import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.authentication.AuthenticatorActivity;
+import com.nmc.android.utils.ScanBotSdkUtils;
 import com.owncloud.android.authentication.PassCodeManager;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl;
@@ -123,6 +124,9 @@ import dagger.android.HasAndroidInjector;
 import de.cotech.hw.SecurityKeyManager;
 import de.cotech.hw.SecurityKeyManagerConfig;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.scanbot.sap.SdkFeature;
+import io.scanbot.sdk.ScanbotSDKInitializer;
+import io.scanbot.sdk.core.contourdetector.ContourDetector;
 
 import static com.owncloud.android.ui.activity.ContactsPreferenceActivity.PREFERENCE_CONTACTS_AUTOMATIC_BACKUP;
 
@@ -363,6 +367,8 @@ public class MainApp extends MultiDexApplication implements HasAndroidInjector {
         new RemoteConfigInit();
 
         registerGlobalPassCodeProtection();
+
+        initialiseScanBotSDK();
     }
 
     private void registerGlobalPassCodeProtection() {
@@ -621,6 +627,10 @@ public class MainApp extends MultiDexApplication implements HasAndroidInjector {
                 createChannel(notificationManager, NotificationUtils.NOTIFICATION_CHANNEL_GENERAL, R.string
                                   .notification_channel_general_name, R.string.notification_channel_general_description,
                               context, NotificationManager.IMPORTANCE_DEFAULT);
+
+                createChannel(notificationManager, NotificationUtils.NOTIFICATION_CHANNEL_IMAGE_SAVE,
+                              R.string.notification_channel_image_save,
+                              R.string.notification_channel_image_save_description, context);
             } else {
                 Log_OC.e(TAG, "Notification manager is null");
             }
@@ -904,5 +914,26 @@ public class MainApp extends MultiDexApplication implements HasAndroidInjector {
     public static void setAppTheme(DarkMode mode) {
         // NMC Customization -> Always follow system theme
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+    }
+
+    /**
+     * method to initialise the ScanBot SDK
+     */
+    private void initialiseScanBotSDK() {
+        new ScanbotSDKInitializer()
+            .withLogging(BuildConfig.DEBUG, BuildConfig.DEBUG)
+            .license(this, ScanBotSdkUtils.LICENSE_KEY)
+            .contourDetectorType(ContourDetector.Type.ML_BASED) // ML_BASED is default. Set it to EDGE_BASED to use the edge-based approach
+            .licenceErrorHandler((status, sdkFeature, statusMessage) -> {
+                // Handle license errors here:
+                Log_OC.d(TAG, "License status: " + status.name());
+                if (sdkFeature != SdkFeature.NoSdkFeature) {
+                    Log_OC.d(TAG, "Missing SDK feature in license: " + sdkFeature.name());
+                }
+            })
+            //enable sdkFilesDir if custom file directory has to be set
+            //.sdkFilesDirectory(this,getExternalFilesDir(null))
+            .prepareOCRLanguagesBlobs(true)
+            .initialize(this);
     }
 }
