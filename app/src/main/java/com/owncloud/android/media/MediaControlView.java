@@ -51,6 +51,8 @@ import javax.inject.Inject;
 public class MediaControlView extends LinearLayout implements OnClickListener, OnSeekBarChangeListener {
     private static final String TAG = MediaControlView.class.getSimpleName();
     private static final int SHOW_PROGRESS = 1;
+    // NMC-3192 Fix
+    private static final int FIVE_SECONDS_IN_MILLIS = 5000;
 
     private MediaPlayerControl playerControl;
     private final MediaControlBinding binding;
@@ -276,7 +278,8 @@ public class MediaControlView extends LinearLayout implements OnClickListener, O
             doPauseResume();
         } else if (id == R.id.rewindBtn) {
             pos = playerControl.getCurrentPosition();
-            pos -= 5000;
+            // NMC-3192 Fix
+            pos -= 2 * FIVE_SECONDS_IN_MILLIS;
             playerControl.seekTo(pos);
             if (!playing) {
                 playerControl.pause();  // necessary in some 2.3.x devices
@@ -284,7 +287,8 @@ public class MediaControlView extends LinearLayout implements OnClickListener, O
             setProgress();
         } else if (id == R.id.forwardBtn) {
             pos = playerControl.getCurrentPosition();
-            pos += 15000;
+            // NMC-3192 Fix
+            pos += 2 * FIVE_SECONDS_IN_MILLIS;
             playerControl.seekTo(pos);
             if (!playing) {
                 playerControl.pause(); // necessary in some 2.3.x devices
