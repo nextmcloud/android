@@ -125,7 +125,7 @@
 
                 <data android:scheme="http" />
                 <data android:scheme="https" />
-                <data android:host="*" />
+                <data android:host="pre1.next.magentacloud.de" />
                 <data android:pathPattern="/f/..*" />
                 <data android:pathPattern="/..*/f/..*" />
                 <data android:pathPattern="/..*/..*/f/..*" />
