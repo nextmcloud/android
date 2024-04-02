@@ -21,6 +21,10 @@
 package com.owncloud.android.utils;
 
 
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,6 +71,15 @@ public final class StringUtils {
         } else {
             return "";
         }
+    }
+
+    public static Spannable getColorSpan(@NonNull String title, @ColorInt int color) {
+        Spannable text = new SpannableString(title);
+        text.setSpan(new ForegroundColorSpan(color),
+                     0,
+                     text.length(),
+                     Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        return text;
     }
 
     public static
