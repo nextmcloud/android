@@ -56,6 +56,7 @@ import com.owncloud.android.utils.PermissionUtil
 import com.owncloud.android.utils.PermissionUtil.checkSelfPermission
 import com.owncloud.android.utils.theme.ThemeUtils
 import com.owncloud.android.utils.theme.ViewThemeUtils
+import com.nmc.android.utils.CheckableThemeUtils
 import third_parties.daveKoeller.AlphanumComparator
 import java.util.Calendar
 import java.util.Collections
@@ -268,9 +269,10 @@ class BackupFragment : FileFragment(), OnDateSetListener, Injectable {
     }
 
     private fun applyUserColor() {
-        viewThemeUtils?.androidx?.colorSwitchCompat(binding.contacts)
-        viewThemeUtils?.androidx?.colorSwitchCompat(binding.calendar)
-        viewThemeUtils?.androidx?.colorSwitchCompat(binding.dailyBackup)
+        //NMC Customisation
+        CheckableThemeUtils.tintSwitch(binding.calendar)
+        CheckableThemeUtils.tintSwitch(binding.contacts)
+        CheckableThemeUtils.tintSwitch(binding.dailyBackup)
 
         viewThemeUtils?.material?.colorMaterialButtonPrimaryFilled(binding.backupNow)
         viewThemeUtils?.material?.colorMaterialButtonPrimaryOutlined(binding.contactsDatepicker)
