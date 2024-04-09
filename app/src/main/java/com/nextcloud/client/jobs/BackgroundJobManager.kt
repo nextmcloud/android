@@ -167,6 +167,13 @@ interface BackgroundJobManager {
 
     fun startPdfGenerateAndUploadWork(user: User, uploadFolder: String, imagePaths: List<String>, pdfPath: String)
 
+    fun scheduleImmediateScanDocUploadJob(
+        saveFileTypes: String,
+        docFileName: String,
+        remotePathToUpload: String,
+        pdfPassword: String?
+    ): LiveData<JobInfo?>
+
     fun scheduleTestJob()
     fun startImmediateTestJob()
     fun cancelTestJob()
@@ -175,4 +182,6 @@ interface BackgroundJobManager {
     fun cancelAllJobs()
     fun schedulePeriodicHealthStatus()
     fun startHealthStatus()
+
+    fun isWorkScheduled(tag: String): Boolean
 }
