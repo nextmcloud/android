@@ -63,6 +63,9 @@ import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.client.preferences.AppPreferencesImpl;
 import com.nextcloud.client.preferences.DarkMode;
 import com.nmc.android.ui.LauncherActivity;
+import com.nmc.android.marketTracking.AdjustSdkUtils;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
+import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.authentication.AuthenticatorActivity;
 import com.owncloud.android.authentication.PassCodeManager;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -303,6 +306,11 @@ public class MainApp extends MultiDexApplication implements HasAndroidInjector {
         insertConscrypt();
 
         initSecurityKeyManager();
+
+        // NMC Customization
+        // Adjust SDK has to be initialised before registerActivityLifecycleCallbacks method
+        // https://github.com/adjust/android_sdk#api-level-14-and-higher
+        initMarketTrackingSdks();
 
         registerActivityLifecycleCallbacks(new ActivityInjector());
 
@@ -894,6 +902,13 @@ public class MainApp extends MultiDexApplication implements HasAndroidInjector {
     @Override
     public AndroidInjector<Object> androidInjector() {
         return dispatchingAndroidInjector;
+    }
+
+    //NMC Customization
+    private void initMarketTrackingSdks(){
+        TealiumSdkUtils.initialiseTealiumSDK(this);
+        AdjustSdkUtils.initialiseAdjustSDK(this);
+        MoEngageSdkUtils.initMoEngageSDK(this);
     }
 
     public static void setAppTheme(DarkMode mode) {

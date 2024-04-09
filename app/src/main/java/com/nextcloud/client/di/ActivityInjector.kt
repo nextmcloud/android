@@ -23,6 +23,7 @@ import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
+import com.adjust.sdk.Adjust
 import dagger.android.AndroidInjection
 
 class ActivityInjector : ActivityLifecycleCallbacks {
@@ -41,11 +42,13 @@ class ActivityInjector : ActivityLifecycleCallbacks {
     }
 
     override fun onActivityResumed(activity: Activity) {
-        // unused atm
+        // NMC Customization
+        Adjust.onResume()
     }
 
     override fun onActivityPaused(activity: Activity) {
-        // unused atm
+        // NMC Customization
+        Adjust.onPause()
     }
 
     override fun onActivityStopped(activity: Activity) {
