@@ -199,7 +199,7 @@ public class SettingsActivity extends PreferenceActivity
 
         // About
         // Not required in NMC
-        //setupAboutCategory(appVersion);
+        // setupAboutCategory(appVersion);
 
         // Data Privacy
         setupDataPrivacyCategory(titleColor);
@@ -364,9 +364,10 @@ public class SettingsActivity extends PreferenceActivity
 
     private void setupSyncCategory(int titleColor) {
         final PreferenceCategory preferenceCategorySync = (PreferenceCategory) findPreference("sync");
-
+        preferenceCategorySync.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_sync),
+                                                                 titleColor));
         setupAutoUploadPreference(preferenceCategorySync, titleColor);
-        setupInternalTwoWaySyncPreference(titleColor);
+        // setupInternalTwoWaySyncPreference(titleColor);
     }
 
     /**
@@ -413,7 +414,6 @@ public class SettingsActivity extends PreferenceActivity
                                             getResources().getString(R.string.privacy_policy));
                             intent.putExtra(ExternalSiteWebView.EXTRA_URL, privacyUrl.toString());
                             intent.putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false);
-                            intent.putExtra(ExternalSiteWebView.EXTRA_MENU_ITEM_ID, -1);
                         }
 
                         startActivity(intent);
@@ -440,7 +440,6 @@ public class SettingsActivity extends PreferenceActivity
                                     getResources().getString(R.string.prefs_open_source));
                     intent.putExtra(ExternalSiteWebView.EXTRA_URL, getResources().getString(R.string.sourcecode_url));
                     intent.putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false);
-                    intent.putExtra(ExternalSiteWebView.EXTRA_MENU_ITEM_ID, -1);
                     startActivity(intent);
                     return true;
                 });
@@ -461,7 +460,7 @@ public class SettingsActivity extends PreferenceActivity
         preferenceCategoryMore.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_more),
                                                                  titleColor));
 
-       setupCalendarPreference(preferenceCategoryMore);
+        setupCalendarPreference(preferenceCategoryMore);
 
         setupBackupPreference(titleColor);
 
@@ -659,7 +658,7 @@ public class SettingsActivity extends PreferenceActivity
 
     private void setupInternalTwoWaySyncPreference(int titleColor) {
         Preference twoWaySync = findPreference("internal_two_way_sync");
-        twoWaySync.setTitle(StringUtils.getColorSpan(getString(R.string.drawer_synced_folders),
+        twoWaySync.setTitle(StringUtils.getColorSpan(getString(R.string.internal_two_way_sync),
                                                      titleColor));
 
         twoWaySync.setOnPreferenceClickListener(preference -> {
@@ -673,7 +672,7 @@ public class SettingsActivity extends PreferenceActivity
         Preference pContactsBackup = findPreference("backup");
         if (pContactsBackup != null) {
             boolean showCalendarBackup = getResources().getBoolean(R.bool.show_calendar_backup);
-            //NMC Customization
+            // NMC Customization
             pContactsBackup.setTitle(StringUtils.getColorSpan(getString(R.string.actionbar_contacts), titleColor));
             pContactsBackup.setSummary(showCalendarBackup
                                            ? getString(R.string.prefs_daily_backup_summary)
@@ -737,7 +736,7 @@ public class SettingsActivity extends PreferenceActivity
     private void setupShowMediaScanNotifications(PreferenceCategory preferenceCategoryDetails,
                                                  boolean fShowMediaScanNotifications, int titleColor) {
         SwitchPreference mShowMediaScanNotifications = (SwitchPreference) findPreference(PREFERENCE_SHOW_MEDIA_SCAN_NOTIFICATIONS);
-        mShowMediaScanNotifications.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_storage_path),
+        mShowMediaScanNotifications.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_enable_media_scan_notifications),
                                                                             titleColor));
         if (fShowMediaScanNotifications) {
             preferenceCategoryDetails.removePreference(mShowMediaScanNotifications);
@@ -835,7 +834,7 @@ public class SettingsActivity extends PreferenceActivity
     }
 
     private void setupAutoUploadCategory(int titleColor, PreferenceScreen preferenceScreen) {
-        PreferenceCategory preferenceCategorySyncedFolders =
+        final PreferenceCategory preferenceCategorySyncedFolders =
             (PreferenceCategory) findPreference("synced_folders_category");
         preferenceCategorySyncedFolders.setTitle(StringUtils.getColorSpan(getString(R.string.drawer_synced_folders),
                                                                                 titleColor));
@@ -879,6 +878,7 @@ public class SettingsActivity extends PreferenceActivity
         preferenceCategoryService.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_service),
                                                                           titleColor));
         setupHelpPreference(titleColor);
+        setupDeleteAccountPreference(titleColor);
         setupImprintPreference(titleColor);
     }
 
@@ -891,6 +891,22 @@ public class SettingsActivity extends PreferenceActivity
                 String helpWeb = getString(R.string.url_help);
                 if (!helpWeb.isEmpty()) {
                     openLinkInWebView(helpWeb, R.string.prefs_help);
+                }
+                return true;
+            });
+
+        }
+    }
+
+    private void setupDeleteAccountPreference(int titleColor) {
+        Preference pHelp = findPreference("delete_account");
+        if (pHelp != null) {
+            pHelp.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_delete_account),
+                                                    titleColor));
+            pHelp.setOnPreferenceClickListener(preference -> {
+                String helpWeb = getString(R.string.url_delete_account);
+                if (!helpWeb.isEmpty()) {
+                    openLinkInWebView(helpWeb, R.string.prefs_delete_account);
                 }
                 return true;
             });
@@ -921,7 +937,6 @@ public class SettingsActivity extends PreferenceActivity
                                        getResources().getString(title));
         externalWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_URL, url);
         externalWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false);
-        externalWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_MENU_ITEM_ID, -1);
         startActivity(externalWebViewIntent);
     }
 

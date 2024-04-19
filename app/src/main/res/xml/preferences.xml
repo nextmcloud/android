@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Nextcloud - Android Client
   ~
   ~ SPDX-FileCopyrightText: 2017-2022 Tobias Kaminsky <tobias@kaminsky.me>
@@ -27,14 +26,11 @@
     <com.owncloud.android.ui.PreferenceCustomCategory
         android:key="general"
         android:title="@string/prefs_category_general">
-        <ListPreference
-            android:key="storage_path"
+        <Preference
+            android:key="data_storage_location"
             android:layout="@layout/custom_preference_layout"
-            android:title="@string/prefs_storage_path" />
-        <!--   <ListPreference
-               android:title="@string/prefs_theme_title"
-               android:key="darkMode"
-               android:summary="%s" />-->
+            android:summary="@string/prefs_data_storage_location_summary"
+            android:title="@string/prefs_data_storage_location" />
     </com.owncloud.android.ui.PreferenceCustomCategory>
 
     <com.owncloud.android.ui.PreferenceCustomCategory
@@ -54,7 +50,7 @@
     <com.owncloud.android.ui.PreferenceCustomCategory
         android:key="details"
         android:title="@string/prefs_category_details">
-        <ListPreference
+        <com.owncloud.android.ui.ListPreferenceDialog
             android:defaultValue="none"
             android:dialogTitle="@string/prefs_lock_title"
             android:key="lock"
@@ -66,10 +62,10 @@
             android:title="@string/prefs_show_hidden_files" />
         <com.owncloud.android.ui.ThemeableSwitchPreference
             android:defaultValue="true"
-            android:title="@string/prefs_show_ecosystem_apps"
             android:key="show_ecosystem_apps"
             android:layout="@layout/custom_preference_layout"
-            android:summary="@string/prefs_show_ecosystem_apps_summary"/>
+            android:summary="@string/prefs_show_ecosystem_apps_summary"
+            android:title="@string/prefs_show_ecosystem_apps" />
         <com.owncloud.android.ui.ThemeableSwitchPreference
             android:key="show_media_scan_notifications"
             android:layout="@layout/custom_preference_layout"
@@ -78,24 +74,24 @@
     </com.owncloud.android.ui.PreferenceCustomCategory>
 
     <com.owncloud.android.ui.PreferenceCustomCategory
-        android:title="@string/prefs_category_sync"
-        android:key="sync">
+        android:key="sync"
+        android:title="@string/prefs_category_sync">
         <Preference
-            android:title="@string/drawer_synced_folders"
             android:key="syncedFolders"
             android:layout="@layout/custom_preference_layout"
-            android:summary="@string/prefs_sycned_folders_summary" />
+            android:summary="@string/prefs_sycned_folders_summary"
+            android:title="@string/drawer_synced_folders" />
 
-        <Preference
-            android:title="@string/internal_two_way_sync"
-            android:key="internal_two_way_sync"
-            android:layout="@layout/custom_preference_layout"
-            android:summary="@string/prefs_two_way_sync_summary" />
+        <!--  <Preference
+              android:title="@string/internal_two_way_sync"
+              android:key="internal_two_way_sync"
+              android:layout="@layout/custom_preference_layout"
+              android:summary="@string/prefs_two_way_sync_summary" />-->
     </com.owncloud.android.ui.PreferenceCustomCategory>
 
     <com.owncloud.android.ui.PreferenceCustomCategory
-        android:title="@string/prefs_category_more"
-        android:key="more">
+        android:key="more"
+        android:title="@string/prefs_category_more">
         <Preference
             android:key="backup"
             android:layout="@layout/custom_preference_layout"
@@ -158,6 +154,10 @@
         android:title="@string/prefs_category_service">
         <Preference
             android:key="help"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/prefs_help" />
+        <Preference
+            android:key="delete_account"
             android:layout="@layout/custom_preference_layout"
             android:title="@string/prefs_help" />
         <Preference
