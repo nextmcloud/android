@@ -343,7 +343,8 @@ public class SettingsActivity extends PreferenceActivity
     
     private void setupSyncCategory(int titleColor) {
         final PreferenceCategory preferenceCategorySync = (PreferenceCategory) findPreference("sync");
-
+        preferenceCategorySync.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_sync),
+                                                                 titleColor));
         setupAutoUploadPreference(preferenceCategorySync, titleColor);
         setupInternalTwoWaySyncPreference(preferenceCategorySync, titleColor);
     }
@@ -639,7 +640,7 @@ public class SettingsActivity extends PreferenceActivity
     
     private void setupInternalTwoWaySyncPreference(PreferenceCategory preferenceCategorySync, int titleColor) {
         Preference twoWaySync = findPreference("internal_two_way_sync");
-        twoWaySync.setTitle(StringUtils.getColorSpan(getString(R.string.drawer_synced_folders),
+        twoWaySync.setTitle(StringUtils.getColorSpan(getString(R.string.internal_two_way_sync),
                                                      titleColor));
 
         twoWaySync.setOnPreferenceClickListener(preference -> {
@@ -850,6 +851,7 @@ public class SettingsActivity extends PreferenceActivity
         preferenceCategoryService.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_service),
                                                                           titleColor));
         setupHelpPreference(titleColor);
+        setupDeleteAccountPreference(titleColor);
         setupImprintPreference(titleColor);
     }
 
@@ -862,6 +864,22 @@ public class SettingsActivity extends PreferenceActivity
                 String helpWeb = getString(R.string.url_help);
                 if (!helpWeb.isEmpty()) {
                     openLinkInWebView(helpWeb, R.string.prefs_help);
+                }
+                return true;
+            });
+
+        }
+    }
+
+    private void setupDeleteAccountPreference(int titleColor) {
+        Preference pHelp = findPreference("delete_account");
+        if (pHelp != null) {
+            pHelp.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_delete_account),
+                                                    titleColor));
+            pHelp.setOnPreferenceClickListener(preference -> {
+                String helpWeb = getString(R.string.url_delete_account);
+                if (!helpWeb.isEmpty()) {
+                    openLinkInWebView(helpWeb, R.string.prefs_delete_account);
                 }
                 return true;
             });
