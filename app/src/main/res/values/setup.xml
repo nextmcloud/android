@@ -99,6 +99,7 @@
     <string name="url_imprint"></string>
     <string name="url_app_download">"https://play.google.com/store/apps/details?id=com.nextcloud.client"</string>
     <string name="url_server_install">https://nextcloud.com/install</string>
+    <string name="url_delete_account">https://www.telekom.de/hilfe/vertrag-rechnung/login-daten-passwoerter/telekom-login-loeschen</string>
     <!-- using different key as existing url_imprint will be duplicated during the merge process
          because url_app_download will be changed in branding -->
     <string name="url_imprint_nmc">https://www.telekom.de/impressum</string>
