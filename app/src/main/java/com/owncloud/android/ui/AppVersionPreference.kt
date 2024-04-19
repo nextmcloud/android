@@ -37,7 +37,7 @@ class AppVersionPreference : Preference {
             var temp: String
             try {
                 val pkg = context.packageManager.getPackageInfo(context.packageName, 0)
-                temp = pkg.versionName
+                temp = pkg.versionName ?: ""
             } catch (e: PackageManager.NameNotFoundException) {
                 temp = ""
                 Log_OC.e(TAG, "Error while showing about dialog", e)
