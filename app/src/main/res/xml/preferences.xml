@@ -86,11 +86,11 @@
             android:layout="@layout/custom_preference_layout"
             android:summary="@string/prefs_sycned_folders_summary" />
 
-        <Preference
+      <!--  <Preference
             android:title="@string/internal_two_way_sync"
             android:key="internal_two_way_sync"
             android:layout="@layout/custom_preference_layout"
-            android:summary="@string/prefs_two_way_sync_summary" />
+            android:summary="@string/prefs_two_way_sync_summary" />-->
     </com.owncloud.android.ui.PreferenceCustomCategory>
 
     <com.owncloud.android.ui.PreferenceCustomCategory
@@ -158,6 +158,10 @@
         android:title="@string/prefs_category_service">
         <Preference
             android:key="help"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/prefs_help" />
+        <Preference
+            android:key="delete_account"
             android:layout="@layout/custom_preference_layout"
             android:title="@string/prefs_help" />
         <Preference
