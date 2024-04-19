@@ -30,6 +30,7 @@ class LogsViewModel @Inject constructor(
 
     private val asyncFilter = AsyncFilter(asyncRunner)
     private val sender = LogsEmailSender(context, clock, asyncRunner)
+    private val logsSaver = LogsSaveHandler(context, clock, asyncRunner)
     private var allEntries = emptyList<LogEntry>()
     private var logsSize = -1L
     private var filterDurationMs = 0L
@@ -43,6 +44,12 @@ class LogsViewModel @Inject constructor(
     fun send() {
         entries.value?.let {
             sender.send(it)
+        }
+    }
+
+    fun save() {
+        entries.value?.let {
+            logsSaver.save(it)
         }
     }
 
