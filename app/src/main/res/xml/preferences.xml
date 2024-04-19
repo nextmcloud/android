@@ -153,6 +153,10 @@
             android:layout="@layout/custom_preference_layout"
             android:title="@string/prefs_help" />
         <Preference
+            android:key="delete_account"
+            android:layout="@layout/custom_preference_layout"
+            android:title="@string/prefs_help" />
+        <Preference
             android:key="imprint"
             android:layout="@layout/custom_preference_layout"
             android:title="@string/prefs_imprint" />
