@@ -1035,8 +1035,9 @@
     <string name="uploader_local_files_uploaded">Fehlgeschlagene lokale Dateien erneut hochladen</string>
     <string name="prefs_category_account_info">Kontoinformationen</string>
     <string name="prefs_category_data_privacy">Datenschutz</string>
-    <string name="privacy_settings">Datenschutz</string>
+    <string name="privacy_settings">Datenschutz-Einstellungen</string>
     <string name="privacy_policy">Datenschutzbestimmungen</string>
+    <string name="prefs_delete_account">Konto endgültig löschen</string>
     <string name="prefs_open_source">Verwendete OpenSource Software</string>
     <string name="prefs_category_info">Info</string>
     <string name="prefs_category_service">Bedienung</string>
