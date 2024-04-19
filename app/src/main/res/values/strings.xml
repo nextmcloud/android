@@ -1240,6 +1240,7 @@
     <string name="prefs_category_data_privacy">Data Privacy</string>
     <string name="privacy_settings">Privacy Settings</string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="prefs_delete_account">Delete account permanently</string>
     <string name="prefs_open_source">Used OpenSource Software</string>
     <string name="prefs_category_service">Service</string>
     <string name="document_scan_pdf_generation_in_progress">Generating PDF…</string>
