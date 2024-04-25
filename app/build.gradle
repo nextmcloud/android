@@ -72,7 +72,7 @@ configurations.configureEach {
 def versionMajor = 7
 def versionMinor = 28
 def versionPatch = 2
-def versionBuild = 90 // 0-50=Alpha / 51-98=RC / 90-99=stable
+def versionBuild = 5 // 0-50=Alpha / 51-98=RC / 90-99=stable
 
 
 def ndkEnv = new HashMap<String, String>()
@@ -120,7 +120,7 @@ android {
         multiDexEnabled true
 
         //using short version number for more readability for NMC
-        versionCode Integer.parseInt("${versionMajor}${versionMinor}${versionPatch}")
+        versionCode Integer.parseInt("${versionMajor}${versionMinor}${versionPatch}${versionBuild}")
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 
         // adapt structure from Eclipse to Gradle/Android Studio expectations;
