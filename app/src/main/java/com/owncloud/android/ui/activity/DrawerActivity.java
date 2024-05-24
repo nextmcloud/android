@@ -58,6 +58,7 @@ import com.nextcloud.common.NextcloudClient;
 import com.nextcloud.ui.ChooseAccountDialogFragment;
 import com.nextcloud.ui.composeActivity.ComposeActivity;
 import com.nextcloud.ui.composeActivity.ComposeDestination;
+import com.nmc.android.ui.NMCDeepLinkConstants;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.PassCodeManager;
@@ -113,6 +114,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
@@ -1271,5 +1273,62 @@ public abstract class DrawerActivity extends ToolbarActivity
             });
             t.start();
         }
+    }
+
+    protected void handleDeepLink(@NonNull Uri uri) {
+        String path = uri.getLastPathSegment();
+        if (path != null) {
+            switch (path) {
+                case NMCDeepLinkConstants.OPEN_FILES:
+                    handleNavItemClickEvent(R.id.nav_all_files);
+                    break;
+                case NMCDeepLinkConstants.OPEN_FAVORITES:
+                    handleNavItemClickEvent(R.id.nav_favorites);
+                    break;
+                case NMCDeepLinkConstants.OPEN_MEDIA:
+                    handleNavItemClickEvent(R.id.nav_gallery);
+                    break;
+                case NMCDeepLinkConstants.OPEN_SHARED:
+                    handleNavItemClickEvent(R.id.nav_shared);
+                    break;
+                case NMCDeepLinkConstants.OPEN_OFFLINE:
+                    handleNavItemClickEvent(R.id.nav_on_device);
+                    break;
+                case NMCDeepLinkConstants.OPEN_NOTIFICATIONS:
+                    handleNavItemClickEvent(R.id.nav_notifications);
+                    break;
+                case NMCDeepLinkConstants.OPEN_DELETED:
+                    handleNavItemClickEvent(R.id.nav_trashbin);
+                    break;
+                case NMCDeepLinkConstants.OPEN_SETTINGS:
+                    handleNavItemClickEvent(R.id.nav_settings);
+                    break;
+                case NMCDeepLinkConstants.OPEN_AUTO_UPLOAD:
+                    startActivity(SyncedFoldersActivity.class);
+                    break;
+                case NMCDeepLinkConstants.OPEN_EXTERNAL_URL:
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                                               Uri.parse(uri.getQueryParameter("url")));
+                    startActivity(intent);
+                    break;
+                case NMCDeepLinkConstants.ACTION_CREATE_NEW:
+                    findViewById(R.id.fab_main).callOnClick();
+                    break;
+                case NMCDeepLinkConstants.ACTION_APP_UPDATE:
+                    openAppStore(getPackageName(), false);
+                    break;
+                default:
+                    // do nothing
+                    break;
+            }
+        }
+    }
+
+    private void handleNavItemClickEvent(@IdRes int menuItemId) {
+        if (mNavigationView == null) {
+            mNavigationView = findViewById(R.id.nav_view);
+        }
+        Menu navMenu = mNavigationView.getMenu();
+        onNavigationItemClicked(navMenu.findItem(menuItemId));
     }
 }

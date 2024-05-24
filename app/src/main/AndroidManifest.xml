@@ -160,6 +160,8 @@
                 <data android:pathPattern="/..*/f/..*" />
                 <data android:pathPattern="/..*/..*/f/..*" />
                 <data android:pathPattern="/..*/..*/..*/f/..*" />
+                <!-- path pattern to handle deep link -->
+                <data android:pathPattern="/app/..*" />
             </intent-filter>
 
             <meta-data

@@ -2352,7 +2352,7 @@ public class FileDisplayActivity extends FileActivity
         DeepLinkHandler.Match match = linkHandler.parseDeepLink(uri);
         if (match == null) {
             dismissLoadingDialog();
-            DisplayUtils.showSnackMessage(this, getString(R.string.invalid_url));
+            handleDeepLink(uri);
         } else if (match.getUsers().isEmpty()) {
             dismissLoadingDialog();
             DisplayUtils.showSnackMessage(this, getString(R.string.associated_account_not_found));
