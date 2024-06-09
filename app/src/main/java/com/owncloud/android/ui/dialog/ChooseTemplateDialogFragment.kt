@@ -37,6 +37,8 @@ import com.nextcloud.utils.ResultParser.data
 import com.nextcloud.utils.SnackbarUtil
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.fileNameValidator.FileNameValidator
+import com.nmc.android.marketTracking.MoEngageSdkUtils
+import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ChooseTemplateBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -252,6 +254,9 @@ class ChooseTemplateDialogFragment :
             putExtra(FileActivity.EXTRA_FILE, result.file)
             putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false)
         }
+
+        // NMC: track create text file event
+        MoEngageSdkUtils.trackCreateFileEvent(MainApp.getAppContext(), result.file)
 
         startActivity(editorWebView)
         dismiss()
