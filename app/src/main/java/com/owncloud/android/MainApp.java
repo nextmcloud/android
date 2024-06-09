@@ -60,6 +60,7 @@ import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.client.preferences.AppPreferencesImpl;
 import com.nextcloud.client.preferences.DarkMode;
 import com.nextcloud.utils.extensions.ContextExtensionsKt;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.nmc.android.ui.LauncherActivity;
 import com.owncloud.android.authentication.AuthenticatorActivity;
 import com.owncloud.android.authentication.PassCodeManager;
@@ -311,6 +312,8 @@ public class MainApp extends Application implements HasAndroidInjector {
 
         registerActivityLifecycleCallbacks(new ActivityInjector());
 
+        // NMC: init MoEngage SDK
+        MoEngageSdkUtils.initMoEngageSDK(this);
         //update the app restart count when app is launched by the user
         inAppReviewHelper.resetAndIncrementAppRestartCounter();
 
