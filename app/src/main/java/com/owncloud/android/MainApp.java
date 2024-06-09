@@ -61,6 +61,7 @@ import com.nextcloud.client.preferences.DarkMode;
 import com.nextcloud.ui.composeActivity.ComposeProcessTextAlias;
 import com.nextcloud.utils.extensions.ContextExtensionsKt;
 import com.nextcloud.utils.mdm.MDMConfig;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.nmc.android.ui.LauncherActivity;
 import com.owncloud.android.authentication.PassCodeManager;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -293,6 +294,9 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
 
         registerActivityLifecycleCallbacks(new ActivityInjector());
 
+        // NMC: init MoEngage SDK
+        initMoEngage();
+        // NMC: end
         //update the app restart count when app is launched by the user
         inAppReviewHelper.resetAndIncrementAppRestartCounter();
 
@@ -994,6 +998,13 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
                 preferences.setLegacyClean(true);
             }
         }
+    }
+
+    private void initMoEngage(){
+        MoEngageSdkUtils.initMoEngageSDK(this);
+        MoEngageSdkUtils.trackAppInstallOrUpdate(this, preferences.getLastSeenVersionCode());
+        MoEngageSdkUtils.captureUserAttrsForOldAppVersion(this, preferences.getLastSeenVersionCode(),
+                                                          accountManager.getUser());
     }
 
     @Override

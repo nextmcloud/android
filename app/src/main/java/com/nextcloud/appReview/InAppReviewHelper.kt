@@ -30,4 +30,12 @@ interface InAppReviewHelper {
      * once all the conditions satisfies it will trigger In-App Review manager to show the flow
      */
     fun showInAppReview(activity: AppCompatActivity)
+
+    /**
+     * NMC customization
+     * method to perform direct native review without the logic of app launch count
+     * this will be triggered when MoEngage push comes to show native rating
+     * === DO NOT CALL THIS FUNCTION DIRECTLY FOR ANY OTHER USE CASE ===
+     */
+    fun performNativeReview(activity: AppCompatActivity)
 }
