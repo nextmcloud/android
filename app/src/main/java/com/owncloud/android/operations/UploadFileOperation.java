@@ -26,6 +26,7 @@ import com.nextcloud.client.network.ConnectivityService;
 import com.nextcloud.utils.autoRename.AutoRename;
 import com.nextcloud.utils.e2ee.E2EVersionHelper;
 import com.nextcloud.utils.extensions.RemoteOperationResultExtensionsKt;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -1774,6 +1775,10 @@ public class UploadFileOperation extends SyncOperation {
         file.setRemoteId(remoteFile.getRemoteId());
         file.setPermissions(remoteFile.getPermissions());
         file.setUploadTimestamp(remoteFile.getUploadTimestamp());
+
+        // NMC: track upload file event
+        // mOriginalStoragePath will help in deciding if Uploading file is from Scan or not
+        MoEngageSdkUtils.trackUploadFileEvent(mContext, file, mOriginalStoragePath);
     }
 
     public interface OnRenameListener {
