@@ -20,3 +20,15 @@ include ":appscan"
 //        substitute module('com.github.nextcloud:android-library') using project(':library') // broken on gradle 8.14.2, so use 8.13 if needed
 //    }
 //}
+
+// NMC: adding moengage catalog
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        create("moengage") {
+            from("com.moengage:android-dependency-catalog:4.2.0")
+        }
+    }
+}

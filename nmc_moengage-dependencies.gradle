@@ -1,0 +1,21 @@
+/*
+ * Nextcloud - Android Client
+ *
+ * SPDX-FileCopyrightText: 2024 Your Name <your@email.com>
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+android {
+    buildTypes.each {
+        it.buildConfigField "String", "MOENGAGE_APP_ID", "${MOENGAGE_APP_ID}"
+    }
+}
+
+dependencies {
+    // core moengage features
+    implementation(moengage.core)
+    // optionally add this to use the Push Templates feature
+    implementation(moengage.richNotification)
+    // optionally add this to use the InApp feature
+    implementation(moengage.inapp)
+}
