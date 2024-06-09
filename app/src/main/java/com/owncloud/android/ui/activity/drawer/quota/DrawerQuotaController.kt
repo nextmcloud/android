@@ -18,6 +18,7 @@ import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.utils.GlideHelper
 import com.nextcloud.utils.HumanReadableFormatter
 import com.nextcloud.utils.mdm.MDMConfig
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.R
 import com.owncloud.android.lib.common.ExternalLink
 import com.owncloud.android.lib.common.ExternalLinkType
@@ -63,6 +64,8 @@ class DrawerQuotaController(private val activity: DrawerActivity, private val ex
             } else {
                 quotaView?.isVisible = false
             }
+            // NMC: track quota storage
+            MoEngageSdkUtils.trackQuotaStorage(activity, quota)
         }
     }
 
