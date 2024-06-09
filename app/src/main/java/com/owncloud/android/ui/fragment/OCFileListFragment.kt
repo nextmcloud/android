@@ -105,6 +105,7 @@ import com.owncloud.android.ui.events.FavoriteEvent
 import com.owncloud.android.ui.events.FileLockEvent
 import com.owncloud.android.ui.events.SearchEvent
 import com.owncloud.android.ui.fragment.FileFragment.ContainerActivity
+import com.owncloud.android.ui.fragment.contactsbackup.BackupFragment
 import com.owncloud.android.ui.fragment.helper.ParentFolderFinder
 import com.owncloud.android.ui.helpers.FileOperationsHelper
 import com.owncloud.android.ui.interfaces.OCFileListFragmentInterface
@@ -112,6 +113,7 @@ import com.owncloud.android.utils.FileSortOrder
 import com.owncloud.android.utils.FileStorageUtils
 import com.owncloud.android.utils.PermissionUtil
 import com.owncloud.android.utils.theme.ThemeUtils
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -279,9 +281,20 @@ open class OCFileListFragment :
             viewThemeUtils.material.themeFAB(it)
         }
 
+        // NMC: track few user attributes at app launch
+        trackUserAttributes()
         return view
     }
 
+    private fun trackUserAttributes() {
+        MoEngageSdkUtils.trackAutoUpload(requireContext(), syncedFolderProvider.countEnabledSyncedFolders())
+        MoEngageSdkUtils.trackContactBackup(
+            requireContext(), arbitraryDataProvider.getBooleanValue(
+                accountManager.user,
+                BackupFragment.PREFERENCE_CONTACTS_BACKUP_ENABLED
+            )
+        )
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         listenEncryptionDialogResult()
@@ -474,6 +487,8 @@ open class OCFileListFragment :
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.skipCollapsed = true
             show()
+            // NMC: track action button item click event
+            MoEngageSdkUtils.trackActionButtonEvent(requireContext())
         }
     }
 

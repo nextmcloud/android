@@ -187,6 +187,7 @@ class AutoUploadFragment :
             itemFactory,
             persistence,
             dialogs,
+            syncedFolderProvider,
             backgroundJobManager,
             getAdapter = { adapter },
             onItemVisibilityChanged = { emptyContent?.checkAndShowEmptyListContent() }
