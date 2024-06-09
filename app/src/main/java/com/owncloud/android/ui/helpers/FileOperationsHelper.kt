@@ -41,6 +41,7 @@ import com.nextcloud.utils.EditorUtils
 import com.nextcloud.utils.SnackbarUtil.show
 import com.nextcloud.utils.extensions.isLocalETagOutdated
 import com.nextcloud.utils.extensions.toEncryptionEvent
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl
@@ -238,6 +239,10 @@ class FileOperationsHelper(
             putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false)
         }
         context.startActivity(intent)
+
+        // NMC: track when office file opened event
+        file ?: return
+        MoEngageSdkUtils.trackOnlineOfficeUsedEvent(context, file)
     }
 
     fun openRichWorkspaceWithTextEditor(file: OCFile?, url: String?, context: Context?) {
@@ -377,6 +382,9 @@ class FileOperationsHelper(
             }
         }
         queueOperation(intent)
+
+        // NMC: track link share event
+        MoEngageSdkUtils.trackShareFileEvent(fileActivity, file)
     }
 
     fun shareFolderViaSecureFileDrop(file: OCFile) {
@@ -617,6 +625,9 @@ class FileOperationsHelper(
             startSyncFolderIntent(file, syncAll)
         } else {
             queueSyncFileIntent(file, postDialogEvent)
+
+            // NMC: track offline available event
+            MoEngageSdkUtils.trackOfflineAvailableEvent(fileActivity, file)
         }
     }
 
@@ -646,7 +657,13 @@ class FileOperationsHelper(
     fun toggleFavoriteFiles(files: Collection<OCFile>, shouldBeFavorite: Boolean) {
         files
             .filter { it.isFavorite != shouldBeFavorite }
-            .forEach { toggleFavoriteFile(it, shouldBeFavorite) }
+            .forEach {
+                toggleFavoriteFile(it, shouldBeFavorite)
+                // NMC: capture whenever a file is added to favourite
+                if (shouldBeFavorite) {
+                    MoEngageSdkUtils.trackAddFavoriteEvent(fileActivity, it)
+                }
+            }
     }
 
     fun toggleFavoriteFile(file: ServerFileInterface, shouldBeFavorite: Boolean) {

@@ -12,6 +12,7 @@ import androidx.fragment.app.commit
 import com.nextcloud.ui.composeActivity.ComposeActivity
 import com.nextcloud.ui.composeActivity.ComposeDestination
 import com.nextcloud.utils.extensions.navigateToAllFiles
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.lib.common.utils.Log_OC
@@ -53,6 +54,9 @@ class DrawerNavigator(private val activity: DrawerActivity) {
     }
 
     fun showOnDeviceFiles() {
+        // NMC: track offline files screen event
+        MoEngageSdkUtils.trackOfflineFilesScreenEvent(activity)
+
         MainApp.showOnlyFilesOnDevice(true)
         MainApp.showOnlyPersonalFiles(false)
         activity.startActivity(fileDisplayActivityIntent(FileDisplayActivity.ON_DEVICE))
@@ -80,6 +84,8 @@ class DrawerNavigator(private val activity: DrawerActivity) {
         resetOnlyPersonalAndOnDevice()
         activity.showActionBar(ActionBarStyle.Plain)
         launchActivityForSearch(SearchEvent("", SearchRemoteOperation.SearchType.FAVORITE_SEARCH))
+        // NMC: track fav screen event
+        MoEngageSdkUtils.trackFavouriteScreenEvent(activity)
     }
 
     fun openMediaTab() {
@@ -87,6 +93,8 @@ class DrawerNavigator(private val activity: DrawerActivity) {
         resetOnlyPersonalAndOnDevice()
         activity.showActionBar(ActionBarStyle.Plain)
         startPhotoSearch()
+        // NMC: track media screen event
+        MoEngageSdkUtils.trackMediaScreenEvent(activity)
     }
 
     fun openAlbums() {
@@ -119,6 +127,8 @@ class DrawerNavigator(private val activity: DrawerActivity) {
     fun openSharedTab() {
         resetOnlyPersonalAndOnDevice()
         launchActivityForSearch(SearchEvent("", SearchRemoteOperation.SearchType.SHARED_FILTER))
+        // NMC: track shared screen event
+        MoEngageSdkUtils.trackSharedScreenEvent(activity)
     }
 
     fun openRecentFiles() {

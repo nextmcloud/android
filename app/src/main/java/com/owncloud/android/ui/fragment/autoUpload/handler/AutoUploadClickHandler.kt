@@ -11,9 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.nextcloud.client.account.User
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.nextcloud.client.jobs.upload.FileUploadHelper
 import com.owncloud.android.datamodel.MediaFolderType
 import com.owncloud.android.datamodel.AutoUploadFolder
+import com.owncloud.android.datamodel.SyncedFolderProvider
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.ui.dialog.AutoUploadPreferenceDialogFragment
 import com.owncloud.android.ui.dialog.parcel.AutoUploadFolderParcelable
@@ -32,6 +34,7 @@ class AutoUploadClickHandler(
     private val itemFactory: AutoUploadDisplayItemFactory,
     private val persistence: AutoUploadPersistence,
     private val dialogs: AutoUploadDialogs,
+    private val syncedFolderProvider: SyncedFolderProvider,
     private val getAdapter: () -> AutoUploadFolderAdapter,
     private val onItemVisibilityChanged: () -> Unit
 ) : AutoUploadFolderClickListener {
@@ -85,6 +88,8 @@ class AutoUploadClickHandler(
             return
         }
 
+        trackAutoUpload()
+
         updateFolder(syncedFolder)
     }
 
@@ -97,8 +102,17 @@ class AutoUploadClickHandler(
             withContext(Dispatchers.Main) {
                 val adapter = getAdapter()
                 adapter.getItem(findSection(adapter, syncedFolder))?.let(adapter::removeItem)
+                trackAutoUpload()
             }
         }
+    }
+
+    /**
+     * NMC: tracking auto upload is enabled or not
+     * Should be called whenever a Folder is saved or removed from auto upload
+     */
+    private fun trackAutoUpload() {
+        MoEngageSdkUtils.trackAutoUpload(fragment.requireContext(), syncedFolderProvider.countEnabledSyncedFolders())
     }
 
     private fun isNewCustomFolder(syncedFolder: AutoUploadFolderParcelable): Boolean =
