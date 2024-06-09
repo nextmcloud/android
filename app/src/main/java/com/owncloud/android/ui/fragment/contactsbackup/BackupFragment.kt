@@ -28,6 +28,7 @@ import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.jobs.BackgroundJobManager
 import com.nextcloud.utils.extensions.getSerializableArgument
 import com.nextcloud.utils.extensions.setVisibleIf
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.BackupFragmentBinding
 import com.owncloud.android.datamodel.ArbitraryDataProvider
@@ -96,6 +97,8 @@ class BackupFragment : FileFragment(), OnDateSetListener, Injectable {
                 PREFERENCE_CONTACTS_BACKUP_ENABLED,
                 enabled
             )
+            // NMC: track contact backup
+            MoEngageSdkUtils.trackContactBackup(requireContext(), enabled)
         }
 
     private lateinit var contactsBackupFolderPath: String
