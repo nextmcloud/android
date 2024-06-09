@@ -63,6 +63,7 @@ import com.nextcloud.receiver.NetworkChangeListener;
 import com.nextcloud.receiver.NetworkChangeReceiver;
 import com.nextcloud.utils.extensions.ContextExtensionsKt;
 import com.nextcloud.utils.mdm.MDMConfig;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.nmc.android.ui.LauncherActivity;
 import com.owncloud.android.authentication.PassCodeManager;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -313,6 +314,8 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
 
         registerActivityLifecycleCallbacks(new ActivityInjector());
 
+        // NMC: init MoEngage SDK
+        MoEngageSdkUtils.initMoEngageSDK(this);
         //update the app restart count when app is launched by the user
         inAppReviewHelper.resetAndIncrementAppRestartCounter();
 
