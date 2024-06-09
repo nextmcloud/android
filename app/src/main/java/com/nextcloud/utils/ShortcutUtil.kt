@@ -22,6 +22,7 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import com.nextcloud.client.account.User
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.datamodel.SyncedFolderProvider
@@ -92,6 +93,9 @@ class ShortcutUtil @Inject constructor(private val mContext: Context) {
                 pinShortcutInfo,
                 successCallback.intentSender
             )
+
+            // NMC: track pin to home screen event
+            MoEngageSdkUtils.trackPinHomeScreenEvent(mContext, file)
         }
     }
 
