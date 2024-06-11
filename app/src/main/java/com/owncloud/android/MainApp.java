@@ -314,6 +314,8 @@ public class MainApp extends Application implements HasAndroidInjector {
 
         // NMC: init MoEngage SDK
         MoEngageSdkUtils.initMoEngageSDK(this);
+        MoEngageSdkUtils.trackAppInstallOrUpdate(this, preferences.getLastSeenVersionCode());
+        // NMC: end
         //update the app restart count when app is launched by the user
         inAppReviewHelper.resetAndIncrementAppRestartCounter();
 
