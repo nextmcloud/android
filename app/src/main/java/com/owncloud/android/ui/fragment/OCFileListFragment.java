@@ -62,6 +62,7 @@ import com.nextcloud.utils.extensions.FileExtensionsKt;
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
 import com.nextcloud.utils.view.FastScrollUtils;
 import com.owncloud.android.MainApp;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -100,6 +101,7 @@ import com.owncloud.android.ui.events.EncryptionEvent;
 import com.owncloud.android.ui.events.FavoriteEvent;
 import com.owncloud.android.ui.events.FileLockEvent;
 import com.owncloud.android.ui.events.SearchEvent;
+import com.owncloud.android.ui.fragment.contactsbackup.BackupFragment;
 import com.owncloud.android.ui.helpers.FileOperationsHelper;
 import com.owncloud.android.ui.interfaces.OCFileListFragmentInterface;
 import com.owncloud.android.ui.preview.PreviewImageFragment;
@@ -335,7 +337,15 @@ public class OCFileListFragment extends ExtendedListFragment implements
         }
 
         Log_OC.i(TAG, "onCreateView() end");
+        // NMC: track few user attributes at app launch
+        trackUserAttributes();
         return v;
+    }
+
+    private void trackUserAttributes() {
+        MoEngageSdkUtils.trackAutoUpload(requireContext(), syncedFolderProvider.countEnabledSyncedFolders());
+        MoEngageSdkUtils.trackContactBackup(requireContext(), arbitraryDataProvider.getBooleanValue(accountManager.getUser(),
+                                                                                                    BackupFragment.PREFERENCE_CONTACTS_BACKUP_ENABLED));
     }
 
     @Override
