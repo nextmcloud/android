@@ -64,6 +64,7 @@ import com.nextcloud.utils.LinkHelper;
 import com.nextcloud.utils.extensions.ViewExtensionsKt;
 import com.nextcloud.utils.mdm.MDMConfig;
 import com.owncloud.android.MainApp;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.PassCodeManager;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -982,6 +983,9 @@ public abstract class DrawerActivity extends ToolbarActivity
                             showQuota(false);
                         }
                     });
+
+                    // NMC: track quota storage
+                    MoEngageSdkUtils.trackQuotaStorage(this, quota);
                 }
             }
         });
