@@ -36,6 +36,7 @@ import com.nextcloud.client.jobs.download.FileDownloadHelper;
 import com.nextcloud.client.jobs.upload.FileUploadHelper;
 import com.nextcloud.client.network.ConnectivityService;
 import com.nextcloud.utils.EditorUtils;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -354,6 +355,9 @@ public class FileOperationsHelper {
         collaboraWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_FILE, file);
         collaboraWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false);
         context.startActivity(collaboraWebViewIntent);
+
+        // NMC: track when office file opened event
+        MoEngageSdkUtils.trackOnlineOfficeUsedEvent(context, file);
     }
 
     public void openFileWithTextEditor(OCFile file, Context context) {
@@ -460,6 +464,9 @@ public class FileOperationsHelper {
             }
             service.putExtra(OperationsService.EXTRA_REMOTE_PATH, file.getRemotePath());
             mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
+
+            // NMC: track link share event
+            MoEngageSdkUtils.trackShareFileEvent(fileActivity, file);
 
         } else {
             Log_OC.e(TAG, "Trying to share a NULL OCFile");
@@ -877,6 +884,8 @@ public class FileOperationsHelper {
             fileActivity.showLoadingDialog(fileActivity.getApplicationContext().
                                                getString(R.string.wait_a_moment));
 
+            // NMC: track offline available event
+            MoEngageSdkUtils.trackOfflineAvailableEvent(fileActivity, file);
         } else {
             Intent intent = new Intent(fileActivity, OperationsService.class);
             intent.setAction(OperationsService.ACTION_SYNC_FOLDER);
@@ -902,6 +911,11 @@ public class FileOperationsHelper {
     public void toggleFavoriteFile(OCFile file, boolean shouldBeFavorite) {
         if (file.isFavorite() != shouldBeFavorite) {
             EventBus.getDefault().post(new FavoriteEvent(file.getRemotePath(), shouldBeFavorite));
+
+            // NMC: capture whenever a file is added to favourite
+            if (shouldBeFavorite) {
+                MoEngageSdkUtils.trackAddFavoriteEvent(fileActivity, file);
+            }
         }
     }
 
