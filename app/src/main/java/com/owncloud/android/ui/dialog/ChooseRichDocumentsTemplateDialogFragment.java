@@ -32,6 +32,7 @@ import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.owncloud.android.MainApp;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.ChooseTemplateBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -393,6 +394,9 @@ public class ChooseRichDocumentsTemplateDialogFragment extends DialogFragment im
                     collaboraWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false);
                     collaboraWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_TEMPLATE, template);
                     fragment.startActivity(collaboraWebViewIntent);
+
+                    // NMC: track create office file event
+                    MoEngageSdkUtils.trackCreateFileEvent(MainApp.getAppContext(), file, template.getType());
 
                     fragment.dismiss();
                 }
