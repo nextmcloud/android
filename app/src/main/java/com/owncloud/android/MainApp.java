@@ -313,8 +313,7 @@ public class MainApp extends Application implements HasAndroidInjector {
         registerActivityLifecycleCallbacks(new ActivityInjector());
 
         // NMC: init MoEngage SDK
-        MoEngageSdkUtils.initMoEngageSDK(this);
-        MoEngageSdkUtils.trackAppInstallOrUpdate(this, preferences.getLastSeenVersionCode());
+        initMoEngage();
         // NMC: end
         //update the app restart count when app is launched by the user
         inAppReviewHelper.resetAndIncrementAppRestartCounter();
@@ -983,6 +982,14 @@ public class MainApp extends Application implements HasAndroidInjector {
                 preferences.setLegacyClean(true);
             }
         }
+    }
+
+    private void initMoEngage(){
+        MoEngageSdkUtils.initMoEngageSDK(this);
+        MoEngageSdkUtils.trackAppInstallOrUpdate(this, preferences.getLastSeenVersionCode());
+        MoEngageSdkUtils.captureUserAttrsForOldAppVersion(this, preferences.getLastSeenVersionCode(),
+                                                          accountManager.getCurrentAccount() != null,
+                                                          accountManager.getUser());
     }
 
     @Override
