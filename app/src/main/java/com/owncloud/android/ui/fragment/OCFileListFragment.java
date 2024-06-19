@@ -530,6 +530,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 dialog.getBehavior().setState(BottomSheetBehavior.STATE_EXPANDED);
                 dialog.getBehavior().setSkipCollapsed(true);
                 dialog.show();
+
+                // NMC: track action button item click event
+                MoEngageSdkUtils.trackActionButtonEvent(requireContext());
             });
         }
     }
