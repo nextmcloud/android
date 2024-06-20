@@ -31,6 +31,11 @@
         <item name="android:datePickerDialogTheme">@style/FallbackDatePickerDialogTheme</item>
         <item name="android:navigationBarColor">@color/bg_default</item>
         <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
+        <!-- ActionBar Menu Item Text Color Style -->
+        <item name="android:actionMenuTextColor">@color/primary</item>
+        <!-- styling action bar back button -->
+        <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
+        <item name="homeAsUpIndicator">@drawable/ic_arrow_back</item>
         <item name="dialogCornerRadius">@dimen/dialogBorderRadius</item>
     </style>
 
@@ -49,6 +54,11 @@
         <item name="android:datePickerDialogTheme">@style/FallbackDatePickerDialogTheme</item>
         <item name="android:navigationBarColor">@color/bg_default</item>
         <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
+        <!-- ActionBar Menu Item Text Color Style -->
+        <item name="android:actionMenuTextColor">@color/primary</item>
+        <!-- styling action bar back button -->
+        <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
+        <item name="homeAsUpIndicator">@drawable/ic_arrow_back</item>
         <item name="dialogCornerRadius">@dimen/dialogBorderRadius</item>
     </style>
 
@@ -449,10 +459,11 @@
     <style name="App.ActionMode" parent="@style/Widget.Material3.ActionMode">
         <item name="background">@color/action_mode_background</item>
         <item name="titleTextStyle">@style/App.ActionModeTitleText</item>
+        <item name="closeItemLayout">@layout/action_mode_close_layout</item>
     </style>
 
     <style name="App.ActionModeTitleText" parent="TextAppearance.Material3.ActionBar.Title">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/fontAppbar</item>
     </style>
 
     <!-- Splash screen style attributes: https://developer.android.com/develop/ui/views/launch/splash-screen#set-theme -->
