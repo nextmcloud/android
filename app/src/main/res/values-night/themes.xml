@@ -19,6 +19,10 @@
         <item name="windowActionBar">false</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="windowNoTitle">true</item>
+        <!-- SnackBar Styling -->
+        <item name="snackbarStyle">@style/SnackBarBackgroundStyle</item>
+        <item name="snackbarButtonStyle">@style/SnackBarActionButtonStyle</item>
+        <item name="snackbarTextViewStyle">@style/SnackBarTextViewStyle</item>
         <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
         <item name="popupMenuStyle">@style/Nextcloud.Widget.PopupMenu</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
