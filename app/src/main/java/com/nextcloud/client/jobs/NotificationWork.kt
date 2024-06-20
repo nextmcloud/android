@@ -162,7 +162,8 @@ class NotificationWork constructor(
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setContentIntent(pendingIntent)
 
-        viewThemeUtils.androidx.themeNotificationCompatBuilder(context, notificationBuilder)
+        //NMC Customization
+        notificationBuilder.color = context.resources.getColor(R.color.primary, null)
 
         // Remove
         if (notification.getActions().isEmpty()) {
@@ -218,9 +219,8 @@ class NotificationWork constructor(
                 .setAutoCancel(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentIntent(pendingIntent)
-                .also {
-                    viewThemeUtils.androidx.themeNotificationCompatBuilder(context, it)
-                }
+                //NMC Customization
+                .setColor(context.resources.getColor(R.color.primary, null))
                 .build()
         )
         val notificationManager = NotificationManagerCompat.from(context)
