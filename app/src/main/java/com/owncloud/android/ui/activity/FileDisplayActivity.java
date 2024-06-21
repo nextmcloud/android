@@ -70,6 +70,7 @@ import com.nextcloud.utils.extensions.FileExtensionsKt;
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
 import com.nextcloud.utils.view.FastScrollUtils;
 import com.owncloud.android.MainApp;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FilesBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -359,6 +360,9 @@ public class FileDisplayActivity extends FileActivity
                 }
             }
         }
+
+        // NMC: Notify MoEngage about Config Changes for In-App Notifications
+        MoEngageSdkUtils.handleConfigChangesForInAppNotification();
     }
 
     @Override
@@ -434,6 +438,9 @@ public class FileDisplayActivity extends FileActivity
                 // handle notification permission on API level >= 33
                 // dialogue was dismissed -> prompt for storage permissions
                 PermissionUtil.requestExternalStoragePermission(this, viewThemeUtils);
+
+                // NMC: Notify MoEngage about the post notification permission response
+                MoEngageSdkUtils.updatePostNotificationsPermission(this);
                 break;
             case PermissionUtil.PERMISSIONS_EXTERNAL_STORAGE:
                 // If request is cancelled, result arrays are empty.
@@ -2314,6 +2321,9 @@ public class FileDisplayActivity extends FileActivity
             }
         }
         lastDisplayedUser = optionalUser;
+
+        // NMC: show in-app notifications
+        MoEngageSdkUtils.displayInAppNotification(this);
 
         EventBus.getDefault().post(new TokenPushEvent());
         checkForNewDevVersionNecessary(getApplicationContext());
