@@ -7,21 +7,27 @@
 
 package com.nmc.android.marketTracking
 
+import android.Manifest
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import com.moengage.core.DataCenter
 import com.moengage.core.MoECoreHelper
 import com.moengage.core.MoEngage
 import com.moengage.core.Properties
 import com.moengage.core.analytics.MoEAnalyticsHelper
+import com.moengage.core.config.NotificationConfig
 import com.moengage.core.enableAdIdTracking
 import com.moengage.core.enableAndroidIdTracking
 import com.moengage.core.model.AppStatus
+import com.moengage.inapp.MoEInAppHelper
+import com.moengage.pushbase.MoEPushHelper
 import com.nextcloud.client.account.User
 import com.nextcloud.common.NextcloudClient
 import com.nextcloud.utils.extensions.getFormattedStringDate
 import com.nmc.android.utils.FileUtils
 import com.owncloud.android.BuildConfig
+import com.owncloud.android.R
 import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.datamodel.Template
 import com.owncloud.android.lib.common.OwnCloudClientFactory
@@ -31,6 +37,7 @@ import com.owncloud.android.lib.common.accounts.AccountUtils
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.lib.resources.users.GetUserInfoRemoteOperation
 import com.owncloud.android.utils.MimeTypeUtil
+import com.owncloud.android.utils.PermissionUtil
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -79,11 +86,23 @@ object MoEngageSdkUtils {
 
     private const val DATE_FORMAT = "yyyy-MM-dd"
 
+    // maximum post notification permission retry count
+    private const val PUSH_PERMISSION_REQUEST_RETRY_COUNT = 2
+
     @JvmStatic
     fun initMoEngageSDK(application: Application) {
         val moEngage = MoEngage.Builder(application, BuildConfig.MOENGAGE_APP_ID, DataCenter.DATA_CENTER_2)
+            .configureNotificationMetaData(
+                NotificationConfig(
+                    R.drawable.notification_icon,
+                    R.drawable.notification_icon
+                )
+            )
             .build()
         MoEngage.initialiseDefaultInstance(moEngage)
+
+        updatePostNotificationsPermission(application)
+
         enableDeviceIdentifierTracking(application)
 
         // track app version at app launch
@@ -191,7 +210,7 @@ object MoEngageSdkUtils {
     }
 
     @JvmStatic
-    fun trackUploadFileEvent(context: Context, file: OCFile, originalStoragePath : String) {
+    fun trackUploadFileEvent(context: Context, file: OCFile, originalStoragePath: String) {
         if (file.isFolder) return
 
         MoEAnalyticsHelper.trackEvent(
@@ -384,7 +403,7 @@ object MoEngageSdkUtils {
         }
     }
 
-    private fun fetchUserInfo(context: Context, user : User) {
+    private fun fetchUserInfo(context: Context, user: User) {
         val t = Thread(Runnable {
             val nextcloudClient: NextcloudClient
             try {
@@ -398,15 +417,50 @@ object MoEngageSdkUtils {
             }
 
             val result = GetUserInfoRemoteOperation().execute(nextcloudClient)
-                if (result.isSuccess && result.resultData != null) {
-                    val userInfo = result.resultData
+            if (result.isSuccess && result.resultData != null) {
+                val userInfo = result.resultData
 
-                    trackUserLogin(context, userInfo)
-                } else {
-                    Log_OC.d(this, result.logMessage)
-                }
+                trackUserLogin(context, userInfo)
+            } else {
+                Log_OC.d(this, result.logMessage)
+            }
         })
 
         t.start()
+    }
+
+    @JvmStatic
+    fun updatePostNotificationsPermission(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val isGranted = PermissionUtil.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
+
+            MoEPushHelper.getInstance().pushPermissionResponse(context, isGranted)
+
+            if (!isGranted) {
+                MoEPushHelper.getInstance()
+                    .updatePushPermissionRequestCount(context, PUSH_PERMISSION_REQUEST_RETRY_COUNT)
+            }
+        } else {
+            MoEPushHelper.getInstance().setUpNotificationChannels(context)
+        }
+    }
+
+    /**
+     * function should be called from onStart() of Activity
+     * or onResume() of Fragment
+     */
+    @JvmStatic
+    fun displayInAppNotification(context: Context) {
+        MoEInAppHelper.getInstance().showInApp(context)
+    }
+
+    /**
+     * To show In-App in both Portrait and Landscape mode properly
+     * when Activity is handling Config changes by itself
+     * call this function from onConfigurationChanged()
+     */
+    @JvmStatic
+    fun handleConfigChangesForInAppNotification() {
+        MoEInAppHelper.getInstance().onConfigurationChanged()
     }
 }
