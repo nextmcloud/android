@@ -35,6 +35,7 @@ import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.client.utils.Throttler
 import com.nextcloud.ui.trashbinFileActions.TrashbinFileActionsBottomSheet
 import com.owncloud.android.R
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.databinding.TrashbinActivityBinding
 import com.owncloud.android.datamodel.SyncedFolderProvider
 import com.owncloud.android.lib.resources.trashbin.model.TrashbinFile
@@ -131,6 +132,9 @@ class TrashbinActivity :
 
         active = true
         setupContent()
+
+        // NMC: track deleted files screen event
+        MoEngageSdkUtils.trackDeletedFilesScreenEvent(this)
     }
 
     private fun setupContent() {
