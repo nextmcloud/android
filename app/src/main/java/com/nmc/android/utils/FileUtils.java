@@ -93,12 +93,12 @@ public class FileUtils {
         }
     }
 
-    private static File getPdfFileName(Context context, String fileName) {
+    public static File getPdfFileName(Context context, String fileName) {
         File pdfFileName = getOutputMediaFile(context);
         if (!TextUtils.isEmpty(fileName)) {
             return new File(pdfFileName.getPath() + File.separator + fileName + ".pdf");
         } else {
-            return new File(pdfFileName.getPath() + File.separator + FileOperationsHelper.getCapturedImageName().replace(".pdf", ".txt"));
+            return new File(pdfFileName.getPath() + File.separator + FileOperationsHelper.getCapturedImageName().replace(".jpg", ".pdf"));
         }
     }
 
