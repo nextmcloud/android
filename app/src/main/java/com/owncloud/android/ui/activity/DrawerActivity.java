@@ -601,8 +601,6 @@ public abstract class DrawerActivity extends ToolbarActivity
             startActivity(UploadListActivity.class, Intent.FLAG_ACTIVITY_CLEAR_TOP);
         } else if (itemId == R.id.nav_trashbin) {
             startActivity(TrashbinActivity.class, Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            // NMC: track deleted files screen event
-            MoEngageSdkUtils.trackDeletedFilesScreenEvent(this);
         } else if (itemId == R.id.nav_activity) {
             startActivity(ActivitiesActivity.class, Intent.FLAG_ACTIVITY_CLEAR_TOP);
         } else if (itemId == R.id.nav_settings) {
