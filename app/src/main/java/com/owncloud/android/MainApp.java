@@ -1000,7 +1000,6 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
         MoEngageSdkUtils.initMoEngageSDK(this);
         MoEngageSdkUtils.trackAppInstallOrUpdate(this, preferences.getLastSeenVersionCode());
         MoEngageSdkUtils.captureUserAttrsForOldAppVersion(this, preferences.getLastSeenVersionCode(),
-                                                          accountManager.getCurrentAccount() != null,
                                                           accountManager.getUser());
     }
 
