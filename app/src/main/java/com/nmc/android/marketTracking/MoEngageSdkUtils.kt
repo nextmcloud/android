@@ -40,6 +40,7 @@ import com.owncloud.android.utils.MimeTypeUtil
 import com.owncloud.android.utils.PermissionUtil
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.round
 
 object MoEngageSdkUtils {
 
@@ -95,7 +96,9 @@ object MoEngageSdkUtils {
             .configureNotificationMetaData(
                 NotificationConfig(
                     R.drawable.notification_icon,
-                    R.drawable.notification_icon
+                    R.drawable.notification_icon,
+                    R.color.primary,
+                    false
                 )
             )
             .build()
@@ -227,9 +230,10 @@ object MoEngageSdkUtils {
 
         val properties = Properties()
         properties.addAttribute(PROPERTIES__FILE_TYPE, getOfficeFileType(type) { getFileType(file) }.fileType)
-        properties.addAttribute(PROPERTIES__FILE_SIZE, bytesToMB(file.fileLength).toString())
+        properties.addAttribute(PROPERTIES__FILE_SIZE, bytesToMBInDecimal(file.fileLength).toString())
         properties.addAttribute(
             PROPERTIES__CREATION_DATE,
+            // using modification timestamp as this will always have value
             file.modificationTimestamp.getFormattedStringDate(DATE_FORMAT)
         )
 
@@ -244,6 +248,7 @@ object MoEngageSdkUtils {
         properties.addAttribute(PROPERTIES__FOLDER_TYPE, getFolderType(file).folderType)
         properties.addAttribute(
             PROPERTIES__CREATION_DATE,
+            // using modification timestamp because for folder creationTimeStamp is always 0
             file.modificationTimestamp.getFormattedStringDate(DATE_FORMAT)
         )
 
@@ -323,12 +328,13 @@ object MoEngageSdkUtils {
     private fun getCommonProperties(file: OCFile, isScan: Boolean = false): Properties {
         val properties = Properties()
         properties.addAttribute(PROPERTIES__FILE_TYPE, getFileType(file, isScan).fileType)
-        properties.addAttribute(PROPERTIES__FILE_SIZE, bytesToMB(file.fileLength).toString())
+        properties.addAttribute(PROPERTIES__FILE_SIZE, bytesToMBInDecimal(file.fileLength).toString())
         properties.addAttribute(
             PROPERTIES__CREATION_DATE,
+            // using modification timestamp as this will always have value
             file.modificationTimestamp.getFormattedStringDate(DATE_FORMAT)
         )
-        properties.addAttribute(PROPERTIES__UPLOAD_DATE, file.modificationTimestamp.getFormattedStringDate(DATE_FORMAT))
+        properties.addAttribute(PROPERTIES__UPLOAD_DATE, file.uploadTimestamp.getFormattedStringDate(DATE_FORMAT))
         return properties
     }
 
@@ -336,8 +342,9 @@ object MoEngageSdkUtils {
         return floor((bytes / GIGABYTE).toDouble()).toInt()
     }
 
-    private fun bytesToMB(bytes: Long): Int {
-        return floor((bytes / MEGABYTE).toDouble()).toInt()
+     private fun bytesToMBInDecimal(bytes: Long): Double {
+         val mb = bytes.toDouble() / MEGABYTE
+         return round((mb * 10)) / 10 // Round down to 1 decimal place
     }
 
     private fun getFileType(file: OCFile, isScan: Boolean = false): EventFileType {
