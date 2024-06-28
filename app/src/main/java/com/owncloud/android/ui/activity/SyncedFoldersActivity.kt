@@ -33,6 +33,8 @@ import com.nextcloud.client.jobs.upload.FileUploadWorker
 import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.client.preferences.SubFolderRule
 import com.nextcloud.utils.extensions.getParcelableArgument
+import com.nmc.android.marketTracking.AdjustSdkUtils
+import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.owncloud.android.BuildConfig
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
@@ -575,6 +577,9 @@ class SyncedFoldersActivity :
             backgroundJobManager.startImmediateFilesSyncJob(overridePowerSaving = false)
             showBatteryOptimizationInfo()
         }
+
+        //track event when user enable/disable auto upload on/off
+        trackAutoUploadEvent(syncedFolderDisplayItem.isEnabled)
     }
 
     override fun onSyncFolderSettingsClick(section: Int, syncedFolderDisplayItem: SyncedFolderDisplayItem) {
@@ -704,6 +709,14 @@ class SyncedFoldersActivity :
         if (syncedFolder.isEnabled) {
             showBatteryOptimizationInfo()
         }
+
+        //track event when user enable/disable auto upload on/off
+        trackAutoUploadEvent(syncedFolder.isEnabled)
+    }
+
+    private fun trackAutoUploadEvent(enabled: Boolean) {
+        AdjustSdkUtils.trackEvent(if (enabled) AdjustSdkUtils.EVENT_TOKEN_SETTINGS_AUTO_UPLOAD_ON else AdjustSdkUtils.EVENT_TOKEN_SETTINGS_AUTO_UPLOAD_OFF, preferences)
+        TealiumSdkUtils.trackEvent(if (enabled) TealiumSdkUtils.EVENT_SETTINGS_AUTO_UPLOAD_ON else TealiumSdkUtils.EVENT_SETTINGS_AUTO_UPLOAD_OFF, preferences)
     }
 
     private fun saveOrUpdateSyncedFolder(item: SyncedFolderDisplayItem) {
