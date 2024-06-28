@@ -37,21 +37,25 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_share"
-                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/share"
+                android:textColor="@color/primary_button_text_color_state"
                 app:iconPadding="@dimen/standard_half_padding"
-                app:icon="@drawable/shared_via_users" />
+                app:icon="@drawable/shared_via_users"
+                app:iconTint="@color/primary_button_text_color_state" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_link"
-                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:iconPadding="@dimen/standard_half_padding"
                 android:text="@string/link"
-                app:icon="@drawable/shared_via_link" />
+                android:textColor="@color/primary_button_text_color_state"
+                app:icon="@drawable/shared_via_link"
+                app:iconTint="@color/primary_button_text_color_state" />
 
         </LinearLayout>
 
