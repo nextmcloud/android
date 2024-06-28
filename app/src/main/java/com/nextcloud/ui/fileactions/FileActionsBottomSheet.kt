@@ -18,9 +18,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.IdRes
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.core.view.isEmpty
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
@@ -94,8 +94,6 @@ class FileActionsBottomSheet : BottomSheetDialogFragment(), Injectable {
         bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         bottomSheetDialog.behavior.skipCollapsed = true
 
-        viewThemeUtils.platform.colorViewBackground(binding.bottomSheet, ColorRole.SURFACE)
-
         return binding.root
     }
 
@@ -147,7 +145,11 @@ class FileActionsBottomSheet : BottomSheetDialogFragment(), Injectable {
 
     private fun setMultipleFilesThumbnail() {
         context?.let {
-            val drawable = viewThemeUtils.platform.tintDrawable(it, R.drawable.file_multiple, ColorRole.PRIMARY)
+            // NMC Customization
+            val drawable = viewThemeUtils.platform.colorDrawable(
+                ResourcesCompat.getDrawable(it.resources, R.drawable.file_multiple, null)!!,
+                it.resources.getColor(R.color.primary, null)
+            )
             binding.thumbnailLayout.thumbnail.setImageDrawable(drawable)
         }
     }
@@ -278,12 +280,8 @@ class FileActionsBottomSheet : BottomSheetDialogFragment(), Injectable {
                 }
                 text.setText(action.title)
                 if (action.icon != null) {
-                    val drawable =
-                        viewThemeUtils.platform.tintDrawable(
-                            requireContext(),
-                            AppCompatResources.getDrawable(requireContext(), action.icon)!!
-                        )
-                    icon.setImageDrawable(drawable)
+                    //NMC customization
+                    icon.setImageResource(action.icon)
                 }
             }
         return itemBinding.root
