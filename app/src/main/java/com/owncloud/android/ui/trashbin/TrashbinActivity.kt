@@ -130,7 +130,7 @@ class TrashbinActivity :
         recyclerView.setEmptyView(binding.emptyList.emptyListView)
 
         binding.emptyList.emptyListView.visibility = View.GONE
-        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_delete)
+        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_list_empty_trashbin)
         binding.emptyList.emptyListIcon.visibility = View.VISIBLE
         binding.emptyList.emptyListViewHeadline.text = getString(R.string.trashbin_empty_headline)
         binding.emptyList.emptyListViewText.text = getString(R.string.trashbin_empty_message)
@@ -258,7 +258,7 @@ class TrashbinActivity :
             trashbinListAdapter?.setTrashbinFiles(trashbinFiles, true)
             binding.swipeContainingList.isRefreshing = false
             binding.loadingContent.visibility = View.GONE
-            binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_delete)
+            binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_list_empty_trashbin)
             binding.emptyList.emptyListViewHeadline.text = getString(R.string.trashbin_empty_headline)
             binding.emptyList.emptyListViewText.text = getString(R.string.trashbin_empty_message)
             binding.list.visibility = View.VISIBLE
