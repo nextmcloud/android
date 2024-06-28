@@ -50,8 +50,8 @@
 
                 <ImageView
                     android:id="@+id/favorite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:layout_marginStart="@dimen/zero"
                     android:layout_marginEnd="@dimen/standard_eighth_margin"
                     android:contentDescription="@null"
