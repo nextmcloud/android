@@ -98,7 +98,8 @@ class UnifiedSearchItemViewHolder(
                     MimeTypeUtil.getFileTypeIcon(mimetype, entry.title, context, viewThemeUtils)
             }
         }
-        return viewThemeUtils.platform.tintPrimaryDrawable(context, drawable)!!
+        //NMC Customization
+        return drawable!!
     }
 
     private inner class RoundIfNeededListener(private val entry: SearchResultEntry) :
