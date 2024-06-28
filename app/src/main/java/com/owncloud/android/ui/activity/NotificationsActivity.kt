@@ -64,6 +64,7 @@ class NotificationsActivity : DrawerActivity(), NotificationsContract.View {
         }
 
         setupToolbar()
+        showHideDefaultToolbarDivider(true)
         updateActionBarTitleAndHomeButtonByString(getString(R.string.drawer_item_notifications))
         setupDrawer(R.id.nav_notifications)
 
