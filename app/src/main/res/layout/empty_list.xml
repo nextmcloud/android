@@ -23,8 +23,8 @@
 
         <ImageView
             android:id="@+id/empty_list_icon"
-            android:layout_width="@dimen/empty_list_icon_layout_width"
-            android:layout_height="@dimen/empty_list_icon_layout_height"
+            android:layout_width="@dimen/empty_list_icon_size"
+            android:layout_height="@dimen/empty_list_icon_size"
             android:contentDescription="@string/file_list_folder"
             android:src="@drawable/ic_list_empty_folder"
             android:visibility="gone"
