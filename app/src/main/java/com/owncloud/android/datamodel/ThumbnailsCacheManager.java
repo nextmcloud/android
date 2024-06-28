@@ -36,6 +36,7 @@ import android.widget.ImageView;
 
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.network.ConnectivityService;
+import com.nmc.android.ui.utils.Log_NMC;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.lib.common.OwnCloudAccount;
@@ -126,7 +127,7 @@ public final class ThumbnailsCacheManager {
                         }
 
                         String cachePath = cacheDir.getPath() + File.separator + CACHE_FOLDER;
-                        Log_OC.d(TAG, "thumbnail cache dir: " + cachePath);
+                        Log_NMC.d(TAG, "thumbnail cache dir: " + cachePath);
                         File diskCacheDir = new File(cachePath);
 
                         // migrate from external cache to internal cache
@@ -143,7 +144,7 @@ public final class ThumbnailsCacheManager {
                         mThumbnailCache = new DiskLruImageCache(diskCacheDir, DISK_CACHE_SIZE, mCompressFormat,
                                                                 mCompressQuality);
                     } catch (Exception e) {
-                        Log_OC.d(TAG, "Disk cache init failed", e);
+                        Log_NMC.d(TAG, "Disk cache init failed", e);
                         mThumbnailCache = null;
                     }
                 }
@@ -723,7 +724,7 @@ public final class ThumbnailsCacheManager {
                                         file.getLocalId() + "&x=" + pxW + "&y=" + pxH;
                                 }
 
-                                Log_OC.d(TAG, "generate thumbnail: " + file.getFileName() + " URI: " + uri);
+                                Log_NMC.d(TAG, "generate thumbnail: " + file.getFileName() + " URI: " + uri);
                                 getMethod = new GetMethod(uri);
                                 getMethod.setRequestHeader("Cookie",
                                                            "nc_sameSiteCookielax=true;nc_sameSiteCookiestrict=true");
@@ -756,7 +757,7 @@ public final class ThumbnailsCacheManager {
 
                     // Add thumbnail to cache
                     if (thumbnail != null) {
-                        Log_OC.d(TAG, "add thumbnail to cache: " + file.getFileName());
+                        Log_NMC.d(TAG, "add thumbnail to cache: " + file.getFileName());
                         addBitmapToCache(imageKey, thumbnail);
                     }
                 }
@@ -937,13 +938,13 @@ public final class ThumbnailsCacheManager {
                         thumbnail = retriever.getFrameAtTime(-1);
                     } catch (Exception ex) {
                         // can't create a bitmap
-                        Log_OC.w(TAG, "Failed to create bitmap from video " + file.getAbsolutePath());
+                        Log_NMC.w(TAG, "Failed to create bitmap from video " + file.getAbsolutePath());
                     } finally {
                         try {
                             retriever.release();
                         } catch (RuntimeException | IOException ex) {
                             // Ignore failure at this point.
-                            Log_OC.w(TAG, "Failed release MediaMetadataRetriever for " + file.getAbsolutePath());
+                            Log_NMC.w(TAG, "Failed release MediaMetadataRetriever for " + file.getAbsolutePath());
                         }
                     }
 
@@ -1062,7 +1063,7 @@ public final class ThumbnailsCacheManager {
 
                     int px = mResources.getInteger(R.integer.file_avatar_px);
                     String uri = mClient.getBaseUri() + "/index.php/avatar/" + Uri.encode(mUserId) + "/" + px;
-                    Log_OC.d("Avatar", "URI: " + uri);
+                    Log_NMC.d("Avatar", "URI: " + uri);
                     get = new GetMethod(uri);
 
                     // only use eTag if available and corresponding avatar is still there
@@ -1336,7 +1337,7 @@ public final class ThumbnailsCacheManager {
             String uri = client.getBaseUri() + "/index.php/apps/files/api/v1/thumbnail/" +
                 pxW + "/" + pxH + Uri.encode(file.getRemotePath(), "/");
 
-            Log_OC.d(TAG, "generate thumbnail: " + file.getFileName() + " URI: " + uri);
+            Log_NMC.d(TAG, "generate thumbnail: " + file.getFileName() + " URI: " + uri);
             getMethod = new GetMethod(uri);
             getMethod.setRequestHeader("Cookie", "nc_sameSiteCookielax=true;nc_sameSiteCookiestrict=true");
 
@@ -1359,7 +1360,7 @@ public final class ThumbnailsCacheManager {
                     thumbnail = handlePNG(thumbnail, pxW, pxH);
                 }
 
-                Log_OC.d(TAG, "add thumbnail to cache: " + file.getFileName());
+                Log_NMC.d(TAG, "add thumbnail to cache: " + file.getFileName());
                 addBitmapToCache(imageKey, thumbnail);
             }
         } catch (Exception e) {
@@ -1413,7 +1414,7 @@ public final class ThumbnailsCacheManager {
                         String uri = mClient.getBaseUri() + "/index.php/core/preview.png?file="
                             + URLEncoder.encode(file.getRemotePath(), Charsets.UTF_8.name())
                             + "&x=" + (pxW / 2) + "&y=" + (pxH / 2) + "&a=1&mode=cover&forceIcon=0";
-                        Log_OC.d(TAG, "generate resized image: " + file.getFileName() + " URI: " + uri);
+                        Log_NMC.d(TAG, "generate resized image: " + file.getFileName() + " URI: " + uri);
                         getMethod = new GetMethod(uri);
 
                         int status = mClient.executeMethod(getMethod);
@@ -1431,7 +1432,7 @@ public final class ThumbnailsCacheManager {
 
                         // Add thumbnail to cache
                         if (thumbnail != null) {
-                            Log_OC.d(TAG, "add resized image to cache: " + file.getFileName());
+                            Log_NMC.d(TAG, "add resized image to cache: " + file.getFileName());
                             addBitmapToCache(imageKey, thumbnail);
                         }
 
