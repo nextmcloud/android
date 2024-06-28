@@ -22,6 +22,9 @@
     <color name="icon_on_nc_grey">#ffffff</color>
     <color name="foreground_highlight">#EAE0E5</color>
 
+    <!-- Notification Colors -->
+    <color name="notification_icon_color">@color/grey_30</color>
+
     <!-- Multiselect backgrounds -->
     <color name="action_mode_background">@color/appbar</color>
     <color name="selected_item_background">#373535</color>

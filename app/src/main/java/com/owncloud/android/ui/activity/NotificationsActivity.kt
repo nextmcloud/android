@@ -151,14 +151,17 @@ class NotificationsActivity : DrawerActivity(), NotificationsContract.View {
                         Snackbar.LENGTH_INDEFINITE
                     )
                 } else {
-                    val pushValue = arbitraryDataProvider.getValue(accountName, PushUtils.KEY_PUSH)
+                    // NMC Note -> Need to disable this error message for now as we will configure our
+                    // own push notification server later not now
+                    // once we will configure our server we will uncomment the below code.
+                   /* val pushValue = arbitraryDataProvider.getValue(accountName, PushUtils.KEY_PUSH)
                     if (pushValue.isEmpty()) {
                         snackbar = Snackbar.make(
                             binding.emptyList.emptyListView,
                             R.string.push_notifications_temp_error,
                             Snackbar.LENGTH_INDEFINITE
                         )
-                    }
+                    }*/
                 }
             }
 
