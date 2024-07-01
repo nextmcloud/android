@@ -33,6 +33,8 @@ import com.nmc.android.ui.conflict.ConflictsResolveConsentDialog;
 import com.nmc.android.ui.LauncherActivity;
 import com.nmc.android.ui.LoginPrivacySettingsActivity;
 import com.nmc.android.ui.PrivacySettingsActivity;
+import com.nmc.android.scans.SaveScannedDocumentFragment;
+import com.nmc.android.scans.ScanActivity;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.authentication.AuthenticatorActivity;
 import com.owncloud.android.authentication.DeepLinkLoginActivity;
@@ -449,6 +451,12 @@ abstract class ComponentsModule {
 
     @ContributesAndroidInjector
     abstract FileUploadHelper fileUploadHelper();
+
+    @ContributesAndroidInjector
+    abstract ScanActivity scanActivity();
+
+    @ContributesAndroidInjector
+    abstract SaveScannedDocumentFragment saveScannedDocumentFragment();
 
     @ContributesAndroidInjector
     abstract SslUntrustedCertDialog sslUntrustedCertDialog();
