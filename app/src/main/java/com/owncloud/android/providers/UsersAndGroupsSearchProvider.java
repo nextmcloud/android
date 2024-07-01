@@ -301,7 +301,11 @@ public class UsersAndGroupsSearchProvider extends ContentProvider {
                             displayName = userName;
                             subline = (status.getMessage() == null || status.getMessage().isEmpty()) ? null :
                                 status.getMessage();
-                            Uri.Builder builder = Uri.parse("content://" + AUTHORITY + "/icon").buildUpon();
+                            icon = R.drawable.ic_internal_share;
+
+                            // Commented for NMC customization
+                            // uncomment the below code to show icon with initials
+                            /*Uri.Builder builder = Uri.parse("content://" + AUTHORITY + "/icon").buildUpon();
 
                             builder.appendQueryParameter("shareWith", shareWith);
                             builder.appendQueryParameter("displayName", displayName);
@@ -311,7 +315,7 @@ public class UsersAndGroupsSearchProvider extends ContentProvider {
                                 builder.appendQueryParameter("icon", status.getIcon());
                             }
 
-                            icon = builder.build();
+                            icon = builder.build();*/
 
                             dataUri = Uri.withAppendedPath(userBaseUri, shareWith);
                             break;
@@ -340,12 +344,22 @@ public class UsersAndGroupsSearchProvider extends ContentProvider {
                     }
 
                     if (displayName != null && dataUri != null) {
-                        response.newRow()
-                            .add(count++)             // BaseColumns._ID
-                            .add(displayName)         // SearchManager.SUGGEST_COLUMN_TEXT_1
-                            .add(subline)             // SearchManager.SUGGEST_COLUMN_TEXT_2
-                            .add(icon)                // SearchManager.SUGGEST_COLUMN_ICON_1
-                            .add(dataUri);
+                        //if display name is empty set sublime as primary text
+                        if (displayName.equals("")) {
+                            response.newRow()
+                                .add(count++)             // BaseColumns._ID
+                                .add(subline)             // SearchManager.SUGGEST_COLUMN_TEXT_1
+                                .add(displayName)         // SearchManager.SUGGEST_COLUMN_TEXT_2
+                                .add(icon)                // SearchManager.SUGGEST_COLUMN_ICON_1
+                                .add(dataUri);
+                        } else {
+                            response.newRow()
+                                .add(count++)             // BaseColumns._ID
+                                .add(displayName)         // SearchManager.SUGGEST_COLUMN_TEXT_1
+                                .add(subline)             // SearchManager.SUGGEST_COLUMN_TEXT_2
+                                .add(icon)                // SearchManager.SUGGEST_COLUMN_ICON_1
+                                .add(dataUri);
+                        }
                     }
                 }
 
@@ -427,7 +441,8 @@ public class UsersAndGroupsSearchProvider extends ContentProvider {
             } catch (FileNotFoundException e) {
                 Log_OC.e(TAG, "File not found: " + e.getMessage());
             }
-
+        } catch (OutOfMemoryError oome) {
+            Log_OC.e(TAG, "Out of memory");
         } catch (Exception e) {
             Log_OC.e(TAG, "Error opening file: " + e.getMessage());
         }
