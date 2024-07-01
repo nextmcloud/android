@@ -815,6 +815,8 @@ public abstract class FileActivity extends DrawerActivity
                 } else {
                     DisplayUtils.showSnackMessage(this, R.string.file_activity_shared_file_cannot_be_updated);
                 }
+            if (fileListFragment instanceof OCFileListFragment && file != null) {
+                ((OCFileListFragment) fileListFragment).getAdapter().replaceFile(file);
             }
         } else {
             // Detect Failure (403) --> maybe needs password
