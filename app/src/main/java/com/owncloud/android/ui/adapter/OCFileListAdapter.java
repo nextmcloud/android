@@ -65,6 +65,7 @@ import com.owncloud.android.ui.preview.PreviewTextFragment;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.FileSortOrder;
 import com.owncloud.android.utils.FileStorageUtils;
+import com.owncloud.android.utils.MimeType;
 import com.owncloud.android.utils.MimeTypeUtil;
 import com.owncloud.android.utils.theme.CapabilityUtils;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
@@ -759,6 +760,65 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         searchType = null;
 
         notifyDataSetChanged();
+    }
+
+    /**
+     * method will only called if only folders has to show
+     */
+    public void showOnlyFolder(
+        User account,
+        OCFile directory,
+        FileDataStorageManager updatedStorageManager,
+        boolean onlyOnDevice, String limitToMimeType,
+        boolean hideEncryptedFolder
+                              ) {
+        this.onlyOnDevice = onlyOnDevice;
+
+        if (updatedStorageManager != null && !updatedStorageManager.equals(mStorageManager)) {
+            mStorageManager = updatedStorageManager;
+            ocFileListDelegate.setShowShareAvatar(mStorageManager
+                                                      .getCapability(user.getAccountName())
+                                                      .getVersion()
+                                                      .isShareesOnDavSupported());
+            this.user = account;
+        }
+
+        if (mStorageManager != null) {
+
+            List<OCFile> allFiles = mStorageManager.getFolderContent(directory, onlyOnDevice);
+            mFiles.clear();
+
+            for (int i = 0; i < allFiles.size(); i++) {
+                OCFile ocFile = allFiles.get(i);
+
+                //if e2ee folder has to hide then ignore if OCFile is encrypted
+                if (hideEncryptedFolder && ocFile.isEncrypted()) {
+                    continue;
+                }
+
+                if (ocFile.getMimeType().equals(MimeType.DIRECTORY)) {
+                    mFiles.add(allFiles.get(i));
+                }
+            }
+
+            if (!preferences.isShowHiddenFilesEnabled()) {
+                mFiles = filterHiddenFiles(mFiles);
+            }
+            if (!limitToMimeType.isEmpty()) {
+                mFiles = filterByMimeType(mFiles, limitToMimeType);
+            }
+            FileSortOrder sortOrder = preferences.getSortOrderByFolder(directory);
+            mFiles = sortOrder.sortCloudFiles(mFiles);
+            mFilesAll.clear();
+            mFilesAll.addAll(mFiles);
+
+            currentDirectory = directory;
+        } else {
+            mFiles.clear();
+            mFilesAll.clear();
+        }
+
+        new Handler(Looper.getMainLooper()).post(this::notifyDataSetChanged);
     }
 
     public void setData(List<Object> objects,
