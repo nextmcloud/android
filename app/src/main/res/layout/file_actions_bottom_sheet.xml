@@ -13,6 +13,7 @@
     style="@style/Widget.Material3.BottomSheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/bottom_sheet_bg_color"
     android:layout_gravity="bottom"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
@@ -59,6 +60,7 @@
                 android:ellipsize="middle"
                 android:lines="1"
                 android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                android:textColor="@color/bottom_sheet_txt_color"
                 tools:text="Test file name which is very very very very very long.pdf" />
 
         </LinearLayout>
