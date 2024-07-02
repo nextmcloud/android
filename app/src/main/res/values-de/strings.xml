@@ -135,6 +135,8 @@
     <string name="clipboard_no_text_to_copy">Kein Text zum Kopieren in die Zwischenablage empfangen</string>
     <string name="clipboard_text_copied">Link kopiert</string>
     <string name="clipboard_unexpected_error">Unerwarteter Fehler beim Kopieren in die Zwischenablage</string>
+    <string name="app_update_downloaded">Das Update wurde bereits heruntergeladen.</string>
+    <string name="common_restart">Neustart</string>
     <string name="common_back">Zurück</string>
     <string name="common_cancel">Abbrechen</string>
     <string name="common_cancel_sync">Abbrechen</string>
