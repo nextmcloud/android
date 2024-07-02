@@ -179,9 +179,8 @@ class UnifiedSearchFragment :
                         requireContext().getString(R.string.file_list_empty_headline_server_search)
                     binding.emptyList.emptyListViewText.text =
                         requireContext().getString(R.string.file_list_empty_unified_search_no_results)
-                    binding.emptyList.emptyListIcon.setImageDrawable(
-                        viewThemeUtils.platform.tintDrawable(requireContext(), R.drawable.ic_search_grey)
-                    )
+                    //NMC Customization
+                    binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_search_empty)
                 }
             }
         }
