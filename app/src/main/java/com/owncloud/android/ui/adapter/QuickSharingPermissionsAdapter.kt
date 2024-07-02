@@ -51,7 +51,6 @@ class QuickSharingPermissionsAdapter(
         fun bindData(quickPermissionModel: QuickPermissionModel) {
             binding.tvQuickShareName.text = quickPermissionModel.permissionName
             if (quickPermissionModel.isSelected) {
-                viewThemeUtils.platform.colorImageView(binding.tvQuickShareCheckIcon)
                 binding.tvQuickShareCheckIcon.visibility = View.VISIBLE
             } else {
                 binding.tvQuickShareCheckIcon.visibility = View.INVISIBLE
