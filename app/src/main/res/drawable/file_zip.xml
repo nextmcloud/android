@@ -6,11 +6,47 @@
   ~ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="72dp"
-    android:height="72dp"
-    android:viewportWidth="16"
-    android:viewportHeight="16">
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
     <path
-        android:fillColor="#0082c9"
-        android:pathData="m4,3 l-2,2v7.5c0,0.26 0.24,0.5 0.5,0.5h11c0.26,0 0.5,-0.24 0.5,-0.5v-7.5l-2,-2zM5,4h6l1,1h-8z" />
+        android:pathData="M57.38,61.79A2.21,2.21 0,0 1,55.17 64H8.83a2.21,2.21 0,0 1,-2.21 -2.21V4.41a2.21,2.21 0,0 1,2.21 -2.2H55.17a2.21,2.21 0,0 1,2.21 2.2Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="32"
+                android:startY="63.14"
+                android:endX="32"
+                android:endY="2.17"
+                android:type="linear">
+                <item android:offset="0" android:color="#FFDDD6D3"/>
+                <item android:offset="0.39" android:color="#FFE9E4E2"/>
+                <item android:offset="1" android:color="#FFE9E4E2"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:pathData="M32,50.76V48.55h5.52V41.93H32V39.72h5.52V33.1H32V30.9h5.52V26.48h-11v8.83H32v2.21H26.48v6.62H32v2.2H26.48V53H32v2.2H26.48v3.31h11V50.76Z"
+        android:fillColor="#b4b4b4"/>
+    <path
+        android:pathData="M26.48,26.48h11v2.21h-11Z"
+        android:fillColor="#66676a"/>
+    <path
+        android:pathData="M32,0a5.47,5.47 0,0 0,-5.52 5.52v21h11v-21A5.47,5.47 0,0 0,32 0ZM34.21,23.17L29.79,23.17L29.79,17.66h4.42Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="32"
+                android:startY="26.49"
+                android:endX="32"
+                android:endY="0"
+                android:type="linear">
+                <item android:offset="0" android:color="#FF808083"/>
+                <item android:offset="1" android:color="#FFA6A6AE"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:pathData="M29.79,15.45h4.42v2.21H29.79Z"
+        android:fillColor="#66676a"/>
 </vector>
