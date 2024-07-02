@@ -115,7 +115,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Injectab
     protected void onRestart() {
         Log_OC.v(TAG, "onRestart() start");
         super.onRestart();
-        mixinRegistry.onRestart();
+        //Fix of NMC-2303 and NMC-2441
+        if (enableAccountHandling) {
+            mixinRegistry.onRestart();
+        }
     }
 
     private void onThemeSettingsModeChanged() {
