@@ -29,6 +29,10 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorSecondary">@color/secondary_text_color</item>
         <item name="searchViewStyle">@style/ownCloud.SearchView</item>
+        <!-- SnackBar Styling -->
+        <item name="snackbarStyle">@style/SnackBarBackgroundStyle</item>
+        <item name="snackbarButtonStyle">@style/SnackBarActionButtonStyle</item>
+        <item name="snackbarTextViewStyle">@style/SnackBarTextViewStyle</item>
         <item name="android:actionModeBackground">@color/action_mode_background</item>
         <item name="android:datePickerDialogTheme">@style/FallbackDatePickerDialogTheme</item>
         <item name="android:navigationBarColor">@color/bg_default</item>
@@ -58,6 +62,10 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorSecondary">@color/secondary_text_color</item>
         <item name="dialogTheme">@style/FallbackTheming.Dialog</item>
+        <!-- SnackBar Styling -->
+        <item name="snackbarStyle">@style/SnackBarBackgroundStyle</item>
+        <item name="snackbarButtonStyle">@style/SnackBarActionButtonStyle</item>
+        <item name="snackbarTextViewStyle">@style/SnackBarTextViewStyle</item>
         <item name="android:actionModeBackground">@color/action_mode_background</item>
         <item name="android:datePickerDialogTheme">@style/FallbackDatePickerDialogTheme</item>
         <item name="android:navigationBarColor">@color/bg_default</item>
@@ -327,6 +335,10 @@
     <style name="Theme.ownCloud.Dialog.NoTitle" parent="@style/Theme.ownCloud.Dialog">
         <item name="windowNoTitle">true</item>
         <item name="colorAccent">@color/color_accent</item>
+        <!-- SnackBar Styling -->
+        <item name="snackbarStyle">@style/SnackBarBackgroundStyle</item>
+        <item name="snackbarButtonStyle">@style/SnackBarActionButtonStyle</item>
+        <item name="snackbarTextViewStyle">@style/SnackBarTextViewStyle</item>
     </style>
 
     <style name="NavigationView_ItemTextAppearance">
@@ -490,6 +502,19 @@
     <style name="Nextcloud.Material.TextButton" parent="Widget.Material3.Button.TextButton.Icon">
         <item name="android:typeface">sans</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="SnackBarBackgroundStyle" parent="Widget.Material3.Snackbar">
+        <item name="android:backgroundTint">@color/snackbar_bg_color</item>
+        <item name="backgroundTint">@color/snackbar_bg_color</item>
+    </style>
+
+    <style name="SnackBarActionButtonStyle" parent="Widget.Material3.Button.TextButton.Snackbar">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="SnackBarTextViewStyle" parent="Widget.Material3.Snackbar.TextView">
+        <item name="android:textColor">@color/snackbar_txt_color</item>
     </style>
 
     <style name="Widget.Nextcloud.AppWidget.Container" parent="android:Widget">
