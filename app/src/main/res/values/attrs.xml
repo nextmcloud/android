@@ -29,14 +29,19 @@
     </string-array>
 
     <string-array name="folder_share_permission_dialog_values" translatable="false">
-        <item>@string/link_share_view_only</item>
-        <item>@string/link_share_allow_upload_and_editing</item>
-        <item>@string/link_share_file_drop</item>
+        <item>@string/share_permission_read_only</item>
+        <item>@string/share_permission_can_edit</item>
+        <item>@string/share_permission_file_drop</item>
+    </string-array>
+
+    <string-array name="folder_internal_share_permission_dialog_values" translatable="false">
+        <item>@string/share_permission_read_only</item>
+        <item>@string/share_permission_can_edit</item>
     </string-array>
 
     <string-array name="file_share_permission_dialog_values" translatable="false">
-        <item>@string/link_share_view_only</item>
-        <item>@string/link_share_editing</item>
+        <item>@string/share_permission_read_only</item>
+        <item>@string/share_permission_can_edit</item>
     </string-array>
     <string-array name="sub_folder_rule_values" translatable="false">
         <item>@string/sub_folder_rule_month</item>
