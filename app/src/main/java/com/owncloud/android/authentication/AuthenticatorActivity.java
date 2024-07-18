@@ -54,6 +54,7 @@ import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.device.DeviceInfo;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.onboarding.FirstRunActivity;
+import com.nmc.android.ui.LoginPrivacySettingsActivity;
 import com.nextcloud.client.onboarding.OnboardingService;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
@@ -89,7 +90,6 @@ import com.owncloud.android.providers.DocumentsStorageProvider;
 import com.owncloud.android.services.OperationsService;
 import com.owncloud.android.services.OperationsService.OperationsServiceBinder;
 import com.owncloud.android.ui.NextcloudWebViewClient;
-import com.owncloud.android.ui.activity.FileDisplayActivity;
 import com.owncloud.android.ui.dialog.IndeterminateProgressDialog;
 import com.owncloud.android.ui.dialog.SslUntrustedCertDialog;
 import com.owncloud.android.ui.dialog.SslUntrustedCertDialog.OnSslUntrustedCertListener;
@@ -1193,10 +1193,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         if (onlyAdd) {
             finish();
         } else {
-            Intent i = new Intent(this, FileDisplayActivity.class);
-            i.setAction(FileDisplayActivity.RESTART);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(i);
+            //login privacy settings to accept/reject by the user after login
+            LoginPrivacySettingsActivity.openPrivacySettingsActivity(this);
+            finish();
         }
     }
 
