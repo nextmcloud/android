@@ -76,4 +76,93 @@
     <color name="appbar">@android:color/white</color>
     <color name="fontAppbar">#666666</color>
     <color name="fontSecondaryAppbar">#A5A5A5</color>
+
+    <!--  NMC Colors  -->
+    <color name="icon_color">#191919</color>
+    <color name="sort_text_color">@color/primary</color>
+    <color name="list_icon_color">#191919</color>
+    <color name="warning_icon_color">#191919</color>
+    <color name="divider_color">@color/grey_30</color>
+    <color name="spinner_bg_color">@android:color/white</color>
+    <color name="refresh_layout_bg_color">#FFFFFF</color>
+    <color name="primary_button_disabled_color">@color/grey_0</color>
+    <color name="toolbar_divider_color">#CCCCCC</color>
+    <color name="et_highlight_color">#77c4ff</color>
+    <color name="white_trans_70">#B3FFFFFF</color>
+    <color name="progress_bar_background">@color/grey_10</color>
+
+    <!-- Grey Colors -->
+    <color name="dark_grey">#101010</color>
+    <color name="grey_0">#F2F2F2</color>
+    <color name="grey_10">#E5E5E5</color>
+    <color name="grey_30">#B2B2B2</color>
+    <color name="grey_60">#666666</color>
+    <color name="grey_70">#4C4C4C</color>
+    <color name="grey_80">#333333</color>
+
+    <!-- Snackbar Colors  -->
+    <color name="snackbar_bg_color">@color/design_snackbar_background_color</color>
+    <color name="snackbar_txt_color">@color/white</color>
+
+    <!-- Alert Dialog Colors -->
+    <color name="alert_bg_color">#FFFFFF</color>
+    <color name="alert_txt_color">#191919</color>
+
+    <!--  NavigationView colors  -->
+    <color name="nav_selected_bg_color">@color/grey_0</color>
+    <color name="nav_txt_unselected_color">#191919</color>
+    <color name="nav_txt_selected_color">@color/primary</color>
+    <color name="nav_icon_unselected_color">#191919</color>
+    <color name="nav_icon_selected_color">@color/primary</color>
+    <color name="nav_divider_color">@color/grey_30</color>
+    <color name="nav_bg_color">@color/white</color>
+    <color name="drawer_quota_txt_color">#191919</color>
+
+    <!-- Bottom Sheet Colors -->
+    <color name="bottom_sheet_bg_color">#FFFFFF</color>
+    <color name="bottom_sheet_icon_color">#191919</color>
+    <color name="bottom_sheet_txt_color">#191919</color>
+
+    <!-- Popup Menu Colors -->
+    <color name="popup_menu_bg">#FFFFFF</color>
+    <color name="popup_menu_txt_color">#191919</color>
+    <color name="overflow_bg_color">#FFFFFF</color>
+
+    <!-- Switch Compat Colors -->
+    <color name="switch_thumb_checked_enabled">@color/primary</color>
+    <color name="switch_track_checked_enabled">#F399C7</color>
+    <color name="switch_thumb_unchecked_enabled">#FFFFFF</color>
+    <color name="switch_track_unchecked_enabled">@color/grey_30</color>
+    <color name="switch_thumb_disabled">@color/grey_10</color>
+    <color name="switch_track_disabled">@color/grey_0</color>
+
+    <!-- Checkbox Colors -->
+    <color name="checkbox_checked_enabled">@color/primary</color>
+    <color name="checkbox_unchecked_enabled">@color/grey_30</color>
+    <color name="checkbox_checked_disabled">@color/grey_30</color>
+    <color name="checkbox_unchecked_disabled">#CCCCCC</color>
+
+    <!-- Share Colors -->
+    <color name="share_title_txt_color">#191919</color>
+    <color name="share_subtitle_txt_color">@color/grey_30</color>
+    <color name="share_info_txt_color">#191919</color>
+    <color name="share_search_border_color">#191919</color>
+    <color name="share_btn_txt_color">#191919</color>
+    <color name="share_list_item_txt_color">#191919</color>
+    <color name="share_disabled_txt_color">@color/grey_30</color>
+    <color name="share_txt_color">#191919</color>
+    <color name="share_et_divider">#000000</color>
+    <color name="share_warning_txt_color">#191919</color>
+    <color name="sharing_warning_bg_color">#F6E5EB</color>
+    <color name="sharing_warning_border_color">#C16F81</color>
+    <color name="share_color">#0D39DF</color>
+    <color name="shared_with_me_color">#0099ff</color>
+
+    <!--  Scan Colors  -->
+    <color name="scan_doc_bg_color">@color/grey_0</color>
+    <color name="scan_text_color">#191919</color>
+    <color name="scan_edit_bottom_color">@color/grey_0</color>
+    <color name="scan_count_bg_color">@color/grey_30</color>
+    <color name="neptune">#77b6bb</color>
+    <color name="neptune_50">#5077b6bb</color>
 </resources>
