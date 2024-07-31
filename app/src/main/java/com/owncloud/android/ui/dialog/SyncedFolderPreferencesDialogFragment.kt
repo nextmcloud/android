@@ -384,6 +384,9 @@ class SyncedFolderPreferencesDialogFragment : DialogFragment(), Injectable {
         binding.remoteFolderContainer.setOnClickListener {
             val action = Intent(activity, FolderPickerActivity::class.java).apply {
                 putExtra(FolderPickerActivity.EXTRA_ACTION, FolderPickerActivity.CHOOSE_LOCATION)
+                // NMC Customization
+                putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true)
+                putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true)
             }
             requireActivity().startActivityForResult(action, REQUEST_CODE__SELECT_REMOTE_FOLDER)
         }
