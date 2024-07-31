@@ -36,6 +36,9 @@
         <item name="android:navigationBarColor">@color/bg_default</item>
         <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
         <item name="dialogCornerRadius">@dimen/dialogBorderRadius</item>
+        <!-- styling autocomplete text view mainly for search view cursor color-->
+        <item name="autoCompleteTextViewStyle">@style/AutoCompleteCursorColorStyle</item>
+        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteCursorColorStyle</item>
     </style>
 
     <style name="Theme.ownCloud" parent="BaseTheme.ownCloud" />
@@ -47,6 +50,9 @@
         <item name="android:textColor">@color/text_color</item>
         <item name="android:textColorSecondary">@color/secondary_text_color</item>
         <item name="android:windowBackground">@color/bg_default</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorSecondary">@color/secondary_text_color</item>
         <item name="dialogTheme">@style/FallbackTheming.Dialog</item>
         <!-- SnackBar Styling -->
@@ -58,6 +64,9 @@
         <item name="android:navigationBarColor">@color/bg_default</item>
         <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
         <item name="dialogCornerRadius">@dimen/dialogBorderRadius</item>
+        <!-- styling autocomplete text view mainly for search view cursor color-->
+        <item name="autoCompleteTextViewStyle">@style/AutoCompleteCursorColorStyle</item>
+        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteCursorColorStyle</item>
     </style>
 
     <style name="FallbackThemingTheme" parent="FallbackThemingThemeBase" />
@@ -464,6 +473,10 @@
 
     <style name="App.ActionModeTitleText" parent="TextAppearance.Material3.ActionBar.Title">
         <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="AutoCompleteCursorColorStyle" parent="Widget.AppCompat.AutoCompleteTextView">
+        <item name="android:textCursorDrawable">@drawable/cursor_drawable</item>
     </style>
 
     <!-- Splash screen style attributes: https://developer.android.com/develop/ui/views/launch/splash-screen#set-theme -->
