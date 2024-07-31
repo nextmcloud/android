@@ -30,5 +30,8 @@
         <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
         <item name="homeAsUpIndicator">@drawable/ic_arrow_back</item>
         <item name="actionModeStyle">@style/App.ActionMode</item>
+        <!-- styling autocomplete text view mainly for search view cursor color-->
+        <item name="autoCompleteTextViewStyle">@style/AutoCompleteCursorColorStyle</item>
+        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteCursorColorStyle</item>
     </style>
 </resources>

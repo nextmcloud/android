@@ -10,11 +10,11 @@
   ~ SPDX-License-Identifier: GPL-2.0-only AND AGPL-3.0-or-later
 -->
 <resources>
-    <color name="list_item_lastmod_and_filesize_text">@color/secondary_text_color</color>
+    <color name="list_item_lastmod_and_filesize_text">@color/grey_600</color>
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
     <color name="white_helper_text">#B3FFFFFF</color>
-    <color name="text_color">#333333</color>
+    <color name="text_color">#191919</color>
     <color name="light_grey">#F5F5F5</color>
     <color name="grid_file_features_icon_color">#303034</color>
     <color name="grid_file_features_background_color">#E9E8EB</color>
@@ -26,7 +26,7 @@
     <color name="filelist_icon_background">#DDDDDD</color>
     <color name="dark_background_text_color">#EEEEEE</color>
     <color name="transparent">#00000000</color>
-    <color name="secondary_text_color">#666666</color>
+    <color name="secondary_text_color">@color/grey_30</color>
     <color name="highlight_textColor_Warning">#e53935</color>
 
     <!-- Colors -->
@@ -67,16 +67,16 @@
     <color name="color_dark_transparent">#40162233</color>
 
     <!-- Multiselect backgrounds -->
-    <color name="action_mode_background">@color/fontAppbar</color>
-    <color name="selected_item_background">#ECECEC</color>
+    <color name="action_mode_background">@color/white</color>
+    <color name="selected_item_background">@color/grey_0</color>
 
     <color name="drawer_menu_icon">#757575</color>
     <color name="bg_fallback_highlight">#616161</color>
-    <color name="drawer_active_item_background">#80000000</color>
+    <color name="drawer_active_item_background">#919191</color>
 
     <!-- App bar -->
     <color name="appbar">@android:color/white</color>
-    <color name="fontAppbar">#666666</color>
+    <color name="fontAppbar">#191919</color>
     <color name="fontSecondaryAppbar">#A5A5A5</color>
 
     <!--  NMC Colors  -->
