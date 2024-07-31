@@ -8,12 +8,15 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/creator_container"
     android:layout_width="match_parent"
     android:layout_height="@dimen/bottom_sheet_item_height"
     android:background="?android:attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
+    android:paddingTop="@dimen/standard_half_padding"
+    android:paddingBottom="@dimen/standard_half_padding"
     android:paddingLeft="@dimen/standard_padding"
     android:paddingRight="@dimen/standard_padding"
     tools:ignore="UseCompoundDrawables">
@@ -22,8 +25,7 @@
         android:id="@+id/creator_thumbnail"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginTop="@dimen/standard_margin"
-        android:layout_marginBottom="@dimen/standard_margin"
+        app:tint="@color/bottom_sheet_icon_color"
         android:contentDescription="@null"
         android:src="@drawable/file_ppt" />
 
@@ -32,8 +34,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
+        android:layout_marginStart="@dimen/standard_margin"
         android:text="@string/create_new_presentation"
-        android:textColor="@color/text_color"
+        android:textColor="@color/bottom_sheet_txt_color"
         android:textSize="@dimen/bottom_sheet_text_size" />
 </LinearLayout>
