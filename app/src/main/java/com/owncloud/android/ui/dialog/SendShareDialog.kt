@@ -23,7 +23,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.utils.IntentUtil.createSendIntent
 import com.nextcloud.utils.extensions.getParcelableArgument
@@ -74,7 +73,6 @@ class SendShareDialog : BottomSheetDialogFragment(R.layout.send_share_fragment),
         binding.btnShare.setOnClickListener { shareFile(file) }
         binding.btnLink.setOnClickListener { shareByLink() }
 
-        applyTintColor()
         setupBottomSheetBehaviour()
         checkButtonVisibilities()
         setupSendButtonRecyclerView()
@@ -96,12 +94,6 @@ class SendShareDialog : BottomSheetDialogFragment(R.layout.send_share_fragment),
         val bottomSheetDialog = dialog as BottomSheetDialog
         bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         bottomSheetDialog.behavior.skipCollapsed = true
-    }
-
-    private fun applyTintColor() {
-        viewThemeUtils?.material?.colorMaterialButtonPrimaryFilled(binding.btnLink)
-        viewThemeUtils?.material?.colorMaterialButtonPrimaryFilled(binding.btnShare)
-        viewThemeUtils?.platform?.colorViewBackground(binding.bottomSheet, ColorRole.SURFACE)
     }
 
     @Suppress("MagicNumber")
@@ -127,6 +119,9 @@ class SendShareDialog : BottomSheetDialogFragment(R.layout.send_share_fragment),
     }
 
     private fun shareByLink() {
+        // NMC Customization
+        isPeopleShareClicked = false
+
         val fileOperationsHelper = (requireActivity() as FileActivity).fileOperationsHelper
 
         if (file?.isSharedViaLink == true) {
@@ -210,6 +205,9 @@ class SendShareDialog : BottomSheetDialogFragment(R.layout.send_share_fragment),
     }
 
     private fun shareFile(file: OCFile?) {
+        // NMC Customization
+        isPeopleShareClicked = true
+
         dismiss()
 
         if (activity is FileDisplayActivity) {
@@ -235,6 +233,11 @@ class SendShareDialog : BottomSheetDialogFragment(R.layout.send_share_fragment),
         private val TAG = SendShareDialog::class.java.simpleName
         const val PACKAGE_NAME = "PACKAGE_NAME"
         const val ACTIVITY_NAME = "ACTIVITY_NAME"
+
+        // TODO: 06/21/23 remove this condition after Comments section included
+        // flag to avoid crash during creating new link share for a file for which link share already exist
+        @JvmField
+        var isPeopleShareClicked = false
 
         @JvmStatic
         fun newInstance(file: OCFile?, hideNcSharingOptions: Boolean, capability: OCCapability): SendShareDialog {
