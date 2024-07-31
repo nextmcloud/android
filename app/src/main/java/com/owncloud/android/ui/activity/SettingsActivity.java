@@ -432,10 +432,14 @@ public class SettingsActivity extends PreferenceActivity
         Preference preference = findPreference("setup_e2e");
 
         if (preference != null) {
+
+            if (!CapabilityUtils.getCapability(this).getEndToEndEncryption().isTrue()) {
+                preferenceCategoryMore.removePreference(preference);
+                return;
+            }
+
             if (FileOperationsHelper.isEndToEndEncryptionSetup(this, user) ||
-                CapabilityUtils.getCapability(this).getEndToEndEncryptionKeysExist().isTrue() ||
-                CapabilityUtils.getCapability(this).getEndToEndEncryptionKeysExist().isUnknown()
-            ) {
+                CapabilityUtils.getCapability(this).getEndToEndEncryptionKeysExist().isTrue()) {
                 preferenceCategoryMore.removePreference(preference);
             } else {
                 preference.setOnPreferenceClickListener(p -> {
@@ -508,19 +512,16 @@ public class SettingsActivity extends PreferenceActivity
                 preferenceCategoryMore.removePreference(preference);
             } else {
                 preference.setOnPreferenceClickListener(p -> {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.FallbackTheming_Dialog);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     AlertDialog alertDialog = builder.setTitle(R.string.prefs_e2e_mnemonic)
                         .setMessage(getString(R.string.remove_e2e_message))
                         .setCancelable(true)
                         .setNegativeButton(R.string.common_cancel, ((dialog, i) -> dialog.dismiss()))
                         .setPositiveButton(R.string.confirm_removal, (dialog, which) -> {
                             EncryptionUtils.removeE2E(arbitraryDataProvider, user);
-                            preferenceCategoryMore.removePreference(preference);
 
-                            Preference pMnemonic = findPreference("mnemonic");
-                            if (pMnemonic != null) {
-                                preferenceCategoryMore.removePreference(pMnemonic);
-                            }
+                            //restart to show the preferences correctly
+                            restartSettingsActivity();
 
                             dialog.dismiss();
                         })
@@ -976,11 +977,16 @@ public class SettingsActivity extends PreferenceActivity
         } else if (requestCode == ACTION_SHOW_MNEMONIC && resultCode == RESULT_OK) {
             handleMnemonicRequest(data);
         } else if (requestCode == ACTION_E2E && data != null && data.getBooleanExtra(SetupEncryptionDialogFragment.SUCCESS, false)) {
-            Intent i = new Intent(this, SettingsActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(i);
+            //restart to show the preferences correctly
+            restartSettingsActivity();
         }
+    }
+
+    private void restartSettingsActivity() {
+        Intent i = new Intent(this, SettingsActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(i);
     }
 
     @VisibleForTesting
@@ -995,8 +1001,8 @@ public class SettingsActivity extends PreferenceActivity
                 ArbitraryDataProvider arbitraryDataProvider = new ArbitraryDataProviderImpl(this);
                 String mnemonic = arbitraryDataProvider.getValue(user.getAccountName(), EncryptionUtils.MNEMONIC).trim();
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.FallbackTheming_Dialog);
-                AlertDialog alertDialog = builder.setTitle(R.string.prefs_e2e_mnemonic)
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                AlertDialog alertDialog = builder.setTitle(R.string.dialog_e2e_mnemonic_title)
                     .setMessage(mnemonic)
                     .setNegativeButton(R.string.common_cancel, (dialog, i) -> dialog.dismiss())
                     .setNeutralButton(R.string.common_copy, (dialog, i) ->
@@ -1005,7 +1011,6 @@ public class SettingsActivity extends PreferenceActivity
                     .create();
 
                 alertDialog.show();
-                viewThemeUtils.platform.colorTextButtons(alertDialog.getButton(AlertDialog.BUTTON_POSITIVE));
             }
         }
     }

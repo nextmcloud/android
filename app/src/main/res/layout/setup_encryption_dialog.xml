@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:autofillHints="password"
             android:ems="10"
-            android:inputType="textPassword"
+            android:inputType="text"
             android:textCursorDrawable="@null" />
 
     </com.google.android.material.textfield.TextInputLayout>
