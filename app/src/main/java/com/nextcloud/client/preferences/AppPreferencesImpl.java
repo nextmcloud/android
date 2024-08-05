@@ -83,6 +83,8 @@ public final class AppPreferencesImpl implements AppPreferences {
     private static final String PREF__UPLOAD_SCANS_LAST_PATH = "upload_scans_last_path";
     private static final String PREF__FOLDER_LAYOUT = "folder_layout";
 
+    private static final String PREF__ON_BOARDING_COMPLETE = "on_boarding_complete";
+
     private static final String PREF__LOCK_TIMESTAMP = "lock_timestamp";
     private static final String PREF__SHOW_MEDIA_SCAN_NOTIFICATIONS = "show_media_scan_notifications";
     private static final String PREF__LOCK = SettingsActivity.PREFERENCE_LOCK;
@@ -750,6 +752,16 @@ public final class AppPreferencesImpl implements AppPreferences {
     @Override
     public void setGlobalUploadPaused(boolean globalPausedState) {
         preferences.edit().putBoolean(PREF__GLOBAL_PAUSE_STATE, globalPausedState).apply();
+    }
+
+    @Override
+    public void setOnBoardingComplete(boolean isCompleted) {
+        preferences.edit().putBoolean(PREF__ON_BOARDING_COMPLETE, isCompleted).apply();
+    }
+
+    @Override
+    public boolean getOnBoardingComplete() {
+        return preferences.getBoolean(PREF__ON_BOARDING_COMPLETE, false);
     }
 
     @Override
