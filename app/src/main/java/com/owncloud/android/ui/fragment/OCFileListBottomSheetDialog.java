@@ -75,12 +75,8 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
         binding = FileListActionsBottomSheetFragmentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewThemeUtils.platform.colorImageView(binding.menuIconUploadFiles);
-        viewThemeUtils.platform.colorImageView(binding.menuIconUploadFromApp);
-        viewThemeUtils.platform.colorImageView(binding.menuIconDirectCameraUpload);
-        viewThemeUtils.platform.colorImageView(binding.menuIconScanDocUpload);
-        viewThemeUtils.platform.colorImageView(binding.menuIconMkdir);
-        viewThemeUtils.platform.colorImageView(binding.menuIconAddFolderInfo);
+        // NMC Customization
+        reorderUploadFromOtherAppsView();
 
         binding.addToCloud.setText(getContext().getResources().getString(R.string.add_to_cloud,
                                                                          themeUtils.getDefaultDisplayNameForRootFolder(getContext())));
@@ -135,8 +131,9 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
             binding.menuDirectCameraUpload.setVisibility(View.GONE);
         }
 
+        // not required for NMC
         // create rich workspace
-        if (editorUtils.isEditorAvailable(user,
+       /* if (editorUtils.isEditorAvailable(user,
                                           MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN) &&
             file != null && !file.isEncrypted()) {
             // richWorkspace
@@ -153,9 +150,17 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
         } else {
             binding.menuCreateRichWorkspace.setVisibility(View.GONE);
             binding.menuCreateRichWorkspaceDivider.setVisibility(View.GONE);
-        }
+        } */
 
         setupClickListener();
+    }
+
+    private void reorderUploadFromOtherAppsView() {
+        // move the upload from other app option
+        // below Create new folder or Create new e2ee folder
+        // NMC-3095 requirement
+        binding.actionLinear.removeView(binding.menuUploadFromApp);
+        binding.actionLinear.addView(binding.menuUploadFromApp, binding.actionLinear.indexOfChild(binding.menuEncryptedMkdir) + 1);
     }
 
     private void setupClickListener() {
