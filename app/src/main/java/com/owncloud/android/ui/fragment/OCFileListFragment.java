@@ -786,7 +786,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
             MenuInflater inflater = getActivity().getMenuInflater();
             inflater.inflate(R.menu.custom_menu_placeholder, menu);
             final MenuItem item = menu.findItem(R.id.custom_menu_placeholder_item);
-            item.setIcon(viewThemeUtils.platform.colorDrawable(item.getIcon(), ContextCompat.getColor(requireContext(), R.color.white)));
+            //NMC customization
+            item.setIcon(viewThemeUtils.platform.colorDrawable(item.getIcon(), ContextCompat.getColor(requireContext(), R.color.fontAppbar)));
             mode.invalidate();
 
             //set actionMode color

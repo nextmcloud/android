@@ -402,9 +402,9 @@
 
     <style name="ThemeOverlay.AppTheme.PopupMenu" parent="ThemeOverlay.Material3.Dark">
         <!-- popup menu background - NEVER "android:background" !!! in themes -->
-        <item name="android:colorBackground">@color/bg_default</item>
+        <item name="android:colorBackground">@color/popup_menu_bg</item>
         <!-- popup menu item text color -->
-        <item name="android:textColorPrimary">@color/text_color</item>
+        <item name="android:textColorPrimary">@color/popup_menu_txt_color</item>
     </style>
 
     <style name="Nextcloud.Widget.PopupMenu" parent="@style/Widget.Material3.PopupMenu">
@@ -417,7 +417,7 @@
     </style>
 
     <style name="OverflowMenuStyle" parent="Widget.Material3.PopupMenu.Overflow">
-        <item name="android:popupBackground">@color/bg_default</item>
+        <item name="android:popupBackground">@color/overflow_bg_color</item>
     </style>
 
     <style name="MaterialListItemSingleLine">
@@ -462,6 +462,20 @@
     <style name="FidoDialog" parent="HwSecurity.Dialog">
         <item name="hwSecurityButtonColor">@color/color_accent</item>
         <item name="hwSecuritySurfaceColor">@color/primary</item>
+    </style>
+
+    <!-- NMC Customization -->
+    <style name="CustomPopupTheme">
+        <!-- if using android.widget.PopupMenu -->
+        <item name="android:popupMenuStyle">@style/PopupMenu</item>
+        <!-- if using android.support.v7.widget.PopupMenu -->
+        <item name="popupMenuStyle">@style/PopupMenu</item>
+    </style>
+
+    <style name="PopupMenu" parent="ThemeOverlay.AppTheme.PopupMenu">
+        <item name="android:popupBackground">@color/popup_menu_bg</item>
+        <item name="android:textColor">@color/popup_menu_txt_color</item>
+        <item name="android:popupElevation">20dp</item>
     </style>
 
     <style name="Nextcloud.Material.TextButton" parent="Widget.Material3.Button.TextButton.Icon">

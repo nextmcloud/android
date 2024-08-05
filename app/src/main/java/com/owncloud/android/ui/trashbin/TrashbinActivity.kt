@@ -18,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.VisibleForTesting
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -210,7 +211,9 @@ class TrashbinActivity :
     }
 
     override fun onOverflowIconClicked(file: TrashbinFile, view: View) {
-        val popup = PopupMenu(this, view)
+        // NMC Customization
+        val ctw = ContextThemeWrapper(this, R.style.CustomPopupTheme)
+        val popup = PopupMenu(ctw, view)
         popup.inflate(R.menu.item_trashbin)
         popup.setOnMenuItemClickListener {
             trashbinPresenter?.removeTrashbinFile(file)
