@@ -49,7 +49,7 @@
     <integer name="contacts_backup_expire">-1</integer>
     <string name="calendar_backup_folder">/.Calendar-Backup</string>
     <!-- flag to enable/disable contact backup -->
-    <bool name="show_calendar_backup">true</bool>
+    <bool name="show_calendar_backup">false</bool>
 
     <!-- What's new -->
     <bool name="show_whats_new">true</bool>
