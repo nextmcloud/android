@@ -65,22 +65,22 @@ class ShareViewHolder extends RecyclerView.ViewHolder {
         switch (share.getShareType()) {
             case GROUP:
                 name = context.getString(R.string.share_group_clarification, name);
-                viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
+                //viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
                 break;
             case ROOM:
                 name = context.getString(R.string.share_room_clarification, name);
-                viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
+                //viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
                 break;
             case CIRCLE:
-                viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
+                //viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
                 break;
             case FEDERATED:
                 name = context.getString(R.string.share_remote_clarification, name);
-                setImage(binding.icon, share.getSharedWithDisplayName(), R.drawable.ic_user);
+                //setImage(binding.icon, share.getSharedWithDisplayName(), R.drawable.ic_user);
                 break;
             case USER:
                 binding.icon.setTag(share.getShareWith());
-                float avatarRadius = context.getResources().getDimension(R.dimen.list_item_avatar_icon_radius);
+               /* float avatarRadius = context.getResources().getDimension(R.dimen.list_item_avatar_icon_radius);
                 DisplayUtils.setAvatar(user,
                                        share.getShareWith(),
                                        share.getSharedWithDisplayName(),
@@ -88,15 +88,17 @@ class ShareViewHolder extends RecyclerView.ViewHolder {
                                        avatarRadius,
                                        context.getResources(),
                                        binding.icon,
-                                       context);
+                                       context);*/
 
-                binding.icon.setOnClickListener(v -> listener.showProfileBottomSheet(user, share.getShareWith()));
+                // Not required for NMC as per NMC-3097
+               // binding.icon.setOnClickListener(v -> listener.showProfileBottomSheet(user, share.getShareWith()));
             default:
-                setImage(binding.icon, name, R.drawable.ic_user);
+                //setImage(binding.icon, name, R.drawable.ic_user);
                 break;
         }
 
         binding.name.setText(name);
+        binding.icon.setImageResource(R.drawable.ic_internal_share);
 
         if (share.getShareWith().equalsIgnoreCase(userId) || share.getUserId().equalsIgnoreCase(userId)) {
             binding.overflowMenu.setVisibility(View.VISIBLE);
