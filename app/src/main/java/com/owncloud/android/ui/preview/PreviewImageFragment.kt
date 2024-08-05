@@ -352,10 +352,11 @@ class PreviewImageFragment : FileFragment(), Injectable {
                     val item = menu.findItem(R.id.custom_menu_placeholder_item)
 
                     item.icon?.let {
+                        // NMC customization
                         item.setIcon(
                             viewThemeUtils.platform.colorDrawable(
                                 it,
-                                ContextCompat.getColor(requireContext(), R.color.white)
+                                ContextCompat.getColor(requireContext(), R.color.fontAppbar)
                             )
                         )
                     }
