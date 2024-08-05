@@ -93,8 +93,6 @@ public class ShareActivity extends FileActivity {
         // Name
         binding.shareFileName.setText(getResources().getString(R.string.share_file, file.getFileName()));
 
-        viewThemeUtils.platform.colorViewBackground(binding.shareHeaderDivider);
-
         // Size
         binding.shareFileSize.setText(DisplayUtils.bytesToHumanReadable(file.getFileLength()));
 

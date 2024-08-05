@@ -35,7 +35,7 @@
         <item name="android:windowLightNavigationBar">false</item>
     </style>
 
-    <style name="Theme.ownCloud.Media" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.ownCloud.Media" parent="Theme.ownCloud.Toolbar">
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
 

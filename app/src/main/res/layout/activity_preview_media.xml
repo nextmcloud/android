@@ -15,15 +15,6 @@
     android:gravity="center"
     tools:context=".ui.preview.PreviewMediaActivity">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/material_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:elevation="@dimen/standard_quarter_margin"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true" />
-
     <ImageView
         android:id="@+id/image_preview"
         android:layout_width="match_parent"
@@ -48,6 +39,13 @@
         android:layout_alignParentBottom="true"
         android:layout_margin="@dimen/standard_margin"
         android:visibility="gone" />
+
+    <!-- NMC Customization: Use common toolbar -->
+    <!-- It should be placed below player so that it will overlay on
+    player instead of player overlaying toolbar -->
+    <include
+        android:id="@+id/media_toolbar"
+        layout="@layout/toolbar_standard" />
 
     <FrameLayout
         android:id="@+id/progress"
