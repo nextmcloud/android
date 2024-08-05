@@ -25,6 +25,16 @@ buildscript {
         classpath "org.jacoco:org.jacoco.report:$jacoco_version"
         classpath "org.jacoco:org.jacoco.agent:$jacoco_version"
     }
+
+    //NMC Customization
+    allprojects {
+        repositories {
+            jcenter()
+            maven {
+                url "https://maven.tealiumiq.com/android/releases/"
+            }
+        }
+    }
 }
 
 plugins {
@@ -110,6 +120,10 @@ android {
 
         buildConfigField 'boolean', 'CI', ciBuild.toString()
         buildConfigField 'boolean', 'RUNTIME_PERF_ANALYSIS', perfAnalysis.toString()
+
+        //NMC customization
+        buildConfigField "String", "ADJUST_APP_TOKEN", "${ADJUST_APP_TOKEN}"
+        buildConfigField "String", "MOENGAGE_APP_ID", "${MOENGAGE_APP_ID}"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -422,6 +436,20 @@ dependencies {
     implementation "androidx.room:room-runtime:$roomVersion"
     ksp "androidx.room:room-compiler:$roomVersion"
     androidTestImplementation "androidx.room:room-testing:$roomVersion"
+
+    //Adjust SDK --> https://github.com/adjust/android_sdk
+    implementation 'com.adjust.sdk:adjust-android:4.28.1'
+    implementation 'com.android.installreferrer:installreferrer:2.2'
+    //google play services identifier required for Adjust SDK
+    implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
+
+    //tealium sdk
+    implementation 'com.tealium:library:5.8.0'
+
+    //MoEngage SDK
+    implementation 'com.moengage:moe-android-sdk:11.3.01'
+    //lifecycle required for MoEngage SDK
+    implementation 'androidx.lifecycle:lifecycle-process:2.2.0'
 
     implementation "io.coil-kt:coil:2.6.0"
 
