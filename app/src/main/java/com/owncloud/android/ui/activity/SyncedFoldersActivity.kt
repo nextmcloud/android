@@ -837,11 +837,8 @@ class SyncedFoldersActivity :
                 .setNeutralButton(getString(R.string.battery_optimization_close)) { dialog, _ -> dialog.dismiss() }
                 .setIcon(R.drawable.ic_battery_alert)
             if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                val alertDialog = alertDialogBuilder.show()
-                viewThemeUtils.platform.colorTextButtons(
-                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE),
-                    alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL)
-                )
+                //NMC Customization
+                alertDialogBuilder.show()
             }
         }
     }

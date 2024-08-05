@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 
 /**
  * Dialog requiring confirmation before removing a collection of given OCFiles.
@@ -117,26 +116,6 @@ public class RemoveFilesDialogFragment extends ConfirmationDialogFragment implem
         ArrayList<OCFile> list = new ArrayList<>();
         list.add(file);
         return newInstance(list);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        AlertDialog alertDialog = (AlertDialog) getDialog();
-
-        if (alertDialog != null) {
-            MaterialButton positiveButton = (MaterialButton) alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(positiveButton);
-
-            MaterialButton negativeButton = (MaterialButton) alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-            viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(negativeButton);
-
-            MaterialButton neutralButton = (MaterialButton) alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-            if (neutralButton != null) {
-                viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(neutralButton);
-            }
-        }
     }
 
     @NonNull
