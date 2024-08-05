@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,6 +55,7 @@ import com.owncloud.android.utils.PermissionUtil;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -192,6 +194,19 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
         viewThemeUtils.material.colorMaterialButtonPrimaryFilled(binding.uploadFilesBtnUpload);
         binding.uploadFilesBtnUpload.setOnClickListener(this);
         binding.uploadFilesBtnUpload.setEnabled(mLocalFolderPickerMode);
+
+        //reduce the button text size so that the text doesn't go to next line
+        //this should only happen for GERMAN language
+        //and device should not be tablet and should be in portrait mode
+        if (!com.nmc.android.utils.DisplayUtils.isTablet() && !com.nmc.android.utils.DisplayUtils.isLandscapeOrientation()) {
+            if (Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage())
+                || Locale.getDefault().getLanguage().equals(Locale.GERMANY.getLanguage())) {
+                binding.uploadFilesBtnUpload.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                                         getResources().getDimensionPixelSize(R.dimen.txt_size_13sp));
+                binding.uploadFilesBtnCancel.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                                         getResources().getDimensionPixelSize(R.dimen.txt_size_13sp));
+            }
+        }
 
         int localBehaviour = preferences.getUploaderBehaviour();
 
