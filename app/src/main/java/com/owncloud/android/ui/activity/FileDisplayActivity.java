@@ -127,6 +127,7 @@ import com.owncloud.android.utils.FileSortOrder;
 import com.owncloud.android.utils.MimeTypeUtil;
 import com.owncloud.android.utils.PermissionUtil;
 import com.owncloud.android.utils.PushUtils;
+import com.nmc.android.utils.KeyboardUtils;
 import com.owncloud.android.utils.StringUtils;
 import com.owncloud.android.utils.theme.CapabilityUtils;
 
@@ -1053,6 +1054,8 @@ public class FileDisplayActivity extends FileActivity
     private void popBack() {
         binding.fabMain.setImageResource(R.drawable.ic_plus);
         resetScrolling(true);
+        // hide the keyboard on back press if showing
+        KeyboardUtils.hideKeyboardFrom(this, binding.getRoot());
         showSortListGroup(false);
         super.onBackPressed();
     }
