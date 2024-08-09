@@ -30,6 +30,7 @@ import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.network.ClientFactory
 import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.utils.extensions.getParcelableArgument
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ChooseTemplateBinding
@@ -328,6 +329,12 @@ class ChooseTemplateDialogFragment : DialogFragment(), View.OnClickListener, Tem
                     editorWebView.putExtra(ExternalSiteWebView.EXTRA_FILE, file)
                     editorWebView.putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false)
                     fragment.startActivity(editorWebView)
+
+                    // NMC: track create text file event
+                    file?.let {
+                        MoEngageSdkUtils.trackCreateFileEvent(MainApp.getAppContext(), it)
+                    }
+
                     fragment.dismiss()
                 }
             } else {
