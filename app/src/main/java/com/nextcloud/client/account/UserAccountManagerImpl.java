@@ -21,6 +21,7 @@ import android.text.TextUtils;
 
 import com.nextcloud.common.NextcloudClient;
 import com.nextcloud.utils.extensions.AccountExtensionsKt;
+import com.nmc.android.ui.LauncherActivity;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.AuthenticatorActivity;
@@ -397,6 +398,10 @@ public class UserAccountManagerImpl implements UserAccountManager {
 
     @Override
     public void startAccountCreation(final Activity activity) {
+        // NMC-3278 fix
+        // Splash screen should be shown properly before navigating to Login screen
+        if(activity instanceof LauncherActivity) return;
+
         Intent intent = new Intent(context, AuthenticatorActivity.class);
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
