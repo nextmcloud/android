@@ -391,6 +391,11 @@ public class DialogFragmentIT extends AbstractIT {
             public void createRichWorkspace() {
 
             }
+
+            @Override
+            public void scanDocument() {
+
+            }
         };
 
         DeviceInfo info = new DeviceInfo();

@@ -29,6 +29,7 @@ buildscript {
         prismVersion = "2.0.0"
         roomVersion = "2.6.1"
         workRuntime = "2.9.0"
+        scanbotSdkVersion = "4.0.0"
 
         ciBuild = System.getenv("CI") == "true"
         shotTest = System.getenv("SHOT_TEST") == "true"
@@ -47,6 +48,14 @@ subprojects {
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
+
+        // Scanbot SDK maven repos:
+        maven {
+            url 'https://nexus.scanbot.io/nexus/content/repositories/releases/'
+        }
+        maven {
+            url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/'
+        }
     }
 }
 

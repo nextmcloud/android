@@ -189,7 +189,7 @@ android {
     // see http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Configuring-the-Structure
     packagingOptions {
         resources {
-            excludes += 'META-INF/LICENSE*'
+            excludes += ['META-INF/LICENSE*', 'META-INF/DEPENDENCIES']
             pickFirst 'MANIFEST.MF' // workaround for duplicated manifest on some dependencies
         }
     }
@@ -311,10 +311,11 @@ dependencies {
     implementation "com.github.nextcloud-deps.hwsecurity:hwsecurity-fido:$fidoVersion"
     implementation "com.github.nextcloud-deps.hwsecurity:hwsecurity-fido2:$fidoVersion"
 
+    //NextCloud scan is not required in NMC
     // document scanner not available on FDroid (generic) due to OpenCV binaries
-    gplayImplementation project(':appscan')
-    huaweiImplementation project(':appscan')
-    qaImplementation project(':appscan')
+    /* gplayImplementation project(':appscan')
+       huaweiImplementation project(':appscan')
+       qaImplementation project(':appscan') */
 
     spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.13.0'
     spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.6.4'
@@ -421,6 +422,14 @@ dependencies {
 
     // splash screen dependency ref: https://developer.android.com/develop/ui/views/launch/splash-screen/migrate
     implementation 'androidx.core:core-splashscreen:1.0.1'
+
+    //scanbot sdk: https://github.com/doo/scanbot-sdk-example-android
+    implementation "io.scanbot:sdk-package-2:$scanbotSdkVersion"
+
+    //apache pdf-box for encrypting pdf files
+    implementation(group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.1') {
+        exclude group: "commons-logging"
+    }
 }
 
 configurations.configureEach {
