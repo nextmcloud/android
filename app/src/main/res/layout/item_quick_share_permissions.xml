@@ -9,17 +9,15 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/bottom_sheet_item_height"
-    android:background="?android:attr/selectableItemBackground"
-    android:paddingStart="@dimen/standard_padding"
-    android:paddingEnd="@dimen/standard_padding">
+    android:layout_height="wrap_content"
+    android:padding="@dimen/standard_padding">
 
     <ImageView
         android:id="@+id/tv_quick_share_check_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@null"
-        android:src="@drawable/ic_baseline_check_24"
+        android:src="@drawable/ic_tick"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -30,9 +28,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
-        android:text="@string/link_share_view_only"
-        android:textColor="@color/text_color"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:text="@string/link_share_read_only"
+        android:textColor="@color/bottom_sheet_txt_color"
         android:textSize="@dimen/bottom_sheet_text_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
