@@ -178,6 +178,8 @@
     <string name="common_copy">Copy</string>
     <string name="common_login">Login</string>
     <string name="about_title">About</string>
+    <string name="app_update_downloaded">An update has just been downloaded.</string>
+    <string name="common_restart">Restart</string>
     <string name="remove_local_account">Remove local account</string>
     <string name="remove_local_account_details">Remove account from device and delete all local files</string>
     <string name="request_account_deletion">Request account deletion</string>
