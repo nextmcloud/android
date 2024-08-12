@@ -37,7 +37,11 @@ class IndeterminateProgressDialog : DialogFragment(), Injectable {
         progressDialog.isIndeterminate = true
         progressDialog.setOnShowListener {
             val v = progressDialog.findViewById<ProgressBar>(android.R.id.progress)
-            viewThemeUtils?.platform?.tintDrawable(requireContext(), v.indeterminateDrawable)
+            // NMC Customization
+            viewThemeUtils?.platform?.colorDrawable(
+                v.indeterminateDrawable,
+                requireContext().resources.getColor(R.color.white, null)
+            )
         }
 
         // / set message
