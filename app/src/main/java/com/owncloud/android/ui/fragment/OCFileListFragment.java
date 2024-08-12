@@ -60,6 +60,9 @@ import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
 import com.nmc.android.marketTracking.TrackingScanInterface;
 import com.nextcloud.utils.view.FastScrollUtils;
+import com.nmc.android.marketTracking.AdjustSdkUtils;
+import com.nmc.android.marketTracking.TrackingScanInterfaceImpl;
+import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -265,6 +268,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
         }
 
         searchFragment = currentSearchType != null && isSearchEventSet(searchEvent);
+
+        //NMC customization will be initialised in nmc/1925-market_tracking
+        trackingScanInterface = new TrackingScanInterfaceImpl();
     }
 
     @Override
@@ -538,6 +544,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
             Intent.createChooser(action, getString(R.string.upload_chooser_title)),
             FileDisplayActivity.REQUEST_CODE__SELECT_CONTENT_FROM_APPS
                                             );
+
+        //track event photo/video/any upload button click
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FAB_BOTTOM_PHOTO_VIDEO_UPLOAD, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FAB_BOTTOM_PHOTO_VIDEO_UPLOAD, preferences);
     }
 
     @Override
@@ -550,6 +560,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
         } else {
             DisplayUtils.showSnackMessage(getView(), getString(R.string.error_starting_direct_camera_upload));
         }
+
+        //track event for camera upload button click
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FAB_BOTTOM_CAMERA_UPLOAD, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FAB_BOTTOM_CAMERA_UPLOAD, preferences);
     }
 
     @Override
@@ -579,6 +593,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
             ((FileActivity) getActivity()).getUser().orElseThrow(RuntimeException::new),
             FileDisplayActivity.REQUEST_CODE__SELECT_FILES_FROM_FILE_SYSTEM,
             getCurrentFile().isEncrypted());
+
+        // track event for uploading files button click
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FAB_BOTTOM_FILE_UPLOAD, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FAB_BOTTOM_FILE_UPLOAD, preferences);
     }
 
     @Override
@@ -627,6 +645,14 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 mContainerActivity.getFileOperationsHelper().sendShareFile(file);
             });
         }
+
+        //track event on click of Share button
+        trackSharingClickEvent();
+    }
+
+    private void trackSharingClickEvent() {
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FILE_BROWSER_SHARING, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FILE_BROWSER_SHARING, preferences);
     }
 
     @Override
@@ -1326,6 +1352,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 //NMC Customization
                 SendShareDialog.isPeopleShareClicked = true;
                 mContainerActivity.getFileOperationsHelper().sendShareFile(singleFile);
+                //track event on click of Share button
+                trackSharingClickEvent();
                 return true;
             } else if (itemId == R.id.action_open_file_with) {
                 mContainerActivity.getFileOperationsHelper().openFile(singleFile);
@@ -1357,6 +1385,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 SendShareDialog.isPeopleShareClicked = true;
                 mContainerActivity.showDetails(singleFile);
                 mContainerActivity.showSortListGroup(false);
+
+                //track event on click of Share button
+                trackSharingClickEvent();
                 return true;
             } else if (itemId == R.id.action_set_as_wallpaper) {
                 mContainerActivity.getFileOperationsHelper().setPictureAs(singleFile, getView());
