@@ -31,6 +31,7 @@ import com.nextcloud.client.network.ClientFactory
 import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nmc.android.marketTracking.MoEngageSdkUtils
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ChooseTemplateBinding
@@ -94,10 +95,6 @@ class ChooseTemplateDialogFragment : DialogFragment(), View.OnClickListener, Tem
         val alertDialog = dialog as AlertDialog
 
         val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE) as MaterialButton
-        viewThemeUtils.material.colorMaterialButtonPrimaryTonal(positiveButton)
-
-        val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE) as MaterialButton
-        viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(negativeButton)
 
         positiveButton.setOnClickListener(this)
         positiveButton.isEnabled = false
@@ -132,10 +129,6 @@ class ChooseTemplateDialogFragment : DialogFragment(), View.OnClickListener, Tem
         _binding = ChooseTemplateBinding.inflate(inflater, null, false)
         val view: View = binding.root
 
-        viewThemeUtils.material.colorTextInputLayout(
-            binding.filenameContainer
-        )
-
         binding.filename.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
 
@@ -169,7 +162,8 @@ class ChooseTemplateDialogFragment : DialogFragment(), View.OnClickListener, Tem
             .setNegativeButton(R.string.common_cancel, null)
             .setTitle(title)
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.list.context, builder)
+        //NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(binding.list.context, builder)
 
         return builder.create()
     }
