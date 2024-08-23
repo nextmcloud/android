@@ -35,13 +35,6 @@
         android:orientation="horizontal"
         android:padding="@dimen/standard_padding">
 
-        <View
-            android:id="@+id/choose_button_spacer"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:visibility="gone" />
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/folder_picker_btn_cancel"
             style="@style/Widget.Material3.Button.IconButton.Outlined"

@@ -88,6 +88,7 @@ import com.owncloud.android.lib.resources.files.SearchRemoteOperation;
 import com.owncloud.android.lib.resources.files.ToggleFavoriteRemoteOperation;
 import com.owncloud.android.lib.resources.status.E2EVersion;
 import com.owncloud.android.lib.resources.status.OCCapability;
+import com.nmc.android.scans.ScanActivity;
 import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.ui.activity.FileDisplayActivity;
 import com.owncloud.android.ui.activity.FolderPickerActivity;
@@ -667,6 +668,24 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 DisplayUtils.showSnackMessage(getView(), R.string.failed_to_start_editor);
             }
         }).start();
+    }
+
+    @Override
+    public void scanDocument() {
+        //remote path to store the scans in the selected path
+        String remotePath = "";
+        if (getActivity() != null && ((FileActivity) getActivity()).getCurrentDir() != null){
+            remotePath = ((FileActivity) getActivity()).getCurrentDir().getRemotePath();
+        }
+
+        //remote path used so that user can directly save at the selected sub folder location
+        ScanActivity.openScanActivity(getActivity(), remotePath, FileDisplayActivity.REQUEST_CODE__SCAN_DOCUMENT);
+
+        //track event on Scan Document button click
+        //implementation and logic will be available in nmc/1925-market_tracking
+        if (trackingScanInterface != null) {
+            trackingScanInterface.sendScanEvent(preferences);
+        }
     }
 
     @Override
