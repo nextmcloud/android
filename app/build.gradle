@@ -52,7 +52,8 @@ if (shotTest) {
 // apply In-App Update SDK for NMC
 apply from: "$rootProject.projectDir/nmc_app_update-dependencies.gradle"
 apply plugin: 'com.google.devtools.ksp'
-
+// apply marketing SDK for NMC
+apply from: "$rootProject.projectDir/nmc_marketing-dependencies.gradle"
 
 println "Gradle uses Java ${Jvm.current()}"
 // apply MoEngage SDK for NMC
