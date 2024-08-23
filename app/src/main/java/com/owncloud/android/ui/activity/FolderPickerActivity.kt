@@ -60,6 +60,8 @@ open class FolderPickerActivity :
     private var mSyncBroadcastReceiver: SyncBroadcastReceiver? = null
     private var mSyncInProgress = false
     private var mSearchOnlyFolders = false
+    private var mShowOnlyFolder = false
+    private var mHideEncryptedFolder = false
     var isDoNotEnterEncryptedFolder = false
         private set
 
@@ -113,6 +115,9 @@ open class FolderPickerActivity :
     }
 
     private fun setupAction() {
+        mShowOnlyFolder = intent.getBooleanExtra(EXTRA_SHOW_ONLY_FOLDER, false)
+        mHideEncryptedFolder = intent.getBooleanExtra(EXTRA_HIDE_ENCRYPTED_FOLDER, false)
+
         action = intent.getStringExtra(EXTRA_ACTION)
 
         if (action != null && action == CHOOSE_LOCATION) {
@@ -358,7 +363,7 @@ open class FolderPickerActivity :
         }
 
     private fun refreshListOfFilesFragment(fromSearch: Boolean) {
-        listOfFilesFragment?.listDirectory(false, fromSearch)
+        listOfFilesFragment?.listDirectoryFolder(false, fromSearch, mShowOnlyFolder, mHideEncryptedFolder)
     }
 
     fun browseToRoot() {
@@ -651,6 +656,12 @@ open class FolderPickerActivity :
 
         @JvmField
         val EXTRA_ACTION = FolderPickerActivity::class.java.canonicalName?.plus(".EXTRA_ACTION")
+
+        @JvmField
+        val EXTRA_SHOW_ONLY_FOLDER = FolderPickerActivity::class.java.canonicalName?.plus(".EXTRA_SHOW_ONLY_FOLDER")
+
+        @JvmField
+        val EXTRA_HIDE_ENCRYPTED_FOLDER = FolderPickerActivity::class.java.canonicalName?.plus(".EXTRA_HIDE_ENCRYPTED_FOLDER")
 
         const val MOVE_OR_COPY = "MOVE_OR_COPY"
         const val CHOOSE_LOCATION = "CHOOSE_LOCATION"
