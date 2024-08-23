@@ -667,8 +667,11 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     public void openActionsMenu(final int filesCount, final Set<OCFile> checkedFiles, final boolean isOverflow) {
         throttler.run("overflowClick", () -> {
+            final List<Integer> additionalFilter = new ArrayList<>();
+            //need to hide the share menu because we have renamed another menu for sharing (NMC)
+            additionalFilter.add(R.id.action_send_share_file);
             final FragmentManager childFragmentManager = getChildFragmentManager();
-            FileActionsBottomSheet.newInstance(filesCount, checkedFiles, isOverflow)
+            FileActionsBottomSheet.newInstance(filesCount, checkedFiles, isOverflow, additionalFilter)
                 .setResultListener(childFragmentManager, this, (id) -> {
                     onFileActionChosen(id, checkedFiles);
                 })
