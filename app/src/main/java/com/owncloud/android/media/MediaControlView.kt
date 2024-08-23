@@ -27,6 +27,7 @@ import android.widget.MediaController.MediaPlayerControl
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.core.content.ContextCompat
+import com.nmc.android.ui.utils.ProgressBarThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.MediaControlBinding
@@ -85,7 +86,8 @@ class MediaControlView(context: Context, attrs: AttributeSet?) :
         binding.rewindBtn.setOnClickListener(this)
 
         binding.progressBar.run {
-            viewThemeUtils.platform.themeHorizontalSeekBar(this)
+            // NMC Customization
+            ProgressBarThemeUtils.themeHorizontalSeekBar(this, resources.getColor(R.color.primary, null));
             setMax(1000)
         }
 
