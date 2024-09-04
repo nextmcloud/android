@@ -35,6 +35,7 @@ import android.view.ViewGroup
 import androidx.annotation.OptIn
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -70,6 +71,7 @@ import com.owncloud.android.ui.dialog.ConfirmationDialogFragment
 import com.owncloud.android.ui.dialog.RemoveFilesDialogFragment
 import com.owncloud.android.ui.fragment.FileFragment
 import com.owncloud.android.utils.MimeTypeUtil
+import com.owncloud.android.utils.theme.ViewThemeUtils
 import java.lang.ref.WeakReference
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -117,6 +119,9 @@ class PreviewMediaFragment : FileFragment(), OnTouchListener, Injectable {
 
     @Inject
     lateinit var backgroundJobManager: BackgroundJobManager
+
+    @Inject
+    lateinit var viewThemeUtils: ViewThemeUtils
 
     lateinit var binding: FragmentPreviewMediaBinding
     private var emptyListView: ViewGroup? = null
@@ -386,6 +391,16 @@ class PreviewMediaFragment : FileFragment(), OnTouchListener, Injectable {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menu.removeItem(R.id.action_search)
                     menuInflater.inflate(R.menu.custom_menu_placeholder, menu)
+                    // NMC customization
+                    val item = menu.findItem(R.id.custom_menu_placeholder_item)
+                    item.icon?.let {
+                        item.setIcon(
+                            viewThemeUtils.platform.colorDrawable(
+                                it,
+                                ContextCompat.getColor(requireContext(), R.color.fontAppbar)
+                            )
+                        )
+                    }
                 }
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
