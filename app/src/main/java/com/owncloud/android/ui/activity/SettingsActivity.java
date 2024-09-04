@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -883,12 +884,10 @@ public class SettingsActivity extends PreferenceActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowTitleEnabled(true);
             if (this.getResources() != null) {
-                viewThemeUtils.androidx.themeActionBar(this,
-                                                       actionBar,
-                                                       getString(R.string.actionbar_settings),
-                                                       ResourcesCompat.getDrawable(this.getResources(),
-                                                                                   R.drawable.ic_arrow_back,
-                                                                                   null));
+                //custom color for back arrow for NMC
+                viewThemeUtils.files.themeActionBar(this, actionBar, getResources().getString(R.string.actionbar_settings));
+                //required for NMC
+                actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.bg_default, null)));
             }
         }
     }
