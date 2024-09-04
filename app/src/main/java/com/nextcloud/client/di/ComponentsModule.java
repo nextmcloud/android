@@ -32,6 +32,8 @@ import com.nextcloud.ui.composeActivity.ComposeActivity;
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet;
 import com.nmc.android.ui.conflict.ConflictsResolveConsentDialog;
 import com.nmc.android.ui.LauncherActivity;
+import com.nmc.android.ui.LoginPrivacySettingsActivity;
+import com.nmc.android.ui.PrivacySettingsActivity;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.authentication.AuthenticatorActivity;
 import com.owncloud.android.authentication.DeepLinkLoginActivity;
@@ -464,6 +466,12 @@ abstract class ComponentsModule {
 
     @ContributesAndroidInjector
     abstract DocumentScanActivity documentScanActivity();
+
+    @ContributesAndroidInjector
+    abstract PrivacySettingsActivity privacySettingsActivity();
+
+    @ContributesAndroidInjector
+    abstract LoginPrivacySettingsActivity loginPrivacySettingsActivity();
 
     @ContributesAndroidInjector
     abstract GroupfolderListFragment groupfolderListFragment();
