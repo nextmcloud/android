@@ -510,14 +510,16 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.getFileName().setVisibility(View.VISIBLE);
         }
 
-        ViewExtensionsKt.setVisibleIf(holder.getShared(), !file.isOfflineOperation());
+        // NMC: don't show share icon for grid view
+        // ViewExtensionsKt.setVisibleIf(holder.getShared(), !file.isOfflineOperation());
         setColorFilterForOfflineOperations(holder, file);
     }
 
     private void bindListItemViewHolder(ListItemViewHolder holder, OCFile file) {
         if ((file.isSharedWithMe() || file.isSharedWithSharee()) && !isMultiSelect() && !gridView &&
             !hideItemOptions) {
-            holder.getSharedAvatars().setVisibility(View.VISIBLE);
+            //visibility gone as view not required for NMC
+            holder.getSharedAvatars().setVisibility(View.GONE);
             holder.getSharedAvatars().removeAllViews();
 
             String fileOwner = file.getOwnerId();
