@@ -29,6 +29,7 @@ import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.fileNameValidator.FileNameValidator
 import com.owncloud.android.MainApp
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ChooseTemplateBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -399,6 +400,11 @@ class ChooseRichDocumentsTemplateDialogFragment :
                 putExtra(ExternalSiteWebView.EXTRA_FILE, file)
                 putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false)
                 putExtra(ExternalSiteWebView.EXTRA_TEMPLATE, template)
+            }
+
+            // NMC: track create office file event
+            file?.let {
+                MoEngageSdkUtils.trackCreateFileEvent(MainApp.getAppContext(), it, template.type)
             }
 
             fragment.run {
