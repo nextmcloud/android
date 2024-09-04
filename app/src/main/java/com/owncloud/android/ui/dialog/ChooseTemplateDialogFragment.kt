@@ -34,6 +34,7 @@ import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.fileNameValidator.FileNameValidator
 import com.nmc.android.marketTracking.MoEngageSdkUtils
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ChooseTemplateBinding
@@ -91,14 +92,8 @@ class ChooseTemplateDialogFragment : DialogFragment(), View.OnClickListener, Tem
         super.onStart()
         val alertDialog = dialog as AlertDialog
 
-        val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE) as? MaterialButton
-        negativeButton?.let {
-            viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(negativeButton)
-        }
-
         val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE) as? MaterialButton
         positiveButton?.let {
-            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(positiveButton)
             positiveButton.setOnClickListener(this)
             positiveButton.isEnabled = false
             positiveButton.isClickable = false
@@ -131,10 +126,6 @@ class ChooseTemplateDialogFragment : DialogFragment(), View.OnClickListener, Tem
         val inflater = requireActivity().layoutInflater
         _binding = ChooseTemplateBinding.inflate(inflater, null, false)
 
-        viewThemeUtils.material.colorTextInputLayout(
-            binding.filenameContainer
-        )
-
         binding.filename.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) = Unit
@@ -163,7 +154,8 @@ class ChooseTemplateDialogFragment : DialogFragment(), View.OnClickListener, Tem
             .setNegativeButton(R.string.common_cancel, null)
             .setTitle(title)
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.list.context, builder)
+        //NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(binding.list.context, builder)
 
         return builder.create()
     }
