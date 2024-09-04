@@ -401,7 +401,8 @@ public class FileDisplayActivity extends FileActivity
             onOpenFileIntent(getIntent());
         } else if (RESTART.equals(getIntent().getAction())) {
             // most likely switched to different account
-            DisplayUtils.showSnackMessage(this, String.format(getString(R.string.logged_in_as), accountManager.getUser().getAccountName()));
+            // NMC-2576 --> Disabling switch account snackbar for NMC
+            /*DisplayUtils.showSnackMessage(this, String.format(getString(R.string.logged_in_as), accountManager.getUser().getAccountName()));*/
         }
 
         upgradeNotificationForInstantUpload();
