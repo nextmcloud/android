@@ -656,8 +656,8 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (file.isOfflineOperation()) {
             holder.getThumbnail().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
         } else {
-            Drawable drawable = viewThemeUtils.platform.tintDrawable(MainApp.getAppContext(), holder.getThumbnail().getDrawable(), ColorRole.PRIMARY);
-            holder.getThumbnail().setImageDrawable(drawable);
+            // NMC Customization: no need to apply tinting to folders
+            holder.getThumbnail().setColorFilter(null);
         }
     }
 
