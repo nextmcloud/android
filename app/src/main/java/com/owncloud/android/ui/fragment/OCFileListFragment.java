@@ -264,6 +264,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
         ADD_GRID_AND_SORT_WITH_SEARCH
     }
 
+    private boolean mShowOnlyFolder, mHideEncryptedFolder;
+
     protected MenuItemAddRemove menuItemAddRemoveValue = MenuItemAddRemove.ADD_GRID_AND_SORT_WITH_SEARCH;
 
     private List<MenuItem> mOriginalMenuItems = new ArrayList<>();
@@ -1430,6 +1432,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
         }
         action.putStringArrayListExtra(FolderPickerActivity.EXTRA_FILE_PATHS, paths);
         action.putExtra(FolderPickerActivity.EXTRA_ACTION, extraAction);
+        action.putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true);
+        action.putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true);
         getActivity().startActivityForResult(action, requestCode);
     }
 
@@ -1447,6 +1451,12 @@ public class OCFileListFragment extends ExtendedListFragment implements
      * Calls {@link OCFileListFragment#listDirectory(OCFile, boolean, boolean)} with a null parameter
      */
     public void listDirectory(boolean onlyOnDevice, boolean fromSearch) {
+        listDirectory(null, onlyOnDevice, fromSearch);
+    }
+
+    public void listDirectoryFolder(boolean onlyOnDevice, boolean fromSearch, boolean showOnlyFolder, boolean hideEncryptedFolder) {
+        mShowOnlyFolder = showOnlyFolder;
+        mHideEncryptedFolder = hideEncryptedFolder;
         listDirectory(null, onlyOnDevice, fromSearch);
     }
 
@@ -1509,12 +1519,23 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 return;
             }
 
-            mAdapter.swapDirectory(
-                accountManager.getUser(),
-                directory,
-                storageManager,
-                onlyOnDevice,
-                mLimitToMimeType);
+                if(mShowOnlyFolder) {
+                    mAdapter.showOnlyFolder(
+                        accountManager.getUser(),
+                        directory,
+                        storageManager,
+                        onlyOnDevice,
+                        mLimitToMimeType,
+                        mHideEncryptedFolder);
+                }
+                else {
+                    mAdapter.swapDirectory(
+                        accountManager.getUser(),
+                        directory,
+                        storageManager,
+                        onlyOnDevice,
+                        mLimitToMimeType);
+                }
 
             OCFile previousDirectory = mFile;
             mFile = directory;

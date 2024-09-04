@@ -176,7 +176,7 @@ public class FileMenuFilter {
 
 
     private void filterShareFile(List<Integer> toHide, OCCapability capability) {
-        if (!isSingleSelection() || containsEncryptedFile() || hasEncryptedParent() ||
+        if (!isSingleSelection() || containsEncryptedFile() || hasEncryptedParent() || containsEncryptedFolder() ||
             (!isShareViaLinkAllowed() && !isShareWithUsersAllowed()) ||
             !isShareApiEnabled(capability) || !files.iterator().next().canReshare()) {
             toHide.add(R.id.action_send_share_file);
@@ -192,19 +192,21 @@ public class FileMenuFilter {
     }
 
     private void filterDetails(Collection<Integer> toHide) {
-        if (!isSingleSelection()) {
+        if (!isSingleSelection() || containsEncryptedFolder() || containsEncryptedFile()) {
             toHide.add(R.id.action_see_details);
         }
     }
 
     private void filterFavorite(List<Integer> toHide, boolean synchronizing) {
-        if (files.isEmpty() || synchronizing || allFavorites()) {
+        if (files.isEmpty() || synchronizing || allFavorites() || containsEncryptedFile()
+            || containsEncryptedFolder()) {
             toHide.add(R.id.action_favorite);
         }
     }
 
     private void filterUnfavorite(List<Integer> toHide, boolean synchronizing) {
-        if (files.isEmpty() || synchronizing || allNotFavorites()) {
+        if (files.isEmpty() || synchronizing || allNotFavorites()  || containsEncryptedFile()
+            || containsEncryptedFolder()) {
             toHide.add(R.id.action_unset_favorite);
         }
     }
@@ -339,8 +341,10 @@ public class FileMenuFilter {
     }
 
     private void filterRemove(List<Integer> toHide, boolean synchronizing) {
-        if (files.isEmpty() || synchronizing || containsLockedFile()
-            || containsEncryptedFolder() || isFolderAndContainsEncryptedFile()) {
+        if ((files.isEmpty() || synchronizing || containsLockedFile()
+            || containsEncryptedFolder() || isFolderAndContainsEncryptedFile())
+            //show delete option for encrypted sub-folder
+            && !hasEncryptedParent()) {
             toHide.add(R.id.action_remove_file);
         }
     }
