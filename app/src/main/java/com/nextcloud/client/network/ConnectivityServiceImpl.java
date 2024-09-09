@@ -146,6 +146,11 @@ class ConnectivityServiceImpl implements ConnectivityService {
         }
     }
 
+    @Override
+    public void clearCachedResult() {
+        walledCheckCache.clear();
+    }
+
     private boolean isNetworkMetered() {
         final Network network = platformConnectivityManager.getActiveNetwork();
         try {
