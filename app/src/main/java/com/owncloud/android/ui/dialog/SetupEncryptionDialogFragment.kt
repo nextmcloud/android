@@ -28,6 +28,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.account.User
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.utils.extensions.getParcelableArgument
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.SetupEncryptionDialogBinding
 import com.owncloud.android.datamodel.ArbitraryDataProvider
@@ -77,14 +78,7 @@ class SetupEncryptionDialogFragment : DialogFragment(), Injectable {
 
         if (alertDialog != null) {
             positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE) as? MaterialButton?
-            positiveButton?.let {
-                viewThemeUtils.material.colorMaterialButtonPrimaryTonal(it)
-            }
-
             negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE) as? MaterialButton?
-            negativeButton?.let {
-                viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(it)
-            }
         }
     }
 
@@ -108,11 +102,9 @@ class SetupEncryptionDialogFragment : DialogFragment(), Injectable {
         val inflater = requireActivity().layoutInflater
         binding = SetupEncryptionDialogBinding.inflate(inflater, null, false)
 
-        // Setup layout
-        viewThemeUtils.material.colorTextInputLayout(binding.encryptionPasswordInputContainer)
-
         val builder = buildMaterialAlertDialog(binding.root)
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(requireContext(), builder)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireContext(), builder)
         return builder.create().apply {
             setCanceledOnTouchOutside(false)
             setOnShowListener { dialog1: DialogInterface ->
@@ -480,19 +472,12 @@ class SetupEncryptionDialogFragment : DialogFragment(), Injectable {
         }
         requireDialog().setTitle(R.string.end_to_end_encryption_passphrase_title)
         binding.encryptionStatus.setText(R.string.end_to_end_encryption_keywords_description)
-        viewThemeUtils.material.colorTextInputLayout(binding.encryptionPasswordInputContainer)
         binding.encryptionPassphrase.text = generateMnemonicString(true)
         binding.encryptionPassphrase.visibility = View.VISIBLE
 
         positiveButton?.setText(R.string.end_to_end_encryption_confirm_button)
         positiveButton?.visibility = View.VISIBLE
         negativeButton?.visibility = View.VISIBLE
-
-        positiveButton?.let { positiveButton ->
-            negativeButton?.let { negativeButton ->
-                viewThemeUtils.platform.colorTextButtons(positiveButton, negativeButton)
-            }
-        }
 
         keyResult = KEY_GENERATE
     }
@@ -511,9 +496,6 @@ class SetupEncryptionDialogFragment : DialogFragment(), Injectable {
 
         positiveButton?.setText(R.string.end_to_end_encryption_dialog_close)
         positiveButton?.visibility = View.VISIBLE
-        positiveButton?.let {
-            viewThemeUtils.platform.colorTextButtons(it)
-        }
     }
 
     @VisibleForTesting

@@ -22,6 +22,7 @@
         android:layout_gravity="center"
         android:layout_margin="@dimen/standard_double_margin"
         card_view:strokeWidth="0dp"
+        card_view:cardBackgroundColor="@color/alert_bg_color"
         card_view:cardCornerRadius="16dp"
         card_view:cardElevation="@dimen/dialog_elevation">
 
