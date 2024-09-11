@@ -92,7 +92,8 @@ class PlayerService : Service() {
         AndroidInjection.inject(this)
         player = Player(applicationContext, clientFactory, playerListener, audioManager)
         notificationBuilder = NotificationCompat.Builder(this)
-        viewThemeUtils.androidx.themeNotificationCompatBuilder(this, notificationBuilder)
+        //NMC Customization
+        notificationBuilder.color = resources.getColor(R.color.primary, null)
 
         val stop = Intent(this, PlayerService::class.java)
         stop.action = ACTION_STOP
