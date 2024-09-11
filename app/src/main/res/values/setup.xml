@@ -129,8 +129,8 @@
     <string name="push_server_url" translatable="false"></string>
 
     <!-- if contains values, will be used to show branding title below app icon in splash screen -->
-    <string name="splashScreenBold"></string>
-    <string name="splashScreenNormal"></string>
+    <string name="splashScreenBold">Magenta</string>
+    <string name="splashScreenNormal">CLOUD</string>
 
     <!-- Geocoding -->
     <string name="osm_geocoder_url" translatable="false">https://nominatim.openstreetmap.org/</string>
