@@ -252,6 +252,8 @@ class SyncedFoldersActivity :
         binding.list.layoutManager = lm
         binding.list.adapter = adapter
         load(getItemsDisplayedPerFolder(), false)
+        //NMC customization
+        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_list_empty_synced_folders)
     }
 
     private fun showHiddenItems() {

@@ -588,16 +588,8 @@ public class ExtendedListFragment extends Fragment implements
                 if (mEmptyListContainer != null && mEmptyListMessage != null) {
                     mEmptyListHeadline.setText(headline);
                     mEmptyListMessage.setText(message);
-
-                    if (tintIcon) {
-                        if (getContext() != null) {
-                            mEmptyListIcon.setImageDrawable(
-                                viewThemeUtils.platform.tintPrimaryDrawable(getContext(), icon));
-                        }
-                    } else {
-                        mEmptyListIcon.setImageResource(icon);
-                    }
-
+                    //tinting is not required in NMC
+                    mEmptyListIcon.setImageResource(icon);
                     mEmptyListIcon.setVisibility(View.VISIBLE);
                     mEmptyListMessage.setVisibility(View.VISIBLE);
                 }
@@ -617,8 +609,8 @@ public class ExtendedListFragment extends Fragment implements
                                            true);
                 } else if (searchType == SearchType.FILE_SEARCH) {
                     setMessageForEmptyList(R.string.file_list_empty_headline_server_search,
-                                           R.string.file_list_empty,
-                                           R.drawable.ic_search_light_grey);
+                                           R.string.search_result_empty,
+                                           R.drawable.ic_search_empty);
                 } else if (searchType == SearchType.FAVORITE_SEARCH) {
                     setMessageForEmptyList(R.string.file_list_empty_favorite_headline,
                                            R.string.file_list_empty_favorites_filter_list,
@@ -630,15 +622,15 @@ public class ExtendedListFragment extends Fragment implements
                 } else if (searchType == SearchType.REGULAR_FILTER) {
                     setMessageForEmptyList(R.string.file_list_empty_headline_search,
                                            R.string.file_list_empty_search,
-                                           R.drawable.ic_search_light_grey);
+                                           R.drawable.ic_search_empty);
                 } else if (searchType == SearchType.SHARED_FILTER) {
                     setMessageForEmptyList(R.string.file_list_empty_shared_headline,
                                            R.string.file_list_empty_shared,
                                            R.drawable.ic_list_empty_shared);
                 } else if (searchType == SearchType.GALLERY_SEARCH) {
-                    setMessageForEmptyList(R.string.file_list_empty_headline_server_search,
-                                           R.string.file_list_empty_gallery,
-                                           R.drawable.file_image);
+                    setMessageForEmptyList(R.string.file_list_empty_headline,
+                                           R.string.gallery_list_empty,
+                                           R.drawable.ic_list_empty_media);
                 }
             }
         });
