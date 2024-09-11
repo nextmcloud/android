@@ -31,6 +31,8 @@ import com.owncloud.android.utils.theme.ThemeUtils;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
 import com.nmc.android.utils.ScanBotSdkUtils;
 
+import androidx.core.content.ContextCompat;
+
 /**
  * FAB menu {@link android.app.Dialog} styled as a bottom sheet for main actions.
  */
@@ -110,16 +112,23 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
 
                     View creatorView = creatorViewBinding.getRoot();
 
-                    creatorViewBinding.creatorName.setText(
-                        String.format(fileActivity.getString(R.string.editor_placeholder),
-                                      fileActivity.getString(R.string.create_new),
-                                      creator.getName()));
+                    //for NMC we have different text and icon for Markdown(.md) menu
+                    if (creator.getMimetype().equalsIgnoreCase(MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN)) {
+                        creatorViewBinding.creatorName.setText(fileActivity.getString(R.string.create_text_document));
+                        creatorViewBinding.creatorThumbnail.setImageDrawable(ContextCompat.getDrawable(getContext(),
+                                                                                                       R.drawable.ic_new_txt_doc));
+                    } else {
+                        creatorViewBinding.creatorName.setText(
+                            String.format(fileActivity.getString(R.string.editor_placeholder),
+                                          fileActivity.getString(R.string.create_new),
+                                          creator.getName()));
 
-                    creatorViewBinding.creatorThumbnail.setImageDrawable(
-                        MimeTypeUtil.getFileTypeIcon(creator.getMimetype(),
-                                                     creator.getExtension(),
-                                                     creatorViewBinding.creatorThumbnail.getContext(),
-                                                     viewThemeUtils));
+                        creatorViewBinding.creatorThumbnail.setImageDrawable(
+                            MimeTypeUtil.getFileTypeIcon(creator.getMimetype(),
+                                                         creator.getExtension(),
+                                                         creatorViewBinding.creatorThumbnail.getContext(),
+                                                         viewThemeUtils));
+                    }
 
                     creatorView.setOnClickListener(v -> {
                         actions.showTemplate(creator, creatorViewBinding.creatorName.getText().toString());
