@@ -42,7 +42,9 @@ object NextcloudExoPlayer {
             .setMediaSourceFactory(mediaSourceFactory)
             .setAudioAttributes(AudioAttributes.DEFAULT, true)
             .setHandleAudioBecomingNoisy(true)
-            .setSeekForwardIncrementMs(FIVE_SECONDS_IN_MILLIS)
+            // NMC-3192 Fix
+            .setSeekBackIncrementMs(2 * FIVE_SECONDS_IN_MILLIS)
+            .setSeekForwardIncrementMs(2 * FIVE_SECONDS_IN_MILLIS)
             .build()
     }
 }
