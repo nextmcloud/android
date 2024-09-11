@@ -30,6 +30,7 @@ import android.widget.MediaController.MediaPlayerControl;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
+import com.nmc.android.ui.utils.ProgressBarThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.MediaControlBinding;
@@ -102,7 +103,8 @@ public class MediaControlView extends LinearLayout implements OnClickListener, O
 
         binding.rewindBtn.setOnClickListener(this);
 
-        viewThemeUtils.platform.themeHorizontalSeekBar(binding.progressBar);
+        //NMC Customization
+        ProgressBarThemeUtils.themeHorizontalSeekBar(binding.progressBar, getResources().getColor(R.color.primary, null));
         binding.progressBar.setOnSeekBarChangeListener(this);
         binding.progressBar.setMax(1000);
     }
