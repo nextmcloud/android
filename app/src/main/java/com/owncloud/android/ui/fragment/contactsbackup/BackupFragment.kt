@@ -225,11 +225,10 @@ class BackupFragment : FileFragment(), OnDateSetListener, Injectable {
         viewThemeUtils.androidx.colorSwitchCompat(binding.calendar)
         viewThemeUtils.androidx.colorSwitchCompat(binding.dailyBackup)
 
-        viewThemeUtils.material.colorMaterialButtonPrimaryFilled(binding.backupNow)
-        viewThemeUtils.material.colorMaterialButtonPrimaryOutlined(binding.contactsDatepicker)
-
-        viewThemeUtils.platform.colorTextView(binding.dataToBackUpTitle)
-        viewThemeUtils.platform.colorTextView(binding.backupSettingsTitle)
+        //NMC Customization
+        val primaryAccentColor = requireContext().resources.getColor(R.color.primary, null)
+        binding.dataToBackUpTitle.setTextColor(primaryAccentColor)
+        binding.backupSettingsTitle.setTextColor(primaryAccentColor)
     }
 
     override fun onResume() {
@@ -530,10 +529,11 @@ class BackupFragment : FileFragment(), OnDateSetListener, Injectable {
                 show()
             }
 
-            viewThemeUtils.platform.colorTextButtons(
-                datePickerDialog!!.getButton(DatePickerDialog.BUTTON_NEGATIVE),
-                datePickerDialog!!.getButton(DatePickerDialog.BUTTON_POSITIVE)
-            )
+            // NMC Customisation
+            datePickerDialog?.getButton(DatePickerDialog.BUTTON_NEGATIVE)
+                ?.setTextColor(resources.getColor(R.color.text_color, null))
+            datePickerDialog?.getButton(DatePickerDialog.BUTTON_POSITIVE)
+                ?.setTextColor(resources.getColor(R.color.primary, null))
         } else {
             DisplayUtils.showSnackMessage(
                 requireView().findViewById<View>(R.id.contacts_linear_layout),
