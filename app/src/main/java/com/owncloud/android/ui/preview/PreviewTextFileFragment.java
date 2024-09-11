@@ -21,6 +21,7 @@ import com.nextcloud.client.account.User;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
+import com.nmc.android.utils.SearchViewThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.utils.Log_OC;
@@ -253,7 +254,8 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
         menuItem.setVisible(true);
         searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setMaxWidth(Integer.MAX_VALUE);
-        viewThemeUtils.androidx.themeToolbarSearchView(searchView);
+        //NMC customization
+        SearchViewThemeUtils.INSTANCE.themeSearchView(requireActivity(), searchView);
 
         if (searchOpen) {
             searchView.setIconified(false);
