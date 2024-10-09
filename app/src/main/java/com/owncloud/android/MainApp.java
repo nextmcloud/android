@@ -83,6 +83,7 @@ import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.status.NextcloudVersion;
 import com.owncloud.android.lib.resources.status.OwnCloudVersion;
 import com.owncloud.android.ui.activity.SyncedFoldersActivity;
+import com.nmc.android.remoteconfig.RemoteConfigInit;
 import com.owncloud.android.ui.notifications.NotificationUtils;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.FilesSyncHelper;
@@ -384,6 +385,9 @@ public class MainApp extends Application implements HasAndroidInjector {
             backgroundJobManager.schedulePeriodicHealthStatus();
             backgroundJobManager.scheduleInternal2WaySync();
         }
+
+        // NMC Customization
+        new RemoteConfigInit(this);
 
         registerGlobalPassCodeProtection();
 
