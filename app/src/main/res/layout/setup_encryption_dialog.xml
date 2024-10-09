@@ -52,7 +52,7 @@
             android:backgroundTint="@color/secondary_text_color"
             android:textColorHighlight="@color/et_highlight_color"
             android:ems="10"
-            android:inputType="textPassword"
+            android:inputType="text"
             android:textCursorDrawable="@null" />
 
     </com.google.android.material.textfield.TextInputLayout>
