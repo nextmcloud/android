@@ -15,6 +15,7 @@ import android.content.Context;
 import android.util.Pair;
 
 import com.nextcloud.client.account.User;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -562,6 +563,9 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
             newDir.setEncrypted(FileStorageUtils.checkEncryptionStatus(newDir, getStorageManager()));
             newDir.setPermissions(createdRemoteFolder.getPermissions());
             getStorageManager().saveFile(newDir);
+
+            // NMC: track create folder event
+            MoEngageSdkUtils.trackCreateFolderEvent(context, newDir);
 
             Log_OC.d(TAG, "Create directory " + remotePath + " in Database");
         }
