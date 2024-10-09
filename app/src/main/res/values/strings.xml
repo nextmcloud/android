@@ -7,13 +7,13 @@
 -->
 <resources>
     <string name="about_android">%1$s Android app</string>
-    <string name="about_version">version %1$s</string>
+    <string name="about_version">Version %1$s</string>
     <string name="about_version_with_build">version %1$s, build #%2$s</string>
     <string name="appbar_search_in">Search in %s</string>
     <string name="actionbar_open_with">Open with</string>
     <string name="actionbar_mkdir">New folder</string>
     <string name="actionbar_settings">Settings</string>
-    <string name="actionbar_see_details">Details</string>
+    <string name="actionbar_see_details">Share</string>
     <string name="actionbar_send_file">Send</string>
     <string name="actionbar_sort">Sort</string>
     <string name="sort_by">Sort by</string>
@@ -68,7 +68,7 @@
     <string name="drawer_item_personal_files">Personal files</string>
     <string name="drawer_item_home">Home</string>
     <string name="drawer_item_favorites">Favorites</string>
-    <string name="drawer_item_on_device">On device</string>
+    <string name="drawer_item_on_device">Offline files</string>
     <string name="drawer_item_recently_modified">Recently modified</string>
     <string name="drawer_item_shared">Shared</string>
     <string name="drawer_item_uploads_list">Uploads</string>
@@ -84,7 +84,7 @@
     <string name="prefs_category_general">General</string>
     <string name="prefs_category_more">More</string>
     <string name="prefs_manage_accounts">Manage accounts</string>
-    <string name="prefs_lock">App passcode</string>
+    <string name="prefs_lock">Security</string>
     <string name="prefs_lock_title">Protect app using</string>
     <string name="prefs_lock_none">None</string>
     <string name="prefs_lock_using_passcode">Passcode</string>
@@ -162,15 +162,15 @@
     <string name="upload_list_empty_headline">No uploads available</string>
     <string name="upload_list_empty_text_auto_upload">Upload some content or activate auto upload.</string>
     <string name="file_list_folder">folder</string>
-    <string name="filedetails_download">Download</string>
-    <string name="filedetails_sync_file">Sync</string>
+    <string name="filedetails_download">Offline availability</string>
+    <string name="filedetails_sync_file">Offline availability</string>
     <string name="filedetails_renamed_in_upload_msg">File renamed %1$s during upload</string>
     <string name="list_layout">Listed layout</string>
-    <string name="action_send_share">Send/Share</string>
+    <string name="action_send_share">Sharing</string>
     <string name="common_yes">Yes</string>
     <string name="common_no">No</string>
     <string name="common_ok">OK</string>
-    <string name="common_cancel_sync">Cancel sync</string>
+    <string name="common_cancel_sync">Cancel</string>
     <string name="common_cancel">Cancel</string>
     <string name="common_back">Back</string>
     <string name="common_save">Save</string>
@@ -422,7 +422,7 @@
     <string name="auto_upload_on_wifi">Only upload on unmetered Wi-Fi</string>
     <string name="instant_upload_on_charging">Only upload when charging</string>
     <string name="instant_upload_existing">Also upload existing files</string>
-    <string name="instant_upload_path">/InstantUpload</string>
+    <string name="instant_upload_path">/Camera-Media</string>
     <string name="auto_upload_path">/AutoUpload</string>
 
     <string name="preview_media_unhandled_http_code_message">File is currently locked by another user or process and therefore not deletable. Please try again later.</string>
@@ -437,7 +437,7 @@
 
     <string name="error__upload__local_file_not_copied">%1$s could not be copied to %2$s local folder</string>
     <string name="prefs_synced_folders_local_path_title">Local folder</string>
-    <string name="prefs_synced_folders_remote_path_title">Remote folder</string>
+    <string name="prefs_synced_folders_remote_path_title">Target folder in your MagentaCLOUD</string>
     <string name="prefs_instant_upload_path_use_subfolders_title">Use subfolders</string>
     <string name="prefs_instant_upload_path_use_date_subfolders_summary">Store in subfolders based on date</string>
     <string name="prefs_instant_upload_exclude_hidden_title">Exclude hidden</string>
@@ -840,7 +840,7 @@
     <string name="sharee_already_added_to_file">Adding share failed. This file or folder has already been shared with this person or group.</string>
     <string name="unsharing_failed">Unsharing failed</string>
     <string name="updating_share_failed">Updating share failed</string>
-    <string name="prefs_e2e_mnemonic">E2E mnemonic</string>
+    <string name="prefs_e2e_mnemonic">End-to-end encryption</string>
     <string name="prefs_e2e_no_device_credentials">To show mnemonic please enable device credentials.</string>
     <string name="dialog_e2e_mnemonic_title">Passphrase</string>
     <string name="login">Log in</string>
@@ -945,7 +945,7 @@
     <string name="notification_action_failed">Failed to execute action.</string>
     <string name="remove_push_notification">Remove</string>
     <string name="new_notification">New Notification</string>
-    <string name="storage_choose_location">Choose storage location</string>
+    <string name="storage_choose_location">Choose Source</string>
     <string name="storage_internal_storage">Internal storage</string>
     <string name="storage_camera">Camera</string>
     <string name="storage_pictures">Pictures</string>
@@ -1152,19 +1152,19 @@
     <string name="common_select">Select</string>
     <string name="storage_permission_full_access">Full access</string>
     <string name="storage_permission_media_read_only">Media read-only</string>
-    <string name="subtitle_photos_videos">Photos and videos</string>
-    <string name="show_images">Show photos</string>
-    <string name="subtitle_photos_only">Photos only</string>
+    <string name="subtitle_photos_videos">Images and videos</string>
+    <string name="show_images">Show images</string>
+    <string name="subtitle_photos_only">Images only</string>
     <string name="show_video">Show videos</string>
     <string name="subtitle_videos_only">Videos only</string>
-    <string name="select_media_folder">Set media folder</string>
+    <string name="select_media_folder">Select the \"Media\" folder</string>
     <string name="lock_file">Lock file</string>
     <string name="unlock_file">Unlock file</string>
     <string name="error_file_lock">Error changing file lock status</string>
     <string name="locked_by">Locked by %1$s</string>
     <string name="locked_by_app">Locked by %1$s app</string>
     <string name="lock_expiration_info">Expires: %1$s</string>
-    <string name="file_already_exists">Filename already exists</string>
+    <string name="file_already_exists">Filename already exists.</string>
     <string name="filedetails_export">Export</string>
     <string name="locate_folder">Locate folder</string>
     <string name="video_overlay_icon">Video overlay icon</string>
