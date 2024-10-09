@@ -16,7 +16,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
-import com.nextcloud.android.common.ui.theme.utils.ColorRole;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.resources.files.model.ServerFileInterface;
@@ -94,13 +93,8 @@ public final class MimeTypeUtil {
                                            ViewThemeUtils viewThemeUtils) {
         if (context != null) {
             int iconId = MimeTypeUtil.getFileTypeIconId(mimetype, filename);
-            Drawable icon = ContextCompat.getDrawable(context, iconId);
-
-            if (R.drawable.file_zip == iconId) {
-                viewThemeUtils.platform.tintPrimaryDrawable(context, icon);
-            }
-
-            return icon;
+            //NMC Customization
+            return ContextCompat.getDrawable(context, iconId);
         } else {
             return null;
         }
@@ -128,11 +122,13 @@ public final class MimeTypeUtil {
         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.folder);
         assert(drawable != null);
 
-        viewThemeUtils.platform.tintDrawable(context, drawable, ColorRole.PRIMARY);
         return drawable;
     }
 
-    public static LayerDrawable getFileIcon(Boolean isDarkModeActive, Integer overlayIconId, Context context, ViewThemeUtils viewThemeUtils) {
+    // NMC Note: This funtion won't be used in NMC as we are using different folder icons with inbuilt overlay. So this function is of no use for us.
+    // changed access to PRIVATE, in case if NC will use this function in more areas then we will get compile error which can be fixed by us
+    // so that UI won't be impacted.
+    private static LayerDrawable getFileIcon(Boolean isDarkModeActive, Integer overlayIconId, Context context, ViewThemeUtils viewThemeUtils) {
         Drawable folderDrawable = getDefaultFolderIcon(context, viewThemeUtils);
         assert(folderDrawable != null);
 
