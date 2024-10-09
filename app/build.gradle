@@ -52,7 +52,8 @@ if (shotTest) {
     apply plugin: 'shot'
 }
 apply plugin: 'com.google.devtools.ksp'
-
+// apply marketing SDK for NMC
+apply from: "$rootProject.projectDir/nmc_marketing-dependencies.gradle"
 
 println "Gradle uses Java ${Jvm.current()}"
 
@@ -431,6 +432,9 @@ dependencies {
 
     // splash screen dependency ref: https://developer.android.com/develop/ui/views/launch/splash-screen/migrate
     implementation 'androidx.core:core-splashscreen:1.0.1'
+
+    // NMC: dependency required to capture Advertising ID for Adjust & MoEngage SDK
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
 }
 
 configurations.configureEach {
