@@ -32,6 +32,7 @@ import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.operations.GetSharesForFileOperation;
 import com.owncloud.android.ui.fragment.FileDetailSharingFragment;
 import com.owncloud.android.ui.fragment.FileDetailsSharingProcessFragment;
+import com.owncloud.android.ui.fragment.util.SharingMenuHelper;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.MimeTypeUtil;
 
@@ -130,11 +131,12 @@ public class ShareActivity extends FileActivity {
 
     @Override
     protected void doShareWith(String shareeName, ShareType shareType) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.share_fragment_container,
+        getSupportFragmentManager().beginTransaction().add(R.id.share_fragment_container,
                                                                FileDetailsSharingProcessFragment.newInstance(getFile(),
                                                                                                              shareeName,
                                                                                                              shareType,
-                                                                                                             false),
+                                                                                                             false,
+                                                                                                             SharingMenuHelper.canEditFile(this, getUser().get(), getStorageManager().getCapability(getUser().get()), getFile(), editorUtils)),
                                                                FileDetailsSharingProcessFragment.TAG)
             .commit();
     }
