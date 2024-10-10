@@ -65,6 +65,7 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
     private TextView mInfoBoxMessage;
     protected AppCompatSpinner mToolbarSpinner;
     private boolean isHomeSearchToolbarShow = false;
+    private ImageView mToolbarBackIcon;
 
     @Inject public ThemeColorUtils themeColorUtils;
     @Inject public ThemeUtils themeUtils;
@@ -83,6 +84,7 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
         mHomeSearchToolbar = findViewById(R.id.home_toolbar);
         mMenuButton = findViewById(R.id.menu_button);
         mSearchText = findViewById(R.id.search_text);
+        mToolbarBackIcon = findViewById(R.id.toolbar_back_icon);
         mSwitchAccountButton = findViewById(R.id.switch_account_button);
         mNotificationButton = findViewById(R.id.notification_button);
 
@@ -105,6 +107,8 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
         viewThemeUtils.material.colorToolbarOverflowIcon(mToolbar);
         viewThemeUtils.platform.themeStatusBar(this);
         viewThemeUtils.material.colorMaterialTextButton(mSwitchAccountButton);
+
+        mToolbarBackIcon.setOnClickListener(v -> onBackPressed());
     }
 
     public void setupToolbarShowOnlyMenuButtonAndTitle(String title, View.OnClickListener toggleDrawer) {
@@ -268,8 +272,18 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
     public void setPreviewImageBitmap(Bitmap bitmap) {
         if (mPreviewImage != null) {
             mPreviewImage.setImageBitmap(bitmap);
+            resetPreviewImageConfiguration();
             setPreviewImageVisibility(true);
         }
+    }
+
+    /**
+     * reset preview image configuration if required the scale type and padding are changing in sharing screen so to
+     * reset it call this method
+     */
+    private void resetPreviewImageConfiguration() {
+        mPreviewImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        mPreviewImage.setPadding(0, 0, 0, 0);
     }
 
     /**
@@ -280,7 +294,32 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
     public void setPreviewImageDrawable(Drawable drawable) {
         if (mPreviewImage != null) {
             mPreviewImage.setImageDrawable(drawable);
+            resetPreviewImageConfiguration();
             setPreviewImageVisibility(true);
+        }
+    }
+
+    /**
+     * method to show/hide the toolbar custom back icon currently this is only showing for sharing details screen for
+     * thumbnail images
+     *
+     * @param show
+     */
+    public void showToolbarBackImage(boolean show) {
+        if (mToolbarBackIcon == null) {
+            return;
+        }
+        ActionBar actionBar = getSupportActionBar();
+        if (show) {
+            mToolbarBackIcon.setVisibility(View.VISIBLE);
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(false);
+            }
+        } else {
+            mToolbarBackIcon.setVisibility(View.GONE);
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+            }
         }
     }
 
@@ -293,6 +332,15 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
 
     public FrameLayout getPreviewImageContainer() {
         return mPreviewImageContainer;
+    }
+
+    /**
+     * method will expand the toolbar using app bar if its hidden due to scrolling
+     */
+    public void expandToolbar() {
+        if (mAppBar != null) {
+            mAppBar.setExpanded(true, true);
+        }
     }
 
     public void updateToolbarSubtitle(@NonNull String subtitle) {
