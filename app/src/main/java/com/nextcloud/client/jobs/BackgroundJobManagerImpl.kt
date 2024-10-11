@@ -21,6 +21,7 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.google.common.util.concurrent.ListenableFuture
 import com.nextcloud.client.account.User
 import com.nextcloud.client.core.Clock
 import com.nextcloud.client.di.Injectable
@@ -32,8 +33,10 @@ import com.nextcloud.utils.extensions.isWorkRunning
 import com.nextcloud.utils.extensions.isWorkScheduled
 import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.operations.DownloadType
+import com.nmc.android.jobs.ScanDocUploadWorker
 import java.util.Date
 import java.util.UUID
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
@@ -80,6 +83,7 @@ internal class BackgroundJobManagerImpl(
         const val JOB_PDF_GENERATION = "pdf_generation"
         const val JOB_IMMEDIATE_CALENDAR_BACKUP = "immediate_calendar_backup"
         const val JOB_IMMEDIATE_FILES_EXPORT = "immediate_files_export"
+        const val JOB_IMMEDIATE_SCAN_DOC_UPLOAD = "immediate_scan_doc_upload"
 
         const val JOB_PERIODIC_HEALTH_STATUS = "periodic_health_status"
         const val JOB_IMMEDIATE_HEALTH_STATUS = "immediate_health_status"
@@ -604,6 +608,26 @@ internal class BackgroundJobManagerImpl(
         workManager.enqueue(request)
     }
 
+    override fun scheduleImmediateScanDocUploadJob(
+        saveFileTypes: String, docFileName: String,
+        remotePathToUpload:
+        String, pdfPassword: String?
+    ): LiveData<JobInfo?> {
+        val data = Data.Builder()
+            .putString(ScanDocUploadWorker.DATA_REMOTE_PATH, remotePathToUpload)
+            .putString(ScanDocUploadWorker.DATA_SCAN_FILE_TYPES, saveFileTypes)
+            .putString(ScanDocUploadWorker.DATA_SCAN_PDF_PWD, pdfPassword)
+            .putString(ScanDocUploadWorker.DATA_DOC_FILE_NAME, docFileName)
+            .build()
+
+        val request = oneTimeRequestBuilder(ScanDocUploadWorker::class, JOB_IMMEDIATE_SCAN_DOC_UPLOAD)
+            .setInputData(data)
+            .build()
+
+        workManager.enqueueUniqueWork(JOB_IMMEDIATE_SCAN_DOC_UPLOAD, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+        return workManager.getJobInfo(request.id)
+    }
+
     override fun scheduleTestJob() {
         val request = periodicRequestBuilder(TestJob::class, JOB_TEST)
             .setInitialDelay(DEFAULT_IMMEDIATE_JOB_DELAY_SEC, TimeUnit.SECONDS)
@@ -657,5 +681,22 @@ internal class BackgroundJobManagerImpl(
         ).build()
 
         workManager.enqueueUniquePeriodicWork(JOB_INTERNAL_TWO_WAY_SYNC, ExistingPeriodicWorkPolicy.KEEP, request)
+    }
+
+    override fun isWorkScheduled(tag: String): Boolean {
+        val statuses: ListenableFuture<List<WorkInfo>> = workManager.getWorkInfosByTag(tag)
+        return try {
+            var running = false
+            val workInfoList: List<WorkInfo> = statuses.get()
+            for (workInfo in workInfoList) {
+                val state = workInfo.state
+                running = state == WorkInfo.State.RUNNING || state == WorkInfo.State.ENQUEUED
+            }
+            running
+        } catch (e: ExecutionException) {
+            false
+        } catch (e: InterruptedException) {
+            false
+        }
     }
 }
