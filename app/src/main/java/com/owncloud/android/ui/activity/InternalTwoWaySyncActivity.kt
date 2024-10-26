@@ -81,6 +81,11 @@ class InternalTwoWaySyncActivity :
                 }
             }
         }
+
+        binding.twoWaySyncToggle.isChecked = preferences.twoWayInternalSyncStatus
+        binding.twoWaySyncToggle.setOnCheckedChangeListener { _, isChecked ->
+            preferences.twoWayInternalSyncStatus = isChecked
+        }
     }
 
     private fun setupEmptyList() {
