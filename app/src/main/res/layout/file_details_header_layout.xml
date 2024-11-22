@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2024 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:showIn="@layout/file_details_fragment">
+
+    <ImageView
+        android:id="@+id/header_image"
+        android:layout_width="0dp"
+        android:padding="@dimen/standard_half_padding"
+        android:layout_height="0dp"
+        android:contentDescription="@string/preview_image_description"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/image_content_separation_guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/folder" />
+
+    <ImageView
+        android:id="@+id/favorite"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_star_outline"
+        app:layout_constraintEnd_toEndOf="@id/header_image"
+        app:layout_constraintTop_toTopOf="@id/header_image" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/image_content_separation_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <TextView
+        android:id="@+id/filename"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:ellipsize="middle"
+        android:text="@string/placeholder_filename"
+        android:textColor="@color/share_title_txt_color"
+        android:textSize="@dimen/txt_size_15sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/image_content_separation_guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/placeholder_filename" />
+
+    <TextView
+        android:id="@+id/file_size_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/standard_half_margin"
+        android:text="@string/share_heading_file_size"
+        android:textColor="@color/share_subtitle_txt_color"
+        android:textSize="@dimen/share_file_layout_text_size"
+        app:layout_constraintStart_toEndOf="@+id/image_content_separation_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/filename" />
+
+    <TextView
+        android:id="@+id/size"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/share_subtitle_txt_color"
+        android:textSize="@dimen/share_file_layout_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/uploaded_timestamp"
+        app:layout_constraintTop_toTopOf="@+id/file_size_label"
+        tools:text="@string/placeholder_fileSize" />
+
+
+    <TextView
+        android:id="@+id/file_modified_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:text="@string/share_heading_file_modified"
+        android:textColor="@color/share_subtitle_txt_color"
+        android:textSize="@dimen/share_file_layout_text_size"
+        app:layout_constraintStart_toEndOf="@+id/image_content_separation_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/file_size_label" />
+
+    <TextView
+        android:id="@+id/last_modification_timestamp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/share_subtitle_txt_color"
+        android:textSize="@dimen/share_file_layout_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/uploaded_timestamp"
+        app:layout_constraintTop_toTopOf="@+id/file_modified_label"
+        tools:text="12:23:45 - 20:15" />
+
+    <TextView
+        android:id="@+id/file_created_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:text="@string/share_heading_file_created"
+        android:textColor="@color/share_subtitle_txt_color"
+        android:textSize="@dimen/share_file_layout_text_size"
+        app:layout_constraintStart_toEndOf="@+id/image_content_separation_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/file_modified_label" />
+
+    <TextView
+        android:id="@+id/created_timestamp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/share_subtitle_txt_color"
+        android:textSize="@dimen/share_file_layout_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/uploaded_timestamp"
+        app:layout_constraintTop_toTopOf="@+id/file_created_label"
+        tools:text="12:23:45 - 20:15" />
+
+    <TextView
+        android:id="@+id/file_uploaded_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:text="@string/share_heading_file_uploaded"
+        android:textColor="@color/share_subtitle_txt_color"
+        android:textSize="@dimen/share_file_layout_text_size"
+        app:layout_constraintStart_toEndOf="@+id/image_content_separation_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/file_created_label" />
+
+    <TextView
+        android:id="@+id/uploaded_timestamp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:textColor="@color/share_subtitle_txt_color"
+        android:textSize="@dimen/share_file_layout_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/file_uploaded_label"
+        app:layout_constraintTop_toTopOf="@+id/file_uploaded_label"
+        tools:text="12:23:45 - 20:15" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

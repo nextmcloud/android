@@ -2,13 +2,14 @@ package com.nmc.android.utils
 
 import android.content.Context
 import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.appcompat.widget.SearchView
 import com.owncloud.android.R
 
 object SearchViewThemeUtils {
     fun themeSearchView(context: Context, searchView: SearchView) {
         val fontColor = context.resources.getColor(R.color.fontAppbar, null)
-        val editText: SearchView.SearchAutoComplete = searchView.findViewById(R.id.search_src_text)
+        val editText: AppCompatAutoCompleteTextView = searchView.findViewById(R.id.search_src_text)
         editText.textSize = 16F
         editText.setTextColor(fontColor)
         editText.highlightColor = context.resources.getColor(R.color.et_highlight_color, null)

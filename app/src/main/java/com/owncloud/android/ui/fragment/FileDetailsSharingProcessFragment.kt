@@ -243,12 +243,6 @@ class FileDetailsSharingProcessFragment :
         }
         themeView()
     }
-    private fun scrollTopShowToolbar() {
-        //show the toolbar if it is hidden due to scrolling
-        if (requireActivity() is ToolbarActivity) {
-            (requireActivity() as ToolbarActivity).expandToolbar()
-        }
-    }
 
     private fun themeView() {
         CheckableThemeUtils.tintSwitch(binding.shareProcessSetPasswordSwitch)
@@ -273,7 +267,6 @@ class FileDetailsSharingProcessFragment :
     }
 
     private fun showShareProcessFirst() {
-        scrollTopShowToolbar()
         binding.shareProcessGroupOne.visibility = View.VISIBLE
         binding.shareProcessGroupTwo.visibility = View.GONE
         binding.tvSetPasswordEmailWarning.visibility = View.GONE
@@ -502,7 +495,6 @@ class FileDetailsSharingProcessFragment :
      * update views for screen type Note
      */
     private fun showShareProcessSecond() {
-        scrollTopShowToolbar()
         binding.shareProcessGroupOne.visibility = View.GONE
         binding.shareProcessGroupTwo.visibility = View.VISIBLE
         if (share != null) {
