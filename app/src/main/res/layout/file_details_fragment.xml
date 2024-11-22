@@ -11,7 +11,6 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/detail_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -30,77 +29,10 @@
             android:padding="@dimen/standard_padding"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/filename"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="middle"
-                android:text="@string/placeholder_filename"
-                android:textColor="@color/share_title_txt_color"
-                android:textSize="@dimen/txt_size_14sp"
-                android:textStyle="bold"
-                tools:text="@string/placeholder_filename" />
-
-            <LinearLayout
-                android:id="@+id/filedetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/favorite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/zero"
-                    android:layout_marginEnd="@dimen/standard_eighth_margin"
-                    android:contentDescription="@null"
-                    android:src="@drawable/ic_star_outline" />
-
-                <TextView
-                    android:id="@+id/size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/txt_size_14sp"
-                    android:textColor="@color/share_subtitle_txt_color"
-                    tools:text="@string/placeholder_fileSize" />
-
-                <TextView
-                    android:id="@+id/file_separator"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:paddingStart="@dimen/zero"
-                    android:paddingEnd="@dimen/standard_quarter_padding"
-                    android:text="@string/info_separator"
-                    android:textColor="@color/share_subtitle_txt_color"
-                    android:textSize="@dimen/two_line_secondary_text_size" />
-
-                <TextView
-                    android:id="@+id/last_modification_timestamp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:textSize="@dimen/txt_size_14sp"
-                    android:textColor="@color/share_subtitle_txt_color"
-                    tools:text="@string/placeholder_media_time" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/standard_margin"
-                    android:layout_marginEnd="@dimen/standard_eighth_margin"
-                    android:contentDescription="@null"
-                    android:src="@drawable/ic_tag"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/tags"
-                    android:visibility="gone" />
-
-            </LinearLayout>
+            <!-- NMC: header for sharing -->
+            <include
+                android:id="@+id/file_details_header"
+                layout="@layout/file_details_header_layout" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/tagsGroup"

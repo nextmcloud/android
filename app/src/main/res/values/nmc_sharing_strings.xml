@@ -15,14 +15,14 @@
     <string name="sharing_description">You can create links or send shares by mail. If you invite MagentaCLOUD users, you have more opportunities for collaboration.</string>
     <string name="your_message">Your Message</string>
     <string name="personal_share_email">Personal share by mail</string>
-    <string name="create_link">Create Link</string>
+    <string name="create_link">Create new link</string>
     <string name="your_shares">Your Shares</string>
     <string name="link_label">Link Label</string>
     <string name="hint_link_label">Your custom link label</string>
     <string name="file_drop_info">With File drop, only uploading is allowed. Only you can see files and folders that have been uploaded.</string>
     <string name="password_protection">Password Protection</string>
     <string name="expiration_date">Expiration Date</string>
-    <string name="empty_shares">No shares created yet.</string>
+    <string name="empty_shares">You have not yet shared your file/folder. Share to give others access.</string>
     <string name="link_download_limit">Download Limit</string>
     <string name="download_limit_empty">Download limit cannot be empty.</string>
     <string name="hint_download_limit">Enter download limit</string>
@@ -34,4 +34,18 @@
         transmitted unencrypted in plaintext.</string>
     <string name="placeholder_receivedMessage">Received</string>
     <string name="placeholder_sharedMessage">Shared</string>
+    <string name="sharing_heading">Send link by mail</string>
+    <string name="reshare_not_allowed">Resharing is not allowed.</string>
+    <string name="reshare_allowed">Resharing is allowed.</string>
+    <string name="resharing_user_info">This file / folder was shared with you by %s</string>
+    <string name="txt_or">or</string>
+    <string name="shared_with_heading">Shared with</string>
+    <string name="share_details">Detail</string>
+    <string name="share_quick_permission_can_view">Everyone can only view</string>
+    <string name="share_quick_permission_can_edit">Everyone can edit</string>
+    <string name="share_quick_permission_can_upload">Everyone can just upload</string>
+    <string name="share_heading_file_size">Size:</string>
+    <string name="share_heading_file_modified">Modified:</string>
+    <string name="share_heading_file_created">Created:</string>
+    <string name="share_heading_file_uploaded">Uploaded:</string>
 </resources>

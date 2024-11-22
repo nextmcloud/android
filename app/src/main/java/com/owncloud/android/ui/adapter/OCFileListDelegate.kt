@@ -398,7 +398,7 @@ class OCFileListDelegate(
                 }
                 file.isSharedWithSharee -> {
                     val shareIcon = viewThemeUtils.platform.colorDrawable(
-                        AppCompatResources.getDrawable(context, R.drawable.ic_shared)!!,
+                        AppCompatResources.getDrawable(context, R.drawable.ic_share)!!,
                         context.resources.getColor(R.color.primary, null)
                     )
                     sharedIconView.setImageDrawable(shareIcon)
@@ -409,7 +409,7 @@ class OCFileListDelegate(
                 }
                 file.isSharedViaLink -> {
                     val shareIcon = viewThemeUtils.platform.colorDrawable(
-                        AppCompatResources.getDrawable(context, R.drawable.ic_shared)!!,
+                        AppCompatResources.getDrawable(context, R.drawable.ic_share)!!,
                         context.resources.getColor(R.color.primary, null)
                     )
                     sharedIconView.setImageDrawable(shareIcon)
@@ -426,7 +426,7 @@ class OCFileListDelegate(
                         context.resources,
                         R.color.list_icon_color, null
                     )
-                    val unShareIcon = AppCompatResources.getDrawable(context, R.drawable.ic_unshared)
+                    val unShareIcon = AppCompatResources.getDrawable(context, R.drawable.ic_share)
                     val unShareTintedIcon = viewThemeUtils.platform.colorDrawable(unShareIcon!!, unShareIconColor)
                     sharedIconView.setImageDrawable(unShareTintedIcon)
                     sharedIconView.contentDescription = context.getString(R.string.shared_icon_share)
