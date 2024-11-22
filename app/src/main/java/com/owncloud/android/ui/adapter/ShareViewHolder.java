@@ -98,7 +98,7 @@ class ShareViewHolder extends RecyclerView.ViewHolder {
         }
 
         binding.name.setText(name);
-        binding.icon.setImageResource(R.drawable.ic_internal_share);
+        //  binding.icon.setImageResource(R.drawable.ic_internal_share);
 
         if (share.getShareWith().equalsIgnoreCase(userId) || share.getUserId().equalsIgnoreCase(userId)) {
             binding.overflowMenu.setVisibility(View.VISIBLE);
@@ -117,6 +117,16 @@ class ShareViewHolder extends RecyclerView.ViewHolder {
     private void setPermissionName(String permissionName) {
         if (!TextUtils.isEmpty(permissionName)) {
             binding.permissionName.setText(permissionName);
+            if (permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_quick_permission_can_edit))) {
+                binding.permissionName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_sharing_edit, 0, R.drawable.ic_sharing_quick_permission_arrow, 0);
+            } else if (permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_quick_permission_can_view))) {
+                binding.permissionName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_sharing_read_only, 0, R.drawable.ic_sharing_quick_permission_arrow, 0);
+            } else if (permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_permission_secure_file_drop))
+                || permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_quick_permission_can_upload))) {
+                binding.permissionName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_sharing_file_drop, 0, R.drawable.ic_sharing_quick_permission_arrow, 0);
+            } else {
+                binding.permissionName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            }
             binding.permissionName.setVisibility(View.VISIBLE);
         } else {
             binding.permissionName.setVisibility(View.GONE);

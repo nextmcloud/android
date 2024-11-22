@@ -55,9 +55,6 @@ class LinkShareViewHolder extends RecyclerView.ViewHolder {
     public void bind(OCShare publicShare, ShareeListAdapterListener listener) {
         if (ShareType.EMAIL == publicShare.getShareType()) {
             binding.name.setText(publicShare.getSharedWithDisplayName());
-            binding.icon.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),
-                                                                      R.drawable.ic_external_share,
-                                                                      null));
             binding.copyLink.setVisibility(View.GONE);
         } else {
             if (!TextUtils.isEmpty(publicShare.getLabel())) {
@@ -104,6 +101,16 @@ class LinkShareViewHolder extends RecyclerView.ViewHolder {
                 binding.shareByLinkContainer.setOnClickListener(v -> listener.showPermissionsDialog(publicShare));
             }
             binding.permissionName.setText(permissionName);
+            if (permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_quick_permission_can_edit))) {
+                binding.permissionName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_sharing_edit, 0, R.drawable.ic_sharing_quick_permission_arrow, 0);
+            } else if (permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_quick_permission_can_view))) {
+                binding.permissionName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_sharing_read_only, 0, R.drawable.ic_sharing_quick_permission_arrow, 0);
+            } else if (permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_permission_secure_file_drop))
+                || permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_quick_permission_can_upload))) {
+                binding.permissionName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_sharing_file_drop, 0, R.drawable.ic_sharing_quick_permission_arrow, 0);
+            } else {
+                binding.permissionName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            }
             binding.permissionName.setVisibility(View.VISIBLE);
         } else {
             binding.permissionName.setVisibility(View.GONE);

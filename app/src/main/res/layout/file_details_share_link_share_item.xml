@@ -23,16 +23,18 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginTop="7dp"
-        app:tint="@color/text_color"
         android:layout_marginEnd="@dimen/standard_margin"
         android:contentDescription="@string/share"
-        android:src="@drawable/shared_via_link" />
+        android:src="@drawable/shared_via_link"
+        android:visibility="gone"
+        app:tint="@color/text_color" />
 
     <LinearLayout
         android:id="@+id/share_name_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/standard_margin"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -53,38 +55,36 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:singleLine="true"
-            tools:text="View only"
-            app:drawableEndCompat="@drawable/ic_baseline_arrow_drop_down_24"
-            app:drawableTint="@color/primary"
-            app:drawableRightCompat="@drawable/ic_baseline_arrow_drop_down_24"
             android:textColor="@color/primary"
-            android:textSize="@dimen/txt_size_14sp" />
+            android:textSize="@dimen/txt_size_15sp"
+            app:drawableTint="@color/primary"
+            tools:drawableEndCompat="@drawable/ic_sharing_quick_permission_arrow"
+            tools:drawableStartCompat="@drawable/ic_sharing_edit"
+            tools:text="View only" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/overflow_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/overflow_menu"
+        android:gravity="center"
+        android:paddingStart="@dimen/standard_padding"
+        android:paddingEnd="@dimen/standard_padding"
+        android:scaleType="fitStart"
+        android:text="@string/share_details"
+        android:textColor="@color/share_info_txt_color"
+        android:textSize="@dimen/txt_size_17sp" />
 
     <ImageView
         android:id="@+id/copy_link"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
         android:contentDescription="@string/copy_link"
-        android:paddingTop="@dimen/standard_quarter_margin"
-        android:paddingBottom="@dimen/standard_quarter_margin"
-        android:scaleType="fitStart"
-        app:tint="@color/primary"
         android:paddingStart="@dimen/standard_padding"
         android:paddingEnd="@dimen/standard_half_padding"
-        android:src="@drawable/ic_clipboard" />
-
-    <ImageView
-        android:id="@+id/overflow_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:paddingTop="@dimen/standard_quarter_margin"
-        android:contentDescription="@string/overflow_menu"
-        android:paddingStart="@dimen/standard_half_padding"
-        android:paddingEnd="@dimen/standard_padding"
-        app:tint="@color/primary"
-        android:scaleType="fitStart"
-        android:src="@drawable/ic_dots_vertical" />
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_share"
+        app:tint="@color/primary" />
 
 </LinearLayout>

@@ -27,14 +27,16 @@
         android:layout_marginEnd="@dimen/standard_margin"
         android:layout_marginRight="@dimen/standard_margin"
         android:contentDescription="@string/user_icon"
-        app:tint="@color/text_color"
-        android:src="@drawable/ic_internal_share" />
+        android:src="@drawable/ic_internal_share"
+        android:visibility="gone"
+        app:tint="@color/text_color" />
 
     <LinearLayout
         android:id="@+id/share_name_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/standard_margin"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -56,10 +58,10 @@
             android:gravity="center_vertical"
             android:singleLine="true"
             android:textColor="@color/primary"
-            android:textSize="@dimen/txt_size_14sp"
-            app:drawableEndCompat="@drawable/ic_baseline_arrow_drop_down_24"
-            app:drawableRightCompat="@drawable/ic_baseline_arrow_drop_down_24"
+            android:textSize="@dimen/txt_size_15sp"
             app:drawableTint="@color/primary"
+            tools:drawableEndCompat="@drawable/ic_sharing_quick_permission_arrow"
+            tools:drawableStartCompat="@drawable/ic_sharing_edit"
             tools:text="View only" />
     </LinearLayout>
 
@@ -68,10 +70,10 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:contentDescription="@string/overflow_menu"
-        app:tint="@color/primary"
-        android:paddingTop="@dimen/standard_quarter_margin"
-        android:scaleType="fitStart"
         android:paddingStart="@dimen/standard_padding"
+        android:paddingTop="@dimen/standard_quarter_margin"
         android:paddingEnd="@dimen/standard_padding"
-        android:src="@drawable/ic_dots_vertical" />
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_dots_vertical"
+        app:tint="@color/primary" />
 </LinearLayout>
