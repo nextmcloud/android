@@ -72,6 +72,10 @@
     <color name="login_text_color">#ffffff</color>
     <color name="login_text_hint_color">#7fC0E3</color>
 
+    <!-- empty list icon colors -->
+    <color name="empty_list_icon_color">#191919</color>
+    <color name="empty_list_icon_color_dark">#CCCCCC</color>
+
     <!-- Multiaccount support -->
     <bool name="multiaccount_support">true</bool>
 
