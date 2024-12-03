@@ -2006,6 +2006,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
         }
     }
 
+    private int encryptFolderRetryCount = 0;
+
     private void encryptFolder(long localId,
                                String remoteId,
                                String remotePath,
@@ -2020,7 +2022,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
             OCFile folder = storageManager.getFileByRemoteId(remoteId);
 
             OwnCloudClient client = clientFactory.create(user);
-            RemoteOperationResult remoteOperationResult = new ToggleEncryptionRemoteOperation(localId,
+            final var remoteOperationResult = new ToggleEncryptionRemoteOperation(localId,
                                                                                               remotePath,
                                                                                               shouldBeEncrypted)
                 .execute(client);
@@ -2073,9 +2075,14 @@ public class OCFileListFragment extends ExtendedListFragment implements
                               R.string.end_to_end_encryption_folder_not_empty,
                               Snackbar.LENGTH_LONG).show();
             } else {
-                Snackbar.make(getRecyclerView(),
-                              R.string.common_error_unknown,
-                              Snackbar.LENGTH_LONG).show();
+                if (shouldBeEncrypted && encryptFolderRetryCount < 3) {
+                    encryptFolderRetryCount += 1;
+                    new Handler().postDelayed(() -> encryptFolder(localId, remoteId, remotePath, true), 5000);
+                } else {
+                    Snackbar.make(getRecyclerView(),
+                                  R.string.common_error_unknown,
+                                  Snackbar.LENGTH_LONG).show();
+                }
             }
 
         } catch (Throwable e) {
