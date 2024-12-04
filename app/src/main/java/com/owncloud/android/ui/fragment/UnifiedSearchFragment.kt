@@ -29,6 +29,7 @@ import com.nextcloud.client.account.UserAccountManager
 import com.nextcloud.client.core.AsyncRunner
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.di.ViewModelFactory
+import com.nmc.android.utils.KeyboardUtils
 import com.nextcloud.client.network.ClientFactory
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ListFragmentBinding
@@ -238,6 +239,8 @@ class UnifiedSearchFragment :
     private fun showFile(file: OCFile, showFileActions: Boolean) {
         activity.let {
             if (activity is FileDisplayActivity) {
+                // NMC: hide keyboard when user taps on any file to view
+                KeyboardUtils.hideKeyboardFrom(requireContext(), binding.root)
                 val fda = activity as FileDisplayActivity
                 fda.file = file
 
@@ -298,6 +301,7 @@ class UnifiedSearchFragment :
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
+        KeyboardUtils.hideKeyboardFrom(requireContext(), binding.root)
         vm.setQuery(query)
         vm.initialQuery()
         return true
