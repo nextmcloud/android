@@ -176,6 +176,16 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         String userId = accountManager.getUserData(user.toPlatformAccount(),
                                                    com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_USER_ID);
 
+        binding.linkSharesList.setAdapter(new ShareeListAdapter(fileActivity,
+                                                                new ArrayList<>(),
+                                                                this,
+                                                                userId,
+                                                                user,
+                                                                viewThemeUtils,
+                                                                file.isEncrypted()));
+
+        binding.linkSharesList.setLayoutManager(new LinearLayoutManager(requireContext()));
+
         binding.sharesList.setAdapter(new ShareeListAdapter(fileActivity,
                                                             new ArrayList<>(),
                                                             this,
@@ -580,9 +590,23 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
         adapter.addShares(shares);
 
+        showHideEmailShareView(shares == null || shares.isEmpty());
+
         if (FileDetailSharingFragmentHelper.isPublicShareDisabled(capabilities) || !file.canReshare()) {
             return;
         }
+
+        ShareeListAdapter linkAdapter = (ShareeListAdapter) binding.linkSharesList.getAdapter();
+
+        if (linkAdapter == null) {
+            DisplayUtils.showSnackMessage(getView(), getString(R.string.could_not_retrieve_shares));
+            return;
+        }
+        linkAdapter.getShares().clear();
+
+        //update flag in adapter
+        linkAdapter.setTextFile(SharingMenuHelper.canEditFile(requireActivity(), user,
+                                                              capabilities, file, editorUtils));
 
         // Get public share
         List<OCShare> publicShares = fileDataStorageManager.getSharesByPathAndType(file.getRemotePath(),
@@ -599,13 +623,16 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
             adapter.removeNewPublicShare();
         }*/
 
-        adapter.addShares(publicShares);
+        linkAdapter.addShares(publicShares);
 
-        showHideView((shares == null || shares.isEmpty()) && (publicShares == null || publicShares.isEmpty()));
+        showHideLinkShareView(publicShares == null || publicShares.isEmpty());
     }
 
-    private void showHideView(boolean isEmptyList) {
+    private void showHideLinkShareView(boolean isEmptyList) {
         binding.linkSharesList.setVisibility(isEmptyList ? View.GONE : View.VISIBLE);
+    }
+
+    private void showHideEmailShareView(boolean isEmptyList) {
         binding.sharesList.setVisibility(isEmptyList ? View.GONE : View.VISIBLE);
         binding.tvEmptyShares.setVisibility(isEmptyList ? View.VISIBLE : View.GONE);
     }
@@ -678,7 +705,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     @Override
     public void avatarGenerated(Drawable avatarDrawable, Object callContext) {
         // NMC: not required
-       // binding.sharedWithYouAvatar.setImageDrawable(avatarDrawable);
+        // binding.sharedWithYouAvatar.setImageDrawable(avatarDrawable);
     }
 
     @Override
@@ -716,7 +743,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     @Override
     public void unShare(OCShare share) {
         unshareWith(share);
-        ShareeListAdapter adapter = (ShareeListAdapter) binding.sharesList.getAdapter();
+        ShareeListAdapter adapter = (ShareeListAdapter) binding.linkSharesList.getAdapter();
         if (adapter == null) {
             DisplayUtils.showSnackMessage(getView(), getString(R.string.failed_update_ui));
             return;

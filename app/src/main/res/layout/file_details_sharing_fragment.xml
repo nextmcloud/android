@@ -93,9 +93,7 @@
             android:layout_marginTop="@dimen/standard_margin"
             android:layout_marginBottom="@dimen/standard_margin"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:orientation="horizontal">
 
             <View
                 android:layout_width="match_parent"
@@ -130,13 +128,12 @@
             android:text="@string/copy_link"
             android:textColor="@color/text_color"
             android:textSize="@dimen/txt_size_17sp"
-            android:textStyle="bold"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/linkSharesList"
             android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/standard_quarter_margin"
             android:layout_height="match_parent"
             android:divider="@drawable/divider"
             android:dividerHeight="1dp" />
@@ -169,14 +166,13 @@
             android:text="@string/shared_with_heading"
             android:textColor="@color/text_color"
             android:textSize="@dimen/txt_size_17sp"
-            android:textStyle="bold"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/sharesList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/standard_quarter_margin"
             android:divider="@drawable/divider"
             android:dividerHeight="1dp" />
 
@@ -184,13 +180,12 @@
             android:id="@+id/tv_empty_shares"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginStart="@dimen/standard_margin"
-            android:layout_marginTop="@dimen/standard_double_margin"
+            android:layout_marginTop="@dimen/standard_quarter_margin"
             android:layout_marginEnd="@dimen/standard_margin"
             android:text="@string/empty_shares"
-            android:textColor="@color/secondary_text_color"
-            android:textSize="@dimen/txt_size_16sp"
+            android:textColor="@color/share_info_txt_color"
+            android:textSize="@dimen/txt_size_14sp"
             android:visibility="gone" />
 
         <View

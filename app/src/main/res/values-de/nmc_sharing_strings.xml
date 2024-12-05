@@ -23,7 +23,7 @@
     <string name="file_drop_info">Bei der Sammelbox ist nur das Hochladen erlaubt. Nur Sie sehen Dateien und Ordner die hochgeladen worden sind.</string>
     <string name="password_protection">Password Protection</string>
     <string name="expiration_date">Expiration Date</string>
-    <string name="empty_shares">Noch keine Freigaben erstellt.</string>
+    <string name="empty_shares">Sie haben ihre Datei / ihren Ordner noch nicht geteilt. Teilen Sie um anderen Zugriff zu geben.</string>
     <string name="link_download_limit">Download Limit</string>
     <string name="download_limit_empty">Das Feld für das Download-Limit darf nicht leer sein.</string>
     <string name="hint_download_limit">Downlimit eingeben</string>
