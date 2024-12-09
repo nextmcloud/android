@@ -105,7 +105,8 @@ class FilesSpecificViewThemeUtils @Inject constructor(
                 .setThumbDrawable(getThumbDrawable(context))
                 .setPopupStyle {
                     PopupStyles.MD2.accept(it)
-                    it.background = FastScrollPopupBackground(context, scheme.primary)
+                    //NMC customisation
+                    it.background = FastScrollPopupBackground(context, context.resources.getColor(R.color.primary, null))
                 }
         }
     }
@@ -117,7 +118,7 @@ class FilesSpecificViewThemeUtils @Inject constructor(
                 me.zhanghai.android.fastscroll.R.drawable.afs_md2_thumb,
                 null
             )
-        return androidViewThemeUtils.tintPrimaryDrawable(context, thumbDrawable)!!
+        return androidViewThemeUtils.colorDrawable(thumbDrawable!!, context.resources.getColor(R.color.primary, null))
     }
 
     private fun getHomeAsUpIcon(isMenu: Boolean): Int {
