@@ -57,6 +57,7 @@
             tools:visibility="visible" />
 
         <LinearLayout
+            android:id="@+id/search_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/standard_margin"
@@ -82,7 +83,7 @@
                 android:layout_marginEnd="@dimen/standard_margin"
                 android:background="@drawable/share_search_background"
                 app:srcCompat="@drawable/ic_contact_book"
-                app:tint="@color/share_btn_txt_color" />
+                app:tint="@color/share_contact_icon_color" />
 
         </LinearLayout>
 
@@ -97,7 +98,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:layout_weight="1"
                 android:background="@color/divider_color" />
 
@@ -112,7 +113,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:layout_weight="1"
                 android:background="@color/divider_color" />
         </LinearLayout>
@@ -151,7 +152,7 @@
         <View
             android:id="@+id/shared_with_divider"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.5dp"
             android:layout_marginTop="@dimen/standard_margin"
             android:layout_marginBottom="@dimen/standard_margin"
             android:background="@color/divider_color" />

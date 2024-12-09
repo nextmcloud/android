@@ -70,7 +70,7 @@
             android:paddingEnd="@dimen/standard_half_padding"
             android:scaleType="fitStart"
             android:text="@string/share_details"
-            android:textColor="@color/share_txt_color"
+            android:textColor="@color/share_subtitle_txt_color"
             android:textSize="@dimen/txt_size_17sp" />
 
         <ImageView

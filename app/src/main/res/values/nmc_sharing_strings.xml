@@ -44,4 +44,8 @@
     <string name="share_quick_permission_can_view">Everyone can only view</string>
     <string name="share_quick_permission_can_edit">Everyone can edit</string>
     <string name="share_quick_permission_can_upload">Everyone can just upload</string>
+    <string name="share_heading_file_size">Size:</string>
+    <string name="share_heading_file_modified">Modified:</string>
+    <string name="share_heading_file_created">Created:</string>
+    <string name="share_heading_file_uploaded">Uploaded:</string>
 </resources>

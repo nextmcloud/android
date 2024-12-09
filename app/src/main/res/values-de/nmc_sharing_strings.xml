@@ -45,4 +45,8 @@
     <string name="share_quick_permission_can_view">Jeder kann nur anzeigen</string>
     <string name="share_quick_permission_can_edit">Jeder kann bearbeiten</string>
     <string name="share_quick_permission_can_upload">Jeder kann nur hochladen</string>
+    <string name="share_heading_file_size">Größe:</string>
+    <string name="share_heading_file_modified">Geändert:</string>
+    <string name="share_heading_file_created">Erstellt:</string>
+    <string name="share_heading_file_uploaded">Hochgeladen:</string>
 </resources>

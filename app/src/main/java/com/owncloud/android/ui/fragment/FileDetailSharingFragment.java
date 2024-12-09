@@ -28,7 +28,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
@@ -40,9 +39,9 @@ import com.nextcloud.client.account.User;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
+import com.nextcloud.utils.EditorUtils;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.nextcloud.utils.extensions.FileExtensionsKt;
-import com.nextcloud.utils.EditorUtils;
 import com.nmc.android.utils.SearchViewThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileDetailsSharingFragmentBinding;
@@ -366,15 +365,14 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     }
 
     private void setShareWithYou() {
+        setUpSearchView();
         if (accountManager.userOwnsFile(file, user)) {
             binding.tvResharingInfo.setVisibility(View.GONE);
-            binding.shareCreateNewLink.setVisibility(View.VISIBLE);
             binding.tvResharingStatus.setVisibility(View.GONE);
-            setUpSearchView();
         } else {
             binding.tvResharingInfo.setText(
                 DisplayUtils.createTextWithSpan(
-                    String.format(getString(R.string.resharing_user_info),file.getOwnerDisplayName()),
+                    String.format(getString(R.string.resharing_user_info), file.getOwnerDisplayName()),
                     file.getOwnerDisplayName(),
                     new StyleSpan(Typeface.BOLD)));
           /*  DisplayUtils.setAvatar(user,
@@ -389,14 +387,19 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
             if (file.canReshare()) {
                 binding.tvResharingStatus.setText(getResources().getString(R.string.reshare_allowed));
-                setUpSearchView();
             } else {
-                binding.searchView.setVisibility(View.GONE);
-                binding.pickContactEmailBtn.setVisibility(View.GONE);
+                binding.orSectionLayout.setVisibility(View.GONE);
+                binding.linkShareSectionHeading.setVisibility(View.GONE);
+                binding.linkSharesList.setVisibility(View.GONE);
                 binding.shareCreateNewLink.setVisibility(View.GONE);
+
+                binding.sharedWithDivider.setVisibility(View.GONE);
+                binding.tvYourShares.setVisibility(View.GONE);
+                binding.sharesList.setVisibility(View.GONE);
+
                 binding.tvResharingStatus.setText(getResources().getString(R.string.reshare_not_allowed));
-                binding.searchView.setInputType(InputType.TYPE_NULL);
-                disableSearchView(binding.searchView);
+
+                disableSearchView(binding.searchContainer);
             }
             binding.tvResharingStatus.setVisibility(View.VISIBLE);
             binding.tvResharingInfo.setVisibility(View.VISIBLE);
