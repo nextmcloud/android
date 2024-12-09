@@ -20,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.nmc.android.utils.SearchViewThemeUtils;
 import com.nextcloud.android.lib.richWorkspace.RichWorkspaceDirectEditingRemoteOperation;
 import com.nextcloud.utils.extensions.FileExtensionsKt;
+import com.nmc.android.utils.FabThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.ui.activity.FileDisplayActivity;
@@ -86,7 +87,8 @@ public class PreviewTextStringFragment extends PreviewTextFragment {
         fabMain.setOnClickListener(v -> edit());
 
         fabMain.setImageResource(R.drawable.ic_edit);
-        viewThemeUtils.material.themeFAB(fabMain);
+        //NMC customization
+        FabThemeUtils.colorFloatingActionButton(requireActivity(), fabMain);
 
         return view;
     }
