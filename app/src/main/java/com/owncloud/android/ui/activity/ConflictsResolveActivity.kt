@@ -21,6 +21,7 @@ import com.nextcloud.client.jobs.upload.UploadNotificationManager
 import com.nextcloud.model.HTTPStatusCodes
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.extensions.logFileSize
+import com.nmc.android.ui.conflict.ConflictsResolveConsentDialog
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.FileDataStorageManager
 import com.owncloud.android.datamodel.OCFile
@@ -30,7 +31,6 @@ import com.owncloud.android.files.services.NameCollisionPolicy
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.lib.resources.files.ReadFileRemoteOperation
 import com.owncloud.android.lib.resources.files.model.RemoteFile
-import com.owncloud.android.ui.dialog.ConflictsResolveDialog
 import com.owncloud.android.ui.dialog.ConflictsResolveDialog.Decision
 import com.owncloud.android.ui.dialog.ConflictsResolveDialog.OnConflictDecisionMadeListener
 import com.owncloud.android.utils.FileStorageUtils
@@ -115,7 +115,9 @@ class ConflictsResolveActivity : FileActivity(), OnConflictDecisionMadeListener 
                 }
 
                 Decision.KEEP_SERVER -> {
-                    if (!shouldDeleteLocal()) {
+                    if (newFile?.isEncrypted == true) {
+                        // NMC-2361 fix
+                    } else if (!shouldDeleteLocal()) {
                         // Overwrite local file
                         file?.let {
                             FileDownloadHelper.instance().downloadFile(
@@ -207,8 +209,8 @@ class ConflictsResolveActivity : FileActivity(), OnConflictDecisionMadeListener 
             fragmentTransaction.remove(prev)
         }
         if (existingFile != null && storageManager.fileExists(remotePath) && newFile != null) {
-            val dialog = ConflictsResolveDialog.newInstance(
-                existingFile,
+            val dialog = ConflictsResolveConsentDialog.newInstance(
+                existingFile!!,
                 newFile!!,
                 userOptional.get()
             )
@@ -222,9 +224,15 @@ class ConflictsResolveActivity : FileActivity(), OnConflictDecisionMadeListener 
 
     private fun showErrorAndFinish(code: Int? = null) {
         val message = parseErrorMessage(code)
-        runOnUiThread {
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-            finish()
+        // NMC Customization
+        // if activity is launched from test case then don't finish the activity as it is required to show the dialog
+        // but during normal app run activity should finish during error so we have to pass it false or don't pass
+        // anything
+        if (!intent.getBooleanExtra(EXTRA_LAUNCHED_FROM_TEST, false)) {
+            runOnUiThread {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                finish()
+            }
         }
     }
 
@@ -254,6 +262,11 @@ class ConflictsResolveActivity : FileActivity(), OnConflictDecisionMadeListener 
          */
         const val EXTRA_LOCAL_BEHAVIOUR = "LOCAL_BEHAVIOUR"
         const val EXTRA_EXISTING_FILE = "EXISTING_FILE"
+
+        /**
+         * variable to tell activity that it has been launched from test class
+         */
+        const val EXTRA_LAUNCHED_FROM_TEST = "LAUNCHED_FROM_TEST"
         private val TAG = ConflictsResolveActivity::class.java.simpleName
 
         @JvmStatic
