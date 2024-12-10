@@ -184,10 +184,8 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
         mFileListFragment = (LocalFileListFragment) getSupportFragmentManager().findFragmentByTag("local_files_list");
 
         // Set input controllers
-        viewThemeUtils.material.colorMaterialButtonPrimaryOutlined(binding.uploadFilesBtnCancel);
         binding.uploadFilesBtnCancel.setOnClickListener(this);
 
-        viewThemeUtils.material.colorMaterialButtonPrimaryFilled(binding.uploadFilesBtnUpload);
         binding.uploadFilesBtnUpload.setOnClickListener(this);
         binding.uploadFilesBtnUpload.setEnabled(mLocalFolderPickerMode);
 
