@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2024 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<resources>
+    <string name="upload_scan_document">Scan Document</string>
+    <string name="result_scan_doc_dont_move">Do not move</string>
+    <string name="result_scan_doc_move_closer">Move closer</string>
+    <string name="result_scan_doc_perspective">Perspective</string>
+    <string name="result_scan_doc_no_doc">No document</string>
+    <string name="result_scan_doc_bg_noisy">Background too noisy</string>
+    <string name="result_scan_doc_aspect_ratio">Wrong aspect ratio.\nRotate your device.</string>
+    <string name="result_scan_doc_poor_light">Poor light</string>
+    <string name="scanned_doc_count">%d of %d</string>
+    <string name="title_edit_scan">Edit Scan</string>
+    <string name="title_crop_scan">Crop Scan</string>
+    <string name="crop_btn_reset_crop_text">Reset Crop</string>
+    <string name="crop_btn_detect_doc_text">Detect Document</string>
+    <string name="edit_scan_filter_dialog_title">Apply Filter</string>
+    <string name="edit_scan_filter_none">No Filter</string>
+    <string name="edit_scan_filter_pure_binarized">Whiteboard</string>
+    <string name="edit_scan_filter_color_enhanced">Photo Filter</string>
+    <string name="edit_scan_filter_b_n_w">Black &amp; White</string>
+    <string name="edit_scan_filter_color_document">Document Filter</string>
+    <string name="edit_scan_filter_grey">Grayscale</string>
+    <string name="automatic">Automatic</string>
+    <string name="flash">Flash</string>
+    <string name="title_save_as">Save as</string>
+    <string name="scan_save_filename">Filename</string>
+    <string name="scan_save_location">Location</string>
+    <string name="scan_save_location_root">/Root folder</string>
+    <string name="scan_save_file_type">File type</string>
+    <string name="scan_save_without_text_recognition">Save without text recognition</string>
+    <string name="scan_save_with_text_recognition">Save with text recognition</string>
+    <string name="scan_save_file_type_txt">Textfile (txt)</string>
+    <string name="scan_save_pdf_password">PDF-Password</string>
+    <string name="scan_save_set_password_hint">Set password</string>
+    <string name="scan_save_no_file_select_toast">Please select at least one filetype</string>
+    <string name="save_scan_empty_pdf_password">Please enter a password for the PDF you want to create or disable the function.</string>
+    <string name="scan_save_file_type_text">You can save the file with or without text recognition. Multiple selection is allowed.</string>
+    <string name="camera_permission_denied">You cannot scan document without camera permission.</string>
+    <string name="description_add_more_scan">Add more document</string>
+    <string name="description_crop_scan">Crop scanned document</string>
+    <string name="description_filter_scan">Filter scanned document</string>
+    <string name="description_rotate_scan">Rotate scanned document</string>
+    <string name="description_delete_scan">Delete scanned document</string>
+    <string name="description_edit_filename">Edit scan filename</string>
+    <string name="description_edit_location">Edit scan location</string>
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_save_scan_message">Saving will take some time, especially if you have selected several pages and file formats.</string>
+    <string name="scan_save_file_type_pdf" translatable="false">PDF</string>
+    <string name="scan_save_file_type_jpg" translatable="false">JPG</string>
+    <string name="scan_save_file_type_png" translatable="false">PNG</string>
+    <string name="scan_save_file_type_pdf_ocr" translatable="false">PDF (OCR)</string>
+    <string name="foreground_service_save">Saving files…</string>
+    <string name="notification_channel_image_save">Image save notification channel</string>
+    <string name="notification_channel_image_save_description">Shows image save progress</string>
+</resources>
