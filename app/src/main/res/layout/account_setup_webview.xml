@@ -7,25 +7,15 @@
   ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <!-- Login Flow V1 -->
     <WebView
-        android:visibility="gone"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:id="@+id/login_webview">
     </WebView>
-
-    <!-- Login Flow V2 -->
-    <include
-        tools:visibility="visible"
-        android:visibility="gone"
-        android:id="@+id/login_flow_v2"
-        layout="@layout/login_flow_info_layout_v2" />
 
     <ProgressBar
         android:id="@+id/login_webview_progress_bar"
@@ -33,5 +23,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:indeterminate="true" />
+        android:indeterminate="true"/>
 </FrameLayout>
