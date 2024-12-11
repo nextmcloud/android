@@ -724,7 +724,6 @@ public abstract class FileActivity extends DrawerActivity
             Snackbar snackbar = Snackbar.make(activity.findViewById(android.R.id.content), R.string.clipboard_text_copied,
                                               Snackbar.LENGTH_LONG)
                 .setAction(R.string.share, v -> showShareLinkDialog(activity, file, link));
-            viewThemeUtils.material.themeSnackbar(snackbar);
             snackbar.show();
         }
     }
@@ -794,7 +793,6 @@ public abstract class FileActivity extends DrawerActivity
                 snackbar = Snackbar.make(sharingFragment.getView(), result.getMessage(), Snackbar.LENGTH_LONG);
             }
 
-            viewThemeUtils.material.themeSnackbar(snackbar);
             snackbar.show();
         }
     }
@@ -871,7 +869,6 @@ public abstract class FileActivity extends DrawerActivity
                                                                                            operation,
                                                                                            getResources()),
                                                   Snackbar.LENGTH_LONG);
-                viewThemeUtils.material.themeSnackbar(snackbar);
                 snackbar.show();
             }
         }
