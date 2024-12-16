@@ -19,7 +19,7 @@
     <string name="actionbar_move_or_copy">Verschieben oder kopieren</string>
     <string name="actionbar_open_with">Öffnen mit</string>
     <string name="actionbar_search">Suche</string>
-    <string name="actionbar_see_details">Details</string>
+    <string name="actionbar_see_details">Teilen</string>
     <string name="actionbar_send_file">Senden</string>
     <string name="actionbar_settings">Einstellungen</string>
     <string name="actionbar_sort">Sortieren</string>
@@ -144,7 +144,7 @@
     <string name="clipboard_unexpected_error">Unerwarteter Fehler beim Kopieren in die Zwischenablage</string>
     <string name="common_back">Zurück</string>
     <string name="common_cancel">Abbrechen</string>
-    <string name="common_cancel_sync">Synchronisierung abbrechen</string>
+    <string name="common_cancel_sync">Abbrechen</string>
     <string name="common_choose_account">Konto auswählen</string>
     <string name="common_confirm">Bestätigen</string>
     <string name="common_copy">Kopieren</string>
@@ -201,7 +201,7 @@
     <string name="conflict_message_description_for_folder">Falls beide Versionen gewählt werden, wird beim lokalen Ordner eine Zahl am Ende des Dateinamens hinzugefügt.</string>
     <string name="conflict_server_file">Server-Datei</string>
     <string name="contact_backup_title">Kontakte-Backup</string>
-    <string name="contact_no_permission">Eine Kontakterlaubnis ist erforderlich.</string>
+    <string name="contact_no_permission">Zugriff auf Kontakte erforderlich.</string>
     <string name="contactlist_item_icon">Nutzericon für Kontaktliste</string>
     <string name="contactlist_no_permission">Keine Berechtigung vergeben, es wurde nichts importiert.</string>
     <string name="contacts">Kontakte</string>
@@ -286,11 +286,11 @@
     <string name="drawer_item_groupfolders">Gruppenordner</string>
     <string name="drawer_item_home">Home</string>
     <string name="drawer_item_notifications">Benachrichtigungen</string>
-    <string name="drawer_item_on_device">Auf dem Gerät</string>
+    <string name="drawer_item_on_device">Offline verfügbare Dateien</string>
     <string name="drawer_item_personal_files">Persönliche Dateien</string>
     <string name="drawer_item_recently_modified">Kürzlich geändert</string>
     <string name="drawer_item_shared">Geteilt</string>
-    <string name="drawer_item_trashbin">Gelöschte Dateien</string>
+    <string name="drawer_item_trashbin">Papierkorb</string>
     <string name="drawer_item_uploads_list">Uploads</string>
     <string name="drawer_logout">Abmelden</string>
     <string name="drawer_open">Hauptmenü öffnen</string>
@@ -312,7 +312,7 @@
     <string name="ecosystem_apps_more">Weitere Nextcloud-Apps</string>
     <string name="ecosystem_apps_notes">Nextcloud Notizen</string>
     <string name="ecosystem_apps_talk">Nextcloud Talk</string>
-    <string name="email_pick_failed">E-Mail-Adresse konnte nicht ausgewählt werden.</string>
+    <string name="email_pick_failed">Fehler beim Zugriff auf E-Mail Adresse.</string>
     <string name="encrypted">Als verschlüsselt festlegen</string>
     <string name="end_to_end_encryption_confirm_button">Verschlüsselung einrichten</string>
     <string name="end_to_end_encryption_decrypting">Entschlüssele…</string>
@@ -450,10 +450,10 @@
     <string name="file_version_restored_error">Fehler beim Wiederherstellen der Dateiversion!</string>
     <string name="file_version_restored_successfully">Dateiversion erfolgreich wiederhergestellt</string>
     <string name="filedetails_details">Details</string>
-    <string name="filedetails_download">Herunterladen</string>
+    <string name="filedetails_download">Offline Verfügbarkeit</string>
     <string name="filedetails_export">Exportieren</string>
     <string name="filedetails_renamed_in_upload_msg">Datei während des Hochladens in %1$s umbenannt</string>
-    <string name="filedetails_sync_file">Synchronisieren</string>
+    <string name="filedetails_sync_file">Offline Verfügbarkeit</string>
     <string name="filedisplay_no_file_selected">Keine Datei gewählt</string>
     <string name="filename_empty">Dateiname darf nicht leer sein</string>
     <string name="filename_forbidden_characters">Verbotene Zeichen: / \\ &lt; &gt; : \" | ? *</string>
@@ -512,7 +512,7 @@
     <string name="in_folder">in Ordner %1$s</string>
     <string name="instant_upload_existing">Vorhandene Dateien ebenfalls hochladen</string>
     <string name="instant_upload_on_charging">Nur während des Ladens der Batterie hochladen</string>
-    <string name="instant_upload_path">/SofortUpload</string>
+    <string name="instant_upload_path">/Kamera-Medien</string>
     <string name="internal_two_way_sync">Interne 2-Wege-Synchronisierung</string>
     <string name="internal_two_way_sync_not_yet">Bislang nicht, wird demnächst synchronisiert</string>
     <string name="internet_connection_required_for_encrypted_folder_setup">Zum Einrichten des verschlüsselten Ordners ist eine Internetverbindung erforderlich</string>
@@ -565,7 +565,7 @@
     <string name="media_play_pause_description">Wiedergabe-/Pause Knopf</string>
     <string name="media_rewind_description">Rückspulknopf</string>
     <string name="media_state_playing">%1$s (wird abgespielt)</string>
-    <string name="menu_item_sort_by_date_newest_first">Neue zuerst</string>
+    <string name="menu_item_sort_by_date_newest_first">Neueste zuerst</string>
     <string name="menu_item_sort_by_date_oldest_first">Älteste zuerst</string>
     <string name="menu_item_sort_by_name_a_z">A - Z</string>
     <string name="menu_item_sort_by_name_z_a">Z - A</string>
@@ -596,6 +596,7 @@
     <string name="no_pdf_app_available">Keine App verfügbar um PDFs anzuzeigen</string>
     <string name="no_send_app">Keine App zum Senden der ausgewählten Dateien verfügbar</string>
     <string name="no_share_permission_selected">Bitte wählen Sie mindestens eine Berechtigung zum Teilen aus.</string>
+    <string name="note_confirm">Senden</string>
     <string name="note_could_not_sent">Notiz konnte nicht versandt werden</string>
     <string name="note_icon_hint">Notiz-Symbol</string>
     <string name="notification_action_failed">Ausführen der Aktion fehlgeschlagen.</string>
@@ -685,7 +686,7 @@
     <string name="prefs_data_storage_location_summary">Speicherort der Daten verwalten</string>
     <string name="prefs_davx5_setup_error">Unerwarteter Fehler beim Einrichten von DAVx5 (früher bekannt als DAVdroid)</string>
     <string name="prefs_e2e_active">Ende-zu-Ende-Verschlüsselung ist eingerichtet!</string>
-    <string name="prefs_e2e_mnemonic">E2E-Gedächtnisstütze</string>
+    <string name="prefs_e2e_mnemonic">Ende-zu-Ende Verschlüsselung</string>
     <string name="prefs_e2e_no_device_credentials">Um die Gedächtnisstütze anzuzeigen, aktivieren Sie bitte Geräte-Zugangsdaten</string>
     <string name="prefs_mnemonic_summary">12-Wort-Schlüssel anzeigen (Passphrase)</string>
     <string name="prefs_enable_media_scan_notifications">Benachrichtigungen der Mediensuche anzeigen</string>
@@ -703,7 +704,7 @@
     <string name="prefs_instant_upload_subfolder_rule_title">Unterordneroptionen</string>
     <string name="prefs_keys_exist">Fügen Sie dieses Gerät zur Ende-zu-Ende Verschlüsselung hinzu.</string>
     <string name="prefs_license">Lizenz</string>
-    <string name="prefs_lock">App-PIN</string>
+    <string name="prefs_lock">Sicherheit</string>
     <string name="prefs_lock_device_credentials_enabled">Geräte-Anmeldedaten aktiviert</string>
     <string name="prefs_lock_device_credentials_not_setup">Keine Geräte-Anmeldedaten eingerichtet.</string>
     <string name="prefs_lock_none">Nichts</string>
@@ -721,7 +722,7 @@
     <string name="prefs_storage_path">Speicherordner</string>
     <string name="prefs_sycned_folders_summary">Ordner für \"Automatisches Hochladen\" verwalten</string>
     <string name="prefs_synced_folders_local_path_title">Lokaler Ordner</string>
-    <string name="prefs_synced_folders_remote_path_title">Remote-Ordner</string>
+    <string name="prefs_synced_folders_remote_path_title">Zielorder in Deiner MagentaCLOUD</string>
     <string name="prefs_theme_title">Design</string>
     <string name="prefs_two_way_sync_interval">Intervall</string>
     <string name="prefs_two_way_sync_summary">Interne Ordner für 2-Wege-Synchronisierung verwalten</string>
@@ -796,11 +797,12 @@
     <string name="secure_share_not_set_up">Sicheres teilen ist für diesen Benutzer nicht eingerichtet</string>
     <string name="secure_share_search">Sicheres teilen …</string>
     <string name="select_all">Alle auswählen</string>
-    <string name="select_media_folder">Medien-Ordner auswählen</string>
+    <string name="select_media_folder">Den Ordner \"Medien\" auswählen</string>
     <string name="select_one_template">Bitte eine Vorlage auswählen</string>
     <string name="select_template">Vorlage auswählen</string>
     <string name="send">Senden</string>
     <string name="send_share">Freigabe senden</string>
+    <string name="send_note">Notiz an Empfänger senden</string>
     <string name="sendbutton_description">Icon für den Senden-Button</string>
     <string name="set_as">Setze als</string>
     <string name="set_note">Notiz setzen</string>
@@ -854,7 +856,7 @@
     <string name="shared_with_you_by">Geteilt mit Ihnen von %1$s</string>
     <string name="sharee_add_failed">Freigeben fehlgeschlagen</string>
     <string name="sharee_already_added_to_file">Das Hinzufügen der Freigabe ist fehlgeschlagen. Diese Datei oder dieser Ordner wurden bereits für diese Person oder Gruppe freigegeben.</string>
-    <string name="show_images">Fotos anzeigen</string>
+    <string name="show_images">Bilder anzeigen</string>
     <string name="show_video">Videos anzeigen</string>
     <string name="signup_with_provider">Mit Provider anmelden</string>
     <string name="single_sign_on_request_token" formatted="true">Zulassen, dass %1$s auf Ihr Nextcloud Konto %2$s zugreifen darf?</string>
@@ -886,7 +888,7 @@
     <string name="ssl_validator_reason_hostname_not_verified">- Die Adresse stimmt nicht mit dem im Zertifikat angegebenen Hostnamen  überein</string>
     <string name="status_message">Statusnachricht</string>
     <string name="storage_camera">Kamera</string>
-    <string name="storage_choose_location">Speicherort auswählen</string>
+    <string name="storage_choose_location">Wählen Sie Quelle</string>
     <string name="storage_description_default">Standard</string>
     <string name="storage_documents">Dokumente</string>
     <string name="storage_downloads">Downloads</string>
@@ -975,7 +977,7 @@
     <string name="unshare_link_forbidden_permissions">diese Datei nicht mehr zu teilen</string>
     <string name="unsharing_failed">Freigabe aufheben fehlgeschlagen</string>
     <string name="untrusted_domain">Zugriff über nicht vertrauenswürdige Domain. Weitere Informationen finden sich in der Dokumentation.</string>
-    <string name="update_link_file_error">Es ist ein Fehler bei der Aktualisierungd der Freigabe aufgetreten.</string>
+    <string name="update_link_file_error">Fehler bei der Aktualisierungd der Freigabe aufgetreten.</string>
     <string name="update_link_file_no_exist">Aktualisierung nicht möglich. Bitte prüfen Sie, ob die Datei existiert.</string>
     <string name="update_link_forbidden_permissions">zum Aktualisieren dieser Freigabe</string>
     <string name="updating_share_failed">Aktualisierung der Freigabe fehlgeschlagen</string>
