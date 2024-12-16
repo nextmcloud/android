@@ -19,6 +19,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.nextcloud.appReview.AppReviewShownModel;
 import com.nextcloud.client.account.User;
+import com.nmc.android.scans.ScanActivity;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.account.UserAccountManagerImpl;
 import com.nextcloud.client.jobs.LogEntry;
@@ -79,6 +80,7 @@ public final class AppPreferencesImpl implements AppPreferences {
     private static final String PREF__AUTO_UPLOAD_SPLIT_OUT = "autoUploadEntriesSplitOut";
     private static final String PREF__AUTO_UPLOAD_INIT = "autoUploadInit";
     private static final String PREF__FOLDER_SORT_ORDER = "folder_sort_order";
+    private static final String PREF__UPLOAD_SCANS_LAST_PATH = "upload_scans_last_path";
     private static final String PREF__FOLDER_LAYOUT = "folder_layout";
 
     private static final String PREF__LOCK_TIMESTAMP = "lock_timestamp";
@@ -699,6 +701,16 @@ public final class AppPreferencesImpl implements AppPreferences {
     @Override
     public void setPowerCheckDisabled(boolean value) {
         preferences.edit().putBoolean(PREF__POWER_CHECK_DISABLED, value).apply();
+    }
+
+    @Override
+    public void setUploadScansLastPath(String path) {
+        preferences.edit().putString(PREF__UPLOAD_SCANS_LAST_PATH, path).apply();
+    }
+
+    @Override
+    public String getUploadScansLastPath() {
+        return preferences.getString(PREF__UPLOAD_SCANS_LAST_PATH, ScanActivity.DEFAULT_UPLOAD_SCAN_PATH);
     }
 
     public void increasePinWrongAttempts() {
