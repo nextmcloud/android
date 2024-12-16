@@ -299,11 +299,6 @@ class SetupEncryptionDialogFragment : DialogFragment(), Injectable {
 
             if (isCertificateValid == false) {
                 Log_OC.d(TAG, "Could not save certificate, certificate is not valid")
-                return null
-            }
-
-            if (arbitraryDataProvider == null) {
-                return null
             }
 
             arbitraryDataProvider?.storeOrUpdateKeyValue(

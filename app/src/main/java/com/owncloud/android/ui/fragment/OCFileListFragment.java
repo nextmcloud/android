@@ -2020,7 +2020,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
             OCFile folder = storageManager.getFileByRemoteId(remoteId);
 
             OwnCloudClient client = clientFactory.create(user);
-            RemoteOperationResult remoteOperationResult = new ToggleEncryptionRemoteOperation(localId,
+            final var remoteOperationResult = new ToggleEncryptionRemoteOperation(localId,
                                                                                               remotePath,
                                                                                               shouldBeEncrypted)
                 .execute(client);
