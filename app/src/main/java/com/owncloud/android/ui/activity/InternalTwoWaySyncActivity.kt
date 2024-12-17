@@ -81,29 +81,6 @@ class InternalTwoWaySyncActivity :
                 }
             }
         }
-
-    private fun setupTwoWaySyncToggle() {
-        binding.twoWaySyncToggle.isChecked = preferences.isTwoWaySyncEnabled
-        binding.twoWaySyncToggle.setOnCheckedChangeListener { _, isChecked ->
-            preferences.setTwoWaySyncStatus(isChecked)
-            setupList()
-            setVisibilities()
-
-            if (isChecked) {
-                backgroundJobManager.scheduleInternal2WaySync(preferences.twoWaySyncInterval)
-            } else {
-                backgroundJobManager.cancelInternal2WaySyncJob()
-            }
-        }
-    }
-
-    private fun setupList() {
-        if (preferences.isTwoWaySyncEnabled) {
-            binding.list.apply {
-                adapter = InternalTwoWaySyncAdapter(fileDataStorageManager, user.get(), context)
-                layoutManager = LinearLayoutManager(context)
-            }
-        }
     }
 
     private fun setupEmptyList() {
