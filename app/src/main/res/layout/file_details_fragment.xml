@@ -50,8 +50,8 @@
 
                 <ImageView
                     android:id="@+id/favorite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:layout_marginStart="@dimen/zero"
                     android:layout_marginEnd="@dimen/standard_eighth_margin"
                     android:contentDescription="@null"
@@ -115,8 +115,8 @@
             android:id="@+id/overflow_menu"
             style="@style/Widget.AppTheme.Button.IconButton"
             android:layout_width="@dimen/minimum_size_for_touchable_area"
-            android:layout_marginTop="@dimen/standard_half_margin"
             android:layout_height="@dimen/minimum_size_for_touchable_area"
+            android:layout_marginTop="@dimen/standard_quarter_margin"
             android:contentDescription="@string/overflow_menu"
             app:cornerRadius="24dp"
             android:visibility="gone"
@@ -209,7 +209,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/list_divider_background" />
+        android:background="@color/divider_color" />
 
     <FrameLayout
         android:layout_width="match_parent"
