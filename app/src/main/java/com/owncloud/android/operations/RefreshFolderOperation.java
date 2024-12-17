@@ -495,7 +495,8 @@ public class RefreshFolderOperation extends RemoteOperation {
 
         if (CapabilityUtils.getCapability(mContext).getEndToEndEncryptionApiVersion().compareTo(E2EVersion.V2_0) >= 0) {
             if (encryptedAncestor && object == null) {
-                throw new IllegalStateException("metadata is null!");
+                Log_OC.d(TAG,"metadata is null!");
+                return;
             }
         }
 
