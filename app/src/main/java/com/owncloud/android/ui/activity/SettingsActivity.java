@@ -195,7 +195,6 @@ public class SettingsActivity extends PreferenceActivity
 
         // Sync
         setupSyncCategory(titleColor);
-        setupSyncCategory();
 
         // More
         setupMoreCategory(titleColor);
@@ -349,7 +348,6 @@ public class SettingsActivity extends PreferenceActivity
     }
 
     private void setupSyncCategory(int titleColor) {
-    private void setupSyncCategory() {
         final PreferenceCategory preferenceCategorySync = (PreferenceCategory) findPreference("sync");
         preferenceCategorySync.setTitle(StringUtils.getColorSpan(getString(R.string.prefs_category_sync),
                                                                  titleColor));
@@ -655,9 +653,6 @@ public class SettingsActivity extends PreferenceActivity
         Preference twoWaySync = findPreference("internal_two_way_sync");
         twoWaySync.setTitle(StringUtils.getColorSpan(getString(R.string.internal_two_way_sync),
                                                      titleColor));
-    private void setupInternalTwoWaySyncPreference() {
-        Preference twoWaySync = findPreference("internal_two_way_sync");
-
         twoWaySync.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(this, InternalTwoWaySyncActivity.class);
             startActivity(intent);
