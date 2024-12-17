@@ -137,13 +137,13 @@ public final class SharingMenuHelper {
 
     public static String getPermissionName(Context context, OCShare share) {
         if (isUploadAndEditingAllowed(share)) {
-            return context.getResources().getString(R.string.share_permission_can_edit);
+            return context.getResources().getString(R.string.share_quick_permission_can_edit);
         } else if (isReadOnly(share)) {
-            return context.getResources().getString(R.string.share_permission_read_only);
+            return context.getResources().getString(R.string.share_quick_permission_can_view);
         } else if (SharingMenuHelper.isSecureFileDrop(share)) {
             return context.getResources().getString(R.string.share_permission_secure_file_drop);
         } else if (isFileDrop(share)) {
-            return context.getResources().getString(R.string.share_permission_file_drop);
+            return context.getResources().getString(R.string.share_quick_permission_can_upload);
         }
         return null;
     }
