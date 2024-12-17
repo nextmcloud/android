@@ -1033,6 +1033,7 @@
     <string name="upload_list_resolve_conflict">Resolve conflict</string>
     <string name="upload_list_delete">Delete</string>
     <string name="create_new">New</string>
+    <string name="create_text_document">Create text document</string>
     <string name="editor_placeholder" translatable="false">%1$s %2$s</string>
 
     <string name="sync_not_enough_space_dialog_action_choose">Choose what to sync</string>
