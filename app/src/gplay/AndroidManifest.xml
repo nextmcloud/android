@@ -68,6 +68,12 @@
             </intent-filter>
         </service>
 
+        <!-- NMC: MoEngage Activity to handle the Rich Landing page -->
+        <activity
+            android:name="com.moe.pushlibrary.activities.MoEActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activity.FileDisplayActivity" />
+
     </application>
 
 </manifest>
