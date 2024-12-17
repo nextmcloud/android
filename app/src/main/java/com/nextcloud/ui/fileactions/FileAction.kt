@@ -19,12 +19,12 @@ enum class FileAction(@IdRes val id: Int, @StringRes val title: Int, @DrawableRe
 
     // generic file actions
     EDIT(R.id.action_edit, R.string.action_edit, R.drawable.ic_edit),
-    SEE_DETAILS(R.id.action_see_details, R.string.actionbar_see_details, R.drawable.ic_information_outline),
+    SEE_DETAILS(R.id.action_see_details, R.string.actionbar_see_details, R.drawable.ic_share),
     REMOVE_FILE(R.id.action_remove_file, R.string.common_remove, R.drawable.ic_delete),
 
     // File moving
     RENAME_FILE(R.id.action_rename_file, R.string.common_rename, R.drawable.ic_rename),
-    MOVE_OR_COPY(R.id.action_move_or_copy, R.string.actionbar_move_or_copy, R.drawable.ic_external),
+    MOVE_OR_COPY(R.id.action_move_or_copy, R.string.actionbar_move_or_copy, R.drawable.ic_content_copy),
 
     // favorites
     FAVORITE(R.id.action_favorite, R.string.favorite, R.drawable.ic_star),
@@ -32,7 +32,7 @@ enum class FileAction(@IdRes val id: Int, @StringRes val title: Int, @DrawableRe
 
     // Uploads and downloads
     DOWNLOAD_FILE(R.id.action_download_file, R.string.filedetails_download, R.drawable.ic_cloud_download),
-    SYNC_FILE(R.id.action_sync_file, R.string.filedetails_sync_file, R.drawable.ic_cloud_sync_on),
+    SYNC_FILE(R.id.action_sync_file, R.string.filedetails_sync_file, R.drawable.ic_cloud_download),
     CANCEL_SYNC(R.id.action_cancel_sync, R.string.common_cancel_sync, R.drawable.ic_cloud_sync_off),
 
     // File sharing
