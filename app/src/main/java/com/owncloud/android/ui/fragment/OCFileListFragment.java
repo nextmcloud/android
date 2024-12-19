@@ -1820,7 +1820,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
             Log_OC.d(TAG, "encrypt folder " + folder.getRemoteId());
             User user = accountManager.getUser();
             OwnCloudClient client = clientFactory.create(user);
-            RemoteOperationResult remoteOperationResult = new ToggleEncryptionRemoteOperation(localId,
+            final var remoteOperationResult = new ToggleEncryptionRemoteOperation(localId,
                                                                                               remotePath,
                                                                                               shouldBeEncrypted)
                 .execute(client);
