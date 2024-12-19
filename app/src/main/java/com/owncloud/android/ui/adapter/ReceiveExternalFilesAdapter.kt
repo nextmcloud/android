@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.nextcloud.client.account.User
 import com.owncloud.android.databinding.UploaderListItemLayoutBinding
@@ -113,10 +114,9 @@ class ReceiveExternalFilesAdapter(
 
     private fun setupThumbnailForFolder(thumbnailImageView: ImageView, file: OCFile) {
         val isAutoUploadFolder = SyncedFolderProvider.isAutoUploadFolder(syncedFolderProvider, file, user)
-        val isDarkModeActive = syncedFolderProvider.preferences.isDarkModeEnabled
         val overlayIconId = file.getFileOverlayIconId(isAutoUploadFolder)
-        val icon = MimeTypeUtil.getFileIcon(isDarkModeActive, overlayIconId, context, viewThemeUtils)
-        thumbnailImageView.setImageDrawable(icon)
+        // NMC Customization: No overlay icon will be used. Directly using folder icons
+        thumbnailImageView.setImageDrawable(ContextCompat.getDrawable(context, overlayIconId))
     }
 
     @Suppress("NestedBlockDepth")
