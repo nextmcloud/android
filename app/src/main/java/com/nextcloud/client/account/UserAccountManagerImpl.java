@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.nextcloud.client.onboarding.FirstRunActivity;
 import com.nextcloud.common.NextcloudClient;
@@ -117,12 +118,22 @@ public class UserAccountManagerImpl implements UserAccountManager {
 
         if (account != null && account.name != null) {
             int lastAtPos = account.name.lastIndexOf('@');
+            // NMC-3680 fix
+            if (lastAtPos == -1) {
+                Log_OC.e(TAG, "Invalid account name: " + account.name);
+                return false;
+            }
             String hostAndPort = account.name.substring(lastAtPos + 1);
             String username = account.name.substring(0, lastAtPos);
             String otherHostAndPort;
             String otherUsername;
             for (Account otherAccount : nextcloudAccounts) {
                 lastAtPos = otherAccount.name.lastIndexOf('@');
+                // NMC-3680 fix
+                if (lastAtPos == -1) {
+                    // Skip invalid account names
+                    continue;
+                }
                 otherHostAndPort = otherAccount.name.substring(lastAtPos + 1);
                 otherUsername = otherAccount.name.substring(0, lastAtPos);
                 if (otherHostAndPort.equals(hostAndPort) &&
