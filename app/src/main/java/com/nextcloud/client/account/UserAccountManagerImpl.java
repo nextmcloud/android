@@ -21,6 +21,7 @@ import android.text.TextUtils;
 
 import com.nextcloud.common.NextcloudClient;
 import com.nextcloud.utils.extensions.AccountExtensionsKt;
+import com.nmc.android.ui.LauncherActivity;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.AuthenticatorActivity;
@@ -115,12 +116,22 @@ public class UserAccountManagerImpl implements UserAccountManager {
 
         if (account != null && account.name != null) {
             int lastAtPos = account.name.lastIndexOf('@');
+            // NMC-3680 fix
+            if (lastAtPos == -1) {
+                Log_OC.e(TAG, "Invalid account name: " + account.name);
+                return false;
+            }
             String hostAndPort = account.name.substring(lastAtPos + 1);
             String username = account.name.substring(0, lastAtPos);
             String otherHostAndPort;
             String otherUsername;
             for (Account otherAccount : nextcloudAccounts) {
                 lastAtPos = otherAccount.name.lastIndexOf('@');
+                // NMC-3680 fix
+                if (lastAtPos == -1) {
+                    // Skip invalid account names
+                    continue;
+                }
                 otherHostAndPort = otherAccount.name.substring(lastAtPos + 1);
                 otherUsername = otherAccount.name.substring(0, lastAtPos);
                 if (otherHostAndPort.equals(hostAndPort) &&
@@ -397,6 +408,10 @@ public class UserAccountManagerImpl implements UserAccountManager {
 
     @Override
     public void startAccountCreation(final Activity activity) {
+        // NMC-3278 fix
+        // Splash screen should be shown properly before navigating to Login screen
+        if(activity instanceof LauncherActivity) return;
+
         Intent intent = new Intent(context, AuthenticatorActivity.class);
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
