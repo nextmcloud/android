@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.nextcloud.client.account.User;
+import com.nextcloud.common.SessionTimeOut;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl;
@@ -408,9 +409,9 @@ public final class EncryptionUtils {
     downloadFolderMetadata(OCFile folder,
                            OwnCloudClient client,
                            Context context,
-                           User user
-                          ) {
-        RemoteOperationResult<MetadataResponse> getMetadataOperationResult = new GetMetadataRemoteOperation(folder.getLocalId())
+                           User user) {
+
+        RemoteOperationResult<MetadataResponse> getMetadataOperationResult = new GetMetadataRemoteOperation(folder.getLocalId(), longSessionTimeOut)
             .execute(client);
 
         if (!getMetadataOperationResult.isSuccess()) {
@@ -1320,7 +1321,8 @@ public final class EncryptionUtils {
     public static String lockFolder(ServerFileInterface parentFile, OwnCloudClient client, long counter) throws UploadException {
         // Lock folder
         LockFileRemoteOperation lockFileOperation = new LockFileRemoteOperation(parentFile.getLocalId(),
-                                                                                counter);
+                                                                                counter,
+                                                                                longSessionTimeOut);
         RemoteOperationResult<String> lockFileOperationResult = lockFileOperation.execute(client);
 
         if (lockFileOperationResult.isSuccess() &&
@@ -1507,9 +1509,11 @@ public final class EncryptionUtils {
         }
     }
 
+    private static SessionTimeOut longSessionTimeOut = new SessionTimeOut(60000, 60000);
+
     public static RemoteOperationResult<Void> unlockFolder(ServerFileInterface parentFolder, OwnCloudClient client, String token) {
         if (token != null) {
-            return new UnlockFileRemoteOperation(parentFolder.getLocalId(), token).execute(client);
+            return new UnlockFileRemoteOperation(parentFolder.getLocalId(), token, longSessionTimeOut).execute(client);
         } else {
             return new RemoteOperationResult<>(new Exception("No token available"));
         }
