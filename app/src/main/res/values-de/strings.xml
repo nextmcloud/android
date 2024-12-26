@@ -390,11 +390,11 @@
     <string name="file_details_no_content">Fehler beim Laden der Details</string>
     <string name="file_icon">Datei</string>
     <string name="file_keep">Behalten</string>
-    <string name="file_list_empty">Laden Sie Inhalt hoch oder synchronisieren Sie mit Ihren Geräten.</string>
+    <string name="file_list_empty">Laden Sie Inhalte hoch oder synchronisieren Sie mit Ihren Geräten.</string>
     <string name="file_list_empty_favorite_headline">Noch keine Favoriten vorhanden</string>
     <string name="file_list_empty_favorites_filter_list">Dateien und Ordner, die als Favoriten markiert werden, erscheinen hier.</string>
     <string name="file_list_empty_gallery">Keine Bilder oder Videos gefunden</string>
-    <string name="file_list_empty_headline"> Keine Dateien vorhanden </string>
+    <string name="file_list_empty_headline">Keine Dateien vorhanden </string>
     <string name="file_list_empty_headline_search">Keine Ergebnisse in diesem Ordner</string>
     <string name="file_list_empty_headline_server_search">Keine Ergebnisse</string>
     <string name="file_list_empty_local_search">Keine Datei oder Ordner entsprechen Ihrer Suche</string>
@@ -402,6 +402,8 @@
     <string name="file_list_empty_on_device">Heruntergeladene Dateien und Ordner werden hier angezeigt werden.</string>
     <string name="file_list_empty_recently_modified">Keine, innerhalb der letzten 7 Tage, geänderten Dateien gefunden</string>
     <string name="file_list_empty_search">Vielleicht befindet es sich in einem anderen Ordner?</string>
+    <string name="search_result_empty">Eine Datei suchen (mindestens 2 Zeichen)</string>
+    <string name="gallery_list_empty">Noch keine hochgeladene Fotos oder Videos vorhanden</string>
     <string name="file_list_empty_shared">Von Ihnen geteilte Dateien und Ordner werden hier angezeigt.</string>
     <string name="file_list_empty_shared_headline">Noch nichts geteilt</string>
     <string name="file_list_empty_unified_search_no_results">Keine Ergebnisse für Ihre Suche gefunden</string>
