@@ -279,7 +279,7 @@ class MediaControlView(context: Context, attrs: AttributeSet?) :
                 }
                 R.id.rewindBtn -> {
                     pos = playerControl.currentPosition
-                    pos -= 5000
+                    pos -= 2 * FIVE_SECONDS_IN_MILLIS
                     playerControl.seekTo(pos)
                     if (!playing) {
                         playerControl.pause() // necessary in some 2.3.x devices
@@ -288,7 +288,7 @@ class MediaControlView(context: Context, attrs: AttributeSet?) :
                 }
                 R.id.forwardBtn -> {
                     pos = playerControl.currentPosition
-                    pos += 15000
+                    pos += 2 * FIVE_SECONDS_IN_MILLIS
                     playerControl.seekTo(pos)
 
                     if (!playing) {
@@ -353,5 +353,7 @@ class MediaControlView(context: Context, attrs: AttributeSet?) :
     companion object {
         private val TAG = MediaControlView::class.java.getSimpleName()
         private const val SHOW_PROGRESS = 1
+        // NMC-3192 Fix
+        private const val FIVE_SECONDS_IN_MILLIS = 5000
     }
 }
