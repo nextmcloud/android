@@ -27,11 +27,13 @@
 
         <item
             android:id="@+id/nav_personal_files"
+            android:visible="false"
             android:icon="@drawable/ic_user"
             android:orderInCategory="0"
             android:title="@string/drawer_item_personal_files" />
         <item
             android:id="@+id/nav_activity"
+            android:visible="false"
             android:icon="@drawable/ic_activity"
             android:title="@string/drawer_item_activities" />
         <item
@@ -52,6 +54,7 @@
             android:id="@+id/nav_groupfolders"
             android:orderInCategory="0"
             android:icon="@drawable/ic_group"
+            android:visible="false"
             android:title="@string/drawer_item_groupfolders" />
         <item
             android:id="@+id/nav_on_device"
@@ -62,8 +65,8 @@
             android:id="@+id/nav_recently_modified"
             android:icon="@drawable/nav_recently"
             android:orderInCategory="0"
-            android:title="@string/drawer_item_recently_modified"
-            android:visible="true"/>
+            android:title="@string/drawer_item_recent_files"
+            android:visible="false"/>
         <item
             android:orderInCategory="0"
             android:id="@+id/nav_notifications"
@@ -80,12 +83,25 @@
             android:id="@+id/nav_uploads"
             android:icon="@drawable/uploads"
             android:orderInCategory="2"
+            android:visible="false"
             android:title="@string/drawer_item_uploads_list"/>
         <item
             android:id="@+id/nav_trashbin"
             android:icon="@drawable/nav_trashbin"
             android:orderInCategory="2"
             android:title="@string/drawer_item_trashbin"/>
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/nav_settings"
+            android:orderInCategory="4"
+            android:title="@string/actionbar_settings"/>
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/nav_logout"
+            android:orderInCategory="4"
+            android:title="@string/drawer_logout"/>
     </group>
 
     <!--
@@ -103,20 +119,10 @@
         android:id="@+id/drawer_menu_bottom"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/nav_settings"
-            android:orderInCategory="4"
-            android:title="@string/actionbar_settings"/>
-        <item
             android:id="@+id/nav_community"
             android:icon="@drawable/nav_community"
             android:orderInCategory="4"
             android:title="@string/drawer_community" />
-        <item
-            android:id="@+id/nav_logout"
-            android:icon="@drawable/nav_logout"
-            android:orderInCategory="4"
-            android:title="@string/drawer_logout"/>
     </group>
 
     <!--
