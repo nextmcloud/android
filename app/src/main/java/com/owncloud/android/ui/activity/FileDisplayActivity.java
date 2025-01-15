@@ -1667,7 +1667,8 @@ public class FileDisplayActivity extends FileActivity
      */
     @Override
     public void showDetails(OCFile file) {
-        showDetails(file, 0);
+        // NMC: use 1 as activeTab
+        showDetails(file, 1);
     }
 
     /**
