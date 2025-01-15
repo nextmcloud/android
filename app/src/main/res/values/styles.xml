@@ -359,9 +359,9 @@
 
     <style name="ThemeOverlay.AppTheme.PopupMenu" parent="ThemeOverlay.Material3.Dark">
         <!-- popup menu background - NEVER "android:background" !!! in themes -->
-        <item name="android:colorBackground">@color/bg_default</item>
+        <item name="android:colorBackground">@color/popup_menu_bg</item>
         <!-- popup menu item text color -->
-        <item name="android:textColorPrimary">@color/text_color</item>
+        <item name="android:textColorPrimary">@color/popup_menu_txt_color</item>
     </style>
 
     <style name="Nextcloud.Widget.PopupMenu" parent="@style/Widget.Material3.PopupMenu">
@@ -374,7 +374,7 @@
     </style>
 
     <style name="OverflowMenuStyle" parent="Widget.Material3.PopupMenu.Overflow">
-        <item name="android:popupBackground">@color/bg_default</item>
+        <item name="android:popupBackground">@color/overflow_bg_color</item>
     </style>
 
     <style name="MaterialListItemSingleLine">
