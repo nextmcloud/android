@@ -11,7 +11,6 @@ import android.view.View;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
-import com.nextcloud.android.common.ui.theme.utils.ColorRole;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.device.DeviceInfo;
 import com.nextcloud.client.di.Injectable;
@@ -77,12 +76,8 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
         binding = FileListActionsBottomSheetFragmentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewThemeUtils.platform.colorImageView(binding.menuIconUploadFiles, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconUploadFromApp, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconDirectCameraUpload, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconScanDocUpload, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconMkdir, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconAddFolderInfo, ColorRole.PRIMARY);
+        // NMC Customization
+        reorderUploadFromOtherAppsView();
 
         binding.addToCloud.setText(getContext().getResources().getString(R.string.add_to_cloud,
                                                                          themeUtils.getDefaultDisplayNameForRootFolder(getContext())));
@@ -137,8 +132,9 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
             binding.menuDirectCameraUpload.setVisibility(View.GONE);
         }
 
+        // not required for NMC
         // create rich workspace
-        if (editorUtils.isEditorAvailable(user,
+       /* if (editorUtils.isEditorAvailable(user,
                                           MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN) &&
             file != null && !file.isEncrypted()) {
             // richWorkspace
@@ -155,7 +151,7 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
         } else {
             binding.menuCreateRichWorkspace.setVisibility(View.GONE);
             binding.menuCreateRichWorkspaceDivider.setVisibility(View.GONE);
-        }
+        } */
 
         if (BuildHelper.INSTANCE.isFlavourGPlay()) {
             binding.menuUploadFiles.setVisibility(View.GONE);
@@ -163,6 +159,14 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
         }
 
         setupClickListener();
+    }
+
+    private void reorderUploadFromOtherAppsView() {
+        // move the upload from other app option
+        // below Create new folder or Create new e2ee folder
+        // NMC-3095 requirement
+        binding.actionLinear.removeView(binding.menuUploadFromApp);
+        binding.actionLinear.addView(binding.menuUploadFromApp, binding.actionLinear.indexOfChild(binding.menuEncryptedMkdir) + 1);
     }
 
     private void setupClickListener() {
