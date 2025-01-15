@@ -62,6 +62,7 @@ import com.nextcloud.ui.composeActivity.ComposeActivity;
 import com.nextcloud.ui.composeActivity.ComposeDestination;
 import com.nextcloud.utils.mdm.MDMConfig;
 import com.owncloud.android.MainApp;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.PassCodeManager;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -584,11 +585,17 @@ public abstract class DrawerActivity extends ToolbarActivity
         } else if (itemId == R.id.nav_favorites) {
             handleSearchEvents(new SearchEvent("", SearchRemoteOperation.SearchType.FAVORITE_SEARCH),
                                menuItem.getItemId());
+            // NMC: track fav screen event
+            MoEngageSdkUtils.trackFavouriteScreenEvent(this);
         } else if (itemId == R.id.nav_gallery) {
             startPhotoSearch(menuItem.getItemId());
+            // NMC: track media screen event
+            MoEngageSdkUtils.trackMediaScreenEvent(this);
         } else if (itemId == R.id.nav_on_device) {
             EventBus.getDefault().post(new ChangeMenuEvent());
             showFiles(true, false);
+            // NMC: track offline files screen event
+            MoEngageSdkUtils.trackOfflineFilesScreenEvent(this);
         } else if (itemId == R.id.nav_uploads) {
             startActivity(UploadListActivity.class, Intent.FLAG_ACTIVITY_CLEAR_TOP);
         } else if (itemId == R.id.nav_trashbin) {
@@ -609,6 +616,8 @@ public abstract class DrawerActivity extends ToolbarActivity
             }
         } else if (itemId == R.id.nav_shared) {
             startSharedSearch(menuItem);
+            // NMC: track shared screen event
+            MoEngageSdkUtils.trackSharedScreenEvent(this);
         } else if (itemId == R.id.nav_recently_modified) {
             startRecentlyModifiedSearch(menuItem);
         } else if (itemId == R.id.nav_assistant) {
@@ -1018,6 +1027,9 @@ public abstract class DrawerActivity extends ToolbarActivity
                             showQuota(false);
                         }
                     });
+
+                    // NMC: track quota storage
+                    MoEngageSdkUtils.trackQuotaStorage(this, quota);
                 }
             }
         });
