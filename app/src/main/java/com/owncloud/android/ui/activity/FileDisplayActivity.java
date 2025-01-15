@@ -73,6 +73,7 @@ import com.nextcloud.utils.extensions.FileExtensionsKt;
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
 import com.nextcloud.utils.fileNameValidator.FileNameValidator;
 import com.nextcloud.utils.view.FastScrollUtils;
+import com.nmc.android.utils.SearchViewThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FilesBinding;
@@ -301,19 +302,19 @@ public class FileDisplayActivity extends FileActivity
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             return;
         }
-        
+
         if (PermissionUtil.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE)) {
             return;
         }
-        
+
         if (preferences.isAutoUploadGPlayWarningShown()) {
             return;
         }
-        
+
         boolean showInfoDialog = false;
         for (SyncedFolder syncedFolder : syncedFolderProvider.getSyncedFolders()) {
             // move or delete after success
-            if (syncedFolder.getUploadAction() == FileUploadWorker.LOCAL_BEHAVIOUR_MOVE || 
+            if (syncedFolder.getUploadAction() == FileUploadWorker.LOCAL_BEHAVIOUR_MOVE ||
                 syncedFolder.getUploadAction() == FileUploadWorker.LOCAL_BEHAVIOUR_DELETE) {
                 showInfoDialog = true;
                 break;
@@ -659,7 +660,7 @@ public class FileDisplayActivity extends FileActivity
             }
         }
     }
-    
+
     private void showReEnableAutoUploadDialog() {
         new MaterialAlertDialogBuilder(this, R.style.Theme_ownCloud_Dialog)
             .setTitle(R.string.re_enable_auto_upload)
@@ -864,7 +865,8 @@ public class FileDisplayActivity extends FileActivity
             searchView.setIconified(false);
         });
 
-        viewThemeUtils.androidx.themeToolbarSearchView(searchView);
+        //NMC customization
+        SearchViewThemeUtils.INSTANCE.themeSearchView(this, searchView);
 
         // populate list of menu items to show/hide when drawer is opened/closed
         mDrawerMenuItemstoShowHideList = new ArrayList<>(1);
