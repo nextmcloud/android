@@ -401,6 +401,10 @@ public interface AppPreferences {
 
     void setGlobalUploadPaused(boolean globalPausedState);
 
+    void setOnBoardingComplete(boolean isCompleted);
+
+    boolean getOnBoardingComplete();
+
     void setPdfZoomTipShownCount(int count);
 
     int getPdfZoomTipShownCount();
