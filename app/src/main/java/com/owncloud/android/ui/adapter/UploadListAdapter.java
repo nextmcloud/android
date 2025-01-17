@@ -30,6 +30,7 @@ import com.nextcloud.client.device.PowerManagementService;
 import com.nextcloud.client.jobs.upload.FileUploadHelper;
 import com.nextcloud.client.jobs.upload.FileUploadWorker;
 import com.nextcloud.client.network.ConnectivityService;
+import com.nmc.android.ui.utils.ProgressBarThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.UploadListHeaderBinding;
@@ -347,7 +348,9 @@ public class UploadListAdapter extends SectionedRecyclerViewAdapter<SectionedVie
         String status = getStatusText(item);
         switch (item.getUploadStatus()) {
             case UPLOAD_IN_PROGRESS -> {
-                viewThemeUtils.platform.themeHorizontalProgressBar(itemViewHolder.binding.uploadProgressBar);
+                // NMC Customization
+                ProgressBarThemeUtils.themeHorizontalProgressBar(itemViewHolder.binding.uploadProgressBar,
+                                                                 holder.itemView.getContext().getResources().getColor(R.color.primary, null));
                 itemViewHolder.binding.uploadProgressBar.setProgress(0);
                 itemViewHolder.binding.uploadProgressBar.setVisibility(View.VISIBLE);
 
