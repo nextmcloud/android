@@ -51,11 +51,12 @@ class OCFileListDelegate(
     private val storageManager: FileDataStorageManager,
     private val hideItemOptions: Boolean,
     private val preferences: AppPreferences,
-    private val gridView: Boolean,
+    private var gridView: Boolean,
     private val transferServiceGetter: ComponentsGetter,
     private val showMetadata: Boolean,
     private var showShareAvatar: Boolean,
     private var viewThemeUtils: ViewThemeUtils,
+    private val isMediaGallery: Boolean,
     private val syncFolderProvider: SyncedFolderProvider? = null
 ) {
     private val checkedFiles: MutableSet<OCFile> = HashSet()
@@ -209,7 +210,8 @@ class OCFileListDelegate(
             shimmerThumbnail,
             preferences,
             viewThemeUtils,
-            syncFolderProvider
+            syncFolderProvider,
+            isMediaGallery
         )
     }
 
@@ -245,7 +247,8 @@ class OCFileListDelegate(
 
         // shares
         val shouldHideShare = (
-            hideItemOptions ||
+            gridView || // NMC: don't show share icon in grid mode
+                hideItemOptions ||
                 !file.isFolder &&
                 file.isEncrypted ||
                 file.isEncrypted &&
@@ -321,9 +324,8 @@ class OCFileListDelegate(
 
     private fun setCheckBoxImage(file: OCFile, gridViewHolder: ListViewHolder) {
         if (isCheckedFile(file)) {
-            gridViewHolder.checkbox.setImageDrawable(
-                viewThemeUtils.platform.tintDrawable(context, R.drawable.ic_checkbox_marked, ColorRole.PRIMARY)
-            )
+            // NMC Customization
+            gridViewHolder.checkbox.setImageResource(R.drawable.ic_checkbox_marked)
         } else {
             gridViewHolder.checkbox.setImageResource(R.drawable.ic_checkbox_blank_outline)
         }
@@ -456,6 +458,10 @@ class OCFileListDelegate(
 
     fun setShowShareAvatar(bool: Boolean) {
         showShareAvatar = bool
+    }
+
+    fun setGridView(bool: Boolean){
+        gridView = bool
     }
 
     companion object {

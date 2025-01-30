@@ -1006,11 +1006,8 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
     }
 
     public static void setAppTheme(DarkMode mode) {
-        switch (mode) {
-            case LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            case DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            case SYSTEM -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        }
+        // NMC Customization -> Always follow system theme
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
     }
 
     @Override
