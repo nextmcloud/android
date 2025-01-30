@@ -64,6 +64,7 @@ import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.nextcloud.utils.extensions.FileExtensionsKt;
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
 import com.nextcloud.utils.fileNameValidator.FileNameValidator;
+import com.nmc.android.marketTracking.TrackingScanInterface;
 import com.nextcloud.utils.view.FastScrollUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
@@ -85,6 +86,7 @@ import com.owncloud.android.lib.resources.files.ToggleFavoriteRemoteOperation;
 import com.owncloud.android.lib.resources.status.E2EVersion;
 import com.owncloud.android.lib.resources.status.OCCapability;
 import com.owncloud.android.ui.activity.DrawerActivity;
+import com.nmc.android.scans.ScanActivity;
 import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.ui.activity.FileDisplayActivity;
 import com.owncloud.android.ui.activity.FolderPickerActivity;
@@ -242,12 +244,21 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Inject DeviceInfo deviceInfo;
 
+    /**
+     * Things to note about both the branches. 1. nmc/1867-scanbot branch: --> interface won't be initialised -->
+     * calling of interface method will be done here 2. nmc/1925-market_tracking --> interface will be initialised -->
+     * calling of interface method won't be done here
+     */
+    private TrackingScanInterface trackingScanInterface;
+
     protected enum MenuItemAddRemove {
         DO_NOTHING,
         REMOVE_SORT,
         REMOVE_GRID_AND_SORT,
         ADD_GRID_AND_SORT_WITH_SEARCH
     }
+
+    private boolean mShowOnlyFolder, mHideEncryptedFolder;
 
     protected MenuItemAddRemove menuItemAddRemoveValue = MenuItemAddRemove.ADD_GRID_AND_SORT_WITH_SEARCH;
 
@@ -633,6 +644,24 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 DisplayUtils.showSnackMessage(getView(), R.string.failed_to_start_editor);
             }
         }).start();
+    }
+
+    @Override
+    public void scanDocument() {
+        //remote file to store the scans in the selected path
+        OCFile remoteFile = new OCFile(ROOT_PATH); // default root folder
+        if (getActivity() != null && ((FileActivity) getActivity()).getCurrentDir() != null){
+            remoteFile = ((FileActivity) getActivity()).getCurrentDir();
+        }
+
+        //remote path used so that user can directly save at the selected sub folder location
+        ScanActivity.openScanActivity(getActivity(), remoteFile, FileDisplayActivity.REQUEST_CODE__SCAN_DOCUMENT);
+
+        //track event on Scan Document button click
+        //implementation and logic will be available in nmc/1925-market_tracking
+        if (trackingScanInterface != null) {
+            trackingScanInterface.sendScanEvent(preferences);
+        }
     }
 
     @Override
@@ -1500,6 +1529,12 @@ public class OCFileListFragment extends ExtendedListFragment implements
         listDirectory(null, onlyOnDevice, fromSearch);
     }
 
+    public void listDirectoryFolder(boolean onlyOnDevice, boolean fromSearch, boolean showOnlyFolder, boolean hideEncryptedFolder) {
+        mShowOnlyFolder = showOnlyFolder;
+        mHideEncryptedFolder = hideEncryptedFolder;
+        listDirectory(null, onlyOnDevice, fromSearch);
+    }
+
     public void refreshDirectory() {
         searchFragment = false;
 
@@ -1559,12 +1594,23 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 return;
             }
 
-            mAdapter.swapDirectory(
-                accountManager.getUser(),
-                directory,
-                storageManager,
-                onlyOnDevice,
-                mLimitToMimeType);
+                if(mShowOnlyFolder) {
+                    mAdapter.showOnlyFolder(
+                        accountManager.getUser(),
+                        directory,
+                        storageManager,
+                        onlyOnDevice,
+                        mLimitToMimeType,
+                        mHideEncryptedFolder);
+                }
+                else {
+                    mAdapter.swapDirectory(
+                        accountManager.getUser(),
+                        directory,
+                        storageManager,
+                        onlyOnDevice,
+                        mLimitToMimeType);
+                }
 
             OCFile previousDirectory = mFile;
             mFile = directory;
