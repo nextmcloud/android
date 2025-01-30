@@ -39,6 +39,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -73,8 +74,8 @@ public class ShareActivity extends FileActivity {
             boolean isAutoUploadFolder = SyncedFolderProvider.isAutoUploadFolder(syncedFolderProvider, file, optionalUser.get());
 
             Integer overlayIconId = file.getFileOverlayIconId(isAutoUploadFolder);
-            LayerDrawable drawable = MimeTypeUtil.getFolderIcon(preferences.isDarkModeEnabled(), overlayIconId, this, viewThemeUtils);
-            binding.shareFileIcon.setImageDrawable(drawable);
+            // NMC Customization: No overlay icon will be used. Directly using folder icons
+            binding.shareFileIcon.setImageDrawable(ContextCompat.getDrawable(this, overlayIconId));
         } else {
             binding.shareFileIcon.setImageDrawable(MimeTypeUtil.getFileTypeIcon(file.getMimeType(),
                                                                                 file.getFileName(),
