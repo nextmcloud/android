@@ -1802,6 +1802,7 @@ public class FileDisplayActivity extends FileActivity
             onSynchronizeFileOperationFinish((SynchronizeFileOperation) operation, result);
         } else if (operation instanceof CreateFolderOperation) {
             onCreateFolderOperationFinish((CreateFolderOperation) operation, result);
+            syncAndUpdateFolder(true);
         } else if (operation instanceof MoveFileOperation) {
             onMoveFileOperationFinish((MoveFileOperation) operation, result);
         } else if (operation instanceof CopyFileOperation) {
