@@ -860,9 +860,13 @@ public final class DisplayUtils {
                                     LoaderImageView shimmerThumbnail,
                                     AppPreferences preferences,
                                     ViewThemeUtils viewThemeUtils,
-                                    SyncedFolderProvider syncedFolderProvider) {
+                                    SyncedFolderProvider syncedFolderProvider,
+                                    boolean isMediaGallery) {
         if (file.isFolder()) {
             stopShimmer(shimmerThumbnail, thumbnailView);
+            updateThumbnailViewSize(thumbnailView, gridView, context, isMediaGallery, R.dimen.standard_folders_grid_item_size);
+            //reset the padding as this will change for files and we don't this for folders
+            thumbnailView.setPadding(0, 0, 0, 0);
 
             boolean isAutoUploadFolder = SyncedFolderProvider.isAutoUploadFolder(syncedFolderProvider, file, user);
             boolean isDarkModeActive = preferences.isDarkModeEnabled();
@@ -871,26 +875,28 @@ public final class DisplayUtils {
             LayerDrawable fileIcon = MimeTypeUtil.getFolderIcon(isDarkModeActive, overlayIconId, context, viewThemeUtils);
             thumbnailView.setImageDrawable(fileIcon);
         } else {
+            updateThumbnailViewSize(thumbnailView, gridView, context, isMediaGallery, R.dimen.standard_files_grid_item_size);
             if (file.getRemoteId() != null && file.isPreviewAvailable()) {
                 // Thumbnail in cache?
                 Bitmap thumbnail = ThumbnailsCacheManager.getBitmapFromDiskCache(
                     ThumbnailsCacheManager.PREFIX_THUMBNAIL + file.getRemoteId());
 
                 if (thumbnail != null && !file.isUpdateThumbnailNeeded()) {
+                    setThumbnailViewPadding(thumbnailView, gridView, context, isMediaGallery, R.dimen.alternate_padding);
                     stopShimmer(shimmerThumbnail, thumbnailView);
 
                     if (MimeTypeUtil.isVideo(file)) {
-                        Bitmap withOverlay = ThumbnailsCacheManager.addVideoOverlay(thumbnail, context);
-                        thumbnailView.setImageBitmap(withOverlay);
+                        thumbnail = ThumbnailsCacheManager.addVideoOverlay(thumbnail, context);
+                    }
+
+                    // NMC: set the corner for both video and image thumbnail
+                    if (gridView) {
+                        BitmapUtils.setRoundedBitmapForGridMode(thumbnail, thumbnailView);
                     } else {
-                        if (gridView) {
-                            BitmapUtils.setRoundedBitmapForGridMode(thumbnail, thumbnailView);
-                        } else {
-                            BitmapUtils.setRoundedBitmap(thumbnail, thumbnailView);
-                        }
+                        BitmapUtils.setRoundedBitmap(thumbnail, thumbnailView);
                     }
                 } else {
-                    generateNewThumbnail(file, thumbnailView, user, storageManager, asyncTasks, gridView, context, shimmerThumbnail, preferences, viewThemeUtils);
+                    generateNewThumbnail(file, thumbnailView, user, storageManager, asyncTasks, gridView, context, shimmerThumbnail, preferences, viewThemeUtils, isMediaGallery);
                 }
 
                 if ("image/png".equalsIgnoreCase(file.getMimeType())) {
@@ -898,9 +904,10 @@ public final class DisplayUtils {
                 }
             } else {
                 if (file.getRemoteId() != null) {
-                    generateNewThumbnail(file, thumbnailView, user, storageManager, asyncTasks, gridView, context, shimmerThumbnail, preferences, viewThemeUtils);
+                    generateNewThumbnail(file, thumbnailView, user, storageManager, asyncTasks, gridView, context, shimmerThumbnail, preferences, viewThemeUtils, isMediaGallery);
                 } else {
                     stopShimmer(shimmerThumbnail, thumbnailView);
+                    setThumbnailViewPadding(thumbnailView, gridView, context, isMediaGallery, R.dimen.standard_quarter_padding);
                     thumbnailView.setImageDrawable(MimeTypeUtil.getFileTypeIcon(file.getMimeType(),
                                                                                 file.getFileName(),
                                                                                 context,
@@ -919,7 +926,8 @@ public final class DisplayUtils {
                                              Context context,
                                              LoaderImageView shimmerThumbnail,
                                              AppPreferences preferences,
-                                             ViewThemeUtils viewThemeUtils) {
+                                             ViewThemeUtils viewThemeUtils,
+                                             boolean isMediaGallery) {
         if (!ThumbnailsCacheManager.cancelPotentialThumbnailWork(file, thumbnailView)) {
             return;
         }
@@ -964,6 +972,10 @@ public final class DisplayUtils {
 
             int px = ThumbnailsCacheManager.getThumbnailDimension();
             thumbnail = BitmapUtils.drawableToBitmap(drawable, px, px);
+
+            //NMC: set thumbnailView padding for no thumbnail
+            setThumbnailViewPadding(thumbnailView, gridView, context, isMediaGallery, R.dimen.standard_quarter_padding);
+
             final ThumbnailsCacheManager.AsyncThumbnailDrawable asyncDrawable =
                 new ThumbnailsCacheManager.AsyncThumbnailDrawable(context.getResources(),
                                                                   thumbnail, task);
@@ -971,9 +983,6 @@ public final class DisplayUtils {
             if (shimmerThumbnail != null) {
                 shimmerThumbnail.postDelayed(() -> {
                     if (thumbnailView.getDrawable() == null) {
-                        if (gridView) {
-                            configShimmerGridImageSize(shimmerThumbnail, preferences.getGridColumns());
-                        }
                         startShimmer(shimmerThumbnail, thumbnailView);
                     }
                 }, 100);
@@ -1043,6 +1052,43 @@ public final class DisplayUtils {
             return displaySize;
         } else {
             throw new Exception("WindowManager not found");
+        }
+    }
+
+    /**
+     * method to set the padding to thumbnail view this is required for files so that there will be space between file
+     * and file name
+     *
+     * @param thumbnailView
+     * @param gridView
+     * @param context
+     * @param isMediaGallery
+     * @param dimensPadding
+     */
+    private static void setThumbnailViewPadding(ImageView thumbnailView, boolean gridView, Context context,
+                                                boolean isMediaGallery, int dimensPadding) {
+        if (gridView && !isMediaGallery) {
+            int padding = context.getResources().getDimensionPixelSize(dimensPadding);
+            thumbnailView.setPadding(0, 0, 0, padding);
+        }
+    }
+
+    /**
+     * method to set manual thumbnail view height and width for folders and files because we are using different size
+     * for both files and folders
+     *
+     * @param thumbnailView
+     * @param gridView
+     * @param context
+     * @param isMediaGallery
+     * @param size
+     */
+    private static void updateThumbnailViewSize(ImageView thumbnailView, boolean gridView, Context context,
+                                                boolean isMediaGallery, int size) {
+        if (gridView && !isMediaGallery) {
+            thumbnailView.getLayoutParams().width =
+                context.getResources().getDimensionPixelSize(size);
+            thumbnailView.getLayoutParams().height = context.getResources().getDimensionPixelSize(size);
         }
     }
 }
