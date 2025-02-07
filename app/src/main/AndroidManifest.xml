@@ -344,11 +344,10 @@
         <activity
             android:name=".ui.activity.SettingsActivity"
             android:exported="false"
-            android:theme="@style/PreferenceTheme" />
+            android:theme="@style/Theme.ownCloud" />
         <activity
             android:name=".ui.preview.PreviewImageActivity"
-            android:exported="false"
-            android:theme="@style/Theme.ownCloud.Overlay" />
+            android:exported="false" />
         <activity
             android:name=".ui.preview.PreviewMediaActivity"
             android:configChanges="orientation|screenLayout|screenSize|keyboardHidden"
