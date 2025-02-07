@@ -65,6 +65,8 @@ import com.nextcloud.client.onboarding.OnboardingService;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.nextcloud.utils.mdm.MDMConfig;
+import com.nmc.android.marketTracking.AdjustSdkUtils;
+import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.AccountSetupBinding;
@@ -1253,6 +1255,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private void endSuccess() {
+        // NMC: track successful login event
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_SUCCESSFUL_LOGIN, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_SUCCESSFUL_LOGIN, preferences);
+
         if (!onlyAdd) {
             if (MDMConfig.INSTANCE.enforceProtection(this) && Objects.equals(preferences.getLockPreference(), SettingsActivity.LOCK_NONE)) {
                 Intent i = new Intent(this, SettingsActivity.class);
@@ -1592,5 +1598,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     @Override
     public void onFailedSavingCertificate() {
         DisplayUtils.showSnackMessage(this, R.string.ssl_validator_not_saved);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //track screen view when activity is visible
+        TealiumSdkUtils.trackView(TealiumSdkUtils.SCREEN_VIEW_LOGIN, preferences);
     }
 }
