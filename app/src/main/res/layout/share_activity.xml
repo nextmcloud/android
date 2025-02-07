@@ -59,8 +59,8 @@
     <View
         android:id="@+id/share_header_divider"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/standard_eighth_margin"
-        android:background="@color/primary" />
+        android:layout_height="1dp"
+        android:background="@color/divider_color" />
 
     <FrameLayout
         android:id="@+id/share_fragment_container"
