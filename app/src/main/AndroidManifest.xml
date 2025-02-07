@@ -159,7 +159,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="http" />
-                <data android:host="*" />
+                <data android:host="magentacloud.de" />
                 <data android:pathPattern="/f/..*" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -169,7 +169,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="http" />
-                <data android:host="*" />
+                <data android:host="magentacloud.de" />
                 <data android:pathPattern="/..*/f/..*" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -179,7 +179,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="http" />
-                <data android:host="*" />
+                <data android:host="magentacloud.de" />
                 <data android:pathPattern="/..*/..*/f/..*" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -189,7 +189,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="http" />
-                <data android:host="*" />
+                <data android:host="magentacloud.de" />
                 <data android:pathPattern="/..*/..*/..*/f/..*" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -199,7 +199,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="*" />
+                <data android:host="magentacloud.de" />
                 <data android:pathPattern="/f/..*" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -209,7 +209,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="*" />
+                <data android:host="magentacloud.de" />
                 <data android:pathPattern="/..*/f/..*" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -219,7 +219,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="*" />
+                <data android:host="magentacloud.de" />
                 <data android:pathPattern="/..*/..*/f/..*" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -229,7 +229,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="*" />
+                <data android:host="magentacloud.de" />
                 <data android:pathPattern="/..*/..*/..*/f/..*" />
                 <!-- path pattern to handle deep link -->
                 <data android:pathPattern="/app/..*" />
