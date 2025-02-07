@@ -73,6 +73,7 @@ import com.nextcloud.utils.extensions.FileExtensionsKt;
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
 import com.nextcloud.utils.fileNameValidator.FileNameValidator;
 import com.nextcloud.utils.view.FastScrollUtils;
+import com.nmc.android.utils.SearchViewThemeUtils;
 import com.owncloud.android.MainApp;
 import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.R;
@@ -308,19 +309,19 @@ public class FileDisplayActivity extends FileActivity
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             return;
         }
-        
+
         if (PermissionUtil.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE)) {
             return;
         }
-        
+
         if (preferences.isAutoUploadGPlayWarningShown()) {
             return;
         }
-        
+
         boolean showInfoDialog = false;
         for (SyncedFolder syncedFolder : syncedFolderProvider.getSyncedFolders()) {
             // move or delete after success
-            if (syncedFolder.getUploadAction() == FileUploadWorker.LOCAL_BEHAVIOUR_MOVE || 
+            if (syncedFolder.getUploadAction() == FileUploadWorker.LOCAL_BEHAVIOUR_MOVE ||
                 syncedFolder.getUploadAction() == FileUploadWorker.LOCAL_BEHAVIOUR_DELETE) {
                 showInfoDialog = true;
                 break;
@@ -525,19 +526,19 @@ public class FileDisplayActivity extends FileActivity
             DisplayUtils.showServerOutdatedSnackbar(this, Snackbar.LENGTH_LONG);
         }
     }
-    
+
     private void checkNotifications() {
         new Thread(() -> {
             try {
                 RemoteOperationResult<List<Notification>> result = new GetNotificationsRemoteOperation()
                     .execute(clientFactory.createNextcloudClient(accountManager.getUser()));
-                
+
                 if (result.isSuccess() && !result.getResultData().isEmpty()) {
                     runOnUiThread(() -> mNotificationButton.setVisibility(View.VISIBLE));
                 } else {
                     runOnUiThread(() -> mNotificationButton.setVisibility(View.GONE));
                 }
-                
+
             } catch (ClientFactory.CreationException e) {
                 Log_OC.e(TAG, "Could not fetch notifications!");
             }
@@ -690,7 +691,7 @@ public class FileDisplayActivity extends FileActivity
             }
         }
     }
-    
+
     private void showReEnableAutoUploadDialog() {
         new MaterialAlertDialogBuilder(this, R.style.Theme_ownCloud_Dialog)
             .setTitle(R.string.re_enable_auto_upload)
@@ -895,7 +896,8 @@ public class FileDisplayActivity extends FileActivity
             searchView.setIconified(false);
         });
 
-        viewThemeUtils.androidx.themeToolbarSearchView(searchView);
+        //NMC customization
+        SearchViewThemeUtils.INSTANCE.themeSearchView(this, searchView);
 
         // populate list of menu items to show/hide when drawer is opened/closed
         mDrawerMenuItemstoShowHideList = new ArrayList<>(1);
@@ -1304,7 +1306,7 @@ public class FileDisplayActivity extends FileActivity
         }
         //show in-app review dialog to user
         inAppReviewHelper.showInAppReview(this);
-        
+
         checkNotifications();
 
         Log_OC.v(TAG, "onResume() end");
