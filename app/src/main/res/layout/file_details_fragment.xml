@@ -18,6 +18,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/share_detail_file_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -35,8 +36,8 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="middle"
                 android:text="@string/placeholder_filename"
-                android:textColor="@color/text_color"
-                android:textSize="20sp"
+                android:textColor="@color/share_title_txt_color"
+                android:textSize="@dimen/txt_size_14sp"
                 android:textStyle="bold"
                 tools:text="@string/placeholder_filename" />
 
@@ -49,8 +50,8 @@
 
                 <ImageView
                     android:id="@+id/favorite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:layout_marginStart="@dimen/zero"
                     android:layout_marginEnd="@dimen/standard_eighth_margin"
                     android:contentDescription="@string/favorite"
@@ -60,8 +61,8 @@
                     android:id="@+id/size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/two_line_primary_text_size"
-                    android:textColor="@color/list_item_lastmod_and_filesize_text"
+                    android:textSize="@dimen/txt_size_14sp"
+                    android:textColor="@color/share_subtitle_txt_color"
                     tools:text="@string/placeholder_fileSize" />
 
                 <TextView
@@ -72,16 +73,16 @@
                     android:paddingStart="@dimen/zero"
                     android:paddingEnd="@dimen/standard_quarter_padding"
                     android:text="@string/info_separator"
-                    android:textColor="@color/list_item_lastmod_and_filesize_text"
-                    android:textSize="@dimen/two_line_primary_text_size" />
+                    android:textColor="@color/share_subtitle_txt_color"
+                    android:textSize="@dimen/two_line_secondary_text_size" />
 
                 <TextView
                     android:id="@+id/last_modification_timestamp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:textSize="@dimen/two_line_primary_text_size"
-                    android:textColor="@color/list_item_lastmod_and_filesize_text"
+                    android:textSize="@dimen/txt_size_14sp"
+                    android:textColor="@color/share_subtitle_txt_color"
                     tools:text="@string/placeholder_media_time" />
 
                 <ImageView
@@ -118,9 +119,10 @@
             android:layout_marginTop="@dimen/standard_quarter_margin"
             android:contentDescription="@string/overflow_menu"
             app:cornerRadius="24dp"
+            android:visibility="gone"
             app:icon="@drawable/ic_dots_vertical"
             app:iconSize="24dp"
-            app:iconTint="@color/grey_600" />
+            app:iconTint="@color/grey_60" />
     </LinearLayout>
 
     <LinearLayout
@@ -165,7 +167,7 @@
             android:contentDescription="@string/common_cancel"
             app:cornerRadius="24dp"
             app:icon="@drawable/ic_cancel"
-            app:iconTint="@color/grey_600"
+            app:iconTint="@color/grey_60"
             android:layout_marginTop="@dimen/standard_eighth_margin"/>
 
     </LinearLayout>
@@ -174,7 +176,8 @@
         android:id="@+id/syncBlock"
         android:layout_width="match_parent"
         android:orientation="vertical"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="gone">
         
         <View
             android:layout_width="match_parent"
@@ -206,26 +209,10 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/list_divider_background" />
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/bg_default"
-        app:tabGravity="center"
-        app:tabMode="fixed"
-        app:tabTextColor="@color/text_color"
-        app:tabInlineLabel="true" />
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:background="@color/divider_color" />
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:visibility="gone"
         android:id="@+id/sharing_frame_container"
         android:layout_height="match_parent"/>
 

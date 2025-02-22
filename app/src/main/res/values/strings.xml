@@ -631,8 +631,8 @@
     <string name="share_with_title">Share with…</string>
     <string name="share_via_link_unset_password">Unset</string>
 
-    <string name="share_search">Name, Federated Cloud ID or email address…</string>
-    <string name="secure_share_search">Secure share…</string>
+    <string name="share_search">Contact name or email</string>
+    <string name="secure_share_search">Secure share …</string>
 
     <string name="share_group_clarification">%1$s (group)</string>
     <string name="share_remote_clarification">%1$s (remote)</string>
@@ -1087,7 +1087,7 @@
     <string name="add_another_public_share_link">Add another link</string>
     <string name="add_new_public_share">Add new public share link</string>
     <string name="public_share_name">New name</string>
-    <string name="share_link_with_label">Share link (%1$s)</string>
+    <string name="share_link_with_label">Link \'%1$s\'</string>
     <string name="share_link">Share link</string>
     <string name="allow_resharing">Allow resharing</string>
     <string name="link_share_view_only">View only</string>
@@ -1159,12 +1159,12 @@
     <string name="create">Create</string>
     <string name="select_one_template">Please select one template</string>
     <string name="choose_template_helper_text">Please choose a template and enter a file name.</string>
-    <string name="share_permission_view_only">View only</string>
+    <string name="share_permission_read_only">Read only</string>
     <string name="share_permission_can_edit">Can edit</string>
-    <string name="share_permission_file_drop">File drop</string>
+    <string name="share_permission_file_drop">Filedrop only</string>
     <string name="share_permission_secure_file_drop">Secure file drop</string>
-    <string name="share_permissions">Share Permissions</string>
-    <string name="advanced_settings">Advanced Settings</string>
+    <string name="share_permissions">Permissions</string>
+    <string name="advanced_settings">Advanced Permissions</string>
     <string name="common_next">Next</string>
     <string name="send_share">Send Share</string>
     <string name="no_share_permission_selected">Please select at least one permission to share.</string>
