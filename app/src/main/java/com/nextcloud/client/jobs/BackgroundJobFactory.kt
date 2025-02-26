@@ -104,6 +104,7 @@ class BackgroundJobFactory @Inject constructor(
                 FileUploadWorker::class -> createFilesUploadWorker(context, workerParameters)
                 AlbumFileUploadWorker::class -> createAlbumsFilesUploadWorker(context, workerParameters)
                 FileDownloadWorker::class -> createFilesDownloadWorker(context, workerParameters)
+                AlbumFileUploadWorker::class -> createAlbumsFilesUploadWorker(context, workerParameters)
                 GeneratePdfFromImagesWork::class -> createPDFGenerateWork(context, workerParameters)
                 HealthStatusWork::class -> createHealthStatusWork(context, workerParameters)
                 TestJob::class -> createTestJob(context, workerParameters)
