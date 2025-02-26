@@ -253,6 +253,12 @@ class GalleryAdapter(
         notifyDataSetChanged()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun showAlbumItems(albumItems: List<OCFile>) {
+        files = albumItems.toGalleryItems()
+        notifyDataSetChanged()
+    }
+
     private fun transformToRows(list: List<OCFile>): List<GalleryRow> {
         if (list.isEmpty()) return emptyList()
 
@@ -312,6 +318,10 @@ class GalleryAdapter(
         if (position >= 0) {
             notifyItemChanged(position)
         }
+    }
+
+    fun setCheckedItem(files: Set<OCFile>?) {
+        ocFileListDelegate.setCheckedItem(files)
     }
 
     override fun setMultiSelect(boolean: Boolean) {
