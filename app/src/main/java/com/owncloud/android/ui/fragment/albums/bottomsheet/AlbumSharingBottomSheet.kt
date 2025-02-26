@@ -16,7 +16,6 @@ import androidx.annotation.StringRes
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.utils.date.DateFormatPattern
 import com.nextcloud.utils.extensions.setVisibleIf
@@ -72,7 +71,6 @@ class AlbumSharingBottomSheet(
             state = BottomSheetBehavior.STATE_EXPANDED
             skipCollapsed = true
         }
-        viewThemeUtils.platform.colorViewBackground(binding.bottomSheet, ColorRole.SURFACE)
         return binding.root
     }
 
@@ -129,7 +127,7 @@ class AlbumSharingBottomSheet(
         thumbnailGenerator.setThumbnail(
             file,
             target.thumbnail,
-            ThumbnailArguments(isGrid = false, hideVideoOverlay = true, target.thumbnailShimmer)
+            ThumbnailArguments(isGrid = false, hideVideoOverlay = false, target.thumbnailShimmer, isMediaGallery = true)
         )
     }
 
