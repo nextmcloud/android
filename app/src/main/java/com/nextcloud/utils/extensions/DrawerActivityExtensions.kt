@@ -42,6 +42,7 @@ fun DrawerActivity.getMenuItemIdFromTitle(): Int? {
         getString(R.string.drawer_item_assistant) -> R.id.nav_assistant
         getString(R.string.drawer_item_uploads_list) -> R.id.nav_uploads
         getString(R.string.drawer_item_trashbin) -> R.id.nav_trashbin
+        getString(R.string.drawer_item_album) -> R.id.nav_album
         else -> {
             if (MainApp.isOnlyPersonFiles()) {
                 R.id.nav_personal_files
