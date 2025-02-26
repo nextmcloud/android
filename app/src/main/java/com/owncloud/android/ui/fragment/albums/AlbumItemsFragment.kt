@@ -25,20 +25,22 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.core.view.get
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
 import com.nextcloud.client.di.Injectable
@@ -54,11 +56,11 @@ import com.nextcloud.utils.SnackbarUtil
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.nextcloud.utils.extensions.isDialogFragmentReady
 import com.nextcloud.utils.extensions.isLandscape
-import com.nextcloud.utils.extensions.setVisibleIf
 import com.nextcloud.utils.extensions.toAlbumItem
 import com.nextcloud.utils.thumbnail.ThumbnailGenerator
+import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.R
-import com.owncloud.android.databinding.ListFragmentBinding
+import com.owncloud.android.databinding.AlbumsFragmentBinding
 import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.datamodel.ThumbnailsCacheManager
 import com.owncloud.android.datamodel.VirtualFolderType
@@ -74,7 +76,6 @@ import com.owncloud.android.lib.resources.files.model.RemoteFile
 import com.owncloud.android.lib.resources.status.Type
 import com.owncloud.android.operations.albums.ReadAlbumItemsOperation
 import com.owncloud.android.ui.activity.AlbumsPickerActivity
-import com.owncloud.android.ui.activity.FileActivity
 import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.adapter.GalleryAdapter
 import com.owncloud.android.ui.dialog.ConfirmationDialogFragment
@@ -84,7 +85,6 @@ import com.owncloud.android.ui.events.FavoriteEvent
 import com.owncloud.android.ui.fragment.FileFragment
 import com.owncloud.android.ui.fragment.albums.bottomsheet.AlbumSharingBottomSheet
 import com.owncloud.android.ui.fragment.albums.bottomsheet.AlbumSharingBottomSheetActions
-import com.owncloud.android.ui.fragment.albums.model.AlbumItemsEmptyState
 import com.owncloud.android.ui.fragment.albums.util.AlbumCollageLayout
 import com.owncloud.android.ui.fragment.helper.ColumnCount
 import com.owncloud.android.ui.helpers.UriUploader
@@ -133,11 +133,10 @@ class AlbumItemsFragment :
     @Inject
     lateinit var thumbnailGenerator: ThumbnailGenerator
 
-    private lateinit var binding: ListFragmentBinding
+    private lateinit var binding: AlbumsFragmentBinding
     private lateinit var albumName: String
 
     private var adapter: GalleryAdapter? = null
-    private var addMediaFab: FloatingActionButton? = null
     private var optionalUser: Optional<User>? = null
     private var containerActivity: FileFragment.ContainerActivity? = null
     private var selectionMode: AlbumItemsMultiChoiceModeListener? = null
@@ -184,7 +183,7 @@ class AlbumItemsFragment :
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = ListFragmentBinding.inflate(inflater, container, false)
+        binding = AlbumsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -196,8 +195,8 @@ class AlbumItemsFragment :
         createMenu()
         setupSwipeRefresh()
         setupList()
-        createAddMediaButton()
         observeRefreshRequests()
+        setUpEmptyView()
 
         if (isNewAlbum) {
             openGalleryToAddMedia()
@@ -217,12 +216,15 @@ class AlbumItemsFragment :
             showSortListGroup(false)
             setMainFabVisible(false)
             clearToolbarSubtitle()
+            showHideDefaultToolbarDivider(true)
+            highlightNavigationViewItem(R.id.nav_album)
         }
     }
 
     override fun onPause() {
         super.onPause()
         adapter?.cancelAllPendingTasks()
+        getTypedActivity(FileDisplayActivity::class.java)?.showHideDefaultToolbarDivider(false)
     }
 
     override fun onStop() {
@@ -232,8 +234,6 @@ class AlbumItemsFragment :
 
     override fun onDestroyView() {
         lastMediaItemPosition = 0
-        addMediaFab = null
-        binding.listRoot.adapter = null
         super.onDestroyView()
     }
 
@@ -254,38 +254,15 @@ class AlbumItemsFragment :
     }
 
     private fun setupList() {
-        binding.listRoot.setEmptyView(binding.emptyList.emptyListView)
         binding.listRoot.layoutManager = GridLayoutManager(requireContext(), SINGLE_SPAN)
     }
 
     private fun setupSwipeRefresh() {
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingList)
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(requireContext(), binding.swipeContainingList)
         binding.swipeContainingList.setOnRefreshListener {
             binding.swipeContainingList.isRefreshing = true
             refreshData()
         }
-    }
-
-    private fun createAddMediaButton() {
-        addMediaFab = FloatingActionButton(requireContext()).apply {
-            id = View.generateViewId()
-            setImageResource(R.drawable.ic_plus)
-            contentDescription = getString(R.string.add_media)
-            viewThemeUtils.material.themeFAB(this)
-            setOnClickListener { openAddMediaMenu() }
-        }
-
-        val layoutParams = RelativeLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ).apply {
-            addRule(RelativeLayout.ALIGN_PARENT_END)
-            addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-            marginEnd = resources.getDimensionPixelSize(R.dimen.standard_margin)
-            bottomMargin = resources.getDimensionPixelSize(R.dimen.bottom_navigation_view_margin)
-        }
-
-        binding.listFragmentLayout.addView(addMediaFab, layoutParams)
     }
 
     private fun initializeAdapter() {
@@ -319,7 +296,7 @@ class AlbumItemsFragment :
             adapter = adapter,
             viewThemeUtils = viewThemeUtils,
             openActionsMenu = { filesCount, checkedFiles -> openActionsMenu(filesCount, checkedFiles) },
-            onSelectionModeChanged = { isActive -> addMediaFab.setVisibleIf(!isActive) }
+            onSelectionModeChanged = { }
         )
 
         (requireActivity() as FileDisplayActivity).addDrawerListener(selectionMode)
@@ -347,7 +324,7 @@ class AlbumItemsFragment :
         binding.swipeContainingList.isRefreshing = true
         selectionMode?.exitSelectionMode()
         initializeAdapter()
-        showLoadingMessageWhenReachable()
+        updateEmptyView(false)
 
         lifecycleScope.launch(Dispatchers.IO) {
             val client = clientRepository.getOwncloudClient() ?: run {
@@ -389,7 +366,7 @@ class AlbumItemsFragment :
 
     private fun onAlbumItemsLoaded() {
         if (albumItems.isEmpty()) {
-            setMessageForEmptyList(AlbumItemsEmptyState.NO_ITEMS)
+            updateEmptyView(true)
         }
 
         populateList(albumItems)
@@ -399,7 +376,7 @@ class AlbumItemsFragment :
 
     private fun onAlbumItemsFailed(result: RemoteOperationResult<*>?) {
         Log_OC.e(TAG, "reading album items failed: ${result?.logMessage}")
-        setMessageForEmptyList(AlbumItemsEmptyState.fromFailure(result))
+        updateEmptyView(true)
         refreshAlbumMetaData()
         hideRefreshLayoutLoader()
     }
@@ -438,29 +415,23 @@ class AlbumItemsFragment :
     //endregion
 
     //region Empty state
-    private fun showLoadingMessageWhenReachable() {
-        val connectivityService = getTypedActivity(FileActivity::class.java)?.connectivityService ?: return
+    private fun setUpEmptyView() {
+        binding.albumEmptyView.albumsBgImage.setImageResource(R.drawable.empty_album_detailed_view)
+        binding.albumEmptyView.albumsBgImage.scaleType = ImageView.ScaleType.FIT_CENTER
+        binding.albumEmptyView.emptyAlbumLabel.text = resources.getString(R.string.empty_album_detailed_view_title)
+        binding.albumEmptyView.emptyAlbumMessageLabel.text =
+            resources.getString(R.string.empty_album_detailed_view_message)
+        binding.albumEmptyView.createAlbum.text = resources.getString(R.string.add_photos)
 
-        connectivityService.isNetworkAndServerAvailable { available ->
-            if (!available) {
-                return@isNetworkAndServerAvailable
-            }
-
-            with(binding.emptyList) {
-                emptyListViewHeadline.setText(R.string.file_list_loading)
-                emptyListViewText.text = ""
-                emptyListIcon.visibility = View.GONE
-            }
+        binding.albumEmptyView.createAlbum.setOnClickListener {
+            // open Gallery fragment as selection then add items to current album
+            openGalleryToAddMedia()
         }
     }
 
-    private fun setMessageForEmptyList(state: AlbumItemsEmptyState) = with(binding.emptyList) {
-        emptyListViewHeadline.setText(state.headline)
-        emptyListViewText.setText(state.message)
-        emptyListIcon.setImageResource(state.icon)
-
-        emptyListIcon.visibility = View.VISIBLE
-        emptyListViewText.visibility = View.VISIBLE
+    private fun updateEmptyView(isEmpty: Boolean) {
+        binding.albumEmptyView.emptyViewLayout.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        binding.listRoot.visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
     //endregion
 
@@ -470,11 +441,46 @@ class AlbumItemsFragment :
         menuHost.addMenuProvider(
             object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menu.clear()
+                    menu.clear() // important: clears any existing activity menu
                     menuInflater.inflate(R.menu.fragment_album_items, menu)
                 }
 
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean = onAlbumActionChosen(menuItem.itemId)
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        R.id.action_three_dot_icon -> {
+                            openAddMediaMenu()
+                            true
+                        }
+
+                        R.id.action_add_from_camera_roll -> {
+                            addFromCameraRoll()
+                            true
+                        }
+
+                        R.id.action_add_from_account -> {
+                            // open Gallery fragment as selection then add items to current album
+                            openGalleryToAddMedia()
+                            true
+                        }
+
+                        else -> false
+                    }
+                }
+
+                override fun onPrepareMenu(menu: Menu) {
+                    super.onPrepareMenu(menu)
+                    for (i in 0 until menu.size) {
+                        val item = menu[i]
+                        item.icon?.let {
+                            item.setIcon(
+                                viewThemeUtils.platform.colorDrawable(
+                                    it,
+                                    ContextCompat.getColor(requireContext(), R.color.fontAppbar)
+                                )
+                            )
+                        }
+                    }
+                }
             },
             viewLifecycleOwner,
             Lifecycle.State.RESUMED
@@ -654,8 +660,10 @@ class AlbumItemsFragment :
                 return@launch
             }
 
-            Handler(Looper.getMainLooper()).post { selectionMode?.exitSelectionMode() }
-            adapter?.markAsFavorite(event.remotePath, event.shouldFavorite)
+            Handler(Looper.getMainLooper()).post {
+                selectionMode?.exitSelectionMode()
+                adapter?.markAsFavorite(event.remotePath, event.shouldFavorite)
+            }
         }
     }
     //endregion
