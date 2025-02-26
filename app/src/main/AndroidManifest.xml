@@ -590,6 +590,9 @@
             android:theme="@style/Theme.ownCloud.Dialog.NoTitle"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".ui.activity.AlbumsPickerActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.ShareActivity"
             android:exported="false"
             android:label="@string/share_dialog_title"
