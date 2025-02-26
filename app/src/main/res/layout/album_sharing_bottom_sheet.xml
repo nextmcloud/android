@@ -270,21 +270,23 @@
                     android:id="@+id/action_stop_sharing"
                     layout="@layout/album_share_action"
                     android:layout_width="@dimen/standard_quadruple_icon_size"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginEnd="@dimen/standard_margin"
                     android:layout_marginBottom="@dimen/standard_half_margin"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/action_copy" />
+                    app:layout_constraintEnd_toStartOf="@+id/action_copy"
+                    app:layout_constraintTop_toTopOf="@+id/action_share_link" />
 
                 <include
                     android:id="@+id/action_copy"
                     layout="@layout/album_share_action"
                     android:layout_width="@dimen/standard_quadruple_icon_size"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginEnd="@dimen/standard_margin"
                     android:layout_marginBottom="@dimen/standard_half_margin"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/action_share_link" />
+                    app:layout_constraintEnd_toStartOf="@+id/action_share_link"
+                    app:layout_constraintTop_toTopOf="@+id/action_share_link" />
 
                 <include
                     android:id="@+id/action_share_link"
