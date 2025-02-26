@@ -932,6 +932,16 @@ public class FileOperationsHelper {
         fileActivity.refreshList();
     }
 
+    public void fetchAlbums() {
+        Log_OC.e(TAG, "Fetch albums");
+        Intent service = new Intent(fileActivity, OperationsService.class);
+
+        service.setAction(OperationsService.ACTION_ALBUM);
+        service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
+
+        mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
+    }
+
 
     /**
      * Start operations to delete one or several files
