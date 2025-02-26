@@ -236,6 +236,12 @@ class GalleryAdapter(
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun showAlbumItems(albumItems: List<OCFile>) {
+        files = albumItems.toGalleryItems()
+        Handler(Looper.getMainLooper()).post { notifyDataSetChanged() }
+    }
+
     private fun transformToRows(list: List<OCFile>): List<GalleryRow> {
         if (list.isEmpty()) return emptyList()
 
@@ -302,6 +308,10 @@ class GalleryAdapter(
 
     override fun notifyItemChanged(file: OCFile) {
         notifyItemChanged(getItemPosition(file))
+    }
+
+    fun setCheckedItem(files: Set<OCFile>?) {
+        ocFileListDelegate.setCheckedItem(files)
     }
 
     override fun getFilesCount(): Int = cachedFilesCount
