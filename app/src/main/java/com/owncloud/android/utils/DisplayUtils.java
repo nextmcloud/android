@@ -803,6 +803,35 @@ public final class DisplayUtils {
         return df.format(timestamp);
     }
 
+    // NMC Customization: required to hide video icon overlay for albums
+    public static void setThumbnail(OCFile file,
+                                    ImageView thumbnailView,
+                                    User user,
+                                    FileDataStorageManager storageManager,
+                                    List<ThumbnailsCacheManager.ThumbnailGenerationTask> asyncTasks,
+                                    boolean gridView,
+                                    Context context,
+                                    LoaderImageView shimmerThumbnail,
+                                    AppPreferences preferences,
+                                    ViewThemeUtils viewThemeUtils,
+                                    SyncedFolderProvider syncedFolderProvider,
+                                    boolean isMediaGallery
+                                   ) {
+        setThumbnail(file,
+                     thumbnailView,
+                     user,
+                     storageManager,
+                     asyncTasks,
+                     gridView,
+                     context,
+                     shimmerThumbnail,
+                     preferences,
+                     viewThemeUtils,
+                     syncedFolderProvider,
+                     false,
+                     isMediaGallery);
+    }
+
     /**
      * Sets a thumbnail for a offline file, file or folder with various display options and states.
      * <p>
@@ -843,7 +872,9 @@ public final class DisplayUtils {
                                     LoaderImageView shimmerThumbnail,
                                     AppPreferences preferences,
                                     ViewThemeUtils viewThemeUtils,
-                                    SyncedFolderProvider syncedFolderProvider) {
+                                    SyncedFolderProvider syncedFolderProvider,
+                                    boolean hideVideoOverlay,
+                                    boolean isMediaGallery) {
         if (file == null || thumbnailView == null || context == null) {
             return;
         }
@@ -859,16 +890,16 @@ public final class DisplayUtils {
         }
 
         if (file.getRemoteId() == null || !file.isPreviewAvailable()) {
-            setThumbnailFirstTimeForFile(file, thumbnailView, storageManager, asyncTasks, gridView, shimmerThumbnail, user, preferences, context, viewThemeUtils);
+            setThumbnailFirstTimeForFile(file, thumbnailView, storageManager, asyncTasks, gridView, shimmerThumbnail, user, preferences, context, viewThemeUtils, hideVideoOverlay, isMediaGallery);
             return;
         }
 
-        setThumbnailFromCache(file, thumbnailView, storageManager, asyncTasks, gridView, shimmerThumbnail, user, preferences, context, viewThemeUtils);
+        setThumbnailFromCache(file, thumbnailView, storageManager, asyncTasks, gridView, shimmerThumbnail, user, preferences, context, viewThemeUtils, hideVideoOverlay, isMediaGallery);
     }
 
-    private static void setThumbnailFirstTimeForFile(OCFile file, ImageView thumbnailView, FileDataStorageManager storageManager, List<ThumbnailsCacheManager.ThumbnailGenerationTask> asyncTasks, boolean gridView, LoaderImageView shimmerThumbnail, User user, AppPreferences preferences, Context context, ViewThemeUtils viewThemeUtils) {
+    private static void setThumbnailFirstTimeForFile(OCFile file, ImageView thumbnailView, FileDataStorageManager storageManager, List<ThumbnailsCacheManager.ThumbnailGenerationTask> asyncTasks, boolean gridView, LoaderImageView shimmerThumbnail, User user, AppPreferences preferences, Context context, ViewThemeUtils viewThemeUtils, boolean hideVideoOverlay, boolean isMediaGallery) {
         if (file.getRemoteId() != null) {
-            generateNewThumbnail(file, thumbnailView, user, storageManager, new ArrayList<>(asyncTasks), gridView, context, shimmerThumbnail, preferences, viewThemeUtils);
+            generateNewThumbnail(file, thumbnailView, user, storageManager, new ArrayList<>(asyncTasks), gridView, context, shimmerThumbnail, preferences, viewThemeUtils, hideVideoOverlay, isMediaGallery);
             return;
         }
 
@@ -910,22 +941,21 @@ public final class DisplayUtils {
         thumbnailView.setImageDrawable(fileIcon);
     }
 
-    private static void setThumbnailFromCache(OCFile file, ImageView thumbnailView, FileDataStorageManager storageManager, List<ThumbnailsCacheManager.ThumbnailGenerationTask> asyncTasks, boolean gridView, LoaderImageView shimmerThumbnail, User user, AppPreferences preferences, Context context, ViewThemeUtils viewThemeUtils) {
-        final var thumbnail = ThumbnailsCacheManager.getBitmapFromDiskCache(ThumbnailsCacheManager.PREFIX_THUMBNAIL + file.getRemoteId());
+    private static void setThumbnailFromCache(OCFile file, ImageView thumbnailView, FileDataStorageManager storageManager, List<ThumbnailsCacheManager.ThumbnailGenerationTask> asyncTasks, boolean gridView, LoaderImageView shimmerThumbnail, User user, AppPreferences preferences, Context context, ViewThemeUtils viewThemeUtils, boolean hideVideoOverlay, boolean isMediaGallery) {
+        var thumbnail = ThumbnailsCacheManager.getBitmapFromDiskCache(ThumbnailsCacheManager.PREFIX_THUMBNAIL + file.getRemoteId());
         if (thumbnail == null || file.isUpdateThumbnailNeeded()) {
-            generateNewThumbnail(file, thumbnailView, user, storageManager, new ArrayList<>(asyncTasks), gridView, context, shimmerThumbnail, preferences, viewThemeUtils);
+            generateNewThumbnail(file, thumbnailView, user, storageManager, new ArrayList<>(asyncTasks), gridView, context, shimmerThumbnail, preferences, viewThemeUtils, hideVideoOverlay, isMediaGallery);
             setThumbnailBackgroundForPNGFileIfNeeded(file, context, thumbnailView);
             return;
         }
 
         stopShimmer(shimmerThumbnail, thumbnailView);
 
-        if (MimeTypeUtil.isVideo(file)) {
-            final var withOverlay = ThumbnailsCacheManager.addVideoOverlay(thumbnail, context);
-            thumbnailView.setImageBitmap(withOverlay);
-        } else {
-            BitmapUtils.setRoundedBitmapAccordingToListType(gridView, thumbnail, thumbnailView);
+        if (MimeTypeUtil.isVideo(file) && !hideVideoOverlay) {
+            thumbnail = ThumbnailsCacheManager.addVideoOverlay(thumbnail, context);
         }
+        // NMC: set the corner for both video and image thumbnail
+        BitmapUtils.setRoundedBitmapAccordingToListType(gridView, thumbnail, thumbnailView);
 
         setThumbnailBackgroundForPNGFileIfNeeded(file, context, thumbnailView);
     }
@@ -946,7 +976,9 @@ public final class DisplayUtils {
                                              Context context,
                                              LoaderImageView shimmerThumbnail,
                                              AppPreferences preferences,
-                                             ViewThemeUtils viewThemeUtils) {
+                                             ViewThemeUtils viewThemeUtils,
+                                             boolean hideVideoOverlay,
+                                             boolean isMediaGallery) {
         if (!ThumbnailsCacheManager.cancelPotentialThumbnailWork(file, thumbnailView)) {
             return;
         }
@@ -977,7 +1009,8 @@ public final class DisplayUtils {
                                                                    user,
                                                                    asyncTasks,
                                                                    gridView,
-                                                                   file.getRemoteId());
+                                                                   file.getRemoteId(),
+                                                                   hideVideoOverlay);
             Drawable drawable = MimeTypeUtil.getFileTypeIcon(file.getMimeType(),
                                                              file.getFileName(),
                                                              context,
