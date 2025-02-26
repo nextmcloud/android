@@ -32,7 +32,9 @@ import java.lang.ref.WeakReference
 class CopyAndUploadContentUrisTask(
     listener: OnCopyTmpFilesTaskListener?,
     context: Context,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
+    // will be used when uploading is happening for Albums
+    private val albumName: String? = null
 ) {
 
     companion object {
@@ -107,17 +109,33 @@ class CopyAndUploadContentUrisTask(
                 currentTempPath = null
             }
 
-            FileUploadHelper.instance().uploadNewFiles(
-                user,
-                localPaths.requireNoNulls(),
-                resolvedRemotePaths.requireNoNulls(),
-                behaviour,
-                false,
-                UploadFileOperation.CREATED_BY_USER,
-                false,
-                false,
-                NameCollisionPolicy.ASK_USER
-            )
+            if (albumName.isNullOrEmpty()) {
+                FileUploadHelper.instance().uploadNewFiles(
+                    user,
+                    localPaths.requireNoNulls(),
+                    resolvedRemotePaths.requireNoNulls(),
+                    behaviour,
+                    false,
+                    UploadFileOperation.CREATED_BY_USER,
+                    false,
+                    false,
+                    NameCollisionPolicy.ASK_USER
+                )
+            } else {
+                FileUploadHelper.instance().uploadAndCopyNewFilesForAlbum(
+                    user,
+                    localPaths.requireNoNulls(),
+                    resolvedRemotePaths.requireNoNulls(),
+                    albumName,
+                    behaviour,
+                    true,      // create parent folder if not existent
+                    UploadFileOperation.CREATED_BY_USER,
+                    requiresWifi = false,
+                    requiresCharging = false,
+                    // use RENAME policy to make sure all files are uploaded
+                    NameCollisionPolicy.RENAME
+                )
+            }
 
             ResultCode.OK
         } catch (e: FileNotFoundException) {
