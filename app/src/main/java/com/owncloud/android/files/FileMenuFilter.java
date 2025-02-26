@@ -169,6 +169,7 @@ public class FileMenuFilter {
         filterUnsetEncrypted(toHide, endToEndEncryptionEnabled);
         filterSetPictureAs(toHide);
         filterStream(toHide);
+        filterAddToAlbum(toHide);
         filterLock(toHide, fileLockingEnabled);
         filterUnlock(toHide, fileLockingEnabled);
         filterPinToHome(toHide);
@@ -396,6 +397,17 @@ public class FileMenuFilter {
     private void filterStream(List<Integer> toHide) {
         if (files.isEmpty() || !isSingleFile() || !isSingleMedia() || containsEncryptedFile()) {
             toHide.add(R.id.action_stream_media);
+        }
+    }
+
+    private void filterAddToAlbum(List<Integer> toHide) {
+        if (files.isEmpty() || containsEncryptedFile()) {
+            toHide.add(R.id.action_add_to_album);
+            return;
+        }
+        OCFile file = files.iterator().next();
+        if(!MimeTypeUtil.isImage(file) && !MimeTypeUtil.isVideo(file)){
+            toHide.add(R.id.action_add_to_album);
         }
     }
 
