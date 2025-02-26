@@ -64,6 +64,7 @@ import com.owncloud.android.operations.UpdateNoteForShareOperation;
 import com.owncloud.android.operations.UpdateShareInfoOperation;
 import com.owncloud.android.operations.UpdateSharePermissionsOperation;
 import com.owncloud.android.operations.UpdateShareViaLinkOperation;
+import com.owncloud.android.operations.albums.ReadAlbumsOperation;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -122,6 +123,7 @@ public class OperationsService extends Service {
     public static final String ACTION_CHECK_CURRENT_CREDENTIALS = "CHECK_CURRENT_CREDENTIALS";
     public static final String ACTION_RESTORE_VERSION = "RESTORE_VERSION";
     public static final String ACTION_UPDATE_FILES_DOWNLOAD_LIMIT = "UPDATE_FILES_DOWNLOAD_LIMIT";
+    public static final String ACTION_ALBUM = "ALBUMS";
 
     private ServiceHandler mOperationsHandler;
     private OperationsServiceBinder mOperationsBinder;
@@ -660,6 +662,11 @@ public class OperationsService extends Service {
 
                     case ACTION_GET_SERVER_INFO:
                         operation = new GetServerInfoOperation(serverUrl, this);
+                        break;
+
+                    case ACTION_ALBUM:
+                        Log_OC.e(TAG, "Fetching albums");
+                        operation = new ReadAlbumsOperation();
                         break;
 
                     case ACTION_GET_USER_NAME:

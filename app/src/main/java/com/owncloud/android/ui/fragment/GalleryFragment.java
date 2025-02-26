@@ -99,6 +99,10 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
         registerRefreshSearchEventReceiver();
     }
 
+    private void fetchResponse(){
+        mContainerActivity.getFileOperationsHelper().fetchAlbums();
+    }
+
     private void registerRefreshSearchEventReceiver() {
         IntentFilter filter = new IntentFilter(REFRESH_SEARCH_EVENT_RECEIVER);
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(refreshSearchEventReceiver, filter);
@@ -163,6 +167,8 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
         updateSubtitle(galleryFragmentBottomSheetDialog.getCurrMediaState());
 
         handleSearchEvent();
+
+        fetchResponse();
     }
 
     @Override
