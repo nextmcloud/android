@@ -97,6 +97,9 @@ class PreviewImagePagerAdapter : FragmentStateAdapter {
         if (type == VirtualFolderType.GALLERY) {
             imageFiles = mStorageManager.allGalleryItems
             imageFiles = FileStorageUtils.sortOcFolderDescDateModifiedWithoutFavoritesFirst(imageFiles)
+        } else if (type == VirtualFolderType.ALBUM) {
+            imageFiles = mStorageManager.getVirtualFolderContent(type, false)
+            imageFiles = FileStorageUtils.sortOcFolderDescDateModifiedWithoutFavoritesFirst(imageFiles)
         } else {
             imageFiles = mStorageManager.getVirtualFolderContent(type, true)
         }

@@ -96,6 +96,8 @@ import com.owncloud.android.ui.fragment.FileDetailsSharingProcessFragment;
 import com.owncloud.android.ui.fragment.OCFileListFragment;
 import com.owncloud.android.ui.navigation.NavigatorActivity;
 import com.owncloud.android.ui.navigation.NavigatorScreen;
+import com.owncloud.android.ui.fragment.albums.AlbumItemsFragment;
+import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
 import com.owncloud.android.ui.trashbin.TrashbinActivity;
 import com.owncloud.android.utils.BitmapUtils;
 import com.owncloud.android.utils.DisplayUtils;
@@ -127,6 +129,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hct.Hct;
 import kotlin.Unit;
@@ -596,6 +599,17 @@ public abstract class DrawerActivity extends ToolbarActivity
             openFavoritesTab();
         } else if (itemId == R.id.nav_gallery) {
             openMediaTab(menuItem.getItemId());
+        } else if (itemId == R.id.nav_album) {
+            if (this instanceof FileDisplayActivity) {
+                replaceAlbumFragment();
+            } else {
+                // when user is not on FileDisplayActivity
+                // if user is on TrashbinActivity then we have to start activity again
+                Intent intent = new Intent(getApplicationContext(), FileDisplayActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.setAction(FileDisplayActivity.ALBUMS);
+                startActivity(intent);
+            }
         } else if (itemId == R.id.nav_on_device) {
             showOnDeviceFiles();
         } else if (itemId == R.id.nav_uploads) {
@@ -617,7 +631,7 @@ public abstract class DrawerActivity extends ToolbarActivity
         } else if (itemId == R.id.nav_logout) {
             resetOnlyPersonalAndOnDevice();
             MenuItem isNewMenuItemChecked = menuItem.setChecked(false);
-            Log_OC.d(TAG,"onNavigationItemClicked nav_logout setChecked " + isNewMenuItemChecked);
+            Log_OC.d(TAG, "onNavigationItemClicked nav_logout setChecked " + isNewMenuItemChecked);
             final Optional<User> optionalUser = getUser();
             if (optionalUser.isPresent()) {
                 UserInfoActivity.openAccountRemovalDialog(optionalUser.get(), getSupportFragmentManager());
@@ -680,6 +694,8 @@ public abstract class DrawerActivity extends ToolbarActivity
                 startAssistantScreen();
             } else if (menuItemId == R.id.nav_gallery) {
                 openMediaTab(menuItem.getItemId());
+            } else if (menuItemId == R.id.nav_album) {
+                replaceAlbumFragment();
             }
 
             // Remove extra icon from the action bar
@@ -695,6 +711,26 @@ public abstract class DrawerActivity extends ToolbarActivity
         });
     }
     // endregion
+
+    public void replaceAlbumFragment() {
+        if (isAlbumsFragment()) {
+            return;
+        }
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.addToBackStack(null);
+        transaction.replace(R.id.left_fragment_container, AlbumsFragment.Companion.newInstance(false), AlbumsFragment.Companion.getTAG());
+        transaction.commit();
+    }
+
+    public boolean isAlbumsFragment() {
+        Fragment albumsFragment = getSupportFragmentManager().findFragmentByTag(AlbumsFragment.Companion.getTAG());
+        return albumsFragment instanceof AlbumsFragment && albumsFragment.isVisible();
+    }
+
+    public boolean isAlbumItemsFragment() {
+        Fragment albumItemsFragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
+        return albumItemsFragment instanceof AlbumItemsFragment && albumItemsFragment.isVisible();
+    }
 
     private void startAssistantScreen() {
         final var destination = ComposeDestination.Companion.getAssistantScreen(this);
