@@ -11,7 +11,6 @@ import android.view.View;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
-import com.nextcloud.android.common.ui.theme.utils.ColorRole;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.device.DeviceInfo;
 import com.nextcloud.client.di.Injectable;
@@ -31,6 +30,8 @@ import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.utils.MimeTypeUtil;
 import com.owncloud.android.utils.theme.ThemeUtils;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
+
+import androidx.core.content.ContextCompat;
 
 /**
  * FAB menu {@link android.app.Dialog} styled as a bottom sheet for main actions.
@@ -77,12 +78,8 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
         binding = FileListActionsBottomSheetFragmentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewThemeUtils.platform.colorImageView(binding.menuIconUploadFiles, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconUploadFromApp, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconDirectCameraUpload, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconScanDocUpload, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconMkdir, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconAddFolderInfo, ColorRole.PRIMARY);
+        // NMC Customization
+        reorderUploadFromOtherAppsView();
 
         binding.addToCloud.setText(getContext().getResources().getString(R.string.add_to_cloud,
                                                                          themeUtils.getDefaultDisplayNameForRootFolder(getContext())));
@@ -112,16 +109,23 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
 
                     View creatorView = creatorViewBinding.getRoot();
 
-                    creatorViewBinding.creatorName.setText(
-                        String.format(fileActivity.getString(R.string.editor_placeholder),
-                                      fileActivity.getString(R.string.create_new),
-                                      creator.getName()));
+                    //for NMC we have different text and icon for Markdown(.md) menu
+                    if (creator.getMimetype().equalsIgnoreCase(MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN)) {
+                        creatorViewBinding.creatorName.setText(fileActivity.getString(R.string.create_text_document));
+                        creatorViewBinding.creatorThumbnail.setImageDrawable(ContextCompat.getDrawable(getContext(),
+                                                                                                       R.drawable.ic_new_txt_doc));
+                    } else {
+                        creatorViewBinding.creatorName.setText(
+                            String.format(fileActivity.getString(R.string.editor_placeholder),
+                                          fileActivity.getString(R.string.create_new),
+                                          creator.getName()));
 
-                    creatorViewBinding.creatorThumbnail.setImageDrawable(
-                        MimeTypeUtil.getFileTypeIcon(creator.getMimetype(),
-                                                     creator.getExtension(),
-                                                     creatorViewBinding.creatorThumbnail.getContext(),
-                                                     viewThemeUtils));
+                        creatorViewBinding.creatorThumbnail.setImageDrawable(
+                            MimeTypeUtil.getFileTypeIcon(creator.getMimetype(),
+                                                         creator.getExtension(),
+                                                         creatorViewBinding.creatorThumbnail.getContext(),
+                                                         viewThemeUtils));
+                    }
 
                     creatorView.setOnClickListener(v -> {
                         actions.showTemplate(creator, creatorViewBinding.creatorName.getText().toString());
@@ -137,8 +141,9 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
             binding.menuDirectCameraUpload.setVisibility(View.GONE);
         }
 
+        // not required for NMC
         // create rich workspace
-        if (editorUtils.isEditorAvailable(user,
+       /* if (editorUtils.isEditorAvailable(user,
                                           MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN) &&
             file != null && !file.isEncrypted()) {
             // richWorkspace
@@ -155,15 +160,24 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
         } else {
             binding.menuCreateRichWorkspace.setVisibility(View.GONE);
             binding.menuCreateRichWorkspaceDivider.setVisibility(View.GONE);
-        }
+        } */
 
-        if (BuildHelper.INSTANCE.isFlavourGPlay()) {
+        // NMC: do not hide the menu item
+       /* if (BuildHelper.INSTANCE.isFlavourGPlay()) {
             binding.menuUploadFiles.setVisibility(View.GONE);
             binding.uploadContentFromOtherApps.setText(getContext().getString(R.string.upload_files));
-        }
+        }*/
 
         setupClickListener();
         filterActionsForOfflineOperations();
+    }
+
+    private void reorderUploadFromOtherAppsView() {
+        // move the upload from other app option
+        // below Create new folder or Create new e2ee folder
+        // NMC-3095 requirement
+        binding.actionLinear.removeView(binding.menuUploadFromApp);
+        binding.actionLinear.addView(binding.menuUploadFromApp, binding.actionLinear.indexOfChild(binding.menuEncryptedMkdir) + 1);
     }
 
     private void setupClickListener() {
