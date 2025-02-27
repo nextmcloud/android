@@ -267,7 +267,7 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
 
             // check if filename already exists
             if (isFileExisting(metadata, filename)) {
-                return new RemoteOperationResult(RemoteOperationResult.ResultCode.FOLDER_ALREADY_EXISTS);
+                return new RemoteOperationResult<>(RemoteOperationResult.ResultCode.FOLDER_ALREADY_EXISTS);
             }
 
             // generate new random file name, check if it exists in metadata
@@ -279,9 +279,9 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
                                                                                    token)
                 .execute(client);
 
-            String remoteId = result.getResultData();
-
             if (result.isSuccess()) {
+                String remoteId = result.getResultData();
+
                 DecryptedFolderMetadataFile subFolderMetadata = encryptionUtilsV2.createDecryptedFolderMetadataFile();
 
                 // upload metadata
@@ -294,9 +294,7 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
                                                              user,
                                                              parent,
                                                              getStorageManager());
-            }
 
-            if (result.isSuccess()) {
                 // update metadata
                 DecryptedFolderMetadataFile updatedMetadataFile = encryptionUtilsV2.addFolderToMetadata(encryptedFileName,
                                                                                                         filename,
@@ -314,48 +312,43 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
                                                              user,
                                                              getStorageManager());
 
-                // unlock folder
-                RemoteOperationResult unlockFolderResult = EncryptionUtils.unlockFolder(parent, client, token);
-
-                if (unlockFolderResult.isSuccess()) {
-                    token = null;
-                } else {
-                    // TODO E2E: do better
-                    throw new RuntimeException("Could not unlock folder!");
-                }
-
-                RemoteOperationResult remoteFolderOperationResult = new ReadFolderRemoteOperation(encryptedRemotePath)
+                final var remoteFolderOperationResult = new ReadFolderRemoteOperation(encryptedRemotePath)
                     .execute(client);
 
-                createdRemoteFolder = (RemoteFile) remoteFolderOperationResult.getData().get(0);
-                OCFile newDir = createRemoteFolderOcFile(parent, filename, createdRemoteFolder);
-                getStorageManager().saveFile(newDir);
+                if (remoteFolderOperationResult.isSuccess()) {
+                    createdRemoteFolder = (RemoteFile) remoteFolderOperationResult.getData().get(0);
+                    OCFile newDir = createRemoteFolderOcFile(parent, filename, createdRemoteFolder);
+                    getStorageManager().saveFile(newDir);
 
-                RemoteOperationResult encryptionOperationResult = new ToggleEncryptionRemoteOperation(
-                    newDir.getLocalId(),
-                    newDir.getRemotePath(),
-                    true)
-                    .execute(client);
+                    final var encryptionOperationResult = new ToggleEncryptionRemoteOperation(
+                        newDir.getLocalId(),
+                        newDir.getRemotePath(),
+                        true)
+                        .execute(client);
 
-                if (!encryptionOperationResult.isSuccess()) {
-                    throw new RuntimeException("Error creating encrypted subfolder!");
+                    if (!encryptionOperationResult.isSuccess()) {
+                        throw new RuntimeException("Error creating encrypted subfolder!");
+                    }
                 }
             } else {
-                // revert to sane state in case of any error
                 Log_OC.e(TAG, remotePath + " hasn't been created");
             }
 
             return result;
         } catch (Exception e) {
-            // TODO remove folder
+            if (token != null) {
+                final var unlockFolderResult = EncryptionUtils.unlockFolder(parent, client, token);
 
-            if (!EncryptionUtils.unlockFolder(parent, client, token).isSuccess()) {
-                throw new RuntimeException("Could not clean up after failing folder creation!", e);
+                if (!unlockFolderResult.isSuccess()) {
+                    throw new RuntimeException("Could not unlock folder!");
+                } else {
+                    token = null;
+                }
             }
 
             // remove folder
             if (encryptedRemotePath != null) {
-                RemoteOperationResult removeResult = new RemoveRemoteEncryptedFileOperation(encryptedRemotePath,
+                final var removeResult = new RemoveRemoteEncryptedFileOperation(encryptedRemotePath,
                                                                                             user,
                                                                                             context,
                                                                                             filename,
@@ -367,16 +360,13 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
                 }
             }
 
-            // TODO E2E: do better
-            return new RemoteOperationResult(e);
+            return new RemoteOperationResult<>(e);
         } finally {
-            // unlock folder
             if (token != null) {
-                RemoteOperationResult unlockFolderResult = EncryptionUtils.unlockFolder(parent, client, token);
+                final var unlockFolderResult = EncryptionUtils.unlockFolder(parent, client, token);
 
                 if (!unlockFolderResult.isSuccess()) {
-                    // TODO E2E: do better
-                    throw new RuntimeException("Could not unlock folder!");
+                    Log_OC.d(TAG, "Could not unlock folder!");
                 }
             }
         }
