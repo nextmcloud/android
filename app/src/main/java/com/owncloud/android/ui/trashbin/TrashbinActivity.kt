@@ -10,6 +10,7 @@
 package com.owncloud.android.ui.trashbin
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.ActionMode
 import android.view.Menu
@@ -40,6 +41,7 @@ import com.owncloud.android.datamodel.SyncedFolderProvider
 import com.owncloud.android.lib.resources.trashbin.model.TrashbinFile
 import com.owncloud.android.ui.activity.DrawerActivity
 import com.owncloud.android.ui.adapter.TrashbinListAdapter
+import com.owncloud.android.ui.decoration.SimpleListItemDividerDecoration
 import com.owncloud.android.ui.dialog.SortingOrderDialogFragment.OnSortingOrderListener
 import com.owncloud.android.ui.interfaces.TrashbinActivityInterface
 import com.owncloud.android.utils.DisplayUtils
@@ -90,6 +92,8 @@ class TrashbinActivity :
             trashbinPresenter?.navigateUp()
         }
     }
+
+    private var simpleListItemDividerDecoration: SimpleListItemDividerDecoration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -158,6 +162,8 @@ class TrashbinActivity :
         recyclerView.setHasFixedSize(true)
         recyclerView.setHasFooter(true)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        simpleListItemDividerDecoration = SimpleListItemDividerDecoration(this, R.drawable.item_divider, true)
+        addListItemDecorator()
 
         viewThemeUtils?.androidx?.themeSwipeRefreshLayout(binding.swipeContainingList)
         binding.swipeContainingList.setOnRefreshListener { loadFolder() }
@@ -183,6 +189,23 @@ class TrashbinActivity :
             viewThemeUtils
         ) { filesCount, checkedFiles -> openActionsMenu(filesCount, checkedFiles) }
         addDrawerListener(mMultiChoiceModeListener)
+    }
+
+    private fun addListItemDecorator() {
+        if (com.nmc.android.utils.DisplayUtils.isShowDividerForList()) {
+            // check and remove divider item decorator if exist then add item decorator
+            removeListDividerDecorator()
+            binding.list.addItemDecoration(simpleListItemDividerDecoration!!)
+        }
+    }
+
+    /**
+     * method to remove the divider item decorator
+     */
+    private fun removeListDividerDecorator() {
+        if (binding.list.itemDecorationCount > 0) {
+            binding.list.removeItemDecoration(simpleListItemDividerDecoration!!)
+        }
     }
 
     private fun handleOnBackPressed() {
@@ -437,6 +460,21 @@ class TrashbinActivity :
             }
 
             mMultiChoiceModeListener?.invalidateActionMode()
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // this should only run when device is not tablet because we are adding dividers in tablet for both the
+        // orientations
+        if (!com.nmc.android.utils.DisplayUtils.isTablet()) {
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                // add the divider item decorator when orientation is landscape
+                addListItemDecorator()
+            } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                // remove the divider item decorator when orientation is portrait
+                removeListDividerDecorator()
+            }
         }
     }
 
