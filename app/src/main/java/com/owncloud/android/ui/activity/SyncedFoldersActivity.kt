@@ -249,7 +249,6 @@ class SyncedFoldersActivity :
             viewThemeUtils
         )
         binding.emptyList.emptyListIcon.setImageResource(R.drawable.nav_synced_folders)
-        viewThemeUtils.material.colorMaterialButtonPrimaryFilled(binding.emptyList.emptyListViewAction)
         val lm = GridLayoutManager(this, gridWidth)
         adapter.setLayoutManager(lm)
         val spacing = resources.getDimensionPixelSize(R.dimen.media_grid_spacing)
