@@ -290,8 +290,11 @@
     <string name="drawer_item_uploads_list">Uploads</string>
     <string name="drawer_logout">Abmelden</string>
     <string name="drawer_open">Hauptmenü öffnen</string>
+    <string name="drawer_item_recent_files">Neuste Dateien</string>
     <string name="drawer_quota">%1$s von %2$s verwendet</string>
     <string name="drawer_quota_unlimited">%1$s verwendet</string>
+    <string name="drawer_quota_percentage">Speicher zu %d %% belegt</string>
+    <string name="drawer_quota_usage">%1$s von %2$s</string>
     <string name="drawer_synced_folders">Automatisches Hochladen</string>
     <string name="due_to_too_many_wrong_attempts">%s aufgrund zu vieler Fehlversuche</string>
     <string name="e2e_counter_too_old">Zähler ist zu alt</string>
