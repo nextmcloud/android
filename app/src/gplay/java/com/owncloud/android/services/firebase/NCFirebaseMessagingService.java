@@ -13,6 +13,8 @@ import android.text.TextUtils;
 import com.google.firebase.messaging.Constants.MessageNotificationKeys;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.moengage.firebase.MoEFireBaseHelper;
+import com.moengage.pushbase.MoEPushHelper;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.jobs.BackgroundJobManager;
 import com.nextcloud.client.jobs.NotificationWork;
@@ -82,6 +84,12 @@ public class NCFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         Log_OC.d(TAG, "onMessageReceived");
+        // NMC: check and pass the Notification payload to MoEngage to handle it
+        if (MoEPushHelper.getInstance().isFromMoEngagePlatform(remoteMessage.getData())) {
+            MoEFireBaseHelper.getInstance().passPushPayload(getApplicationContext(), remoteMessage.getData());
+            return;
+        }
+
         final Map<String, String> data = remoteMessage.getData();
         final String subject = data.get(NotificationWork.KEY_NOTIFICATION_SUBJECT);
         final String signature = data.get(NotificationWork.KEY_NOTIFICATION_SIGNATURE);
