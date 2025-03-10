@@ -15,23 +15,39 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.MenuItem;
 
+import com.nextcloud.client.account.User;
+import com.nextcloud.utils.EditorUtils;
 import com.owncloud.android.R;
+import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.resources.shares.OCShare;
+import com.owncloud.android.lib.resources.status.OCCapability;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import androidx.annotation.NonNull;
+
 import static com.owncloud.android.lib.resources.shares.OCShare.CREATE_PERMISSION_FLAG;
-import static com.owncloud.android.lib.resources.shares.OCShare.MAXIMUM_PERMISSIONS_FOR_FILE;
-import static com.owncloud.android.lib.resources.shares.OCShare.MAXIMUM_PERMISSIONS_FOR_FOLDER;
+import static com.owncloud.android.lib.resources.shares.OCShare.DELETE_PERMISSION_FLAG;
 import static com.owncloud.android.lib.resources.shares.OCShare.NO_PERMISSION;
 import static com.owncloud.android.lib.resources.shares.OCShare.READ_PERMISSION_FLAG;
 import static com.owncloud.android.lib.resources.shares.OCShare.SHARE_PERMISSION_FLAG;
+import static com.owncloud.android.lib.resources.shares.OCShare.UPDATE_PERMISSION_FLAG;
 
 /**
  * Helper calls for visibility logic of the sharing menu.
  */
 public final class SharingMenuHelper {
+
+    //updated Edit permissions for folder and files
+    //because the MAXIMUM_PERMISSIONS_FOR_FILE and MAXIMUM_PERMISSIONS_FOR_FOLDER permission in OCShare
+    //are not valid anymore due to functionality changes
+    public static final int CAN_EDIT_PERMISSIONS_FOR_FILE =
+        READ_PERMISSION_FLAG + UPDATE_PERMISSION_FLAG;
+
+    public static final int CAN_EDIT_PERMISSIONS_FOR_FOLDER =
+        READ_PERMISSION_FLAG + UPDATE_PERMISSION_FLAG + CREATE_PERMISSION_FLAG + DELETE_PERMISSION_FLAG;
+
 
     private SharingMenuHelper() {
         // utility class -> private constructor
@@ -90,9 +106,9 @@ public final class SharingMenuHelper {
             return false;
         }
 
-        return (share.getPermissions() & (share.isFolder() ? MAXIMUM_PERMISSIONS_FOR_FOLDER :
-            MAXIMUM_PERMISSIONS_FOR_FILE)) == (share.isFolder() ? MAXIMUM_PERMISSIONS_FOR_FOLDER :
-            MAXIMUM_PERMISSIONS_FOR_FILE);
+        return (share.getPermissions() & (share.isFolder() ? CAN_EDIT_PERMISSIONS_FOR_FOLDER:
+            CAN_EDIT_PERMISSIONS_FOR_FILE)) == (share.isFolder() ? CAN_EDIT_PERMISSIONS_FOR_FOLDER :
+            CAN_EDIT_PERMISSIONS_FOR_FILE);
     }
 
     public static boolean isReadOnly(OCShare share) {
@@ -120,14 +136,14 @@ public final class SharingMenuHelper {
     }
 
     public static String getPermissionName(Context context, OCShare share) {
-        if (SharingMenuHelper.isUploadAndEditingAllowed(share)) {
-            return context.getResources().getString(R.string.share_permission_can_edit);
-        } else if (SharingMenuHelper.isReadOnly(share)) {
-            return context.getResources().getString(R.string.share_permission_view_only);
+        if (isUploadAndEditingAllowed(share)) {
+            return context.getResources().getString(R.string.share_quick_permission_can_edit);
+        } else if (isReadOnly(share)) {
+            return context.getResources().getString(R.string.share_quick_permission_can_view);
         } else if (SharingMenuHelper.isSecureFileDrop(share)) {
             return context.getResources().getString(R.string.share_permission_secure_file_drop);
-        } else if (SharingMenuHelper.isFileDrop(share)) {
-            return context.getResources().getString(R.string.share_permission_file_drop);
+        } else if (isFileDrop(share)) {
+            return context.getResources().getString(R.string.share_quick_permission_can_upload);
         }
         return null;
     }
@@ -135,18 +151,18 @@ public final class SharingMenuHelper {
     /**
      * method to get the current checked index from the list of permissions
      *
+     * @param context
+     * @param share
+     * @param permissionArray
+     * @return
      */
     public static int getPermissionCheckedItem(Context context, OCShare share, String[] permissionArray) {
         if (SharingMenuHelper.isUploadAndEditingAllowed(share)) {
-            if (share.isFolder()) {
-                return getPermissionIndexFromArray(context, permissionArray, R.string.link_share_allow_upload_and_editing);
-            } else {
-                return getPermissionIndexFromArray(context, permissionArray, R.string.link_share_editing);
-            }
+            return getPermissionIndexFromArray(context, permissionArray, R.string.share_permission_can_edit);
         } else if (SharingMenuHelper.isReadOnly(share)) {
-            return getPermissionIndexFromArray(context, permissionArray, R.string.link_share_view_only);
+            return getPermissionIndexFromArray(context, permissionArray, R.string.share_permission_read_only);
         } else if (SharingMenuHelper.isFileDrop(share)) {
-            return getPermissionIndexFromArray(context, permissionArray, R.string.link_share_file_drop);
+            return getPermissionIndexFromArray(context, permissionArray, R.string.share_permission_file_drop);
         }
         return 0;//default first item selected
     }
@@ -162,5 +178,29 @@ public final class SharingMenuHelper {
 
     public static boolean canReshare(OCShare share) {
         return (share.getPermissions() & SHARE_PERMISSION_FLAG) > 0;
+    }
+
+    /**
+     * method to check if the file should not be a text file or any of the office files
+     * this method will be used during sharing process to disable/enable edit option
+     */
+    public static boolean canEditFile(@NonNull Context context, @NonNull User user,
+                                      @NonNull OCCapability capability, @NonNull OCFile file,
+                                      @NonNull EditorUtils editorUtils) {
+
+        //if OCFile is folder then no need to check further direct return true
+        //as edit permission should be available for folder restriction is only applicable for files
+        if (file.isFolder()) {
+            return true;
+        }
+
+        //check for text files like .md, .txt, etc
+        boolean isTextFile = editorUtils.isEditorAvailable(user, file.getMimeType()) && !file.isEncrypted();
+
+        //check for office files like .docx, .pptx, .xls, etc
+        boolean isOfficeFile = capability.getRichDocumentsMimeTypeList() != null && capability.getRichDocumentsMimeTypeList().contains(file.getMimeType()) &&
+            capability.getRichDocumentsDirectEditing().isTrue() && !file.isEncrypted();
+
+        return isTextFile || isOfficeFile;
     }
 }
