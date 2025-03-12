@@ -65,6 +65,8 @@ import com.nextcloud.utils.extensions.ContextExtensionsKt;
 import com.nextcloud.utils.mdm.MDMConfig;
 import com.nmc.android.ui.LauncherActivity;
 import com.nmc.android.utils.ScanBotSdkUtils;
+import com.nmc.android.marketTracking.AdjustSdkUtils;
+import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.authentication.PassCodeManager;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl;
@@ -314,6 +316,11 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
         ProcessLifecycleOwner.get().getLifecycle().addObserver(lifecycleEventObserver);
 
         insertConscrypt();
+
+        // NMC Customization
+        // Adjust SDK has to be initialised before registerActivityLifecycleCallbacks method
+        // https://github.com/adjust/android_sdk#api-level-14-and-higher
+        initMarketTrackingSdks();
 
         registerActivityLifecycleCallbacks(new ActivityInjector());
 
@@ -1003,6 +1010,12 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
     @Override
     public AndroidInjector<Object> androidInjector() {
         return dispatchingAndroidInjector;
+    }
+
+    //NMC Customization
+    private void initMarketTrackingSdks(){
+        TealiumSdkUtils.initialiseTealiumSDK(this);
+        AdjustSdkUtils.initialiseAdjustSDK(this);
     }
 
     public static void setAppTheme(DarkMode mode) {
