@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unshare">Unshare</string>
+    <string name="allow_creating">Allow creating</string>
+    <string name="allow_deleting">Allow deleting</string>
+    <string name="allow_editing">Allow editing</string>
+    <string name="link_share_read_only">Read only</string>
+    <string name="share_link_folder">Link to folder</string>
+    <string name="share_link_file">Link to file</string>
+    <string name="share_via_link_menu_password_label">Password protect (%1$s)</string>
+    <string name="share_link_empty_exp_date">You must select expiration date.</string>
+    <string name="share_link_empty_note_message">Please enter note.</string>
+    <string name="send_email">Send email</string>
+    <string name="share_open_in">Open in…</string>
+    <string name="sharing_description">You can create links or send shares by mail. If you invite MagentaCLOUD users, you have more opportunities for collaboration.</string>
+    <string name="your_message">Your Message</string>
+    <string name="personal_share_email">Personal share by mail</string>
+    <string name="create_link">Create new link</string>
+    <string name="your_shares">Your Shares</string>
+    <string name="link_label">Link Label</string>
+    <string name="hint_link_label">Your custom link label</string>
+    <string name="file_drop_info">With File drop, only uploading is allowed. Only you can see files and folders that have been uploaded.</string>
+    <string name="password_protection">Password Protection</string>
+    <string name="expiration_date">Expiration Date</string>
+    <string name="empty_shares">You have not yet shared your file/folder. Share to give others access.</string>
+    <string name="link_download_limit">Download Limit</string>
+    <string name="download_limit_empty">Download limit cannot be empty.</string>
+    <string name="hint_download_limit">Enter download limit</string>
+    <string name="download_text">Downloads: %s</string>
+    <string name="download_limit_zero">Download limit should be greater than 0.</string>
+    <string name="allow_resharing_info">You are sharing with a MagentaCLOUD user and you can allow her or him to reshare.</string>
+    <string name="sharing_email_warning">Password protection has been enabled. You have to provide the password to
+        the recipient.\n\nIf you send a share via MagentaCLOUD and paste the password in this message, it will be
+        transmitted unencrypted in plaintext.</string>
+    <string name="placeholder_receivedMessage">Received</string>
+    <string name="placeholder_sharedMessage">Shared</string>
+    <string name="sharing_heading">Send link by mail</string>
+    <string name="reshare_not_allowed">Resharing is not allowed.</string>
+    <string name="reshare_allowed">Resharing is allowed.</string>
+    <string name="resharing_user_info">This file / folder was shared with you by %s</string>
+    <string name="txt_or">or</string>
+    <string name="shared_with_heading">Shared with</string>
+    <string name="share_details">Detail</string>
+    <string name="share_quick_permission_can_view">Everyone can only view</string>
+    <string name="share_quick_permission_can_edit">Everyone can edit</string>
+    <string name="share_quick_permission_can_upload">Everyone can just upload</string>
+</resources>
