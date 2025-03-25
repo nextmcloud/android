@@ -43,6 +43,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -287,7 +288,8 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
         MenuItem menuItem = menu.findItem(R.id.action_three_dot_icon);
 
         if (menuItem != null) {
-            viewThemeUtils.platform.colorMenuItemText(requireContext(), menuItem);
+            //NMC customization
+            menuItem.setIcon(viewThemeUtils.platform.colorDrawable(menuItem.getIcon(), ContextCompat.getColor(requireContext(), R.color.fontAppbar)));
         }
 
     }
