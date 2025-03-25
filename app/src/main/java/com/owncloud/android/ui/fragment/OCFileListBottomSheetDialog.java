@@ -88,9 +88,8 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
         binding.addToCloud.setText(getContext().getResources().getString(R.string.add_to_cloud,
                                                                          themeUtils.getDefaultDisplayNameForRootFolder(getContext())));
 
-        OCCapability capability = fileActivity.getCapabilities();
-        if (capability != null &&
-            capability.getRichDocuments().isTrue() &&
+        OCCapability capability = fileActivity.getStorageManager().getCapability(user.getAccountName());
+        if (capability.getRichDocuments().isTrue() &&
             capability.getRichDocumentsDirectEditing().isTrue() &&
             capability.getRichDocumentsTemplatesAvailable().isTrue() &&
             !file.isEncrypted()) {
@@ -145,6 +144,12 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
            // binding.menuScanDocument.setVisibility(View.GONE);
         }
 
+        if (capability.getEndToEndEncryption().isTrue() && OCFile.ROOT_PATH.equals(file.getRemotePath())) {
+            binding.menuEncryptedMkdir.setVisibility(View.VISIBLE);
+        } else {
+            binding.menuEncryptedMkdir.setVisibility(View.GONE);
+        }
+
         // create rich workspace
         if (editorUtils.isEditorAvailable(user,
                                           MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN) &&
@@ -182,6 +187,11 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
 
         binding.menuMkdir.setOnClickListener(v -> {
             actions.createFolder();
+            dismiss();
+        });
+
+        binding.menuEncryptedMkdir.setOnClickListener(v -> {
+            actions.createEncryptedFolder();
             dismiss();
         });
 
