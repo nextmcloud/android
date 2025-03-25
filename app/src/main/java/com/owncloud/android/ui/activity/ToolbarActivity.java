@@ -64,6 +64,7 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
     private LinearLayout mInfoBox;
     private TextView mInfoBoxMessage;
     protected AppCompatSpinner mToolbarSpinner;
+    private View mDefaultToolbarDivider;
     private boolean isHomeSearchToolbarShow = false;
 
     @Inject public ThemeColorUtils themeColorUtils;
@@ -85,6 +86,7 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
         mSearchText = findViewById(R.id.search_text);
         mSwitchAccountButton = findViewById(R.id.switch_account_button);
         mNotificationButton = findViewById(R.id.notification_button);
+        mDefaultToolbarDivider = findViewById(R.id.default_toolbar_divider);
 
         if (showSortListButtonGroup) {
             findViewById(R.id.sort_list_button_group).setVisibility(View.VISIBLE);
@@ -185,6 +187,14 @@ public abstract class ToolbarActivity extends BaseActivity implements Injectable
             mDefaultToolbar.setVisibility(View.VISIBLE);
             mHomeSearchToolbar.setVisibility(View.GONE);
         }
+    }
+
+    public void showHideToolbar(boolean isShow){
+        mDefaultToolbar.setVisibility(isShow  ? View.VISIBLE : View.GONE);
+    }
+
+    public void showHideDefaultToolbarDivider(boolean isShow) {
+        mDefaultToolbarDivider.setVisibility(isShow ? View.VISIBLE : View.GONE);
     }
 
     /**
