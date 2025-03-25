@@ -42,6 +42,8 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import androidx.core.content.ContextCompat;
+
 public abstract class EditorWebView extends ExternalSiteWebView {
     public static final int REQUEST_LOCAL_FILE = 101;
     public ValueCallback<Uri[]> uploadMessage;
@@ -253,8 +255,8 @@ public abstract class EditorWebView extends ExternalSiteWebView {
             boolean isAutoUploadFolder = SyncedFolderProvider.isAutoUploadFolder(syncedFolderProvider, file, user);
 
             Integer overlayIconId = file.getFileOverlayIconId(isAutoUploadFolder);
-            LayerDrawable drawable = MimeTypeUtil.getFolderIcon(preferences.isDarkModeEnabled(), overlayIconId, this, viewThemeUtils);
-            binding.thumbnail.setImageDrawable(drawable);
+            // NMC Customization: No overlay icon will be used. Directly using folder icons
+            binding.thumbnail.setImageDrawable(ContextCompat.getDrawable(this, overlayIconId));
         } else {
             if ((MimeTypeUtil.isImage(file) || MimeTypeUtil.isVideo(file)) && file.getRemoteId() != null) {
                 // Thumbnail in cache?
