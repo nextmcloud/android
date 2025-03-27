@@ -10,6 +10,7 @@
 package com.owncloud.android.ui.dialog
 
 import android.app.Dialog
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
@@ -63,11 +64,19 @@ class SortingOrderDialogFragment : DialogFragment(), Injectable {
             view.tag = sortOrder
             view.let {
                 it.setOnClickListener(OnSortOrderClickListener())
-                viewThemeUtils?.material?.colorMaterialButtonPrimaryBorderless(it)
+
+                // NMC Customization
+                if ((view.tag as FileSortOrder).name == currentSortOrderName) {
+                    it.setTextColor(resources.getColor(R.color.primary, null))
+                    it.setIconTintResource(R.color.primary)
+                    it.setTypeface(it.typeface, Typeface.BOLD)
+                } else {
+                    it.setTextColor(resources.getColor(R.color.standard_grey, null))
+                    it.setIconTintResource(R.color.standard_grey)
+                }
             }
         }
 
-        viewThemeUtils?.material?.colorMaterialButtonPrimaryTonal(binding.cancel)
         binding.cancel.setOnClickListener { dismiss() }
     }
 
