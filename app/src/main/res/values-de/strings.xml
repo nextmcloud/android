@@ -229,7 +229,8 @@
     <string name="daily_backup">Tägliche Sicherung</string>
     <string name="data_to_back_up">Zu sichernde Daten</string>
     <string name="default_credentials_wrong">Zugangsdaten falsch</string>
-    <string name="delete_account">Benutzerkonto löschen</string>
+    <string name="delete_account">Benutzer abmelden</string>
+    <string name="delete_account_warning">Benutzer %s auf diesem Gerät abmelden und lokale Daten löschen?</string>
     <string name="delete_entries">Einträgen entfernen</string>
     <string name="delete_link">Link löschen</string>
     <string name="deselect_all">Auswahl aufheben</string>
