@@ -104,6 +104,11 @@ android {
 
     defaultConfig {
         applicationId 'com.t_systems.android.webdav'
+        applicationId "com.nextcloud.client"
+        // NMC: to avoid merge conflicts, we do not change the original version settings.
+        // NMC: Instead, we override the local values with our own here and not touch the definition above.
+        versionMajor = 7
+        // NMC: end
         minSdkVersion 25
         targetSdkVersion 35
         compileSdk 35
@@ -128,15 +133,9 @@ android {
         testInstrumentationRunnerArgument "TEST_SERVER_PASSWORD", "${NC_TEST_SERVER_PASSWORD}"
         testInstrumentationRunnerArguments disableAnalytics: 'true'
 
-        versionCode versionMajor * 10000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
-
-        if (versionBuild > 89) {
-            versionName "${versionMajor}.${versionMinor}.${versionPatch}"
-        } else if (versionBuild > 50) {
-            versionName "${versionMajor}.${versionMinor}.${versionPatch} RC" + (versionBuild - 50)
-        } else {
-            versionName "${versionMajor}.${versionMinor}.${versionPatch} Alpha" + (versionBuild + 1)
-        }
+        // using short version number for more readability for NMC
+        versionCode Integer.parseInt("${versionMajor}${versionMinor}${versionPatch}${versionBuild}")
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 
         // adapt structure from Eclipse to Gradle/Android Studio expectations;
         // see http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Configuring-the-Structure
