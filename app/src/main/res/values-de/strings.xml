@@ -128,6 +128,7 @@
     <string name="check_back_later_or_reload">Schauen Sie später noch einmal vorbei oder laden Sie neu.</string>
     <string name="checkbox">Checkbox</string>
     <string name="choose_local_folder">Wähle einen lokalen Ordner…</string>
+    <string name="choose_location">Ort wählen</string>
     <string name="choose_remote_folder">Wähle einen entfernten Ordner …</string>
     <string name="choose_template_helper_text">Bitte eine Vorlage auswählen und einen Dateinamen eingeben.</string>
     <string name="choose_which_file">Wählen Sie, welche Datei behalten werden soll!</string>
@@ -159,6 +160,7 @@
     <string name="common_remove">Löschen</string>
     <string name="common_rename">Umbenennen</string>
     <string name="common_save">Speichern</string>
+    <string name="common_select">Auswählen</string>
     <string name="common_send">Senden</string>
     <string name="common_share">Teilen</string>
     <string name="common_skip">Überspringen</string>
@@ -1091,6 +1093,7 @@
     <string name="version_dev_download">Herunterladen</string>
     <string name="video_overlay_icon">Video Überlagerungsicon</string>
     <string name="wait_a_moment">Bitte warten…</string>
+    <string name="camera_permission_rationale">Bitte geben Sie unter Apps &amp; Benachrichtigungen in den Einstellungen manuell die Erlaubnis.</string>
     <string name="wait_checking_credentials">Überprüfe gespeicherte Anmeldeinformationen</string>
     <string name="wait_for_tmp_copy_from_private_storage">Kopiere Datei von privatem Speicher</string>
     <string name="warn_rename_extension">Das Ändern der Erweiterung kann dazu führen, dass diese Datei in einer anderen Anwendung geöffnet wird</string>
