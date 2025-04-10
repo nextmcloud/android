@@ -33,6 +33,7 @@ import com.nextcloud.client.jobs.MediaFoldersDetectionWork
 import com.nextcloud.client.jobs.NotificationWork
 import com.nextcloud.client.jobs.upload.FileUploadWorker
 import com.nextcloud.client.preferences.SubFolderRule
+import com.nmc.android.utils.DialogThemeUtils
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.extensions.isDialogFragmentReady
 import com.owncloud.android.BuildConfig
@@ -221,7 +222,8 @@ class SyncedFoldersActivity :
             .setTitle(R.string.autoupload_disable_power_save_check)
             .setMessage(getString(R.string.power_save_check_dialog_message))
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(this, builder)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(this, builder)
 
         return builder.create()
     }
@@ -817,7 +819,7 @@ class SyncedFoldersActivity :
 
     private fun showBatteryOptimizationInfo() {
         if (powerManagementService.isPowerSavingExclusionAvailable || checkIfBatteryOptimizationEnabled()) {
-            val alertDialogBuilder = MaterialAlertDialogBuilder(this, R.style.Theme_ownCloud_Dialog)
+            val alertDialogBuilder = MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.battery_optimization_title))
                 .setMessage(getString(R.string.battery_optimization_message))
                 .setPositiveButton(getString(R.string.battery_optimization_disable)) { _, _ ->
@@ -833,12 +835,13 @@ class SyncedFoldersActivity :
                 }
                 .setNeutralButton(getString(R.string.battery_optimization_close)) { dialog, _ -> dialog.dismiss() }
                 .setIcon(R.drawable.ic_battery_alert)
+
+            // NMC customization
+            DialogThemeUtils.colorMaterialAlertDialogBackground(this, alertDialogBuilder)
+
             if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                val alertDialog = alertDialogBuilder.show()
-                viewThemeUtils.platform.colorTextButtons(
-                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE),
-                    alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL)
-                )
+                //NMC Customization
+                alertDialogBuilder.show()
             }
         }
     }
