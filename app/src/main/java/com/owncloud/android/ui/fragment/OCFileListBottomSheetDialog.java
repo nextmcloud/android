@@ -16,7 +16,9 @@ import com.nextcloud.client.device.DeviceInfo;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.documentscan.AppScanOptionalFeature;
 import com.nextcloud.utils.BuildHelper;
+import com.nextcloud.client.preferences.AppPreferencesImpl;
 import com.nextcloud.utils.EditorUtils;
+import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileListActionsBottomSheetCreatorBinding;
 import com.owncloud.android.databinding.FileListActionsBottomSheetFragmentBinding;
@@ -179,6 +181,12 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog implements In
 
         setupClickListener();
         filterActionsForOfflineOperations();
+
+        //track screen view when fragment is visible
+        TealiumSdkUtils.trackView(TealiumSdkUtils.SCREEN_VIEW_FAB_PLUS,
+                                  //Need to create direct instance of AppPreferences as Injection doesn't work in Dialogs
+                                  //If we take AppPreferences as parameter in constructor it will affect the other NMC PRs test cases
+                                  AppPreferencesImpl.fromContext(fileActivity));
     }
 
     private void setupClickListener() {
