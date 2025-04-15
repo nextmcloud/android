@@ -23,6 +23,7 @@ import com.nmc.android.scans.ScanActivity;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.account.UserAccountManagerImpl;
 import com.nextcloud.client.jobs.LogEntry;
+import com.nmc.android.ui.PrivacyUserAction;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -119,6 +120,9 @@ public final class AppPreferencesImpl implements AppPreferences {
     private static final String PREF__PASSCODE_DELAY_IN_SECONDS = "passcode_delay_in_seconds";
 
     private static final String LOG_ENTRY = "log_entry";
+
+    private static final String PREF__DATA_ANALYSIS = "data_analysis";
+    private static final String PREF__PRIVACY_POLICY_ACTION = "privacy_policy_action";
 
     private final Context context;
     private final SharedPreferences preferences;
@@ -624,6 +628,27 @@ public final class AppPreferencesImpl implements AppPreferences {
     @Override
     public void setCurrentAccountName(String accountName) {
         preferences.edit().putString(PREF__SELECTED_ACCOUNT_NAME, accountName).apply();
+    }
+
+    @Override
+    public void setDataAnalysis(boolean enableDataAnalysis) {
+        preferences.edit().putBoolean(PREF__DATA_ANALYSIS, enableDataAnalysis).apply();
+    }
+
+    @Override
+    public boolean isDataAnalysisEnabled() {
+        //default value will be true
+        return preferences.getBoolean(PREF__DATA_ANALYSIS, true);
+    }
+
+    @Override
+    public void setPrivacyPolicyAction(int userAction) {
+        preferences.edit().putInt(PREF__PRIVACY_POLICY_ACTION, userAction).apply();
+    }
+
+    @Override
+    public int getPrivacyPolicyAction() {
+        return preferences.getInt(PREF__PRIVACY_POLICY_ACTION, PrivacyUserAction.NO_ACTION);
     }
 
     @Override
