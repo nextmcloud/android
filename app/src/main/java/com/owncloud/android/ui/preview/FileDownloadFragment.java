@@ -25,6 +25,7 @@ import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.jobs.download.FileDownloadHelper;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.nextcloud.utils.extensions.FileExtensionsKt;
+import com.nmc.android.utils.ProgressBarThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.network.OnDatatransferProgressListener;
@@ -139,7 +140,8 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
         mView = inflater.inflate(R.layout.file_download_fragment, container, false);
 
         ProgressBar progressBar = mView.findViewById(R.id.progressBar);
-        viewThemeUtils.platform.themeHorizontalProgressBar(progressBar);
+        //NMC Customization
+        ProgressBarThemeUtils.themeHorizontalProgressBar(progressBar, getResources().getColor(R.color.primary, null));
         mProgressListener = new ProgressListener(progressBar);
 
         (mView.findViewById(R.id.cancelBtn)).setOnClickListener(this);
