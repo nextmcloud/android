@@ -82,12 +82,14 @@ class LocalStoragePathPickerDialogFragment :
                     Environment.getExternalStoragePublicDirectory(standardDirectory.name).absolutePath
                 )
             }
-            val sdCard = getString(R.string.storage_internal_storage)
             for (dir in FileStorageUtils.getStorageDirectories(requireActivity())) {
+                // NMC Customisation
                 if (internalStoragePaths.contains(dir)) {
-                    addIfExists(storagePathItems, R.drawable.ic_sd_grey600, sdCard, dir)
+                    val internalStorage = getString(R.string.storage_internal_storage)
+                    addIfExists(storagePathItems, R.drawable.ic_sd_grey600, internalStorage, dir)
                 } else {
-                    addIfExists(storagePathItems, R.drawable.ic_sd_grey600, File(dir).name, dir)
+                    val sdCard = getString(R.string.storage_sd_card)
+                    addIfExists(storagePathItems, R.drawable.ic_sd, sdCard, dir)
                 }
             }
             return storagePathItems
