@@ -10,71 +10,75 @@
  */
 package com.owncloud.android.operations.albums;
 
-import android.net.Uri;
-
 import com.owncloud.android.lib.common.OwnCloudClient;
-import com.owncloud.android.lib.common.network.WebdavEntry;
 import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
-import com.owncloud.android.lib.resources.files.model.RemoteFile;
 
+import org.apache.http.HttpStatus;
+import org.apache.jackrabbit.webdav.DavConstants;
 import org.apache.jackrabbit.webdav.MultiStatus;
+import org.apache.jackrabbit.webdav.MultiStatusResponse;
 import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
+import org.apache.jackrabbit.webdav.property.DavProperty;
 import org.apache.jackrabbit.webdav.property.DavPropertyName;
 import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
+import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.jackrabbit.webdav.xml.Namespace;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class ReadAlbumsOperation extends RemoteOperation {
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
-
+public class ReadAlbumsOperation extends RemoteOperation<List<ReadAlbumsOperation.PhotoAlbumEntry>> {
 
     public ReadAlbumsOperation() {
         Log_OC.e("ReadAlbumsOperation", "Fetch albums remote operation");
-
     }
 
     /**
      * Performs the operation.
      *
-     * @param   client      Client object to communicate with the remote ownCloud server.
+     * @param client Client object to communicate with the remote ownCloud server.
      */
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult<List<ReadAlbumsOperation.PhotoAlbumEntry>> run(OwnCloudClient client) {
         Log_OC.e("ReadAlbumsOperation", "Fetch albums remote operation running");
         PropFindMethod propfind = null;
-        RemoteOperationResult result = null;
-
+        RemoteOperationResult<List<ReadAlbumsOperation.PhotoAlbumEntry>> result;
         try {
-            propfind = new PropFindMethod("https://pre1.next.magentacloud.de/remote.php/dav/photos/120049010000000202817426/albums/", getProp(), 1);
+            propfind = new PropFindMethod("https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums/", getProp(), DavConstants.DEPTH_1);
             int status = client.executeMethod(propfind);
-            Log_OC.e("ReadAlbumsOperation", "Fetch albums remote: "+status);
-            boolean isSuccess = status == 207 || status == 200;
+            Log_OC.e("ReadAlbumsOperation", "Fetch albums remote: " + status);
+            boolean isSuccess = status == HttpStatus.SC_MULTI_STATUS || status == HttpStatus.SC_OK;
             if (isSuccess) {
-                MultiStatus resp = propfind.getResponseBodyAsMultiStatus();
-                Log_OC.e("Albums","Response: "+resp.getResponses()[0]);
-                WebdavEntry we = new WebdavEntry(resp.getResponses()[0], Uri.parse("https://pre1.next.magentacloud.de/remote.php/dav/photos/120049010000000202817426/albums/").getEncodedPath());
-
-                Log_OC.e("Albums","WebDavEntry: "+ we);
-
-                RemoteFile remoteFile = new RemoteFile(we);
-
-                Log_OC.e("Albums","remoteFile: "+ remoteFile);
-               /* ArrayList<Object> files = new ArrayList();
-                files.add(remoteFile);*/
+                MultiStatus multiStatus = propfind.getResponseBodyAsMultiStatus();
+                List<PhotoAlbumEntry> albumsList = new ArrayList<>();
+                for (MultiStatusResponse response : multiStatus.getResponses()) {
+                    Log_OC.e("Albums", "Response: " + response);
+                    int st = response.getStatus()[0].getStatusCode();
+                    if (st == HttpStatus.SC_OK) {
+                        PhotoAlbumEntry entry = new PhotoAlbumEntry(response);
+                        Log_OC.e("Albums", "Href: " + entry.getHref() + "\nLast Photo: " + entry.getLastPhoto() + "\nDate Range: " + entry.getDateRange() + "\nItems: "
+                            + entry.getNbItems() + "\nLocation: " + entry.getLocation());
+                        albumsList.add(entry);
+                    }
+                }
                 result = new RemoteOperationResult(true, propfind);
-                Log_OC.e("Albums","Result: "+result);
-
-                //  result.setData(files);
+                result.setResultData(albumsList);
             } else {
-                Log_OC.e("ReadAlbumsOperation", "Fetch albums remote else: "+propfind.getResponseBodyAsStream());
+                Log_OC.e("ReadAlbumsOperation", "Fetch albums remote else: " + propfind.getResponseBodyAsStream());
                 result = new RemoteOperationResult(false, propfind);
                 client.exhaustResponse(propfind.getResponseBodyAsStream());
             }
         } catch (Exception var13) {
             Exception e = var13;
             result = new RemoteOperationResult(e);
-            Log_OC.e("ReadAlbumsOPeration", "Read file "  + " failed: " + result.getLogMessage(), result.getException());
+            Log_OC.e("ReadAlbumsOperation", "Read file " + " failed: " + result.getLogMessage(), result.getException());
         } finally {
             if (propfind != null) {
                 propfind.releaseConnection();
@@ -98,4 +102,114 @@ public class ReadAlbumsOperation extends RemoteOperation {
 
         return propertySet;
     }
+
+    public static class PhotoAlbumEntry {
+
+        private final String href;
+        private final long lastPhoto;
+        private final int nbItems;
+        private final String location;
+        private final String dateRange;
+
+        public PhotoAlbumEntry(MultiStatusResponse response) {
+            this.href = response.getHref();
+
+            DavPropertySet properties = response.getProperties(HttpStatus.SC_OK);
+
+            this.lastPhoto = parseLong(getValue(properties, "last-photo"));
+            this.nbItems = parseInt(getValue(properties, "nbItems"));
+            this.location = getValue(properties, "location");
+            this.dateRange = getValue(properties, "dateRange");
+        }
+
+        private String getValue(DavPropertySet props, String name) {
+            DavPropertyName propName = DavPropertyName.create(name, Namespace.getNamespace("nc", "http://nextcloud.org/ns"));
+            DavProperty<?> prop = props.get(propName);
+            return prop != null && prop.getValue() != null ? prop.getValue().toString() : null;
+        }
+
+        private int parseInt(String value) {
+            try {
+                return value != null ? Integer.parseInt(value) : 0;
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+
+        private long parseLong(String value) {
+            try {
+                return value != null ? Long.parseLong(value) : 0L;
+            } catch (NumberFormatException e) {
+                return 0L;
+            }
+        }
+
+        public String getHref() {
+            return href;
+        }
+
+        public long getLastPhoto() {
+            return lastPhoto;
+        }
+
+        public int getNbItems() {
+            return nbItems;
+        }
+
+        public String getLocation() {
+            return location;
+        }
+
+        public String getDateRange() {
+            return dateRange;
+        }
+
+        public String getAlbumName() {
+            String href = getHref();
+            if (href == null || href.isEmpty()) {
+                return null;
+            }
+
+            // Remove trailing slash if present
+            if (href.endsWith("/")) {
+                href = href.substring(0, href.length() - 1);
+            }
+
+            // Split and return last part
+            String[] parts = href.split("/");
+            return parts.length > 0 ? parts[parts.length - 1] : null;
+        }
+
+        public String getCreatedDate() {
+            String jsonRange = getDateRange();
+
+            if (jsonRange == null || jsonRange.isEmpty()) {
+                Date date = new Date(System.currentTimeMillis()); // Convert to milliseconds
+                SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+                return sdf.format(date);
+            }
+
+            try {
+                JSONObject obj = new JSONObject(jsonRange);
+                long startTimestamp = obj.optLong("start", 0);
+
+                if (startTimestamp > 0) {
+                    Date date = new Date(startTimestamp * 1000L); // Convert to milliseconds
+                    SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+                    return sdf.format(date);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Date date = new Date(System.currentTimeMillis()); // Convert to milliseconds
+                SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+                return sdf.format(date);
+            }
+            Date date = new Date(System.currentTimeMillis()); // Convert to milliseconds
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+            return sdf.format(date);
+        }
+
+
+    }
+
 }
