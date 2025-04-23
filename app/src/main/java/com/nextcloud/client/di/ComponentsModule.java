@@ -114,6 +114,7 @@ import com.owncloud.android.ui.fragment.OCFileListBottomSheetDialog;
 import com.owncloud.android.ui.fragment.OCFileListFragment;
 import com.owncloud.android.ui.fragment.SharedListFragment;
 import com.owncloud.android.ui.fragment.UnifiedSearchFragment;
+import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
 import com.owncloud.android.ui.fragment.contactsbackup.BackupFragment;
 import com.owncloud.android.ui.fragment.contactsbackup.BackupListFragment;
 import com.owncloud.android.ui.preview.FileDownloadFragment;
@@ -314,6 +315,9 @@ abstract class ComponentsModule {
 
     @ContributesAndroidInjector
     abstract GalleryFragment photoFragment();
+
+    @ContributesAndroidInjector
+    abstract AlbumsFragment albumsFragment();
 
     @ContributesAndroidInjector
     abstract MultipleAccountsDialog multipleAccountsDialog();
