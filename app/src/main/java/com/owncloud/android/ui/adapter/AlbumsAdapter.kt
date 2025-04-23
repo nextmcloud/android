@@ -7,44 +7,100 @@
 
 package com.owncloud.android.ui.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.nextcloud.client.account.User
+import com.nextcloud.client.preferences.AppPreferences
 import com.owncloud.android.R
+import com.owncloud.android.databinding.AlbumsGridItemBinding
+import com.owncloud.android.databinding.AlbumsListItemBinding
+import com.owncloud.android.datamodel.FileDataStorageManager
+import com.owncloud.android.datamodel.SyncedFolderProvider
+import com.owncloud.android.datamodel.ThumbnailsCacheManager
+import com.owncloud.android.lib.common.utils.Log_OC
+import com.owncloud.android.operations.albums.ReadAlbumsOperation.PhotoAlbumEntry
+import com.owncloud.android.ui.fragment.albums.AlbumGridItemViewHolder
+import com.owncloud.android.ui.fragment.albums.AlbumItemViewHolder
+import com.owncloud.android.ui.fragment.albums.AlbumListItemViewHolder
+import com.owncloud.android.utils.DisplayUtils
+import com.owncloud.android.utils.theme.ViewThemeUtils
 
-class AlbumsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val gridView = false
+class AlbumsAdapter(
+    val context: Context,
+    private val storageManager: FileDataStorageManager?,
+    private val user: User,
+    private val syncedFolderProvider: SyncedFolderProvider,
+    private val preferences: AppPreferences,
+    private val viewThemeUtils: ViewThemeUtils,
+    private val gridView: Boolean = true
+) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var albumList: MutableList<PhotoAlbumEntry> = mutableListOf()
+    private val asyncTasks: MutableList<ThumbnailsCacheManager.ThumbnailGenerationTask> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (gridView) {
-            val itemView: View = LayoutInflater.from(context).inflate(R.layout.grid_item, parent, false)
-            return AlbumsListItemViewHolder(itemView)
+        return if (gridView) {
+            AlbumGridItemViewHolder(AlbumsGridItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
         } else {
-            val itemView: View = LayoutInflater.from(context).inflate(R.layout.list_item, parent, false)
-            return AlbumsListItemViewHolder(itemView)
+            AlbumListItemViewHolder(AlbumsListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
         }
     }
 
     override fun getItemCount(): Int {
-        return 0;
+        return albumList.size
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val gridViewHolder = holder as AlbumItemViewHolder
+        val file: PhotoAlbumEntry = albumList[position]
+
+        gridViewHolder.albumName.text = file.albumName
+        gridViewHolder.thumbnail.tag = file.lastPhoto
+        gridViewHolder.albumInfo.text = "${file.nbItems} Items -- ${file.createdDate}"
+
+        if (file.lastPhoto > 0) {
+            val ocLocal = storageManager?.getFileByLocalId(file.lastPhoto)
+            DisplayUtils.setThumbnail(
+                ocLocal,
+                gridViewHolder.thumbnail,
+                user,
+                storageManager,
+                asyncTasks,
+                gridView,
+                context,
+                gridViewHolder.shimmerThumbnail,
+                preferences,
+                viewThemeUtils,
+                syncedFolderProvider
+            )
+        } else {
+            gridViewHolder.thumbnail.setImageResource(R.drawable.file_image)
+            gridViewHolder.thumbnail.visibility = View.VISIBLE
+            gridViewHolder.shimmerThumbnail.visibility = View.GONE
+        }
     }
 
-    internal class AlbumsListItemViewHolder(itemView: View) :
-        RecyclerView.ViewHolder(itemView) {
-        private val fileSize: TextView = itemView.findViewById(R.id.file_size)
-        private val lastModification: TextView = itemView.findViewById(R.id.last_mod)
-        private val fileSeparator: TextView = itemView.findViewById(R.id.file_separator)
-
-        init {
-            itemView.findViewById<View>(R.id.sharedAvatars).visibility = View.GONE
-            itemView.findViewById<View>(R.id.overflow_menu).visibility = View.GONE
-            itemView.findViewById<View>(R.id.tagsGroup).visibility = View.GONE
+    fun cancelAllPendingTasks() {
+        for (task in asyncTasks) {
+            task.cancel(true)
+            if (task.getMethod != null) {
+                Log_OC.d("AlbumsAdapter", "cancel: abort get method directly")
+                task.getMethod.abort()
+            }
         }
+        asyncTasks.clear()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setAlbumItems(albumItems: List<PhotoAlbumEntry>?) {
+        albumList.clear()
+        albumItems?.let {
+            albumList.addAll(it)
+        }
+        notifyDataSetChanged()
     }
 }
