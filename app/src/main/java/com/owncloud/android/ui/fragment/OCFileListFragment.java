@@ -2197,6 +2197,12 @@ public class OCFileListFragment extends ExtendedListFragment implements
             return;
         }
 
+        if (requireActivity() instanceof FileDisplayActivity fda
+            && fda.isAlbumsFragmentVisible()) {
+            mFabMain.hide();
+            return;
+        }
+
         if (getActivity() != null) {
             getActivity().runOnUiThread(() -> {
                 if (visible) {
