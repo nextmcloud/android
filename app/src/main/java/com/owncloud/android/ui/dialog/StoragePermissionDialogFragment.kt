@@ -12,12 +12,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import kotlinx.parcelize.Parcelize
@@ -40,22 +40,6 @@ class StoragePermissionDialogFragment : DialogFragment(), Injectable {
         super.onCreate(savedInstanceState)
         arguments?.let {
             permissionRequired = it.getBoolean(ARG_PERMISSION_REQUIRED, false)
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        dialog?.let {
-            val alertDialog = it as AlertDialog
-
-            val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE) as MaterialButton
-            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(positiveButton)
-
-            val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE) as MaterialButton
-            viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(negativeButton)
-
-            val neutralButton = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL) as MaterialButton
-            viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(neutralButton)
         }
     }
 
@@ -86,7 +70,8 @@ class StoragePermissionDialogFragment : DialogFragment(), Injectable {
                 dismiss()
             }
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(requireContext(), dialogBuilder)
+        //NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireContext(), dialogBuilder)
 
         return dialogBuilder.create()
     }
