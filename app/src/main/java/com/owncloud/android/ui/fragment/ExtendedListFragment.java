@@ -47,6 +47,7 @@ import com.nmc.android.utils.SearchViewThemeUtils;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.client.preferences.AppPreferencesImpl;
 import com.nextcloud.utils.extensions.FragmentExtensionsKt;
+import com.nmc.android.utils.SwipeRefreshThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.ListFragmentBinding;
@@ -352,7 +353,8 @@ public class ExtendedListFragment extends Fragment implements
 
         // Pull-down to refresh layout
         mRefreshListLayout = binding.swipeContainingList;
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(mRefreshListLayout);
+        //NMC Customisation
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(requireContext(), mRefreshListLayout);
         mRefreshListLayout.setOnRefreshListener(this);
 
         mSortButton = getActivity().findViewById(R.id.sort_button);
