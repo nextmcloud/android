@@ -186,7 +186,7 @@
     <string name="community_testing_headline">Helfen Sie durch Testen</string>
     <string name="community_testing_report_text">Fehlerbericht auf GitHub erstellen</string>
     <string name="configure_new_media_folder_detection_notifications">Konfigurieren</string>
-    <string name="confirm_removal">Lokale Verschlüsselung entfernen</string>
+    <string name="confirm_removal">Verschlüsselung lokal entfernen</string>
     <string name="confirmation_remove_file_alert">Wollen Sie %1$s wirklich löschen?</string>
     <string name="confirmation_remove_files_alert">Möchten Sie die ausgewählten Elemente wirklich löschen?</string>
     <string name="confirmation_remove_folder_alert">Wollen Sie %1$s und deren Inhalte wirklich löschen?</string>
@@ -299,7 +299,7 @@
     <string name="due_to_too_many_wrong_attempts">%s aufgrund zu vieler Fehlversuche</string>
     <string name="e2e_counter_too_old">Zähler ist zu alt</string>
     <string name="e2e_hash_not_found">Hash nicht gefunden</string>
-    <string name="e2e_not_yet_setup">E2E bislang nicht eingerichtet</string>
+    <string name="e2e_not_yet_setup">Die Ende-zu-Ende Verschlüsselung ist noch nicht eingerichtet.</string>
     <string name="e2e_offline">Ohne Internetverbindung nicht möglich</string>
     <string name="e2e_signature_does_not_match">Signatur stimmt nicht überein</string>
     <string name="ecosystem_apps_display_assistant">Assistent</string>
@@ -312,13 +312,13 @@
     <string name="end_to_end_encryption_confirm_button">Verschlüsselung einrichten</string>
     <string name="end_to_end_encryption_decrypting">Entschlüssele…</string>
     <string name="end_to_end_encryption_dialog_close">Schließen</string>
-    <string name="end_to_end_encryption_enter_passphrase_to_access_files">Geben Sie Ihre Passphrase ein, um auf Ihre Dateien zuzugreifen</string>
+    <string name="end_to_end_encryption_enter_passphrase_to_access_files">Bitte geben Sie Ihren 12-Wort-Schlüssel (Passphrase) ein.</string>
     <string name="end_to_end_encryption_folder_not_empty">Dieser Ordner ist nicht leer.</string>
     <string name="end_to_end_encryption_generating_keys">Neue Schlüssel generieren…</string>
     <string name="end_to_end_encryption_keywords_description">Diese 12 Wörter-Phrase ist wie ein sehr starkes Passwort: Sie bietet vollen Zugriff um Ihre verschlüsselten Dateien anzusehen und zu verwenden. Bitte schreiben Sie sie auf und verwahren sie an einem sicheren Ort.</string>
     <string name="end_to_end_encryption_not_enabled">Ende-zu-Ende-Verschlüsselung ist auf diesem Server deaktiviert.</string>
     <string name="end_to_end_encryption_passphrase_title">Notieren Sie Ihre Verschlüsselungs-Passphrase</string>
-    <string name="end_to_end_encryption_password">Passwort…</string>
+    <string name="end_to_end_encryption_password">Passphrase…</string>
     <string name="end_to_end_encryption_retrieving_keys">Schlüssel abrufen…</string>
     <string name="end_to_end_encryption_server_private_key_unavailable">Privater Schlüssel kann nicht abgerufen werden</string>
     <string name="end_to_end_encryption_server_public_key_unavailable">Öffentlicher Schlüssel kann nicht abgerufen werden</string>
@@ -341,7 +341,7 @@
     <string name="error_report_issue_text">Problem melden? (benötigt ein GitHub-Konto)</string>
     <string name="error_retrieving_file">Fehler beim Abruf der Datei</string>
     <string name="error_retrieving_templates">Fehler beim Laden der Vorlagen</string>
-    <string name="error_showing_encryption_dialog">Fehler beim Anzeigen des Setup-Dialogs für Verschlüsselung!</string>
+    <string name="error_showing_encryption_dialog">Fehler bei der Anzeige des Verschlüsselungsdialogs!</string>
     <string name="error_starting_direct_camera_upload">Fehler beim Starten der Kamera</string>
     <string name="error_starting_doc_scan">Start des Dokumentenscans fehlgeschlagen</string>
     <string name="error_uploading_direct_camera_upload">Fehler beim Hochladen aufgenommener Medien</string>
@@ -689,6 +689,7 @@
     <string name="prefs_e2e_mnemonic">E2E-Gedächtnisstütze</string>
     <string name="prefs_e2e_no_device_credentials">Um die Gedächtnisstütze anzuzeigen, aktivieren Sie bitte Geräte-Zugangsdaten</string>
     <string name="prefs_enable_media_scan_notifications">Benachrichtigungen der Mediensuche anzeigen</string>
+    <string name="dialog_e2e_mnemonic_title">Passphrase</string>
     <string name="prefs_enable_media_scan_notifications_summary">Über neu gefundene Medienordner informieren</string>
     <string name="prefs_gpl_v2">GNU General Public Lizenz, version 2</string>
     <string name="prefs_help">Hilfe</string>
@@ -700,7 +701,7 @@
     <string name="prefs_instant_upload_path_use_date_subfolders_summary">Nach Datum in Unterordnern speichern</string>
     <string name="prefs_instant_upload_path_use_subfolders_title">Unterordner benutzen</string>
     <string name="prefs_instant_upload_subfolder_rule_title">Unterordneroptionen</string>
-    <string name="prefs_keys_exist">Diesem Client Ende-zu-Ende-Verschlüsselung hinzufügen</string>
+    <string name="prefs_keys_exist">Fügen Sie dieses Gerät zur Ende-zu-Ende Verschlüsselung hinzu.</string>
     <string name="prefs_license">Lizenz</string>
     <string name="prefs_lock">App-PIN</string>
     <string name="prefs_lock_device_credentials_enabled">Geräte-Anmeldedaten aktiviert</string>
@@ -712,7 +713,7 @@
     <string name="prefs_manage_accounts">Konten verwalten</string>
     <string name="prefs_recommend">Einem Freund empfehlen</string>
     <string name="prefs_remove_e2e">Verschlüsselung lokal entfernen</string>
-    <string name="prefs_setup_e2e">Ende-zu-Ende-Verschlüsselung einrichten</string>
+    <string name="prefs_setup_e2e">Ende-zu-Ende Verschlüsselung starten</string>
     <string name="prefs_show_ecosystem_apps">App-Umschalter anzeigen</string>
     <string name="prefs_show_ecosystem_apps_summary">Nextcloud-App-Vorschläge in der Navigationsüberschrift</string>
     <string name="prefs_show_hidden_files">Versteckte Dateien anzeigen</string>
@@ -753,8 +754,8 @@
     <string name="reload">Neu laden</string>
     <string name="remote">(entfernt)</string>
     <string name="remote_file_fetch_failed">Datei nicht gefunden!</string>
-    <string name="remove_e2e">Sie können die Ende-zu-Ende-Verschlüsselung lokal auf diesem Client entfernen</string>
-    <string name="remove_e2e_message">Sie können die Ende-zu-Ende-Verschlüsselung lokal auf diesem Client entfernen. Die verschlüsselten Dateien bleiben auf dem Server, werden aber nicht mehr mit diesem Computer synchronisiert.</string>
+    <string name="remove_e2e">Sie können die Passphrase auf diesem Gerät entfernen.</string>
+    <string name="remove_e2e_message">Sie können die Passphrase auf diesem Gerät entfernen. Dadurch bleiben die verschlüsselten Inhalte unberührt, jedoch kann dieses Gerät die Daten nicht mehr entschlüsseln.\n\nSie können die Passphrase jederzeit wieder hier eingeben, um Zugriff von diesem Gerät aus auf ihre verschlüsselten Inhalte zu gewährleisten.</string>
     <string name="remove_fail_msg">Löschung fehlgeschlagen</string>
     <string name="remove_local_account">Lokales Konto entfernen</string>
     <string name="remove_local_account_details">Das Konto vom Gerät entfernen und alle lokalen Dateien löschen</string>
@@ -805,7 +806,7 @@
     <string name="set_picture_as">Nutze Bild als</string>
     <string name="set_status">Status setzen</string>
     <string name="set_status_message">Statusnachricht setzen</string>
-    <string name="setup_e2e">Während der Einrichtung der Ende-zu-Ende-Verschlüsselung erhalten Sie eine zufällige 12-Wörter-Gedächtnisstütze, die Sie benötigen, um Ihre Dateien auf anderen Geräten zu öffnen. Diese wird nur auf diesem Gerät gespeichert und kann in diesem Bildschirm erneut angezeigt werden. Bitte notieren Sie es an einem sicheren Ort!</string>
+    <string name="setup_e2e">Nach dem Start der Verschlüsselung wird Ihnen eine aus 12 Wörtern zufällig erzeugte Wortfolge (Passphrase) angezeigt. Diese bleibt in dieser App erhalten und kann erneut angezeigt werden. Dennoch empfehlen wir Ihnen, die Passphrase zu notieren.</string>
     <string name="share">Teilen</string>
     <string name="share_copy_link">Teilen und Link kopieren</string>
     <string name="share_dialog_title">Teilen</string>
