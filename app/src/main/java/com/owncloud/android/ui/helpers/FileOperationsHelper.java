@@ -1022,6 +1022,18 @@ public class FileOperationsHelper {
         fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
     }
 
+    public void albumCopyFiles(final List<String> filePaths, final String targetFolder) {
+        for (String path : filePaths) {
+            Intent service = new Intent(fileActivity, OperationsService.class);
+            service.setAction(OperationsService.ACTION_ALBUM_COPY_FILE);
+            service.putExtra(OperationsService.EXTRA_NEW_PARENT_PATH, targetFolder);
+            service.putExtra(OperationsService.EXTRA_REMOTE_PATH, path);
+            service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
+            mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
+        }
+        fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
+    }
+
     public void exportFiles(Collection<OCFile> files,
                             Context context,
                             View view,

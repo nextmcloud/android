@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nextcloud.client.network.ConnectivityService;
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
 import com.owncloud.android.BuildConfig;
 import com.owncloud.android.R;
@@ -38,6 +39,10 @@ import com.owncloud.android.ui.adapter.GalleryAdapter;
 import com.owncloud.android.ui.asynctasks.GallerySearchTask;
 import com.owncloud.android.ui.events.ChangeMenuEvent;
 import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
+import com.owncloud.android.utils.DisplayUtils;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -68,6 +73,7 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
     private GalleryFragmentBottomSheetDialog galleryFragmentBottomSheetDialog;
 
     @Inject FileDataStorageManager fileDataStorageManager;
+    @Inject ConnectivityService connectivityService;
     private final static int maxColumnSizeLandscape = 5;
     private final static int maxColumnSizePortrait = 2;
     private int columnSize;
@@ -434,7 +440,7 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
         mAdapter.markAsFavorite(remotePath, favorite);
     }
 
-    public void addImagesToAlbum() {
+    public void addImagesToAlbum(Set<OCFile> checkedFiles) {
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(null);
         transaction.add(R.id.left_fragment_container, AlbumsFragment.Companion.newInstance(true), AlbumsFragment.Companion.getTAG());
@@ -443,6 +449,18 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
             if (requestKey.equals(AlbumsFragment.SELECT_ALBUM_REQ_KEY)) {
                 String albumName = bundle.getString(AlbumsFragment.ARG_SELECTED_ALBUM_NAME);
                 Log_OC.e(TAG, "Selected album name: " + albumName);
+
+                connectivityService.isNetworkAndServerAvailable(result -> {
+                    if (result) {
+                        final ArrayList<String> paths = new ArrayList<>(checkedFiles.size());
+                        for (OCFile file : checkedFiles) {
+                            paths.add(file.getRemotePath());
+                        }
+                        mContainerActivity.getFileOperationsHelper().albumCopyFiles(paths, albumName);
+                    } else {
+                        DisplayUtils.showSnackMessage(requireActivity(), getString(R.string.offline_mode));
+                    }
+                });
             }
         });
     }
