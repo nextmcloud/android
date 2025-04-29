@@ -10,7 +10,10 @@
  */
 package com.owncloud.android.operations.albums;
 
+import android.text.TextUtils;
+
 import com.owncloud.android.lib.common.OwnCloudClient;
+import com.owncloud.android.lib.common.network.WebdavUtils;
 import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
@@ -36,8 +39,16 @@ import java.util.Locale;
 
 public class ReadAlbumsOperation extends RemoteOperation<List<ReadAlbumsOperation.PhotoAlbumEntry>> {
 
+    private static final String TAG = ReadAlbumsOperation.class.getSimpleName();
+    private String albumPath = null;
+
     public ReadAlbumsOperation() {
-        Log_OC.e("ReadAlbumsOperation", "Fetch albums remote operation");
+        Log_OC.e(TAG, "Fetch albums remote operation");
+    }
+
+    public ReadAlbumsOperation(String albumPath) {
+        Log_OC.e(TAG, "Fetch albums remote operation");
+        this.albumPath = albumPath;
     }
 
     /**
@@ -47,13 +58,17 @@ public class ReadAlbumsOperation extends RemoteOperation<List<ReadAlbumsOperatio
      */
     @Override
     protected RemoteOperationResult<List<ReadAlbumsOperation.PhotoAlbumEntry>> run(OwnCloudClient client) {
-        Log_OC.e("ReadAlbumsOperation", "Fetch albums remote operation running");
+        Log_OC.e(TAG, "Fetch albums remote operation running");
         PropFindMethod propfind = null;
         RemoteOperationResult<List<ReadAlbumsOperation.PhotoAlbumEntry>> result;
+        String url = "https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums/";
+        if (!TextUtils.isEmpty(albumPath)) {
+            url += WebdavUtils.encodePath(albumPath);
+        }
         try {
-            propfind = new PropFindMethod("https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums/", getProp(), DavConstants.DEPTH_1);
+            propfind = new PropFindMethod(url, getProp(), DavConstants.DEPTH_1);
             int status = client.executeMethod(propfind);
-            Log_OC.e("ReadAlbumsOperation", "Fetch albums remote: " + status);
+            Log_OC.e(TAG, "Fetch albums remote: " + status);
             boolean isSuccess = status == HttpStatus.SC_MULTI_STATUS || status == HttpStatus.SC_OK;
             if (isSuccess) {
                 MultiStatus multiStatus = propfind.getResponseBodyAsMultiStatus();
@@ -71,14 +86,14 @@ public class ReadAlbumsOperation extends RemoteOperation<List<ReadAlbumsOperatio
                 result = new RemoteOperationResult(true, propfind);
                 result.setResultData(albumsList);
             } else {
-                Log_OC.e("ReadAlbumsOperation", "Fetch albums remote else: " + propfind.getResponseBodyAsStream());
+                Log_OC.e(TAG, "Fetch albums remote else: " + propfind.getResponseBodyAsStream());
                 result = new RemoteOperationResult(false, propfind);
                 client.exhaustResponse(propfind.getResponseBodyAsStream());
             }
         } catch (Exception var13) {
             Exception e = var13;
             result = new RemoteOperationResult(e);
-            Log_OC.e("ReadAlbumsOperation", "Read file " + " failed: " + result.getLogMessage(), result.getException());
+            Log_OC.e(TAG, "Read file " + " failed: " + result.getLogMessage(), result.getException());
         } finally {
             if (propfind != null) {
                 propfind.releaseConnection();

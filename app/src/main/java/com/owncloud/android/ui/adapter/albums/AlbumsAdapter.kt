@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package com.owncloud.android.ui.adapter
+package com.owncloud.android.ui.adapter.albums
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -33,6 +33,7 @@ class AlbumsAdapter(
     val context: Context,
     private val storageManager: FileDataStorageManager?,
     private val user: User,
+    private val albumFragmentInterface: AlbumFragmentInterface,
     private val syncedFolderProvider: SyncedFolderProvider,
     private val preferences: AppPreferences,
     private val viewThemeUtils: ViewThemeUtils,
@@ -82,6 +83,8 @@ class AlbumsAdapter(
             gridViewHolder.thumbnail.visibility = View.VISIBLE
             gridViewHolder.shimmerThumbnail.visibility = View.GONE
         }
+
+        holder.itemView.setOnClickListener { albumFragmentInterface.onItemClick(file) }
     }
 
     fun cancelAllPendingTasks() {

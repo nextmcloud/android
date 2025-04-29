@@ -21,14 +21,11 @@ import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.os.bundleOf
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
 import com.nextcloud.client.di.Injectable
@@ -38,24 +35,25 @@ import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ListFragmentBinding
+import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.datamodel.SyncedFolderProvider
+import com.owncloud.android.datamodel.ThumbnailsCacheManager
 import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.utils.Log_OC
-import com.owncloud.android.operations.albums.ReadAlbumsOperation
-import com.owncloud.android.operations.albums.ReadAlbumsOperation.PhotoAlbumEntry
+import com.owncloud.android.operations.albums.ReadAlbumItemsOperation
 import com.owncloud.android.ui.activity.FileActivity
 import com.owncloud.android.ui.activity.FileDisplayActivity
-import com.owncloud.android.ui.adapter.albums.AlbumFragmentInterface
-import com.owncloud.android.ui.adapter.albums.AlbumsAdapter
+import com.owncloud.android.ui.adapter.GalleryAdapter
 import com.owncloud.android.ui.dialog.CreateAlbumDialogFragment
 import com.owncloud.android.ui.fragment.FileFragment
+import com.owncloud.android.ui.interfaces.OCFileListFragmentInterface
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import java.util.Optional
 import javax.inject.Inject
 
-class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
+class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
 
-    private var adapter: AlbumsAdapter? = null
+    private var adapter: GalleryAdapter? = null
     private var client: OwnCloudClient? = null
     private var optionalUser: Optional<User>? = null
 
@@ -78,9 +76,9 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
 
     private var mContainerActivity: FileFragment.ContainerActivity? = null
 
-    private var isGridView = true
-    private var maxColumnSize = 2
-    private var isSelectionMode = false
+    private var columnSize = 0
+
+    private lateinit var albumName: String
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -93,10 +91,7 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
             )
         }
         arguments?.let {
-            isSelectionMode = it.getBoolean(ARG_IS_SELECTION_MODE, false)
-            if (isSelectionMode) {
-                isGridView = false
-            }
+            albumName = it.getString(ARG_ALBUM_NAME) ?: ""
         }
     }
 
@@ -107,10 +102,10 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        maxColumnSize = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            4
+        columnSize = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            maxColumnSizeLandscape;
         } else {
-            2
+            maxColumnSizePortrait;
         }
     }
 
@@ -168,14 +163,8 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
 
     private fun setupContent() {
         binding.listRoot.setEmptyView(binding.emptyList.emptyListView)
-        binding.listRoot.setHasFixedSize(true)
-        if (isGridView) {
-            val layoutManager = GridLayoutManager(requireContext(), maxColumnSize)
-            binding.listRoot.layoutManager = layoutManager
-        } else {
-            val layoutManager = LinearLayoutManager(requireContext())
-            binding.listRoot.layoutManager = layoutManager
-        }
+        val layoutManager = GridLayoutManager(requireContext(), 1)
+        binding.listRoot.layoutManager = layoutManager
         fetchAndSetData()
     }
 
@@ -188,19 +177,19 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
     }
 
     @VisibleForTesting
-    fun populateList(albums: List<PhotoAlbumEntry>?) {
+    fun populateList(albums: List<OCFile>) {
         if (requireActivity() is FileDisplayActivity) {
             (requireActivity() as FileDisplayActivity).setMainFabVisible(false)
         }
         initializeAdapter()
-        adapter?.setAlbumItems(albums)
+        adapter?.showAlbumItems(albums)
     }
 
     private fun fetchAndSetData() {
         initializeAdapter()
         val t = Thread {
             setEmptyListLoadingMessage()
-            val getRemoteNotificationOperation = ReadAlbumsOperation()
+            val getRemoteNotificationOperation = ReadAlbumItemsOperation(albumName)
             val result = client?.let { getRemoteNotificationOperation.execute(it) }
             if (result?.isSuccess == true && result.resultData != null) {
                 if (result.resultData.isEmpty()) {
@@ -234,6 +223,18 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         }
     }
 
+    private fun setEmptyListLoadingMessage() {
+        Handler(Looper.getMainLooper()).post {
+            val fileActivity = this.getTypedActivity(FileActivity::class.java)
+            fileActivity?.connectivityService?.isNetworkAndServerAvailable { result: Boolean? ->
+                if (!result!!) return@isNetworkAndServerAvailable
+                binding.emptyList.emptyListViewHeadline.setText(R.string.file_list_loading)
+                binding.emptyList.emptyListViewText.text = ""
+                binding.emptyList.emptyListIcon.visibility = View.GONE
+            }
+        }
+    }
+
     private fun initializeClient() {
         if (client == null && optionalUser?.isPresent == true) {
             try {
@@ -248,18 +249,23 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
     private fun initializeAdapter() {
         initializeClient()
         if (adapter == null) {
-            adapter = AlbumsAdapter(
+            adapter = GalleryAdapter(
                 requireContext(),
-                mContainerActivity?.storageManager,
                 accountManager.user,
                 this,
-                syncedFolderProvider,
                 preferences,
+                mContainerActivity!!,
                 viewThemeUtils,
-                isGridView
+                columnSize,
+                ThumbnailsCacheManager.getThumbnailDimension()
             )
+            adapter?.setHasStableIds(true)
         }
         binding.listRoot.adapter = adapter
+
+        lastMediaItemPosition?.let {
+            binding.listRoot.layoutManager?.scrollToPosition(it)
+        }
     }
 
     private fun setMessageForEmptyList(
@@ -285,26 +291,11 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         }
     }
 
-    private fun setEmptyListLoadingMessage() {
-        Handler(Looper.getMainLooper()).post {
-            val fileActivity = this.getTypedActivity(FileActivity::class.java)
-            fileActivity?.connectivityService?.isNetworkAndServerAvailable { result: Boolean? ->
-                if (!result!!) return@isNetworkAndServerAvailable
-                binding.emptyList.emptyListViewHeadline.setText(R.string.file_list_loading)
-                binding.emptyList.emptyListViewText.text = ""
-                binding.emptyList.emptyListIcon.visibility = View.GONE
-            }
-        }
-    }
-
     override fun onResume() {
         super.onResume()
-        if (isSelectionMode) {
-            binding.root.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.bg_default, null))
-        }
         if (requireActivity() is FileDisplayActivity) {
             (requireActivity() as FileDisplayActivity).setupToolbar()
-            (requireActivity() as FileDisplayActivity).updateActionBarTitleAndHomeButtonByString(getString(R.string.drawer_item_album))
+            (requireActivity() as FileDisplayActivity).updateActionBarTitleAndHomeButtonByString(albumName)
             (requireActivity() as FileDisplayActivity).showSortListGroup(false)
             (requireActivity() as FileDisplayActivity).setMainFabVisible(false)
 
@@ -313,64 +304,79 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         }
     }
 
-    fun newAlbumCreated(albumName: String) {
-        requireActivity().supportFragmentManager.beginTransaction().apply {
-            addToBackStack(null)
-            replace(
-                R.id.left_fragment_container,
-                AlbumItemsFragment.newInstance(albumName),
-                AlbumItemsFragment.TAG
-            )
-            commit()
-        }
-    }
-
     override fun onPause() {
         super.onPause()
         adapter?.cancelAllPendingTasks()
     }
 
-    private val isGridEnabled: Boolean
-        get() {
-            return binding.listRoot.layoutManager is GridLayoutManager
-        }
-
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (isGridEnabled) {
-            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                maxColumnSize = 4
-            } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                maxColumnSize = 2
-            }
-            (binding.listRoot.layoutManager as GridLayoutManager).setSpanCount(maxColumnSize)
+
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            columnSize = maxColumnSizeLandscape
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            columnSize = maxColumnSizePortrait
         }
+        adapter?.changeColumn(columnSize)
+        adapter?.notifyDataSetChanged()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        lastMediaItemPosition = 0
     }
 
     companion object {
-        val TAG: String = AlbumsFragment::class.java.simpleName
-        private const val ARG_IS_SELECTION_MODE = "is_selection_mode"
-        const val SELECT_ALBUM_REQ_KEY = "select_album_req_key"
-        const val ARG_SELECTED_ALBUM_NAME = "selected_album_name"
+        val TAG: String = AlbumItemsFragment::class.java.simpleName
+        private const val ARG_ALBUM_NAME = "album_name"
+        var lastMediaItemPosition: Int? = null
 
-        fun newInstance(isSelectionMode: Boolean = false): AlbumsFragment {
+        private const val maxColumnSizeLandscape: Int = 5
+        private const val maxColumnSizePortrait: Int = 2
+
+        fun newInstance(albumName: String): AlbumItemsFragment {
             val args = Bundle()
-            args.putBoolean(ARG_IS_SELECTION_MODE, isSelectionMode)
-            val fragment = AlbumsFragment()
+
+            val fragment = AlbumItemsFragment()
             fragment.arguments = args
+            args.putString(ARG_ALBUM_NAME, albumName)
             return fragment
         }
     }
 
-    override fun onItemClick(album: PhotoAlbumEntry) {
-        if (isSelectionMode) {
-            requireActivity().supportFragmentManager.setFragmentResult(
-                SELECT_ALBUM_REQ_KEY,
-                bundleOf(ARG_SELECTED_ALBUM_NAME to album.albumName)
-            )
-            requireActivity().supportFragmentManager.beginTransaction().remove(this).commit()
-            return
-        }
-        newAlbumCreated(album.albumName)
+    override fun getColumnsCount(): Int {
+        return columnSize
+    }
+
+    override fun onShareIconClick(file: OCFile?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun showShareDetailView(file: OCFile?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun showActivityDetailView(file: OCFile?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onOverflowIconClicked(file: OCFile?, view: View?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onItemClicked(file: OCFile?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onLongItemClicked(file: OCFile?): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun isLoading(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun onHeaderClicked() {
+        TODO("Not yet implemented")
     }
 }
