@@ -700,9 +700,6 @@
     <string name="notifications_no_results_headline">No notifications</string>
     <string name="notifications_no_results_message">Please check back later.</string>
 
-    <string name="albums_no_results_headline">No Albums</string>
-    <string name="albums_no_results_message">Create your new album.</string>
-
     <string name="upload_file_dialog_title">Input filename and filetype to upload</string>
     <string name="upload_file_dialog_filename">Filename</string>
     <string name="upload_file_dialog_filetype">Filetype</string>
@@ -1124,7 +1121,6 @@
     <string name="fourHours">4 hours</string>
     <string name="thisWeek">This week</string>
     <string name="drawer_item_gallery">Media</string>
-    <string name="drawer_item_album">Album</string>
     <string name="player_stop">stop</string>
     <string name="player_toggle">toggle</string>
     <string name="choose_which_file">Choose which file to keep!</string>

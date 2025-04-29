@@ -100,6 +100,7 @@ import com.owncloud.android.operations.RemoveFileOperation;
 import com.owncloud.android.operations.RenameFileOperation;
 import com.owncloud.android.operations.SynchronizeFileOperation;
 import com.owncloud.android.operations.UploadFileOperation;
+import com.owncloud.android.operations.albums.CreateNewAlbumOperation;
 import com.owncloud.android.syncadapter.FileSyncAdapter;
 import com.owncloud.android.ui.activity.fileDisplayActivity.OfflineFolderConflictManager;
 import com.owncloud.android.ui.asynctasks.CheckAvailableSpaceTask;
@@ -121,6 +122,8 @@ import com.owncloud.android.ui.fragment.SearchType;
 import com.owncloud.android.ui.fragment.SharedListFragment;
 import com.owncloud.android.ui.fragment.TaskRetainerFragment;
 import com.owncloud.android.ui.fragment.UnifiedSearchFragment;
+import com.owncloud.android.ui.fragment.albums.AlbumItemsFragment;
+import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
 import com.owncloud.android.ui.helpers.FileOperationsHelper;
 import com.owncloud.android.ui.helpers.UriUploader;
 import com.owncloud.android.ui.preview.PreviewImageActivity;
@@ -1145,6 +1148,12 @@ public class FileDisplayActivity extends FileActivity
             return;
         }
 
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
+        if (fragment instanceof AlbumItemsFragment && fragment.isVisible()) {
+            popBack();
+            return;
+        }
+
         if (getLeftFragment() instanceof OCFileListFragment listOfFiles) {
             if (isRoot(getCurrentDir())) {
                 finish();
@@ -1823,6 +1832,8 @@ public class FileDisplayActivity extends FileActivity
             onCopyFileOperationFinish(copyFileOperation, result);
         } else if (operation instanceof RestoreFileVersionRemoteOperation) {
             onRestoreFileVersionOperationFinish(result);
+        } else if (operation instanceof CreateNewAlbumOperation createNewAlbumOperation) {
+            onCreateAlbumOperationFinish(createNewAlbumOperation, result);
         }
     }
 
@@ -2047,6 +2058,25 @@ public class FileDisplayActivity extends FileActivity
             OCFileListFragment fileListFragment = getListOfFilesFragment();
             if (fileListFragment != null) {
                 fileListFragment.onItemClicked(getStorageManager().getFileByDecryptedRemotePath(operation.getRemotePath()));
+            }
+        } else {
+            try {
+                if (ResultCode.FOLDER_ALREADY_EXISTS == result.getCode()) {
+                    DisplayUtils.showSnackMessage(this, R.string.folder_already_exists);
+                } else {
+                    DisplayUtils.showSnackMessage(this, ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources()));
+                }
+            } catch (NotFoundException e) {
+                Log_OC.e(TAG, "Error while trying to show fail message ", e);
+            }
+        }
+    }
+
+    private void onCreateAlbumOperationFinish(CreateNewAlbumOperation operation, RemoteOperationResult result) {
+        if (result.isSuccess()) {
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumsFragment.Companion.getTAG());
+            if (isAlbumsFragmentVisible() && fragment instanceof AlbumsFragment albumsFragment) {
+                albumsFragment.newAlbumCreated(operation.getNewAlbumName());
             }
         } else {
             try {
