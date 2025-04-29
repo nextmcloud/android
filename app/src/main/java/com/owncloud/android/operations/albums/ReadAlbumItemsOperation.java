@@ -12,6 +12,7 @@ package com.owncloud.android.operations.albums;
 
 import android.net.Uri;
 
+import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.network.WebdavEntry;
@@ -33,8 +34,10 @@ public class ReadAlbumItemsOperation extends RemoteOperation<List<OCFile>> {
     private static final String TAG = ReadAlbumItemsOperation.class.getSimpleName();
     private final String albumPath;
     private ArrayList<OCFile> mFolderAndFiles;
+    private final FileDataStorageManager fileDataStorageManager;
 
-    public ReadAlbumItemsOperation(String albumPath) {
+    public ReadAlbumItemsOperation(String albumPath, FileDataStorageManager fileDataStorageManager) {
+        this.fileDataStorageManager = fileDataStorageManager;
         Log_OC.e(TAG, "Reading Album Operations");
         this.albumPath = albumPath;
     }
@@ -43,7 +46,7 @@ public class ReadAlbumItemsOperation extends RemoteOperation<List<OCFile>> {
         Log_OC.e(TAG, "Reading Album Operations running");
         RemoteOperationResult<List<OCFile>> result = null;
         PropFindMethod query = null;
-        String url = "https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums/" + WebdavUtils.encodePath(albumPath);
+        String url = "https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums" + WebdavUtils.encodePath(albumPath);
         try {
             query = new PropFindMethod(url, WebdavUtils.getAllPropSet(), 1);
             int status = client.executeMethod(query);
@@ -91,7 +94,10 @@ public class ReadAlbumItemsOperation extends RemoteOperation<List<OCFile>> {
         for (int i = 1; i < remoteData.getResponses().length; ++i) {
             WebdavEntry we = new WebdavEntry(remoteData.getResponses()[i], Uri.parse(url).getEncodedPath());
             RemoteFile remoteFile = new RemoteFile(we);
-            OCFile ocFile = FileStorageUtils.fillOCFile(remoteFile);
+            OCFile ocFile = fileDataStorageManager.getFileByLocalId(remoteFile.getLocalId());
+            if (ocFile == null) {
+                ocFile = FileStorageUtils.fillOCFile(remoteFile);
+            }
             this.mFolderAndFiles.add(ocFile);
         }
 
