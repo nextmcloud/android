@@ -33,6 +33,7 @@ import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.ui.activity.ComponentsGetter
 import com.owncloud.android.ui.fragment.GalleryFragment
 import com.owncloud.android.ui.fragment.SearchType
+import com.owncloud.android.ui.fragment.albums.AlbumItemsFragment
 import com.owncloud.android.ui.interfaces.OCFileListFragmentInterface
 import com.owncloud.android.utils.BitmapUtils
 import com.owncloud.android.utils.DisplayUtils
@@ -115,6 +116,7 @@ class OCFileListDelegate(
         imageView.setOnClickListener {
             ocFileListFragmentInterface.onItemClicked(file)
             GalleryFragment.setLastMediaItemPosition(galleryRowHolder.absoluteAdapterPosition)
+            AlbumItemsFragment.lastMediaItemPosition = galleryRowHolder.absoluteAdapterPosition
         }
 
         if (!hideItemOptions) {

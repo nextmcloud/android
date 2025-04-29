@@ -64,7 +64,7 @@ import com.owncloud.android.operations.UpdateNoteForShareOperation;
 import com.owncloud.android.operations.UpdateShareInfoOperation;
 import com.owncloud.android.operations.UpdateSharePermissionsOperation;
 import com.owncloud.android.operations.UpdateShareViaLinkOperation;
-import com.owncloud.android.operations.albums.ReadAlbumsOperation;
+import com.owncloud.android.operations.albums.CreateNewAlbumOperation;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -123,7 +123,8 @@ public class OperationsService extends Service {
     public static final String ACTION_CHECK_CURRENT_CREDENTIALS = "CHECK_CURRENT_CREDENTIALS";
     public static final String ACTION_RESTORE_VERSION = "RESTORE_VERSION";
     public static final String ACTION_UPDATE_FILES_DOWNLOAD_LIMIT = "UPDATE_FILES_DOWNLOAD_LIMIT";
-    public static final String ACTION_ALBUM = "ALBUMS";
+    public static final String ACTION_CREATE_ALBUM = "CREATE_ALBUM";
+    public static final String EXTRA_ALBUM_NAME = "ALBUM_NAME";
 
     private ServiceHandler mOperationsHandler;
     private OperationsServiceBinder mOperationsBinder;
@@ -664,11 +665,6 @@ public class OperationsService extends Service {
                         operation = new GetServerInfoOperation(serverUrl, this);
                         break;
 
-                    case ACTION_ALBUM:
-                        Log_OC.e(TAG, "Fetching albums");
-                        operation = new ReadAlbumsOperation();
-                        break;
-
                     case ACTION_GET_USER_NAME:
                         operation = new GetUserInfoRemoteOperation();
                         break;
@@ -698,6 +694,11 @@ public class OperationsService extends Service {
                                                               user,
                                                               getApplicationContext(),
                                                               fileDataStorageManager);
+                        break;
+
+                    case ACTION_CREATE_ALBUM:
+                        String albumName = operationIntent.getStringExtra(EXTRA_ALBUM_NAME);
+                        operation = new CreateNewAlbumOperation(albumName);
                         break;
 
                     case ACTION_SYNC_FILE:

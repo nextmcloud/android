@@ -603,7 +603,7 @@ public abstract class DrawerActivity extends ToolbarActivity
         }
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(null);
-        transaction.replace(R.id.left_fragment_container, new AlbumsFragment(), AlbumsFragment.Companion.getTAG());
+        transaction.replace(R.id.left_fragment_container, AlbumsFragment.Companion.newInstance(false), AlbumsFragment.Companion.getTAG());
         transaction.commit();
     }
 

@@ -205,6 +205,14 @@ class GalleryAdapter(
         Handler(Looper.getMainLooper()).post { notifyDataSetChanged() }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun showAlbumItems(
+        albumItems: List<OCFile>,
+    ) {
+        files = albumItems.toGalleryItems()
+        Handler(Looper.getMainLooper()).post { notifyDataSetChanged() }
+    }
+
     private fun transformToRows(list: List<OCFile>): List<GalleryRow> {
         return list
             .sortedBy { it.modificationTimestamp }

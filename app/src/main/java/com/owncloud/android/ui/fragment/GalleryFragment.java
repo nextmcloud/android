@@ -37,11 +37,13 @@ import com.owncloud.android.ui.adapter.CommonOCFileListAdapterInterface;
 import com.owncloud.android.ui.adapter.GalleryAdapter;
 import com.owncloud.android.ui.asynctasks.GallerySearchTask;
 import com.owncloud.android.ui.events.ChangeMenuEvent;
+import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
 
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -430,5 +432,18 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
 
     public void markAsFavorite(String remotePath, boolean favorite) {
         mAdapter.markAsFavorite(remotePath, favorite);
+    }
+
+    public void addImagesToAlbum() {
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.addToBackStack(null);
+        transaction.add(R.id.left_fragment_container, AlbumsFragment.Companion.newInstance(true), AlbumsFragment.Companion.getTAG());
+        transaction.commit();
+        requireActivity().getSupportFragmentManager().setFragmentResultListener(AlbumsFragment.SELECT_ALBUM_REQ_KEY, getViewLifecycleOwner(), (requestKey, bundle) -> {
+            if (requestKey.equals(AlbumsFragment.SELECT_ALBUM_REQ_KEY)) {
+                String albumName = bundle.getString(AlbumsFragment.ARG_SELECTED_ALBUM_NAME);
+                Log_OC.e(TAG, "Selected album name: " + albumName);
+            }
+        });
     }
 }
