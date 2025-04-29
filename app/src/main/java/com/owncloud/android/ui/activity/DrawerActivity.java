@@ -93,6 +93,7 @@ import com.owncloud.android.ui.fragment.GalleryFragment;
 import com.owncloud.android.ui.fragment.GroupfolderListFragment;
 import com.owncloud.android.ui.fragment.OCFileListFragment;
 import com.owncloud.android.ui.fragment.SharedListFragment;
+import com.owncloud.android.ui.fragment.albums.AlbumItemsFragment;
 import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
 import com.owncloud.android.ui.preview.PreviewTextStringFragment;
 import com.owncloud.android.ui.trashbin.TrashbinActivity;
@@ -609,6 +610,11 @@ public abstract class DrawerActivity extends ToolbarActivity
 
     public boolean isAlbumsFragmentVisible() {
         Fragment albumsFragment = getSupportFragmentManager().findFragmentByTag(AlbumsFragment.Companion.getTAG());
+        return albumsFragment != null && albumsFragment.isVisible();
+    }
+
+    public boolean isAlbumItemsFragmentVisible() {
+        Fragment albumsFragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
         return albumsFragment != null && albumsFragment.isVisible();
     }
 

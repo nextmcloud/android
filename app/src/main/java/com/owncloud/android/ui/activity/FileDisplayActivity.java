@@ -100,6 +100,7 @@ import com.owncloud.android.operations.RemoveFileOperation;
 import com.owncloud.android.operations.RenameFileOperation;
 import com.owncloud.android.operations.SynchronizeFileOperation;
 import com.owncloud.android.operations.UploadFileOperation;
+import com.owncloud.android.operations.albums.CopyFileToAlbumOperation;
 import com.owncloud.android.operations.albums.CreateNewAlbumOperation;
 import com.owncloud.android.syncadapter.FileSyncAdapter;
 import com.owncloud.android.ui.activity.fileDisplayActivity.OfflineFolderConflictManager;
@@ -1834,6 +1835,8 @@ public class FileDisplayActivity extends FileActivity
             onRestoreFileVersionOperationFinish(result);
         } else if (operation instanceof CreateNewAlbumOperation createNewAlbumOperation) {
             onCreateAlbumOperationFinish(createNewAlbumOperation, result);
+        } else if (operation instanceof CopyFileToAlbumOperation copyFileOperation) {
+            onCopyAlbumFileOperationFinish(copyFileOperation, result);
         }
     }
 
@@ -1980,6 +1983,19 @@ public class FileDisplayActivity extends FileActivity
             try {
                 DisplayUtils.showSnackMessage(this, ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources()));
 
+            } catch (NotFoundException e) {
+                Log_OC.e(TAG, "Error while trying to show fail message ", e);
+            }
+        }
+    }
+
+    private void onCopyAlbumFileOperationFinish(CopyFileToAlbumOperation operation, RemoteOperationResult result) {
+        if (result.isSuccess()) {
+            DisplayUtils.showSnackMessage(this, "File added successfully");
+            Log_OC.e(TAG, "Files copied successfully");
+        } else {
+            try {
+                DisplayUtils.showSnackMessage(this, ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources()));
             } catch (NotFoundException e) {
                 Log_OC.e(TAG, "Error while trying to show fail message ", e);
             }

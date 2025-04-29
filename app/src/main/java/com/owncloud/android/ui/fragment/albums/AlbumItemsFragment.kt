@@ -189,7 +189,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         initializeAdapter()
         val t = Thread {
             setEmptyListLoadingMessage()
-            val getRemoteNotificationOperation = ReadAlbumItemsOperation(albumName)
+            val getRemoteNotificationOperation = ReadAlbumItemsOperation(albumName, mContainerActivity?.storageManager)
             val result = client?.let { getRemoteNotificationOperation.execute(it) }
             if (result?.isSuccess == true && result.resultData != null) {
                 if (result.resultData.isEmpty()) {

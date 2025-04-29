@@ -64,6 +64,7 @@ import com.owncloud.android.operations.UpdateNoteForShareOperation;
 import com.owncloud.android.operations.UpdateShareInfoOperation;
 import com.owncloud.android.operations.UpdateSharePermissionsOperation;
 import com.owncloud.android.operations.UpdateShareViaLinkOperation;
+import com.owncloud.android.operations.albums.CopyFileToAlbumOperation;
 import com.owncloud.android.operations.albums.CreateNewAlbumOperation;
 
 import java.io.IOException;
@@ -125,6 +126,7 @@ public class OperationsService extends Service {
     public static final String ACTION_UPDATE_FILES_DOWNLOAD_LIMIT = "UPDATE_FILES_DOWNLOAD_LIMIT";
     public static final String ACTION_CREATE_ALBUM = "CREATE_ALBUM";
     public static final String EXTRA_ALBUM_NAME = "ALBUM_NAME";
+    public static final String ACTION_ALBUM_COPY_FILE = "ALBUM_COPY_FILE";
 
     private ServiceHandler mOperationsHandler;
     private OperationsServiceBinder mOperationsBinder;
@@ -733,6 +735,12 @@ public class OperationsService extends Service {
                         remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
                         newParentPath = operationIntent.getStringExtra(EXTRA_NEW_PARENT_PATH);
                         operation = new CopyFileOperation(remotePath, newParentPath, fileDataStorageManager);
+                        break;
+
+                    case ACTION_ALBUM_COPY_FILE:
+                        remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        newParentPath = operationIntent.getStringExtra(EXTRA_NEW_PARENT_PATH);
+                        operation = new CopyFileToAlbumOperation(remotePath, newParentPath, fileDataStorageManager);
                         break;
 
                     case ACTION_CHECK_CURRENT_CREDENTIALS:
