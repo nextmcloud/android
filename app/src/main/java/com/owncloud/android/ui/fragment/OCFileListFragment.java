@@ -2197,8 +2197,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
             return;
         }
 
+        // NMC Customizations: to hide the fab if user is on Albums Fragment
         if (requireActivity() instanceof FileDisplayActivity fda
-            && fda.isAlbumsFragmentVisible()) {
+            && (fda.isAlbumsFragmentVisible()
+            || fda.isAlbumItemsFragmentVisible())) {
             mFabMain.hide();
             return;
         }
