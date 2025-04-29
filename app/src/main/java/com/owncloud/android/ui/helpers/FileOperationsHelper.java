@@ -920,16 +920,6 @@ public class FileOperationsHelper {
         fileActivity.refreshList();
     }
 
-    public void fetchAlbums() {
-        Log_OC.e(TAG, "Fetch albums");
-        Intent service = new Intent(fileActivity, OperationsService.class);
-
-        service.setAction(OperationsService.ACTION_ALBUM);
-        service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
-
-        mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
-    }
-
 
     /**
      * Start operations to delete one or several files
@@ -963,6 +953,17 @@ public class FileOperationsHelper {
         service.setAction(OperationsService.ACTION_CREATE_FOLDER);
         service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
         service.putExtra(OperationsService.EXTRA_REMOTE_PATH, remotePath);
+        mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
+
+        fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
+    }
+
+    public void createAlbum(String albumName) {
+        // Create Album
+        Intent service = new Intent(fileActivity, OperationsService.class);
+        service.setAction(OperationsService.ACTION_CREATE_ALBUM);
+        service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
+        service.putExtra(OperationsService.EXTRA_ALBUM_NAME, albumName);
         mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
 
         fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
