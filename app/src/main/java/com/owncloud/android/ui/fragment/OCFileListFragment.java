@@ -817,6 +817,11 @@ public class OCFileListFragment extends ExtendedListFragment implements
             // hide FAB in multi selection mode
             setFabVisible(false);
 
+            if (OCFileListFragment.this instanceof GalleryFragment) {
+                final MenuItem addAlbumItem = menu.findItem(R.id.add_to_album);
+                addAlbumItem.setVisible(true);
+            }
+
             getCommonAdapter().setMultiSelect(true);
             return true;
         }
@@ -848,6 +853,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
             final Set<OCFile> checkedFiles = getCommonAdapter().getCheckedItems();
             if (item.getItemId() == R.id.custom_menu_placeholder_item) {
                 openActionsMenu(getCommonAdapter().getFilesCount(), checkedFiles, false);
+            } else if (item.getItemId() == R.id.add_to_album){
+                if (OCFileListFragment.this instanceof GalleryFragment galleryFragment) {
+                    galleryFragment.addImagesToAlbum(checkedFiles);
+                }
             }
             return true;
         }

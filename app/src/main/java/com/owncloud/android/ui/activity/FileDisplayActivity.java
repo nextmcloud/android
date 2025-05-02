@@ -102,6 +102,8 @@ import com.owncloud.android.operations.SynchronizeFileOperation;
 import com.owncloud.android.operations.UploadFileOperation;
 import com.owncloud.android.operations.albums.CopyFileToAlbumOperation;
 import com.owncloud.android.operations.albums.CreateNewAlbumOperation;
+import com.owncloud.android.operations.albums.RemoveAlbumOperation;
+import com.owncloud.android.operations.albums.RenameAlbumOperation;
 import com.owncloud.android.syncadapter.FileSyncAdapter;
 import com.owncloud.android.ui.activity.fileDisplayActivity.OfflineFolderConflictManager;
 import com.owncloud.android.ui.asynctasks.CheckAvailableSpaceTask;
@@ -1837,6 +1839,10 @@ public class FileDisplayActivity extends FileActivity
             onCreateAlbumOperationFinish(createNewAlbumOperation, result);
         } else if (operation instanceof CopyFileToAlbumOperation copyFileOperation) {
             onCopyAlbumFileOperationFinish(copyFileOperation, result);
+        } else if (operation instanceof RenameAlbumOperation renameAlbumOperation) {
+            onRenameAlbumOperationFinish(renameAlbumOperation, result);
+        } else if (operation instanceof RemoveAlbumOperation removeAlbumOperation) {
+            onRemoveAlbumOperationFinish(removeAlbumOperation, result);
         }
     }
 
@@ -1908,6 +1914,24 @@ public class FileDisplayActivity extends FileActivity
             refreshGalleryFragmentIfNeeded();
             fetchRecommendedFilesIfNeeded();
         } else {
+            if (result.isSslRecoverableException()) {
+                mLastSslUntrustedServerResult = result;
+                showUntrustedCertDialog(mLastSslUntrustedServerResult);
+            }
+        }
+    }
+
+    private void onRemoveAlbumOperationFinish(RemoveAlbumOperation operation, RemoteOperationResult result) {
+
+        if (result.isSuccess()) {
+
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
+            if (fragment instanceof AlbumItemsFragment albumItemsFragment) {
+                albumItemsFragment.onAlbumDeleted();
+            }
+        } else {
+            DisplayUtils.showSnackMessage(this, ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources()));
+
             if (result.isSslRecoverableException()) {
                 mLastSslUntrustedServerResult = result;
                 showUntrustedCertDialog(mLastSslUntrustedServerResult);
@@ -2053,6 +2077,24 @@ public class FileDisplayActivity extends FileActivity
         }
     }
 
+
+    private void onRenameAlbumOperationFinish(RenameAlbumOperation operation, RemoteOperationResult result) {
+        if (result.isSuccess()) {
+
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
+            if (fragment instanceof AlbumItemsFragment albumItemsFragment) {
+                albumItemsFragment.onAlbumRenamed(operation.getNewAlbumName());
+            }
+
+        } else {
+            DisplayUtils.showSnackMessage(this, ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources()));
+
+            if (result.isSslRecoverableException()) {
+                mLastSslUntrustedServerResult = result;
+                showUntrustedCertDialog(mLastSslUntrustedServerResult);
+            }
+        }
+    }
 
     private void onSynchronizeFileOperationFinish(SynchronizeFileOperation operation, RemoteOperationResult result) {
         if (result.isSuccess() && operation.transferWasRequested()) {

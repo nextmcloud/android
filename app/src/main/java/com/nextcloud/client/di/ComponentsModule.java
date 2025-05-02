@@ -31,6 +31,7 @@ import com.nextcloud.ui.ChooseAccountDialogFragment;
 import com.nextcloud.ui.ChooseStorageLocationDialogFragment;
 import com.nextcloud.ui.ImageDetailFragment;
 import com.nextcloud.ui.SetStatusDialogFragment;
+import com.nextcloud.ui.albumItemActions.AlbumItemActionsBottomSheet;
 import com.nextcloud.ui.composeActivity.ComposeActivity;
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet;
 import com.nextcloud.ui.trashbinFileActions.TrashbinFileActionsBottomSheet;
@@ -323,6 +324,9 @@ abstract class ComponentsModule {
 
     @ContributesAndroidInjector
     abstract AlbumItemsFragment albumItemsFragment();
+
+    @ContributesAndroidInjector
+    abstract AlbumItemActionsBottomSheet albumItemActionsBottomSheet();
 
     @ContributesAndroidInjector
     abstract MultipleAccountsDialog multipleAccountsDialog();

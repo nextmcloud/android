@@ -41,7 +41,7 @@ public class CreateNewAlbumOperation extends RemoteOperation<Void> {
         MkColMethod mkCol = null;
         RemoteOperationResult<Void> result;
         try {
-            mkCol = new MkColMethod("https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums/" + WebdavUtils.encodePath(newAlbumName));
+            mkCol = new MkColMethod("https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums" + WebdavUtils.encodePath(newAlbumName));
             client.executeMethod(mkCol);
             if (405 == mkCol.getStatusCode()) {
                 result = new RemoteOperationResult<>(RemoteOperationResult.ResultCode.FOLDER_ALREADY_EXISTS);
