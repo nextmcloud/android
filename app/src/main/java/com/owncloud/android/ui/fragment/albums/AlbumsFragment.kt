@@ -134,12 +134,12 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.fragment_gallery_three_dots, menu)
+                menuInflater.inflate(R.menu.fragment_create_album, menu)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
-                    R.id.action_three_dot_icon -> {
+                    R.id.action_create_new_album -> {
                         CreateAlbumDialogFragment.newInstance()
                             .show(
                                 requireActivity().supportFragmentManager,

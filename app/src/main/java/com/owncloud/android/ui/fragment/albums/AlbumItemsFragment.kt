@@ -19,6 +19,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
+import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.core.view.MenuHost
@@ -32,6 +33,8 @@ import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.network.ClientFactory
 import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.client.preferences.AppPreferences
+import com.nextcloud.client.utils.Throttler
+import com.nextcloud.ui.albumItemActions.AlbumItemActionsBottomSheet
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ListFragmentBinding
@@ -73,6 +76,9 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
 
     @Inject
     lateinit var syncedFolderProvider: SyncedFolderProvider
+
+    @Inject
+    lateinit var throttler: Throttler
 
     private var mContainerActivity: FileFragment.ContainerActivity? = null
 
@@ -129,17 +135,18 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.fragment_gallery_three_dots, menu)
+                menuInflater.inflate(R.menu.fragment_album_items, menu)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.action_three_dot_icon -> {
-                        CreateAlbumDialogFragment.newInstance()
-                            .show(
-                                requireActivity().supportFragmentManager,
-                                CreateAlbumDialogFragment.TAG
-                            )
+                        openActionsMenu()
+                        true
+                    }
+
+                    R.id.action_add_more_photos -> {
+                        // open Gallery fragment as selection then add items to current album
                         true
                     }
 
@@ -147,6 +154,43 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun openActionsMenu() {
+        throttler.run("overflowClick") {
+            val supportFragmentManager = requireActivity().supportFragmentManager
+
+            AlbumItemActionsBottomSheet.newInstance()
+                .setResultListener(
+                    supportFragmentManager,
+                    this
+                ) { id: Int ->
+                    onFileActionChosen(id)
+                }
+                .show(supportFragmentManager, "album_actions")
+        }
+    }
+
+    private fun onFileActionChosen(@IdRes itemId: Int): Boolean {
+        return when (itemId) {
+            // action to rename album
+            R.id.action_rename_file -> {
+                CreateAlbumDialogFragment.newInstance(albumName)
+                    .show(
+                        requireActivity().supportFragmentManager,
+                        CreateAlbumDialogFragment.TAG
+                    )
+                true
+            }
+
+            // action to delete album
+            R.id.action_delete -> {
+                mContainerActivity?.getFileOperationsHelper()?.removeAlbum(albumName);
+                true
+            }
+
+            else -> false
+        }
     }
 
     private fun showError() {
@@ -378,5 +422,16 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
 
     override fun onHeaderClicked() {
         TODO("Not yet implemented")
+    }
+
+    fun onAlbumRenamed(newAlbumName: String) {
+        albumName = newAlbumName
+        if (requireActivity() is FileDisplayActivity) {
+            (requireActivity() as FileDisplayActivity).updateActionBarTitleAndHomeButtonByString(albumName)
+        }
+    }
+
+    fun onAlbumDeleted() {
+        requireActivity().supportFragmentManager.popBackStack()
     }
 }
