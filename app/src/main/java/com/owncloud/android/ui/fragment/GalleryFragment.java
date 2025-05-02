@@ -461,6 +461,8 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
                         DisplayUtils.showSnackMessage(requireActivity(), getString(R.string.offline_mode));
                     }
                 });
+                // clear result listener once done
+                requireActivity().getSupportFragmentManager().clearFragmentResultListener(AlbumsFragment.SELECT_ALBUM_REQ_KEY);
             }
         });
     }

@@ -10,7 +10,11 @@
     <string name="albums_no_results_headline">No Albums</string>
     <string name="albums_no_results_message">Create your new album.</string>
     <string name="create_album_dialog_title">New album</string>
+    <string name="rename_album_dialog_title">Rename album</string>
     <string name="create_album_dialog_message">Enter your new Album name</string>
     <string name="album_name_empty">Album name cannot be empty</string>
     <string name="hidden_album_name">Album name cannot start with invalid char</string>
+    <string name="add_more">Add more</string>
+    <string name="album_rename">Rename Album</string>
+    <string name="album_delete">Delete Album</string>
 </resources>

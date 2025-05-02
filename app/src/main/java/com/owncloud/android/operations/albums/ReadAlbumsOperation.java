@@ -61,7 +61,7 @@ public class ReadAlbumsOperation extends RemoteOperation<List<ReadAlbumsOperatio
         Log_OC.e(TAG, "Fetch albums remote operation running");
         PropFindMethod propfind = null;
         RemoteOperationResult<List<ReadAlbumsOperation.PhotoAlbumEntry>> result;
-        String url = "https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums/";
+        String url = "https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums";
         if (!TextUtils.isEmpty(albumPath)) {
             url += WebdavUtils.encodePath(albumPath);
         }

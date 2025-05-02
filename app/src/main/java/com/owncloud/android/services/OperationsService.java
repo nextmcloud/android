@@ -66,6 +66,8 @@ import com.owncloud.android.operations.UpdateSharePermissionsOperation;
 import com.owncloud.android.operations.UpdateShareViaLinkOperation;
 import com.owncloud.android.operations.albums.CopyFileToAlbumOperation;
 import com.owncloud.android.operations.albums.CreateNewAlbumOperation;
+import com.owncloud.android.operations.albums.RemoveAlbumOperation;
+import com.owncloud.android.operations.albums.RenameAlbumOperation;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -127,6 +129,8 @@ public class OperationsService extends Service {
     public static final String ACTION_CREATE_ALBUM = "CREATE_ALBUM";
     public static final String EXTRA_ALBUM_NAME = "ALBUM_NAME";
     public static final String ACTION_ALBUM_COPY_FILE = "ALBUM_COPY_FILE";
+    public static final String ACTION_RENAME_ALBUM = "RENAME_ALBUM";
+    public static final String ACTION_REMOVE_ALBUM = "REMOVE_ALBUM";
 
     private ServiceHandler mOperationsHandler;
     private OperationsServiceBinder mOperationsBinder;
@@ -677,6 +681,12 @@ public class OperationsService extends Service {
                         operation = new RenameFileOperation(remotePath, newName, fileDataStorageManager);
                         break;
 
+                    case ACTION_RENAME_ALBUM:
+                        remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        String newAlbumName = operationIntent.getStringExtra(EXTRA_NEWNAME);
+                        operation = new RenameAlbumOperation(remotePath, newAlbumName, fileDataStorageManager);
+                        break;
+
                     case ACTION_REMOVE:
                         // Remove file or folder
                         OCFile file = IntentExtensionsKt.getParcelableArgument(operationIntent, EXTRA_FILE, OCFile.class);
@@ -688,6 +698,12 @@ public class OperationsService extends Service {
                                                             inBackground,
                                                             getApplicationContext(),
                                                             fileDataStorageManager);
+                        break;
+
+                    case ACTION_REMOVE_ALBUM:
+                        String albumNameToRemove = operationIntent.getStringExtra(EXTRA_ALBUM_NAME);
+                        operation = new RemoveAlbumOperation(albumNameToRemove,
+                                                             fileDataStorageManager);
                         break;
 
                     case ACTION_CREATE_FOLDER:

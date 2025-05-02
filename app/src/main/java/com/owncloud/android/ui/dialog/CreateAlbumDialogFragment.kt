@@ -18,6 +18,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -62,6 +63,8 @@ class CreateAlbumDialogFragment : DialogFragment(), DialogInterface.OnClickListe
 
     private lateinit var binding: EditBoxDialogBinding
 
+    private var albumName: String? = null
+
     override fun onStart() {
         super.onStart()
         bindButton()
@@ -92,11 +95,17 @@ class CreateAlbumDialogFragment : DialogFragment(), DialogInterface.OnClickListe
 
     @Suppress("EmptyFunctionBlock")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        albumName = arguments?.getString(ARG_ALBUM_NAME)
+
         val inflater = requireActivity().layoutInflater
         binding = EditBoxDialogBinding.inflate(inflater, null, false)
 
-        binding.userInput.setText(R.string.empty)
+
+        binding.userInput.setText(albumName ?: "")
         viewThemeUtils.material.colorTextInputLayout(binding.userInputContainer)
+        albumName?.let {
+            binding.userInput.setSelection(0, it.length)
+        }
 
         binding.userInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {}
@@ -137,17 +146,18 @@ class CreateAlbumDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     private fun buildMaterialAlertDialog(view: View): MaterialAlertDialogBuilder {
         return MaterialAlertDialogBuilder(requireActivity())
             .setView(view)
-            .setPositiveButton(R.string.folder_confirm_create, this)
+            .setPositiveButton(
+                if (albumName == null) R.string.folder_confirm_create else R.string.rename_dialog_title,
+                this
+            )
             .setNegativeButton(R.string.common_cancel, this)
-            .setTitle(R.string.create_album_dialog_title)
+            .setTitle(if (albumName == null) R.string.create_album_dialog_title else R.string.rename_album_dialog_title)
             .setMessage(R.string.create_album_dialog_message)
     }
 
     override fun onClick(dialog: DialogInterface, which: Int) {
         if (which == AlertDialog.BUTTON_POSITIVE) {
-            val capabilities = getOCCapability()
-
-            var newAlbumName = (getDialog()?.findViewById<View>(R.id.user_input) as TextView)
+            val newAlbumName = (getDialog()?.findViewById<View>(R.id.user_input) as TextView)
                 .text.toString()
 
             val errorMessage = when {
@@ -162,7 +172,11 @@ class CreateAlbumDialogFragment : DialogFragment(), DialogInterface.OnClickListe
 
             connectivityService.isNetworkAndServerAvailable { result ->
                 if (result) {
-                    typedActivity<ComponentsGetter>()?.fileOperationsHelper?.createAlbum(newAlbumName)
+                    if (albumName != null) {
+                        typedActivity<ComponentsGetter>()?.fileOperationsHelper?.renameAlbum(albumName, newAlbumName)
+                    } else {
+                        typedActivity<ComponentsGetter>()?.fileOperationsHelper?.createAlbum(newAlbumName)
+                    }
                 } else {
                     DisplayUtils.showSnackMessage(requireActivity(), getString(R.string.offline_mode))
                 }
@@ -172,6 +186,7 @@ class CreateAlbumDialogFragment : DialogFragment(), DialogInterface.OnClickListe
 
     companion object {
         val TAG: String = CreateAlbumDialogFragment::class.java.simpleName
+        private const val ARG_ALBUM_NAME = "album_name"
 
         /**
          * Public factory method to create new CreateFolderDialogFragment instances.
@@ -179,8 +194,12 @@ class CreateAlbumDialogFragment : DialogFragment(), DialogInterface.OnClickListe
          * @return Dialog ready to show.
          */
         @JvmStatic
-        fun newInstance(): CreateAlbumDialogFragment {
+        fun newInstance(albumName: String? = null): CreateAlbumDialogFragment {
             return CreateAlbumDialogFragment().apply {
+                val argsBundle = bundleOf(
+                    ARG_ALBUM_NAME to albumName,
+                )
+                arguments = argsBundle
             }
         }
     }
