@@ -7,11 +7,11 @@
 
 package com.owncloud.android.ui.fragment.albums
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -22,11 +22,11 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.os.bundleOf
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nextcloud.client.account.User
@@ -50,6 +50,9 @@ import com.owncloud.android.ui.adapter.albums.AlbumsAdapter
 import com.owncloud.android.ui.dialog.CreateAlbumDialogFragment
 import com.owncloud.android.ui.fragment.FileFragment
 import com.owncloud.android.utils.theme.ViewThemeUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Optional
 import javax.inject.Inject
 
@@ -155,15 +158,12 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
     }
 
     private fun showError() {
-        requireActivity().runOnUiThread {
-            setMessageForEmptyList(
-                R.string.albums_no_results_headline,
-                resources.getString(R.string.account_not_found),
-                R.drawable.ic_notification,
-                false
-            )
-        }
-        return
+        setMessageForEmptyList(
+            R.string.albums_no_results_headline,
+            resources.getString(R.string.account_not_found),
+            R.drawable.ic_notification,
+            false
+        )
     }
 
     private fun setupContent() {
@@ -198,40 +198,39 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
 
     private fun fetchAndSetData() {
         initializeAdapter()
-        val t = Thread {
-            setEmptyListLoadingMessage()
+        setEmptyListLoadingMessage()
+        lifecycleScope.launch(Dispatchers.IO) {
             val getRemoteNotificationOperation = ReadAlbumsOperation()
             val result = client?.let { getRemoteNotificationOperation.execute(it) }
-            if (result?.isSuccess == true && result.resultData != null) {
-                if (result.resultData.isEmpty()) {
+            withContext(Dispatchers.Main) {
+                if (result?.isSuccess == true && result.resultData != null) {
+                    if (result.resultData.isEmpty()) {
+                        setMessageForEmptyList(
+                            R.string.albums_no_results_headline,
+                            resources.getString(R.string.albums_no_results_message),
+                            R.drawable.ic_notification,
+                            false
+                        )
+                    }
+                    populateList(result.resultData)
+                } else {
+                    Log_OC.d(TAG, result?.logMessage)
+                    // show error
                     setMessageForEmptyList(
                         R.string.albums_no_results_headline,
-                        resources.getString(R.string.albums_no_results_message),
+                        result?.getLogMessage(requireContext())
+                            ?: resources.getString(R.string.albums_no_results_message),
                         R.drawable.ic_notification,
                         false
                     )
-                } else {
-                    requireActivity().runOnUiThread { populateList(result.resultData) }
                 }
-            } else {
-                Log_OC.d(TAG, result?.logMessage)
-                // show error
-                setMessageForEmptyList(
-                    R.string.albums_no_results_headline,
-                    result?.getLogMessage(requireContext()) ?: resources.getString(R.string.albums_no_results_message),
-                    R.drawable.ic_notification,
-                    false
-                )
+                hideRefreshLayoutLoader()
             }
-            hideRefreshLayoutLoader()
         }
-        t.start()
     }
 
     private fun hideRefreshLayoutLoader() {
-        requireActivity().runOnUiThread {
-            binding.swipeContainingList.isRefreshing = false
-        }
+        binding.swipeContainingList.isRefreshing = false
     }
 
     private fun initializeClient() {
@@ -266,34 +265,30 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         @StringRes headline: Int, message: String,
         @DrawableRes icon: Int, tintIcon: Boolean
     ) {
-        Handler(Looper.getMainLooper()).post {
-            binding.emptyList.emptyListViewHeadline.setText(headline)
-            binding.emptyList.emptyListViewText.text = message
+        binding.emptyList.emptyListViewHeadline.setText(headline)
+        binding.emptyList.emptyListViewText.text = message
 
-            if (tintIcon) {
-                if (context != null) {
-                    binding.emptyList.emptyListIcon.setImageDrawable(
-                        viewThemeUtils.platform.tintPrimaryDrawable(requireContext(), icon)
-                    )
-                }
-            } else {
-                binding.emptyList.emptyListIcon.setImageResource(icon)
+        if (tintIcon) {
+            if (context != null) {
+                binding.emptyList.emptyListIcon.setImageDrawable(
+                    viewThemeUtils.platform.tintPrimaryDrawable(requireContext(), icon)
+                )
             }
-
-            binding.emptyList.emptyListIcon.visibility = View.VISIBLE
-            binding.emptyList.emptyListViewText.visibility = View.VISIBLE
+        } else {
+            binding.emptyList.emptyListIcon.setImageResource(icon)
         }
+
+        binding.emptyList.emptyListIcon.visibility = View.VISIBLE
+        binding.emptyList.emptyListViewText.visibility = View.VISIBLE
     }
 
     private fun setEmptyListLoadingMessage() {
-        Handler(Looper.getMainLooper()).post {
-            val fileActivity = this.getTypedActivity(FileActivity::class.java)
-            fileActivity?.connectivityService?.isNetworkAndServerAvailable { result: Boolean? ->
-                if (!result!!) return@isNetworkAndServerAvailable
-                binding.emptyList.emptyListViewHeadline.setText(R.string.file_list_loading)
-                binding.emptyList.emptyListViewText.text = ""
-                binding.emptyList.emptyListIcon.visibility = View.GONE
-            }
+        val fileActivity = this.getTypedActivity(FileActivity::class.java)
+        fileActivity?.connectivityService?.isNetworkAndServerAvailable { result: Boolean? ->
+            if (!result!!) return@isNetworkAndServerAvailable
+            binding.emptyList.emptyListViewHeadline.setText(R.string.file_list_loading)
+            binding.emptyList.emptyListViewText.text = ""
+            binding.emptyList.emptyListIcon.visibility = View.GONE
         }
     }
 
@@ -323,6 +318,10 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
             )
             commit()
         }
+    }
+
+    fun newAlbumCreated() {
+        fetchAndSetData()
     }
 
     override fun onPause() {
@@ -364,11 +363,11 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
 
     override fun onItemClick(album: PhotoAlbumEntry) {
         if (isSelectionMode) {
-            requireActivity().supportFragmentManager.setFragmentResult(
-                SELECT_ALBUM_REQ_KEY,
-                bundleOf(ARG_SELECTED_ALBUM_NAME to album.albumName)
-            )
-            requireActivity().supportFragmentManager.beginTransaction().remove(this).commit()
+            val resultIntent = Intent().apply {
+                putExtra(ARG_SELECTED_ALBUM_NAME, album.albumName)
+            }
+            requireActivity().setResult(Activity.RESULT_OK, resultIntent)
+            requireActivity().finish()
             return
         }
         newAlbumCreated(album.albumName)

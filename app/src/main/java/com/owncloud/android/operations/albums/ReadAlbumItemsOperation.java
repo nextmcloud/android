@@ -97,6 +97,11 @@ public class ReadAlbumItemsOperation extends RemoteOperation<List<OCFile>> {
             OCFile ocFile = fileDataStorageManager.getFileByLocalId(remoteFile.getLocalId());
             if (ocFile == null) {
                 ocFile = FileStorageUtils.fillOCFile(remoteFile);
+            } else{
+                // required: as OCFile will only contains file_name.png not with /albums/album_name/file_name
+                // to fix this we have to get the remote path from remote file and assign to OCFile
+                ocFile.setRemotePath(remoteFile.getRemotePath());
+                ocFile.setDecryptedRemotePath(remoteFile.getRemotePath());
             }
             this.mFolderAndFiles.add(ocFile);
         }

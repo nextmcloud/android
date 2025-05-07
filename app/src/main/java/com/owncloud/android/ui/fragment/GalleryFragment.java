@@ -8,6 +8,7 @@
  */
 package com.owncloud.android.ui.fragment;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +40,7 @@ import com.owncloud.android.ui.adapter.GalleryAdapter;
 import com.owncloud.android.ui.asynctasks.GallerySearchTask;
 import com.owncloud.android.ui.events.ChangeMenuEvent;
 import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
+import com.owncloud.android.ui.fragment.albums.AlbumsPickerActivity;
 import com.owncloud.android.utils.DisplayUtils;
 
 import java.util.ArrayList;
@@ -46,9 +48,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -77,6 +80,7 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
     private final static int maxColumnSizeLandscape = 5;
     private final static int maxColumnSizePortrait = 2;
     private int columnSize;
+    private Set<OCFile> checkedFiles;
 
     protected void setPhotoSearchQueryRunning(boolean value) {
         this.photoSearchQueryRunning = value;
@@ -440,30 +444,33 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
         mAdapter.markAsFavorite(remotePath, favorite);
     }
 
-    public void addImagesToAlbum(Set<OCFile> checkedFiles) {
-        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        transaction.addToBackStack(null);
-        transaction.add(R.id.left_fragment_container, AlbumsFragment.Companion.newInstance(true), AlbumsFragment.Companion.getTAG());
-        transaction.commit();
-        requireActivity().getSupportFragmentManager().setFragmentResultListener(AlbumsFragment.SELECT_ALBUM_REQ_KEY, getViewLifecycleOwner(), (requestKey, bundle) -> {
-            if (requestKey.equals(AlbumsFragment.SELECT_ALBUM_REQ_KEY)) {
-                String albumName = bundle.getString(AlbumsFragment.ARG_SELECTED_ALBUM_NAME);
+    final ActivityResultLauncher<Intent> activityResult =
+        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), intentResult -> {
+            if (Activity.RESULT_OK == intentResult.getResultCode() && intentResult.getData() != null) {
+                String albumName = intentResult.getData().getStringExtra(AlbumsFragment.ARG_SELECTED_ALBUM_NAME);
                 Log_OC.e(TAG, "Selected album name: " + albumName);
 
                 connectivityService.isNetworkAndServerAvailable(result -> {
                     if (result) {
+                        if (checkedFiles == null || checkedFiles.isEmpty()) {
+                            return;
+                        }
                         final ArrayList<String> paths = new ArrayList<>(checkedFiles.size());
                         for (OCFile file : checkedFiles) {
                             paths.add(file.getRemotePath());
                         }
                         mContainerActivity.getFileOperationsHelper().albumCopyFiles(paths, albumName);
+                        checkedFiles = null;
                     } else {
                         DisplayUtils.showSnackMessage(requireActivity(), getString(R.string.offline_mode));
                     }
                 });
-                // clear result listener once done
-                requireActivity().getSupportFragmentManager().clearFragmentResultListener(AlbumsFragment.SELECT_ALBUM_REQ_KEY);
             }
         });
+
+    public void addImagesToAlbum(Set<OCFile> checkedFiles) {
+        this.checkedFiles = checkedFiles;
+
+        activityResult.launch(AlbumsPickerActivity.Companion.intentForPickingAlbum(requireActivity()));
     }
 }

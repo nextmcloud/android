@@ -312,6 +312,10 @@ class GalleryAdapter(
         notifyItemChanged(getItemPosition(file))
     }
 
+    fun setCheckedItem(files: Set<OCFile>?) {
+       ocFileListDelegate.setCheckedItem(files)
+    }
+
     override fun getFilesCount(): Int {
         return files.fold(0) { acc, item -> acc + item.rows.size }
     }
