@@ -17,4 +17,6 @@
     <string name="add_more">Add more</string>
     <string name="album_rename">Rename Album</string>
     <string name="album_delete">Delete Album</string>
+    <string name="album_delete_failed_message">Failed to delete few of the files.</string>
+    <string name="album_already_exists">Album already exists</string>
 </resources>

@@ -2139,7 +2139,7 @@ public class FileDisplayActivity extends FileActivity
         } else {
             try {
                 if (ResultCode.FOLDER_ALREADY_EXISTS == result.getCode()) {
-                    DisplayUtils.showSnackMessage(this, R.string.folder_already_exists);
+                    DisplayUtils.showSnackMessage(this, R.string.album_already_exists);
                 } else {
                     DisplayUtils.showSnackMessage(this, ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources()));
                 }
