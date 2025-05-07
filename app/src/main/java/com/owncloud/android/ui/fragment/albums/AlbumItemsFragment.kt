@@ -12,20 +12,26 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.ActionMode
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
@@ -35,7 +41,9 @@ import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.client.utils.Throttler
 import com.nextcloud.ui.albumItemActions.AlbumItemActionsBottomSheet
+import com.nextcloud.ui.fileactions.FileActionsBottomSheet.Companion.newInstance
 import com.nextcloud.utils.extensions.getTypedActivity
+import com.nextcloud.utils.extensions.isDialogFragmentReady
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ListFragmentBinding
 import com.owncloud.android.datamodel.OCFile
@@ -44,13 +52,26 @@ import com.owncloud.android.datamodel.ThumbnailsCacheManager
 import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.operations.albums.ReadAlbumItemsOperation
+import com.owncloud.android.operations.albums.RemoveAlbumFileRemoteOperation
+import com.owncloud.android.operations.albums.ToggleAlbumFavoriteRemoteOperation
 import com.owncloud.android.ui.activity.FileActivity
 import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.adapter.GalleryAdapter
 import com.owncloud.android.ui.dialog.CreateAlbumDialogFragment
+import com.owncloud.android.ui.events.FavoriteEvent
 import com.owncloud.android.ui.fragment.FileFragment
 import com.owncloud.android.ui.interfaces.OCFileListFragmentInterface
+import com.owncloud.android.ui.preview.PreviewImageFragment
+import com.owncloud.android.ui.preview.PreviewMediaActivity
+import com.owncloud.android.utils.DisplayUtils
+import com.owncloud.android.utils.ErrorMessageAdapter
 import com.owncloud.android.utils.theme.ViewThemeUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.Optional
 import javax.inject.Inject
 
@@ -85,6 +106,8 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     private var columnSize = 0
 
     private lateinit var albumName: String
+
+    private var mMultiChoiceModeListener: MultiChoiceModeListener? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -131,6 +154,17 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         setupContent()
     }
 
+    private fun setUpActionMode() {
+        if (mMultiChoiceModeListener != null) return
+
+        mMultiChoiceModeListener = MultiChoiceModeListener(
+            requireActivity(),
+            adapter,
+            viewThemeUtils
+        ) { filesCount, checkedFiles -> openActionsMenu(filesCount, checkedFiles, true) }
+        (requireActivity() as FileDisplayActivity).addDrawerListener(mMultiChoiceModeListener)
+    }
+
     private fun createMenu() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
@@ -141,7 +175,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.action_three_dot_icon -> {
-                        openActionsMenu()
+                        openAlbumActionsMenu()
                         true
                     }
 
@@ -156,7 +190,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun openActionsMenu() {
+    private fun openAlbumActionsMenu() {
         throttler.run("overflowClick") {
             val supportFragmentManager = requireActivity().supportFragmentManager
 
@@ -165,13 +199,13 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
                     supportFragmentManager,
                     this
                 ) { id: Int ->
-                    onFileActionChosen(id)
+                    onAlbumActionChosen(id)
                 }
                 .show(supportFragmentManager, "album_actions")
         }
     }
 
-    private fun onFileActionChosen(@IdRes itemId: Int): Boolean {
+    private fun onAlbumActionChosen(@IdRes itemId: Int): Boolean {
         return when (itemId) {
             // action to rename album
             R.id.action_rename_file -> {
@@ -194,15 +228,12 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     }
 
     private fun showError() {
-        requireActivity().runOnUiThread {
-            setMessageForEmptyList(
-                R.string.albums_no_results_headline,
-                resources.getString(R.string.account_not_found),
-                R.drawable.ic_notification,
-                false
-            )
-        }
-        return
+        setMessageForEmptyList(
+            R.string.albums_no_results_headline,
+            resources.getString(R.string.account_not_found),
+            R.drawable.ic_notification,
+            false
+        )
     }
 
     private fun setupContent() {
@@ -222,6 +253,9 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
 
     @VisibleForTesting
     fun populateList(albums: List<OCFile>) {
+        // exit action mode on data refresh
+        mMultiChoiceModeListener?.exitSelectionMode()
+
         if (requireActivity() is FileDisplayActivity) {
             (requireActivity() as FileDisplayActivity).setMainFabVisible(false)
         }
@@ -230,52 +264,50 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     }
 
     private fun fetchAndSetData() {
+        mMultiChoiceModeListener?.exitSelectionMode()
         initializeAdapter()
-        val t = Thread {
-            setEmptyListLoadingMessage()
+        setEmptyListLoadingMessage()
+        lifecycleScope.launch(Dispatchers.IO) {
             val getRemoteNotificationOperation = ReadAlbumItemsOperation(albumName, mContainerActivity?.storageManager)
             val result = client?.let { getRemoteNotificationOperation.execute(it) }
-            if (result?.isSuccess == true && result.resultData != null) {
-                if (result.resultData.isEmpty()) {
+            withContext(Dispatchers.Main) {
+                if (result?.isSuccess == true && result.resultData != null) {
+                    if (result.resultData.isEmpty()) {
+                        setMessageForEmptyList(
+                            R.string.albums_no_results_headline,
+                            resources.getString(R.string.albums_no_results_message),
+                            R.drawable.ic_notification,
+                            false
+                        )
+                    }
+                    populateList(result.resultData)
+                } else {
+                    Log_OC.d(TAG, result?.logMessage)
+                    // show error
                     setMessageForEmptyList(
                         R.string.albums_no_results_headline,
-                        resources.getString(R.string.albums_no_results_message),
+                        result?.getLogMessage(requireContext())
+                            ?: resources.getString(R.string.albums_no_results_message),
                         R.drawable.ic_notification,
                         false
                     )
-                } else {
-                    requireActivity().runOnUiThread { populateList(result.resultData) }
                 }
-            } else {
-                Log_OC.d(TAG, result?.logMessage)
-                // show error
-                setMessageForEmptyList(
-                    R.string.albums_no_results_headline,
-                    result?.getLogMessage(requireContext()) ?: resources.getString(R.string.albums_no_results_message),
-                    R.drawable.ic_notification,
-                    false
-                )
+                hideRefreshLayoutLoader()
             }
-            hideRefreshLayoutLoader()
         }
-        t.start()
     }
 
     private fun hideRefreshLayoutLoader() {
-        requireActivity().runOnUiThread {
-            binding.swipeContainingList.isRefreshing = false
-        }
+        binding.swipeContainingList.isRefreshing = false
     }
 
     private fun setEmptyListLoadingMessage() {
-        Handler(Looper.getMainLooper()).post {
-            val fileActivity = this.getTypedActivity(FileActivity::class.java)
-            fileActivity?.connectivityService?.isNetworkAndServerAvailable { result: Boolean? ->
-                if (!result!!) return@isNetworkAndServerAvailable
-                binding.emptyList.emptyListViewHeadline.setText(R.string.file_list_loading)
-                binding.emptyList.emptyListViewText.text = ""
-                binding.emptyList.emptyListIcon.visibility = View.GONE
-            }
+        val fileActivity = this.getTypedActivity(FileActivity::class.java)
+        fileActivity?.connectivityService?.isNetworkAndServerAvailable { result: Boolean? ->
+            if (!result!!) return@isNetworkAndServerAvailable
+            binding.emptyList.emptyListViewHeadline.setText(R.string.file_list_loading)
+            binding.emptyList.emptyListViewText.text = ""
+            binding.emptyList.emptyListIcon.visibility = View.GONE
         }
     }
 
@@ -304,6 +336,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
                 ThumbnailsCacheManager.getThumbnailDimension()
             )
             adapter?.setHasStableIds(true)
+            setUpActionMode()
         }
         binding.listRoot.adapter = adapter
 
@@ -316,23 +349,21 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         @StringRes headline: Int, message: String,
         @DrawableRes icon: Int, tintIcon: Boolean
     ) {
-        Handler(Looper.getMainLooper()).post {
-            binding.emptyList.emptyListViewHeadline.setText(headline)
-            binding.emptyList.emptyListViewText.text = message
+        binding.emptyList.emptyListViewHeadline.setText(headline)
+        binding.emptyList.emptyListViewText.text = message
 
-            if (tintIcon) {
-                if (context != null) {
-                    binding.emptyList.emptyListIcon.setImageDrawable(
-                        viewThemeUtils.platform.tintPrimaryDrawable(requireContext(), icon)
-                    )
-                }
-            } else {
-                binding.emptyList.emptyListIcon.setImageResource(icon)
+        if (tintIcon) {
+            if (context != null) {
+                binding.emptyList.emptyListIcon.setImageDrawable(
+                    viewThemeUtils.platform.tintPrimaryDrawable(requireContext(), icon)
+                )
             }
-
-            binding.emptyList.emptyListIcon.visibility = View.VISIBLE
-            binding.emptyList.emptyListViewText.visibility = View.VISIBLE
+        } else {
+            binding.emptyList.emptyListIcon.setImageResource(icon)
         }
+
+        binding.emptyList.emptyListIcon.visibility = View.VISIBLE
+        binding.emptyList.emptyListViewText.visibility = View.VISIBLE
     }
 
     override fun onResume() {
@@ -393,35 +424,73 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     }
 
     override fun onShareIconClick(file: OCFile?) {
-        TODO("Not yet implemented")
+        // nothing to do here
     }
 
     override fun showShareDetailView(file: OCFile?) {
-        TODO("Not yet implemented")
+        // nothing to do here
     }
 
     override fun showActivityDetailView(file: OCFile?) {
-        TODO("Not yet implemented")
+        // nothing to do here
     }
 
     override fun onOverflowIconClicked(file: OCFile?, view: View?) {
-        TODO("Not yet implemented")
+        // nothing to do here
     }
 
-    override fun onItemClicked(file: OCFile?) {
-        TODO("Not yet implemented")
+    override fun onItemClicked(file: OCFile) {
+        if (adapter?.isMultiSelect() == true) {
+            toggleItemToCheckedList(file)
+        } else {
+            if (PreviewImageFragment.canBePreviewed(file)) {
+                (mContainerActivity as FileDisplayActivity).startImagePreview(file, !file.isDown)
+            } else if (file.isDown) {
+                if (PreviewMediaActivity.canBePreviewed(file)) {
+                    (mContainerActivity as FileDisplayActivity).startMediaPreview(file, 0, true, true, false, true)
+                } else {
+                    mContainerActivity?.getFileOperationsHelper()?.openFile(file)
+                }
+            } else {
+                Log_OC.d(TAG, "Couldn't handle item click")
+            }
+        }
     }
 
-    override fun onLongItemClicked(file: OCFile?): Boolean {
-        TODO("Not yet implemented")
+    override fun onLongItemClicked(file: OCFile): Boolean {
+        // Create only once instance of action mode
+        if (mMultiChoiceModeListener?.mActiveActionMode != null) {
+            toggleItemToCheckedList(file)
+        } else {
+            requireActivity().startActionMode(mMultiChoiceModeListener)
+            adapter?.addCheckedFile(file)
+        }
+        mMultiChoiceModeListener?.updateActionModeFile(file)
+        return true
+    }
+
+    /**
+     * Will toggle a file selection status from the action mode
+     *
+     * @param file The concerned OCFile by the selection/deselection
+     */
+    private fun toggleItemToCheckedList(file: OCFile) {
+        adapter?.run {
+            if (isCheckedFile(file)) {
+                removeCheckedFile(file)
+            } else {
+                addCheckedFile(file)
+            }
+        }
+        mMultiChoiceModeListener?.updateActionModeFile(file)
     }
 
     override fun isLoading(): Boolean {
-        TODO("Not yet implemented")
+        return false
     }
 
     override fun onHeaderClicked() {
-        TODO("Not yet implemented")
+        // nothing to do here
     }
 
     fun onAlbumRenamed(newAlbumName: String) {
@@ -433,5 +502,390 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
 
     fun onAlbumDeleted() {
         requireActivity().supportFragmentManager.popBackStack()
+    }
+
+    private fun openActionsMenu(filesCount: Int, checkedFiles: Set<OCFile>, isOverflow: Boolean) {
+        throttler.run("overflowClick") {
+            var toHide: MutableList<Int>? = ArrayList()
+            for (file in checkedFiles) {
+                if (file.isOfflineOperation) {
+                    toHide = ArrayList(
+                        listOf(
+                            R.id.action_favorite,
+                            R.id.action_move_or_copy,
+                            R.id.action_sync_file,
+                            R.id.action_encrypted,
+                            R.id.action_unset_encrypted,
+                            R.id.action_edit,
+                            R.id.action_download_file,
+                            R.id.action_export_file,
+                            R.id.action_set_as_wallpaper
+                        )
+                    )
+                    break
+                }
+            }
+
+            toHide?.apply {
+                addAll(
+                    listOf(
+                        R.id.action_move_or_copy,
+                        R.id.action_sync_file,
+                        R.id.action_encrypted,
+                        R.id.action_unset_encrypted,
+                        R.id.action_edit,
+                        R.id.action_download_file,
+                        R.id.action_export_file,
+                        R.id.action_set_as_wallpaper,
+                        R.id.action_send_file,
+                        R.id.action_send_share_file,
+                        R.id.action_see_details,
+                        R.id.action_rename_file,
+                        R.id.action_pin_to_homescreen
+                    )
+                )
+            }
+
+            val childFragmentManager = childFragmentManager
+            val actionBottomSheet = newInstance(filesCount, checkedFiles, isOverflow, toHide)
+                .setResultListener(
+                    childFragmentManager, this
+                ) { id: Int -> onFileActionChosen(id, checkedFiles) }
+            if (this.isDialogFragmentReady()) {
+                actionBottomSheet.show(childFragmentManager, "actions")
+            }
+        }
+    }
+
+    private fun onFileActionChosen(@IdRes itemId: Int, checkedFiles: Set<OCFile>): Boolean {
+        if (checkedFiles.isEmpty()) {
+            return false
+        }
+
+        when (itemId) {
+            R.id.action_remove_file -> {
+                onRemoveFileOperation(checkedFiles)
+                return true
+            }
+
+            R.id.action_favorite -> {
+                mContainerActivity?.fileOperationsHelper?.toggleFavoriteFiles(checkedFiles, true)
+                return true
+            }
+
+            R.id.action_unset_favorite -> {
+                mContainerActivity?.fileOperationsHelper?.toggleFavoriteFiles(checkedFiles, false)
+                return true
+            }
+
+            R.id.action_select_all_action_menu -> {
+                selectAllFiles(true)
+                return true
+            }
+
+            R.id.action_deselect_all_action_menu -> {
+                selectAllFiles(false)
+                return true
+            }
+
+            else -> return true
+        }
+    }
+
+    /**
+     * De-/select all elements in the current list view.
+     *
+     * @param select `true` to select all, `false` to deselect all
+     */
+    private fun selectAllFiles(select: Boolean) {
+        adapter?.let {
+            it.selectAll(select)
+            it.notifyDataSetChanged()
+            mMultiChoiceModeListener?.invalidateActionMode()
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    fun onMessageEvent(event: FavoriteEvent) {
+        try {
+            val user = accountManager.user
+            val client = clientFactory.create(user)
+            val toggleFavoriteOperation = ToggleAlbumFavoriteRemoteOperation(
+                event.shouldFavorite, event.remotePath
+            )
+            val remoteOperationResult = toggleFavoriteOperation.execute(client)
+
+            if (remoteOperationResult.isSuccess) {
+                Handler(Looper.getMainLooper()).post {
+                    mMultiChoiceModeListener?.exitSelectionMode()
+                }
+                adapter?.markAsFavorite(event.remotePath, event.shouldFavorite)
+            }
+        } catch (e: CreationException) {
+            Log_OC.e(TAG, "Error processing event", e)
+        }
+    }
+
+    private fun onRemoveFileOperation(files: Collection<OCFile>) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val removeFailedFiles = mutableListOf<OCFile>()
+            try {
+                val user = accountManager.user
+                val client = clientFactory.create(user)
+                withContext(Dispatchers.Main) {
+                    showDialog(true)
+                }
+                if (files.size == 1) {
+                    val toggleFavoriteOperation = RemoveAlbumFileRemoteOperation(
+                        files.first().remotePath
+                    )
+                    val remoteOperationResult = toggleFavoriteOperation.execute(client)
+
+                    if (!remoteOperationResult.isSuccess) {
+                        withContext(Dispatchers.Main) {
+                            DisplayUtils.showSnackMessage(
+                                requireActivity(), ErrorMessageAdapter.getErrorCauseMessage(
+                                    remoteOperationResult, toggleFavoriteOperation,
+                                    resources
+                                )
+                            )
+                        }
+                    }
+                } else {
+                    for (file in files) {
+                        val toggleFavoriteOperation = RemoveAlbumFileRemoteOperation(
+                            file.remotePath
+                        )
+                        val remoteOperationResult = toggleFavoriteOperation.execute(client)
+
+                        if (!remoteOperationResult.isSuccess) {
+                            removeFailedFiles.add(file)
+                        }
+                    }
+                }
+            } catch (e: CreationException) {
+                Log_OC.e(TAG, "Error processing event", e)
+            }
+
+            Log_OC.d(TAG, "Files removed: ${removeFailedFiles.size}")
+
+            withContext(Dispatchers.Main) {
+                if (removeFailedFiles.isNotEmpty()) {
+                    DisplayUtils.showSnackMessage(
+                        requireActivity(), requireContext().resources.getString(R.string.album_delete_failed_message)
+                    )
+                }
+                showDialog(false)
+
+                // refresh data
+                fetchAndSetData()
+            }
+        }
+    }
+
+    private fun showDialog(isShow: Boolean) {
+        if (requireActivity() is FileDisplayActivity) {
+            if (isShow) (requireActivity() as FileDisplayActivity).showLoadingDialog(
+                requireContext().resources.getString(
+                    R.string.wait_a_moment
+                )
+            )
+            else (requireActivity() as FileDisplayActivity).dismissLoadingDialog()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        EventBus.getDefault().unregister(this)
+        super.onStop()
+    }
+
+    /**
+     * Handler for multiple selection mode.
+     *
+     *
+     * Manages input from the user when one or more files or folders are selected in the list.
+     *
+     *
+     * Also listens to changes in navigation drawer to hide and recover multiple selection when it's opened and closed.
+     */
+    internal class MultiChoiceModeListener(
+        val activity: FragmentActivity,
+        val adapter: GalleryAdapter?,
+        val viewThemeUtils: ViewThemeUtils,
+        val openActionsMenu: (Int, Set<OCFile>) -> Unit
+    ) : AbsListView.MultiChoiceModeListener, DrawerLayout.DrawerListener {
+
+        var mActiveActionMode: ActionMode? = null
+        private var mIsActionModeNew = false
+
+        /**
+         * True when action mode is finished because the drawer was opened
+         */
+        private var mActionModeClosedByDrawer = false
+
+        /**
+         * Selected items in list when action mode is closed by drawer
+         */
+        private val mSelectionWhenActionModeClosedByDrawer: MutableSet<OCFile> = HashSet()
+
+        override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+            // nothing to do
+        }
+
+        override fun onDrawerOpened(drawerView: View) {
+            // nothing to do
+        }
+
+        /**
+         * When the navigation drawer is closed, action mode is recovered in the same state as was when the drawer was
+         * (started to be) opened.
+         *
+         * @param drawerView Navigation drawer just closed.
+         */
+        override fun onDrawerClosed(drawerView: View) {
+            if (mActionModeClosedByDrawer && mSelectionWhenActionModeClosedByDrawer.size > 0) {
+                activity.startActionMode(this)
+
+                adapter?.setCheckedItem(mSelectionWhenActionModeClosedByDrawer)
+
+                mActiveActionMode?.invalidate()
+
+                mSelectionWhenActionModeClosedByDrawer.clear()
+            }
+        }
+
+        /**
+         * If the action mode is active when the navigation drawer starts to move, the action mode is closed and the
+         * selection stored to be recovered when the drawer is closed.
+         *
+         * @param newState One of STATE_IDLE, STATE_DRAGGING or STATE_SETTLING.
+         */
+        override fun onDrawerStateChanged(newState: Int) {
+            if (DrawerLayout.STATE_DRAGGING == newState && mActiveActionMode != null) {
+                adapter?.let {
+                    mSelectionWhenActionModeClosedByDrawer.addAll(
+                        it.getCheckedItems()
+                    )
+                }
+
+                mActiveActionMode?.finish()
+                mActionModeClosedByDrawer = true
+            }
+        }
+
+        /**
+         * Update action mode bar when an item is selected / unselected in the list
+         */
+        override fun onItemCheckedStateChanged(mode: ActionMode, position: Int, id: Long, checked: Boolean) {
+            // nothing to do here
+        }
+
+        /**
+         * Load menu and customize UI when action mode is started.
+         */
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            mActiveActionMode = mode
+            // Determine if actionMode is "new" or not (already affected by item-selection)
+            mIsActionModeNew = true
+
+            // fake menu to be able to use bottom sheet instead
+            val inflater: MenuInflater = activity.menuInflater
+            inflater.inflate(R.menu.custom_menu_placeholder, menu)
+            val item = menu.findItem(R.id.custom_menu_placeholder_item)
+            item.icon?.let {
+                item.setIcon(
+                    viewThemeUtils.platform.colorDrawable(
+                        it,
+                        ContextCompat.getColor(activity, R.color.white)
+                    )
+                )
+            }
+
+            mode.invalidate()
+
+            // set actionMode color
+            viewThemeUtils.platform.colorStatusBar(
+                activity,
+                ContextCompat.getColor(activity, R.color.action_mode_background)
+            )
+
+            adapter?.setMultiSelect(true)
+            return true
+        }
+
+        /**
+         * Updates available action in menu depending on current selection.
+         */
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+            val checkedFiles: Set<OCFile> = adapter?.getCheckedItems() ?: emptySet()
+            val checkedCount = checkedFiles.size
+            val title: String =
+                activity.getResources().getQuantityString(R.plurals.items_selected_count, checkedCount, checkedCount)
+            mode.title = title
+
+            // Determine if we need to finish the action mode because there are no items selected
+            if (checkedCount == 0 && !mIsActionModeNew) {
+                exitSelectionMode()
+            }
+
+            return true
+        }
+
+        /**
+         * Exits the multi file selection mode.
+         */
+        fun exitSelectionMode() {
+            mActiveActionMode?.run {
+                finish()
+            }
+        }
+
+        /**
+         * Will update (invalidate) the action mode adapter/mode to refresh an item selection change
+         *
+         * @param file The concerned OCFile to refresh in adapter
+         */
+        fun updateActionModeFile(file: OCFile) {
+            mIsActionModeNew = false
+            mActiveActionMode?.let {
+                it.invalidate()
+                adapter?.notifyItemChanged(file)
+            }
+        }
+
+        fun invalidateActionMode() {
+            mActiveActionMode?.invalidate()
+        }
+
+        /**
+         * Starts the corresponding action when a menu item is tapped by the user.
+         */
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            adapter?.let {
+                val checkedFiles: Set<OCFile> = it.getCheckedItems()
+                if (item.itemId == R.id.custom_menu_placeholder_item) {
+                    openActionsMenu(it.getFilesCount(), checkedFiles)
+                }
+                return true
+            }
+            return false
+        }
+
+        /**
+         * Restores UI.
+         */
+        override fun onDestroyActionMode(mode: ActionMode) {
+            mActiveActionMode = null
+
+            viewThemeUtils.platform.resetStatusBar(activity)
+
+            adapter?.setMultiSelect(false)
+            adapter?.clearCheckedItems()
+        }
     }
 }
