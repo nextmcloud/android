@@ -587,6 +587,9 @@
             android:name=".ui.activity.FolderPickerActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.fragment.albums.AlbumsPickerActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.FilePickerActivity"
             android:exported="false"
             android:launchMode="singleTop"

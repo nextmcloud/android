@@ -118,6 +118,7 @@ import com.owncloud.android.ui.fragment.SharedListFragment;
 import com.owncloud.android.ui.fragment.UnifiedSearchFragment;
 import com.owncloud.android.ui.fragment.albums.AlbumItemsFragment;
 import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
+import com.owncloud.android.ui.fragment.albums.AlbumsPickerActivity;
 import com.owncloud.android.ui.fragment.contactsbackup.BackupFragment;
 import com.owncloud.android.ui.fragment.contactsbackup.BackupListFragment;
 import com.owncloud.android.ui.preview.FileDownloadFragment;
@@ -405,6 +406,9 @@ abstract class ComponentsModule {
 
     @ContributesAndroidInjector
     abstract FileActivity fileActivity();
+
+    @ContributesAndroidInjector
+    abstract AlbumsPickerActivity albumsPickerActivity();
 
     @ContributesAndroidInjector
     abstract FileDownloadFragment fileDownloadFragment();
