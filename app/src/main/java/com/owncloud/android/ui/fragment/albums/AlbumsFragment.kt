@@ -349,7 +349,6 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
     companion object {
         val TAG: String = AlbumsFragment::class.java.simpleName
         private const val ARG_IS_SELECTION_MODE = "is_selection_mode"
-        const val SELECT_ALBUM_REQ_KEY = "select_album_req_key"
         const val ARG_SELECTED_ALBUM_NAME = "selected_album_name"
 
         fun newInstance(isSelectionMode: Boolean = false): AlbumsFragment {

@@ -19,13 +19,19 @@ import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.lib.common.operations.RemoteOperation
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.common.utils.Log_OC
+import com.owncloud.android.lib.resources.files.SearchRemoteOperation
 import com.owncloud.android.operations.albums.CreateNewAlbumOperation
 import com.owncloud.android.ui.activity.FileActivity
+import com.owncloud.android.ui.activity.FolderPickerActivity.Companion.TAG_LIST_OF_FOLDERS
+import com.owncloud.android.ui.activity.OnEnforceableRefreshListener
+import com.owncloud.android.ui.events.SearchEvent
 import com.owncloud.android.ui.fragment.FileFragment
+import com.owncloud.android.ui.fragment.GalleryFragment
+import com.owncloud.android.ui.fragment.OCFileListFragment
 import com.owncloud.android.utils.DisplayUtils
 import com.owncloud.android.utils.ErrorMessageAdapter
 
-class AlbumsPickerActivity : FileActivity(), FileFragment.ContainerActivity, Injectable {
+class AlbumsPickerActivity : FileActivity(), FileFragment.ContainerActivity, OnEnforceableRefreshListener, Injectable {
 
     private var captionText: String? = null
 
@@ -64,27 +70,51 @@ class AlbumsPickerActivity : FileActivity(), FileFragment.ContainerActivity, Inj
 
     private fun setupAction() {
         action = intent.getStringExtra(EXTRA_ACTION)
-
         setupUIForChooseButton()
     }
 
     private fun setupUIForChooseButton() {
-        captionText = resources.getText(R.string.folder_picker_choose_caption_text).toString()
+        if (action == CHOOSE_ALBUM) {
+            captionText = resources.getText(R.string.album_picker_toolbar_title).toString()
+        } else if (action == CHOOSE_MEDIA_FILES) {
+            captionText = resources.getText(R.string.media_picker_toolbar_title).toString()
+        }
 
         folderPickerBinding.folderPickerBtnCopy.visibility = View.GONE
         folderPickerBinding.folderPickerBtnMove.visibility = View.GONE
         folderPickerBinding.folderPickerBtnChoose.visibility = View.GONE
+        folderPickerBinding.folderPickerBtnCancel.visibility = View.GONE
         folderPickerBinding.chooseButtonSpacer.visibility = View.GONE
         folderPickerBinding.moveOrCopyButtonSpacer.visibility = View.GONE
     }
 
-    protected fun createFragments() {
+    private fun createFragments() {
+        if (action == CHOOSE_ALBUM) {
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.add(
+                R.id.fragment_container,
+                AlbumsFragment.newInstance(isSelectionMode = true),
+                AlbumsFragment.TAG
+            )
+            transaction.commit()
+        } else if (action == CHOOSE_MEDIA_FILES) {
+            createGalleryFragment()
+        }
+    }
+
+    private fun createGalleryFragment() {
+        val photoFragment = GalleryFragment()
+         val bundle = Bundle()
+         bundle.putParcelable(OCFileListFragment.SEARCH_EVENT, SearchEvent("image/%", SearchRemoteOperation.SearchType.PHOTO_SEARCH))
+        bundle.putBoolean(EXTRA_FROM_ALBUM, true)
+        photoFragment.arguments = bundle
+
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.add(R.id.fragment_container, AlbumsFragment.newInstance(isSelectionMode = true), AlbumsFragment.TAG)
+        transaction.add(R.id.fragment_container, photoFragment, TAG_LIST_OF_FOLDERS)
         transaction.commit()
     }
 
-    protected val listOfFilesFragment: AlbumsFragment?
+    private val listOfFilesFragment: AlbumsFragment?
         get() {
             val listOfFiles = supportFragmentManager.findFragmentByTag(AlbumsFragment.TAG)
 
@@ -125,19 +155,6 @@ class AlbumsPickerActivity : FileActivity(), FileFragment.ContainerActivity, Inj
         }
     }
 
-    companion object {
-        private val EXTRA_ACTION = AlbumsPickerActivity::class.java.canonicalName?.plus(".EXTRA_ACTION")
-        private val CHOOSE_ALBUM = AlbumsPickerActivity::class.java.canonicalName?.plus(".CHOOSE_ALBUM")
-
-        private val TAG = AlbumsPickerActivity::class.java.simpleName
-
-        fun intentForPickingAlbum(context: FragmentActivity): Intent {
-            return Intent(context, AlbumsPickerActivity::class.java).apply {
-                putExtra(EXTRA_ACTION, CHOOSE_ALBUM)
-            }
-        }
-    }
-
     override fun showDetails(file: OCFile?) {
         // not used at the moment
     }
@@ -152,5 +169,35 @@ class AlbumsPickerActivity : FileActivity(), FileFragment.ContainerActivity, Inj
 
     override fun onTransferStateChanged(file: OCFile?, downloading: Boolean, uploading: Boolean) {
         // not used at the moment
+    }
+
+    companion object {
+        private val EXTRA_ACTION = AlbumsPickerActivity::class.java.canonicalName?.plus(".EXTRA_ACTION")
+        private val CHOOSE_ALBUM = AlbumsPickerActivity::class.java.canonicalName?.plus(".CHOOSE_ALBUM")
+        private val CHOOSE_MEDIA_FILES = AlbumsPickerActivity::class.java.canonicalName?.plus(".CHOOSE_MEDIA_FILES")
+        val EXTRA_FROM_ALBUM = AlbumsPickerActivity::class.java.canonicalName?.plus(".EXTRA_FROM_ALBUM")
+        val EXTRA_MEDIA_FILES_PATH = AlbumsPickerActivity::class.java.canonicalName?.plus(".EXTRA_MEDIA_FILES_PATH")
+
+        private val TAG = AlbumsPickerActivity::class.java.simpleName
+
+        fun intentForPickingAlbum(context: FragmentActivity): Intent {
+            return Intent(context, AlbumsPickerActivity::class.java).apply {
+                putExtra(EXTRA_ACTION, CHOOSE_ALBUM)
+            }
+        }
+
+        fun intentForPickingMediaFiles(context: FragmentActivity): Intent {
+            return Intent(context, AlbumsPickerActivity::class.java).apply {
+                putExtra(EXTRA_ACTION, CHOOSE_MEDIA_FILES)
+            }
+        }
+    }
+
+    override fun onRefresh(enforced: Boolean) {
+        // do nothing
+    }
+
+    override fun onRefresh() {
+        // do nothing
     }
 }

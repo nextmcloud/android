@@ -2015,7 +2015,14 @@ public class FileDisplayActivity extends FileActivity
 
     private void onCopyAlbumFileOperationFinish(CopyFileToAlbumOperation operation, RemoteOperationResult result) {
         if (result.isSuccess()) {
-            DisplayUtils.showSnackMessage(this, "File added successfully");
+            // when item added from inside of Album
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
+            if (fragment instanceof AlbumItemsFragment albumItemsFragment) {
+                albumItemsFragment.refreshData();
+            } else {
+                // files added directly from Media tab
+                DisplayUtils.showSnackMessage(this, "File added successfully");
+            }
             Log_OC.e(TAG, "Files copied successfully");
         } else {
             try {

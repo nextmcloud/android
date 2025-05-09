@@ -7,7 +7,9 @@
 
 package com.owncloud.android.ui.fragment.albums
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
@@ -20,6 +22,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
@@ -60,6 +65,7 @@ import com.owncloud.android.ui.adapter.GalleryAdapter
 import com.owncloud.android.ui.dialog.CreateAlbumDialogFragment
 import com.owncloud.android.ui.events.FavoriteEvent
 import com.owncloud.android.ui.fragment.FileFragment
+import com.owncloud.android.ui.fragment.albums.AlbumsPickerActivity.Companion.intentForPickingMediaFiles
 import com.owncloud.android.ui.interfaces.OCFileListFragmentInterface
 import com.owncloud.android.ui.preview.PreviewImageFragment
 import com.owncloud.android.ui.preview.PreviewMediaActivity
@@ -67,6 +73,7 @@ import com.owncloud.android.utils.DisplayUtils
 import com.owncloud.android.utils.ErrorMessageAdapter
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
@@ -181,6 +188,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
 
                     R.id.action_add_more_photos -> {
                         // open Gallery fragment as selection then add items to current album
+                        openGalleryToAddMedia()
                         true
                     }
 
@@ -887,5 +895,35 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
             adapter?.setMultiSelect(false)
             adapter?.clearCheckedItems()
         }
+    }
+
+    private val activityResult: ActivityResultLauncher<Intent> = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { intentResult: ActivityResult ->
+        if (Activity.RESULT_OK == intentResult.resultCode) {
+            intentResult.data?.let {
+                val paths = it.getStringArrayListExtra(AlbumsPickerActivity.EXTRA_MEDIA_FILES_PATH)
+                paths?.let { p ->
+                    addMediaToAlbum(p.toMutableList())
+                }
+            }
+        }
+    }
+
+    private fun openGalleryToAddMedia() {
+        activityResult.launch(intentForPickingMediaFiles(requireActivity()))
+    }
+
+    private fun addMediaToAlbum(filePaths: MutableList<String>) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            // short delay to let other transactions finish
+            // else showLoadingDialog will throw exception
+            delay(100)
+            mContainerActivity?.fileOperationsHelper?.albumCopyFiles(filePaths, albumName)
+        }
+    }
+
+    fun refreshData(){
+        fetchAndSetData()
     }
 }
