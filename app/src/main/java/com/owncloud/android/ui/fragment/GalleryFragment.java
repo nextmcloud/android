@@ -16,6 +16,7 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -80,7 +81,10 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
     private final static int maxColumnSizeLandscape = 5;
     private final static int maxColumnSizePortrait = 2;
     private int columnSize;
+
+    // NMC: required for Albums
     private Set<OCFile> checkedFiles;
+    private boolean isFromAlbum; // when opened from Albums to add items
 
     protected void setPhotoSearchQueryRunning(boolean value) {
         this.photoSearchQueryRunning = value;
@@ -109,6 +113,10 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
         }
 
         registerRefreshSearchEventReceiver();
+
+        if (getArguments() != null) {
+            isFromAlbum = getArguments().getBoolean(AlbumsPickerActivity.Companion.getEXTRA_FROM_ALBUM(), false);
+        }
     }
 
     private void registerRefreshSearchEventReceiver() {
@@ -449,28 +457,41 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
             if (Activity.RESULT_OK == intentResult.getResultCode() && intentResult.getData() != null) {
                 String albumName = intentResult.getData().getStringExtra(AlbumsFragment.ARG_SELECTED_ALBUM_NAME);
                 Log_OC.e(TAG, "Selected album name: " + albumName);
-
-                connectivityService.isNetworkAndServerAvailable(result -> {
-                    if (result) {
-                        if (checkedFiles == null || checkedFiles.isEmpty()) {
-                            return;
-                        }
-                        final ArrayList<String> paths = new ArrayList<>(checkedFiles.size());
-                        for (OCFile file : checkedFiles) {
-                            paths.add(file.getRemotePath());
-                        }
-                        mContainerActivity.getFileOperationsHelper().albumCopyFiles(paths, albumName);
-                        checkedFiles = null;
-                    } else {
-                        DisplayUtils.showSnackMessage(requireActivity(), getString(R.string.offline_mode));
-                    }
-                });
+                addFilesToAlbum(albumName);
             }
         });
 
     public void addImagesToAlbum(Set<OCFile> checkedFiles) {
         this.checkedFiles = checkedFiles;
+        if (isFromAlbum) {
+            addFilesToAlbum(null);
+        } else {
+            activityResult.launch(AlbumsPickerActivity.Companion.intentForPickingAlbum(requireActivity()));
+        }
+    }
 
-        activityResult.launch(AlbumsPickerActivity.Companion.intentForPickingAlbum(requireActivity()));
+    private void addFilesToAlbum(@Nullable String albumName) {
+        connectivityService.isNetworkAndServerAvailable(result -> {
+            if (result) {
+                if (checkedFiles == null || checkedFiles.isEmpty()) {
+                    return;
+                }
+                final ArrayList<String> paths = new ArrayList<>(checkedFiles.size());
+                for (OCFile file : checkedFiles) {
+                    paths.add(file.getRemotePath());
+                }
+                checkedFiles = null;
+                if (!TextUtils.isEmpty(albumName)) {
+                    mContainerActivity.getFileOperationsHelper().albumCopyFiles(paths, albumName);
+                } else {
+                    Intent resultIntent = new Intent();
+                    resultIntent.putStringArrayListExtra(AlbumsPickerActivity.Companion.getEXTRA_MEDIA_FILES_PATH(), paths);
+                    requireActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    requireActivity().finish();
+                }
+            } else {
+                DisplayUtils.showSnackMessage(requireActivity(), getString(R.string.offline_mode));
+            }
+        });
     }
 }

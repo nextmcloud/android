@@ -19,4 +19,6 @@
     <string name="album_delete">Delete Album</string>
     <string name="album_delete_failed_message">Failed to delete few of the files.</string>
     <string name="album_already_exists">Album already exists</string>
+    <string name="album_picker_toolbar_title">Pick Album</string>
+    <string name="media_picker_toolbar_title">Pick Media Files</string>
 </resources>
