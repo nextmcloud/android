@@ -7,8 +7,11 @@
 package com.owncloud.android.ui.interfaces;
 
 import com.owncloud.android.lib.resources.activities.model.RichObject;
+import com.owncloud.android.operations.comments.Comments;
 
 public interface ActivityListInterface {
 
     void onActivityClicked(RichObject richObject);
+
+    void onCommentsOverflowMenuClicked(Comments comments);
 }
