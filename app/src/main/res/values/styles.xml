@@ -486,7 +486,7 @@
     </style>
 
     <style name="App.BottomSheetDialog" parent="Widget.Material3.BottomSheet.Modal">
-        <item name="backgroundTint">@color/bg_default</item>
+        <item name="backgroundTint">@color/bottom_sheet_bg_color</item>
     </style>
 
     <style name="App.ActionMode" parent="@style/Widget.Material3.ActionMode">
