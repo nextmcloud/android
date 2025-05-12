@@ -62,7 +62,7 @@ internal class OnboardingServiceImpl(
     }
 
     override fun launchFirstRunIfNeeded(activity: Activity): Boolean {
-        val canLaunch = MDMConfig.showIntro(activity) && isFirstRun && activity is AuthenticatorActivity
+        val canLaunch = !preferences.onBoardingComplete && activity is AuthenticatorActivity
         if (canLaunch) {
             val intent = Intent(activity, FirstRunActivity::class.java)
             activity.startActivityForResult(intent, AuthenticatorActivity.REQUEST_CODE_FIRST_RUN)
