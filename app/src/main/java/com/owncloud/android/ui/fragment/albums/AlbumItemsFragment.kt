@@ -176,6 +176,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menu.clear() // important: clears any existing activity menu
                 menuInflater.inflate(R.menu.fragment_album_items, menu)
             }
 
@@ -193,6 +194,28 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
                     }
 
                     else -> false
+                }
+            }
+
+            override fun onPrepareMenu(menu: Menu) {
+                super.onPrepareMenu(menu)
+                val moreMenu = menu.findItem(R.id.action_three_dot_icon)
+                moreMenu.icon?.let {
+                    moreMenu.setIcon(
+                        viewThemeUtils.platform.colorDrawable(
+                            it,
+                            ContextCompat.getColor(requireActivity(), R.color.black)
+                        )
+                    )
+                }
+                val add = menu.findItem(R.id.action_add_more_photos)
+                add.icon?.let {
+                    add.setIcon(
+                        viewThemeUtils.platform.colorDrawable(
+                            it,
+                            ContextCompat.getColor(requireActivity(), R.color.black)
+                        )
+                    )
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -378,7 +401,9 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         super.onResume()
         if (requireActivity() is FileDisplayActivity) {
             (requireActivity() as FileDisplayActivity).setupToolbar()
-            (requireActivity() as FileDisplayActivity).updateActionBarTitleAndHomeButtonByString(albumName)
+            (requireActivity() as FileDisplayActivity).supportActionBar?.let { actionBar ->
+                viewThemeUtils.files.themeActionBar(requireContext(), actionBar, albumName)
+            }
             (requireActivity() as FileDisplayActivity).showSortListGroup(false)
             (requireActivity() as FileDisplayActivity).setMainFabVisible(false)
 
@@ -407,24 +432,6 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     override fun onDestroyView() {
         super.onDestroyView()
         lastMediaItemPosition = 0
-    }
-
-    companion object {
-        val TAG: String = AlbumItemsFragment::class.java.simpleName
-        private const val ARG_ALBUM_NAME = "album_name"
-        var lastMediaItemPosition: Int? = null
-
-        private const val maxColumnSizeLandscape: Int = 5
-        private const val maxColumnSizePortrait: Int = 2
-
-        fun newInstance(albumName: String): AlbumItemsFragment {
-            val args = Bundle()
-
-            val fragment = AlbumItemsFragment()
-            fragment.arguments = args
-            args.putString(ARG_ALBUM_NAME, albumName)
-            return fragment
-        }
     }
 
     override fun getColumnsCount(): Int {
@@ -923,7 +930,25 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         }
     }
 
-    fun refreshData(){
+    fun refreshData() {
         fetchAndSetData()
+    }
+
+    companion object {
+        val TAG: String = AlbumItemsFragment::class.java.simpleName
+        private const val ARG_ALBUM_NAME = "album_name"
+        var lastMediaItemPosition: Int? = null
+
+        private const val maxColumnSizeLandscape: Int = 5
+        private const val maxColumnSizePortrait: Int = 2
+
+        fun newInstance(albumName: String): AlbumItemsFragment {
+            val args = Bundle()
+
+            val fragment = AlbumItemsFragment()
+            fragment.arguments = args
+            args.putString(ARG_ALBUM_NAME, albumName)
+            return fragment
+        }
     }
 }
