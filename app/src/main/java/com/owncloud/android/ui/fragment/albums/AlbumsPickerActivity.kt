@@ -10,6 +10,7 @@ package com.owncloud.android.ui.fragment.albums
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.FragmentActivity
 import com.nextcloud.client.di.Injectable
@@ -66,6 +67,7 @@ class AlbumsPickerActivity : FileActivity(), FileFragment.ContainerActivity, OnE
             View.GONE
         findViewById<View>(R.id.switch_grid_view_button).visibility =
             View.GONE
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun setupAction() {
@@ -104,8 +106,11 @@ class AlbumsPickerActivity : FileActivity(), FileFragment.ContainerActivity, OnE
 
     private fun createGalleryFragment() {
         val photoFragment = GalleryFragment()
-         val bundle = Bundle()
-         bundle.putParcelable(OCFileListFragment.SEARCH_EVENT, SearchEvent("image/%", SearchRemoteOperation.SearchType.PHOTO_SEARCH))
+        val bundle = Bundle()
+        bundle.putParcelable(
+            OCFileListFragment.SEARCH_EVENT,
+            SearchEvent("image/%", SearchRemoteOperation.SearchType.PHOTO_SEARCH)
+        )
         bundle.putBoolean(EXTRA_FROM_ALBUM, true)
         photoFragment.arguments = bundle
 
@@ -199,5 +204,12 @@ class AlbumsPickerActivity : FileActivity(), FileFragment.ContainerActivity, OnE
 
     override fun onRefresh() {
         // do nothing
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> super.onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

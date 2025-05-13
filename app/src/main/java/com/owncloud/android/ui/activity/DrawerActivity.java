@@ -528,7 +528,7 @@ public abstract class DrawerActivity extends ToolbarActivity
                 !(((FileDisplayActivity) this).getLeftFragment() instanceof SharedListFragment) &&
                 !(((FileDisplayActivity) this).getLeftFragment() instanceof GroupfolderListFragment) &&
                 !(((FileDisplayActivity) this).getLeftFragment() instanceof PreviewTextStringFragment) &&
-                !isAlbumsFragmentVisible()) {
+                !isAlbumsFragment() && !isAlbumItemsFragment()) {
                 showFiles(false, itemId == R.id.nav_personal_files);
                 ((FileDisplayActivity) this).browseToRoot();
                 EventBus.getDefault().post(new ChangeMenuEvent());
@@ -599,7 +599,7 @@ public abstract class DrawerActivity extends ToolbarActivity
     }
 
     private void replaceAlbumFragment() {
-        if (isAlbumsFragmentVisible()) {
+        if (isAlbumsFragment()) {
             return;
         }
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -608,14 +608,14 @@ public abstract class DrawerActivity extends ToolbarActivity
         transaction.commit();
     }
 
-    public boolean isAlbumsFragmentVisible() {
+    public boolean isAlbumsFragment() {
         Fragment albumsFragment = getSupportFragmentManager().findFragmentByTag(AlbumsFragment.Companion.getTAG());
-        return albumsFragment != null && albumsFragment.isVisible();
+        return albumsFragment instanceof AlbumsFragment && albumsFragment.isVisible();
     }
 
-    public boolean isAlbumItemsFragmentVisible() {
-        Fragment albumsFragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
-        return albumsFragment != null && albumsFragment.isVisible();
+    public boolean isAlbumItemsFragment() {
+        Fragment albumItemsFragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
+        return albumItemsFragment instanceof AlbumItemsFragment && albumItemsFragment.isVisible();
     }
 
     private void startComposeActivity(ComposeDestination destination, int titleId) {
@@ -680,7 +680,7 @@ public abstract class DrawerActivity extends ToolbarActivity
         if (this instanceof FileDisplayActivity) {
             final Fragment leftFragment = ((FileDisplayActivity) this).getLeftFragment();
             if (leftFragment instanceof GalleryFragment || leftFragment instanceof SharedListFragment
-                || isAlbumsFragmentVisible()) {
+                || isAlbumsFragment() || isAlbumItemsFragment()) {
                 launchActivityForSearch(searchEvent, menuItemId);
             } else {
                 EventBus.getDefault().post(searchEvent);

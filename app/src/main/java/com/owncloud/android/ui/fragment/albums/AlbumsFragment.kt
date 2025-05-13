@@ -137,6 +137,7 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menu.clear() // important: clears any existing activity menu
                 menuInflater.inflate(R.menu.fragment_create_album, menu)
             }
 
@@ -299,7 +300,14 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         }
         if (requireActivity() is FileDisplayActivity) {
             (requireActivity() as FileDisplayActivity).setupToolbar()
-            (requireActivity() as FileDisplayActivity).updateActionBarTitleAndHomeButtonByString(getString(R.string.drawer_item_album))
+            (requireActivity() as FileDisplayActivity).supportActionBar?.let { actionBar ->
+                viewThemeUtils.files.themeActionBar(
+                    requireContext(),
+                    actionBar,
+                    R.string.drawer_item_album,
+                    isMenu = true
+                )
+            }
             (requireActivity() as FileDisplayActivity).showSortListGroup(false)
             (requireActivity() as FileDisplayActivity).setMainFabVisible(false)
 
