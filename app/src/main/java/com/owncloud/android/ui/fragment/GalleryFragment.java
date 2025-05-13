@@ -100,7 +100,12 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
         super.onCreate(savedInstanceState);
         searchFragment = true;
 
-        setHasOptionsMenu(true);
+        if (getArguments() != null) {
+            isFromAlbum = getArguments().getBoolean(AlbumsPickerActivity.Companion.getEXTRA_FROM_ALBUM(), false);
+        }
+
+        // NMC Customization: only show menu when not opened from media picker
+        setHasOptionsMenu(!isFromAlbum);
 
         if (galleryFragmentBottomSheetDialog == null) {
             galleryFragmentBottomSheetDialog = new GalleryFragmentBottomSheetDialog(this);
@@ -113,10 +118,6 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
         }
 
         registerRefreshSearchEventReceiver();
-
-        if (getArguments() != null) {
-            isFromAlbum = getArguments().getBoolean(AlbumsPickerActivity.Companion.getEXTRA_FROM_ALBUM(), false);
-        }
     }
 
     private void registerRefreshSearchEventReceiver() {
@@ -425,6 +426,11 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
     }
 
     private void updateSubtitle(GalleryFragmentBottomSheetDialog.MediaState mediaState) {
+        // NMC Customization: while picking media don't show subtitle
+        if (isFromAlbum) {
+            return;
+        }
+
         requireActivity().runOnUiThread(() -> {
             if (!isAdded()) {
                 return;
