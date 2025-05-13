@@ -954,7 +954,8 @@ public class FileDisplayActivity extends FileActivity
         int itemId = item.getItemId();
 
         if (itemId == android.R.id.home) {
-            if (!isDrawerOpen() && !isSearchOpen() && isRoot(getCurrentDir()) && getLeftFragment() instanceof OCFileListFragment) {
+            if (!isDrawerOpen() && !isSearchOpen() && isRoot(getCurrentDir()) && getLeftFragment() instanceof OCFileListFragment
+                && !isAlbumItemsFragment()) {
                 openDrawer();
             } else {
                 onBackPressed();
@@ -1151,8 +1152,8 @@ public class FileDisplayActivity extends FileActivity
             return;
         }
 
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
-        if (fragment instanceof AlbumItemsFragment && fragment.isVisible()) {
+        // NMC Customization: pop back if current fragment is AlbumItemsFragment
+        if (isAlbumItemsFragment()) {
             popBack();
             return;
         }
@@ -2140,7 +2141,7 @@ public class FileDisplayActivity extends FileActivity
     private void onCreateAlbumOperationFinish(CreateNewAlbumOperation operation, RemoteOperationResult result) {
         if (result.isSuccess()) {
             Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumsFragment.Companion.getTAG());
-            if (isAlbumsFragmentVisible() && fragment instanceof AlbumsFragment albumsFragment) {
+            if (fragment instanceof AlbumsFragment albumsFragment) {
                 albumsFragment.newAlbumCreated(operation.getNewAlbumName());
             }
         } else {
