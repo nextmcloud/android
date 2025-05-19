@@ -316,19 +316,19 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         }
     }
 
-    fun newAlbumCreated(albumName: String) {
+    fun navigateToAlbumItemsFragment(albumName: String, isNewAlbum: Boolean = false) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             addToBackStack(null)
             replace(
                 R.id.left_fragment_container,
-                AlbumItemsFragment.newInstance(albumName),
+                AlbumItemsFragment.newInstance(albumName, isNewAlbum = isNewAlbum),
                 AlbumItemsFragment.TAG
             )
             commit()
         }
     }
 
-    fun newAlbumCreated() {
+    fun refreshAlbums() {
         fetchAndSetData()
     }
 
@@ -377,6 +377,6 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
             requireActivity().finish()
             return
         }
-        newAlbumCreated(album.albumName)
+        navigateToAlbumItemsFragment(album.albumName)
     }
 }
