@@ -2142,7 +2142,7 @@ public class FileDisplayActivity extends FileActivity
         if (result.isSuccess()) {
             Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumsFragment.Companion.getTAG());
             if (fragment instanceof AlbumsFragment albumsFragment) {
-                albumsFragment.newAlbumCreated(operation.getNewAlbumName());
+                albumsFragment.navigateToAlbumItemsFragment(operation.getNewAlbumName(), true);
             }
         } else {
             try {

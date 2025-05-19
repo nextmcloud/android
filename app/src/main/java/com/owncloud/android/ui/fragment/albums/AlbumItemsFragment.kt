@@ -7,6 +7,7 @@
 
 package com.owncloud.android.ui.fragment.albums
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -113,6 +114,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     private var columnSize = 0
 
     private lateinit var albumName: String
+    private var isNewAlbum: Boolean = false
 
     private var mMultiChoiceModeListener: MultiChoiceModeListener? = null
 
@@ -128,6 +130,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         }
         arguments?.let {
             albumName = it.getString(ARG_ALBUM_NAME) ?: ""
+            isNewAlbum = it.getBoolean(ARG_IS_NEW_ALBUM)
         }
     }
 
@@ -139,9 +142,9 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         columnSize = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            maxColumnSizeLandscape;
+            MAX_COLUMN_SIZE_LANDSCAPE
         } else {
-            maxColumnSizePortrait;
+            MAX_COLUMN_SIZE_PORTRAIT
         }
     }
 
@@ -159,6 +162,12 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         createMenu()
         setupContainingList()
         setupContent()
+
+        // if fragment is opened when new albums is created
+        // then open gallery to choose media to add
+        if (isNewAlbum) {
+            openGalleryToAddMedia()
+        }
     }
 
     private fun setUpActionMode() {
@@ -168,7 +177,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
             requireActivity(),
             adapter,
             viewThemeUtils
-        ) { filesCount, checkedFiles -> openActionsMenu(filesCount, checkedFiles, true) }
+        ) { filesCount, checkedFiles -> openActionsMenu(filesCount, checkedFiles) }
         (requireActivity() as FileDisplayActivity).addDrawerListener(mMultiChoiceModeListener)
     }
 
@@ -417,13 +426,14 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         adapter?.cancelAllPendingTasks()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
 
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            columnSize = maxColumnSizeLandscape
+            columnSize = MAX_COLUMN_SIZE_LANDSCAPE
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            columnSize = maxColumnSizePortrait
+            columnSize = MAX_COLUMN_SIZE_PORTRAIT
         }
         adapter?.changeColumn(columnSize)
         adapter?.notifyDataSetChanged()
@@ -519,7 +529,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         requireActivity().supportFragmentManager.popBackStack()
     }
 
-    private fun openActionsMenu(filesCount: Int, checkedFiles: Set<OCFile>, isOverflow: Boolean) {
+    private fun openActionsMenu(filesCount: Int, checkedFiles: Set<OCFile>) {
         throttler.run("overflowClick") {
             var toHide: MutableList<Int>? = ArrayList()
             for (file in checkedFiles) {
@@ -562,7 +572,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
             }
 
             val childFragmentManager = childFragmentManager
-            val actionBottomSheet = newInstance(filesCount, checkedFiles, isOverflow, toHide)
+            val actionBottomSheet = newInstance(filesCount, checkedFiles, true, toHide)
                 .setResultListener(
                     childFragmentManager, this
                 ) { id: Int -> onFileActionChosen(id, checkedFiles) }
@@ -612,6 +622,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
      *
      * @param select `true` to select all, `false` to deselect all
      */
+    @SuppressLint("NotifyDataSetChanged")
     private fun selectAllFiles(select: Boolean) {
         adapter?.let {
             it.selectAll(select)
@@ -937,17 +948,19 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     companion object {
         val TAG: String = AlbumItemsFragment::class.java.simpleName
         private const val ARG_ALBUM_NAME = "album_name"
+        private const val ARG_IS_NEW_ALBUM = "is_new_album"
         var lastMediaItemPosition: Int? = null
 
-        private const val maxColumnSizeLandscape: Int = 5
-        private const val maxColumnSizePortrait: Int = 2
+        private const val MAX_COLUMN_SIZE_LANDSCAPE: Int = 5
+        private const val MAX_COLUMN_SIZE_PORTRAIT: Int = 2
 
-        fun newInstance(albumName: String): AlbumItemsFragment {
+        fun newInstance(albumName: String, isNewAlbum: Boolean = false): AlbumItemsFragment {
             val args = Bundle()
 
             val fragment = AlbumItemsFragment()
             fragment.arguments = args
             args.putString(ARG_ALBUM_NAME, albumName)
+            args.putBoolean(ARG_IS_NEW_ALBUM, isNewAlbum)
             return fragment
         }
     }
