@@ -147,7 +147,7 @@ class AlbumsPickerActivity : FileActivity(), FileFragment.ContainerActivity, OnE
     private fun onCreateAlbumOperationFinish(operation: CreateNewAlbumOperation, result: RemoteOperationResult<*>) {
         if (result.isSuccess) {
             val fileListFragment = listOfFilesFragment
-            fileListFragment?.newAlbumCreated()
+            fileListFragment?.refreshAlbums()
         } else {
             try {
                 DisplayUtils.showSnackMessage(
