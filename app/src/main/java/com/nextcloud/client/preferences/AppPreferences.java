@@ -332,6 +332,24 @@ public interface AppPreferences {
     void setCurrentAccountName(String accountName);
 
     /**
+     * Saves the data analysis from privacy settings
+     * on disabling it we should disable Adjust SDK tracking
+     *
+     * @param enableDataAnalysis to enable/disable data analysis
+     */
+    void setDataAnalysis(boolean enableDataAnalysis);
+    boolean isDataAnalysisEnabled();
+
+    /**
+     * Saves the privacy policy action taken by user
+     * this will maintain the state of current privacy policy action taken
+     * @see com.nmc.android.ui.LoginPrivacySettingsActivity for actions
+     * @param userAction taken by user
+     */
+    void setPrivacyPolicyAction(int userAction);
+    int getPrivacyPolicyAction();
+
+    /**
      * Gets status of migration to user id, default false
      *
      * @return true: migration done: every account has userId, false: pending accounts without userId
