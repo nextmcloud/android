@@ -40,7 +40,7 @@ public class RemoveAlbumOperation extends SyncOperation {
         DeleteMethod delete = null;
 
         try {
-            delete = new DeleteMethod("https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums" + WebdavUtils.encodePath(albumName));
+            delete = new DeleteMethod(client.getBaseUri()  + "/remote.php/dav/photos/" + client.getUserId() + "/albums" + WebdavUtils.encodePath(albumName));
             int status = client.executeMethod(delete);
             delete.getResponseBodyAsString();
             result = new RemoteOperationResult(delete.succeeded() || status == 404, delete);

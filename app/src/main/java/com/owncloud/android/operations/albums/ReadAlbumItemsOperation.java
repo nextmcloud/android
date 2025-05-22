@@ -46,7 +46,7 @@ public class ReadAlbumItemsOperation extends RemoteOperation<List<OCFile>> {
         Log_OC.e(TAG, "Reading Album Operations running");
         RemoteOperationResult<List<OCFile>> result = null;
         PropFindMethod query = null;
-        String url = "https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums" + WebdavUtils.encodePath(albumPath);
+        String url = client.getBaseUri() + "/remote.php/dav/photos/" + client.getUserId() + "/albums" + WebdavUtils.encodePath(albumPath);
         try {
             query = new PropFindMethod(url, WebdavUtils.getAllPropSet(), 1);
             int status = client.executeMethod(query);
@@ -87,7 +87,7 @@ public class ReadAlbumItemsOperation extends RemoteOperation<List<OCFile>> {
     }
 
     private void readData(MultiStatus remoteData, OwnCloudClient client) {
-        String url = "https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId();
+        String url = client.getBaseUri() + "/remote.php/dav/photos/" + client.getUserId();
         this.mFolderAndFiles = new ArrayList<>();
 
         // reading from 1 as 0th item will be just the root album path

@@ -109,7 +109,7 @@ public class CopyFileToAlbumOperation extends SyncOperation {
             RemoteOperationResult result;
 
             try {
-                copyMethod = new CopyMethod(client.getFilesDavUri(this.srcPath), "https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums" + WebdavUtils.encodePath(targetRemotePath), false);
+                copyMethod = new CopyMethod(client.getFilesDavUri(this.srcPath), client.getBaseUri()  + "/remote.php/dav/photos/" + client.getUserId() + "/albums" + WebdavUtils.encodePath(targetRemotePath), false);
                 int status = client.executeMethod(copyMethod);
                 if (status == 207) {
                     result = this.processPartialError(copyMethod);
