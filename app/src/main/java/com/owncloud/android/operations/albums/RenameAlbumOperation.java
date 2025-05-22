@@ -44,7 +44,7 @@ public class RenameAlbumOperation extends SyncOperation {
     protected RemoteOperationResult run(OwnCloudClient client) {
         RemoteOperationResult result = null;
         MoveMethod move = null;
-        String url = "https://pre1.next.magentacloud.de/remote.php/dav/photos/" + client.getUserId() + "/albums";
+        String url = client.getBaseUri()  + "/remote.php/dav/photos/" + client.getUserId() + "/albums";
         try {
             if (!this.newAlbumName.equals(this.oldAlbumName)) {
                 move = new MoveMethod(url + WebdavUtils.encodePath(oldAlbumName), url + WebdavUtils.encodePath(newAlbumName), true);
