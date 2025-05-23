@@ -135,7 +135,8 @@ class FilesExportWork(
             .setContentTitle(message)
             .setAutoCancel(true)
 
-        viewThemeUtils.androidx.themeNotificationCompatBuilder(appContext, notificationBuilder)
+        // NMC Customization
+        notificationBuilder.color = appContext.resources.getColor(R.color.primary, null)
 
         val actionIntent = Intent(DownloadManager.ACTION_VIEW_DOWNLOADS).apply {
             flags = FLAG_ACTIVITY_NEW_TASK
