@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2025 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<resources>
+    <string name="drawer_item_album">Album</string>
+    <string name="albums_no_results_headline">No Albums</string>
+    <string name="albums_no_results_message">Create your new album.</string>
+    <string name="create_album_dialog_title">New album</string>
+    <string name="rename_album_dialog_title">Rename album</string>
+    <string name="create_album_dialog_message">Enter your new Album name</string>
+    <string name="album_name_empty">Album name cannot be empty</string>
+    <string name="hidden_album_name">Album name cannot start with invalid char</string>
+    <string name="add_more">Add more</string>
+    <string name="album_rename">Rename Album</string>
+    <string name="album_delete">Delete Album</string>
+    <string name="album_delete_failed_message">Failed to delete few of the files.</string>
+    <string name="album_already_exists">Album already exists</string>
+    <string name="album_picker_toolbar_title">Pick Album</string>
+    <string name="media_picker_toolbar_title">Pick Media Files</string>
+</resources>
