@@ -61,6 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
+            android:paddingBottom="@dimen/standard_quarter_padding"
             android:textColor="@color/secondary_text_color"
             android:textSize="@dimen/text_size_13sp"
             tools:text="@string/placeholder_sentence" />
@@ -69,7 +70,7 @@
             android:id="@+id/buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/standard_quarter_margin"
+            android:layout_marginTop="@dimen/alternate_half_margin"
             android:layout_marginEnd="@dimen/notification_list_item_grid_layout_left_start_margin"
             android:columnCount="3"
             android:gravity="start"
