@@ -186,6 +186,11 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
      * @return reference to the {@link FileDetailActivitiesFragment}
      */
     public FileDetailActivitiesFragment getFileDetailActivitiesFragment() {
+        // NMC: uncomment below code if any crash is happening during testing
+        // else remove the code
+       /* if (binding == null) {
+            return null;
+        }*/
         if (binding.pager.getAdapter() instanceof FileDetailTabAdapter adapter) {
             return adapter.getFileDetailActivitiesFragment();
         }
@@ -322,12 +327,13 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     private void setupViewPager() {
         binding.tabLayout.removeAllTabs();
 
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.drawer_item_activities).setIcon(R.drawable.ic_activity));
-
-
         if (showSharingTab()) {
-            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.share_dialog_title).setIcon(R.drawable.shared_via_users));
+            // NMC: no icon required for tabs
+            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.share_dialog_title));
         }
+
+        // NMC: 2nd tab will be comments and without icon
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.comments_tab_title));
 
         if (MimeTypeUtil.isImage(getFile())) {
             binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.filedetails_details).setIcon(R.drawable.image_32dp));
@@ -509,11 +515,11 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
             setFileModificationTimestamp(getFile(), showDetailedTimestamp);
         } else if (id == R.id.folder_sync_button) {
             if (binding.folderSyncButton.isChecked()) {
-                getFile().setInternalFolderSyncTimestamp(0L);    
+                getFile().setInternalFolderSyncTimestamp(0L);
             } else {
                 getFile().setInternalFolderSyncTimestamp(-1L);
             }
-            
+
             storageManager.saveFile(getFile());
         } else {
             Log_OC.e(TAG, "Incorrect view clicked!");
@@ -598,11 +604,11 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
             if (fabMain != null) {
                 fabMain.hide();
             }
-            
+
             binding.syncBlock.setVisibility(file.isFolder() ? View.VISIBLE : View.GONE);
-            
+
             if (file.isInternalFolderSync()) {
-                binding.folderSyncButton.setChecked(file.isInternalFolderSync());    
+                binding.folderSyncButton.setChecked(file.isInternalFolderSync());
             } else {
                 if (storageManager.isPartOfInternalTwoWaySync(file)) {
                     binding.folderSyncButton.setChecked(true);
