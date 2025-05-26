@@ -157,7 +157,8 @@ class PreviewMediaActivity :
         binding = ActivityPreviewMediaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.materialToolbar)
+        // NMC Customization: Customize toolbar
+        setupToolbar()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         applyWindowInsets()
         initArguments(savedInstanceState)
@@ -273,10 +274,6 @@ class PreviewMediaActivity :
                 it.setBackgroundDrawable(Color.BLACK.toDrawable())
             }
         }
-
-        viewThemeUtils.platform.themeStatusBar(
-            this
-        )
     }
 
     private fun showProgressLayout() {
@@ -503,7 +500,7 @@ class PreviewMediaActivity :
                     .displayCutout()
             )
 
-            binding.materialToolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            binding.mediaToolbar.appbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = insets.top
             }
             exoControls.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -514,7 +511,7 @@ class PreviewMediaActivity :
             }
             exoControls.updatePadding(left = insets.left, right = insets.right)
             exoProgress.updatePadding(left = insets.left, right = insets.right)
-            binding.materialToolbar.updatePadding(left = insets.left, right = insets.right)
+            binding.mediaToolbar.appbar.updatePadding(left = insets.left, right = insets.right)
             WindowInsetsCompat.CONSUMED
         }
     }
@@ -542,12 +539,18 @@ class PreviewMediaActivity :
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.custom_menu_placeholder, menu)
-
-        if (isFileVideo()) {
-            val moreMenuItem = menu?.findItem(R.id.custom_menu_placeholder_item)
-            moreMenuItem?.icon?.setTint(ContextCompat.getColor(this, R.color.white))
+        // NMC customization
+        menu?.findItem(R.id.custom_menu_placeholder_item)?.apply {
+            icon = icon?.let {
+                viewThemeUtils.platform.colorDrawable(
+                    it,
+                    ContextCompat.getColor(
+                        this@PreviewMediaActivity,
+                        if (isFileVideo()) R.color.white else R.color.fontAppbar
+                    )
+                )
+            }
         }
-
         return true
     }
 
