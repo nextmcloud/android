@@ -348,14 +348,7 @@ open class ExtendedListFragment :
         }
 
         mSortButton = requireActivity().findViewById(R.id.sort_button)
-        mSortButton?.let {
-            viewThemeUtils.material.colorMaterialTextButton(it)
-        }
-
         mSwitchGridViewButton = requireActivity().findViewById(R.id.switch_grid_view_button)
-        mSwitchGridViewButton?.let {
-            viewThemeUtils.material.colorMaterialTextButton(it)
-        }
 
         return v
     }
