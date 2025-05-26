@@ -5,4 +5,8 @@
   ~ SPDX-License-Identifier: AGPL-3.0-or-later
   -->
 
-<resources></resources>
+<resources>
+    <string name="create_album">Album erstellen</string>
+    <string name="empty_albums_title">Erstelle Alben für deine Fotos</string>
+    <string name="empty_albums_message">Du kannst alle deine Fotos in beliebig vielen Alben organisieren. Bisher hast du noch kein Album erstellt.</string>
+</resources>

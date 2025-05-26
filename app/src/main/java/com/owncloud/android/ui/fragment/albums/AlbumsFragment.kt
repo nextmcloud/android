@@ -18,8 +18,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.MenuHost
@@ -35,15 +33,13 @@ import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.network.ClientFactory
 import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.client.preferences.AppPreferences
-import com.nextcloud.utils.extensions.getTypedActivity
 import com.owncloud.android.R
-import com.owncloud.android.databinding.ListFragmentBinding
+import com.owncloud.android.databinding.AlbumsFragmentBinding
 import com.owncloud.android.datamodel.SyncedFolderProvider
 import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.operations.albums.ReadAlbumsOperation
 import com.owncloud.android.operations.albums.ReadAlbumsOperation.PhotoAlbumEntry
-import com.owncloud.android.ui.activity.FileActivity
 import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.adapter.albums.AlbumFragmentInterface
 import com.owncloud.android.ui.adapter.albums.AlbumsAdapter
@@ -62,7 +58,7 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
     private var client: OwnCloudClient? = null
     private var optionalUser: Optional<User>? = null
 
-    private lateinit var binding: ListFragmentBinding
+    private lateinit var binding: AlbumsFragmentBinding
 
     @Inject
     lateinit var viewThemeUtils: ViewThemeUtils
@@ -118,19 +114,19 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = ListFragmentBinding.inflate(inflater, container, false)
+        binding = AlbumsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         optionalUser = Optional.of(accountManager.user)
-        if (optionalUser?.isPresent == false) {
-            showError()
-        }
         createMenu()
         setupContainingList()
         setupContent()
+        binding.createAlbum.setOnClickListener {
+            showCreateAlbumDialog()
+        }
     }
 
     private fun createMenu() {
@@ -144,11 +140,7 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.action_create_new_album -> {
-                        CreateAlbumDialogFragment.newInstance()
-                            .show(
-                                requireActivity().supportFragmentManager,
-                                CreateAlbumDialogFragment.TAG
-                            )
+                        showCreateAlbumDialog()
                         true
                     }
 
@@ -158,17 +150,15 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun showError() {
-        setMessageForEmptyList(
-            R.string.albums_no_results_headline,
-            resources.getString(R.string.account_not_found),
-            R.drawable.ic_notification,
-            false
-        )
+    private fun showCreateAlbumDialog() {
+        CreateAlbumDialogFragment.newInstance()
+            .show(
+                requireActivity().supportFragmentManager,
+                CreateAlbumDialogFragment.TAG
+            )
     }
 
     private fun setupContent() {
-        binding.listRoot.setEmptyView(binding.emptyList.emptyListView)
         binding.listRoot.setHasFixedSize(true)
         if (isGridView) {
             val layoutManager = GridLayoutManager(requireContext(), maxColumnSize)
@@ -183,7 +173,6 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
     private fun setupContainingList() {
         viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingList)
         binding.swipeContainingList.setOnRefreshListener {
-            binding.swipeContainingList.isRefreshing = true
             fetchAndSetData()
         }
     }
@@ -198,32 +187,22 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
     }
 
     private fun fetchAndSetData() {
+        binding.swipeContainingList.isRefreshing = true
         initializeAdapter()
-        setEmptyListLoadingMessage()
+        updateEmptyView(false)
         lifecycleScope.launch(Dispatchers.IO) {
             val getRemoteNotificationOperation = ReadAlbumsOperation()
             val result = client?.let { getRemoteNotificationOperation.execute(it) }
             withContext(Dispatchers.Main) {
                 if (result?.isSuccess == true && result.resultData != null) {
                     if (result.resultData.isEmpty()) {
-                        setMessageForEmptyList(
-                            R.string.albums_no_results_headline,
-                            resources.getString(R.string.albums_no_results_message),
-                            R.drawable.ic_notification,
-                            false
-                        )
+                        updateEmptyView(true)
                     }
                     populateList(result.resultData)
                 } else {
                     Log_OC.d(TAG, result?.logMessage)
                     // show error
-                    setMessageForEmptyList(
-                        R.string.albums_no_results_headline,
-                        result?.getLogMessage(requireContext())
-                            ?: resources.getString(R.string.albums_no_results_message),
-                        R.drawable.ic_notification,
-                        false
-                    )
+                    updateEmptyView(true)
                 }
                 hideRefreshLayoutLoader()
             }
@@ -262,35 +241,9 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         binding.listRoot.adapter = adapter
     }
 
-    private fun setMessageForEmptyList(
-        @StringRes headline: Int, message: String,
-        @DrawableRes icon: Int, tintIcon: Boolean
-    ) {
-        binding.emptyList.emptyListViewHeadline.setText(headline)
-        binding.emptyList.emptyListViewText.text = message
-
-        if (tintIcon) {
-            if (context != null) {
-                binding.emptyList.emptyListIcon.setImageDrawable(
-                    viewThemeUtils.platform.tintPrimaryDrawable(requireContext(), icon)
-                )
-            }
-        } else {
-            binding.emptyList.emptyListIcon.setImageResource(icon)
-        }
-
-        binding.emptyList.emptyListIcon.visibility = View.VISIBLE
-        binding.emptyList.emptyListViewText.visibility = View.VISIBLE
-    }
-
-    private fun setEmptyListLoadingMessage() {
-        val fileActivity = this.getTypedActivity(FileActivity::class.java)
-        fileActivity?.connectivityService?.isNetworkAndServerAvailable { result: Boolean? ->
-            if (!result!!) return@isNetworkAndServerAvailable
-            binding.emptyList.emptyListViewHeadline.setText(R.string.file_list_loading)
-            binding.emptyList.emptyListViewText.text = ""
-            binding.emptyList.emptyListIcon.visibility = View.GONE
-        }
+    private fun updateEmptyView(isEmpty: Boolean) {
+        binding.emptyViewLayout.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        binding.listRoot.visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
 
     override fun onResume() {

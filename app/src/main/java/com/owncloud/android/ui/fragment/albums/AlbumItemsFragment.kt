@@ -156,9 +156,6 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         optionalUser = Optional.of(accountManager.user)
-        if (optionalUser?.isPresent == false) {
-            showError()
-        }
         createMenu()
         setupContainingList()
         setupContent()
@@ -267,15 +264,6 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         }
     }
 
-    private fun showError() {
-        setMessageForEmptyList(
-            R.string.albums_no_results_headline,
-            resources.getString(R.string.account_not_found),
-            R.drawable.ic_notification,
-            false
-        )
-    }
-
     private fun setupContent() {
         binding.listRoot.setEmptyView(binding.emptyList.emptyListView)
         val layoutManager = GridLayoutManager(requireContext(), 1)
@@ -314,9 +302,9 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
                 if (result?.isSuccess == true && result.resultData != null) {
                     if (result.resultData.isEmpty()) {
                         setMessageForEmptyList(
-                            R.string.albums_no_results_headline,
-                            resources.getString(R.string.albums_no_results_message),
-                            R.drawable.ic_notification,
+                            R.string.file_list_empty_headline_server_search,
+                            resources.getString(R.string.file_list_empty_gallery),
+                            R.drawable.file_image,
                             false
                         )
                     }
@@ -325,10 +313,9 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
                     Log_OC.d(TAG, result?.logMessage)
                     // show error
                     setMessageForEmptyList(
-                        R.string.albums_no_results_headline,
-                        result?.getLogMessage(requireContext())
-                            ?: resources.getString(R.string.albums_no_results_message),
-                        R.drawable.ic_notification,
+                        R.string.file_list_empty_headline_server_search,
+                        resources.getString(R.string.file_list_empty_gallery),
+                        R.drawable.file_image,
                         false
                     )
                 }
