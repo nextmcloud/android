@@ -16,17 +16,16 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/grid_container_margin"
     android:layout_marginEnd="@dimen/grid_container_margin"
-    android:gravity="center"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <com.elyeproj.loaderviewlibrary.LoaderImageView
             android:id="@+id/thumbnail_shimmer"
-            android:layout_width="@dimen/grid_container_height"
-            android:layout_height="@dimen/grid_container_height"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
             android:contentDescription="@null"
             android:src="@drawable/file_image"
             android:visibility="gone"
@@ -38,8 +37,8 @@
 
         <ImageView
             android:id="@+id/thumbnail"
-            android:layout_width="@dimen/grid_container_height"
-            android:layout_height="@dimen/grid_container_height"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
             android:contentDescription="@null"
             android:src="@drawable/file_image"
             app:layout_constraintBottom_toTopOf="@+id/Filename"
@@ -50,11 +49,10 @@
 
         <TextView
             android:id="@+id/Filename"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="@dimen/grid_bottom_view_height"
-            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/standard_margin"
             android:ellipsize="middle"
-            android:gravity="center"
             android:singleLine="true"
             android:text="@string/placeholder_filename"
             android:textColor="@color/text_color"
@@ -66,12 +64,11 @@
 
         <TextView
             android:id="@+id/file_info"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="@dimen/grid_bottom_view_height"
-            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/standard_margin"
             android:layout_marginBottom="@dimen/grid_bottom_view_margin_bottom"
             android:ellipsize="middle"
-            android:gravity="center"
             android:singleLine="true"
             android:textColor="@color/list_item_lastmod_and_filesize_text"
             android:textSize="@dimen/two_line_secondary_text_size"
