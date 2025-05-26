@@ -44,6 +44,7 @@ import com.owncloud.android.utils.PermissionUtil
 import com.owncloud.android.utils.PermissionUtil.checkSelfPermission
 import com.owncloud.android.utils.theme.ThemeUtils
 import com.owncloud.android.utils.theme.ViewThemeUtils
+import com.nmc.android.utils.CheckableThemeUtils
 import third_parties.daveKoeller.AlphanumComparator
 import java.util.Calendar
 import java.util.GregorianCalendar
@@ -221,15 +222,15 @@ class BackupFragment : FileFragment(), OnDateSetListener, Injectable {
     }
 
     private fun applyUserColor() {
-        viewThemeUtils.androidx.colorSwitchCompat(binding.contacts)
-        viewThemeUtils.androidx.colorSwitchCompat(binding.calendar)
-        viewThemeUtils.androidx.colorSwitchCompat(binding.dailyBackup)
+        //NMC Customisation
+        CheckableThemeUtils.tintSwitch(binding.contacts)
+        CheckableThemeUtils.tintSwitch(binding.calendar)
+        CheckableThemeUtils.tintSwitch(binding.dailyBackup)
 
-        viewThemeUtils.material.colorMaterialButtonPrimaryFilled(binding.backupNow)
-        viewThemeUtils.material.colorMaterialButtonPrimaryOutlined(binding.contactsDatepicker)
-
-        viewThemeUtils.platform.colorTextView(binding.dataToBackUpTitle)
-        viewThemeUtils.platform.colorTextView(binding.backupSettingsTitle)
+        //NMC Customization
+        val primaryAccentColor = requireContext().resources.getColor(R.color.primary, null)
+        binding.dataToBackUpTitle.setTextColor(primaryAccentColor)
+        binding.backupSettingsTitle.setTextColor(primaryAccentColor)
     }
 
     override fun onResume() {
@@ -529,10 +530,11 @@ class BackupFragment : FileFragment(), OnDateSetListener, Injectable {
                 show()
             }
 
-            viewThemeUtils.platform.colorTextButtons(
-                datePickerDialog!!.getButton(DatePickerDialog.BUTTON_NEGATIVE),
-                datePickerDialog!!.getButton(DatePickerDialog.BUTTON_POSITIVE)
-            )
+            // NMC Customisation
+            datePickerDialog?.getButton(DatePickerDialog.BUTTON_NEGATIVE)
+                ?.setTextColor(resources.getColor(R.color.text_color, null))
+            datePickerDialog?.getButton(DatePickerDialog.BUTTON_POSITIVE)
+                ?.setTextColor(resources.getColor(R.color.primary, null))
         } else {
             DisplayUtils.showSnackMessage(
                 requireView().findViewById<View>(R.id.contacts_linear_layout),
