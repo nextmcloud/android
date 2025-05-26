@@ -31,6 +31,7 @@ import com.nextcloud.ui.ChooseAccountDialogFragment;
 import com.nextcloud.ui.ChooseStorageLocationDialogFragment;
 import com.nextcloud.ui.ImageDetailFragment;
 import com.nextcloud.ui.SetStatusDialogFragment;
+import com.nextcloud.ui.albumItemActions.AlbumItemActionsBottomSheet;
 import com.nextcloud.ui.composeActivity.ComposeActivity;
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet;
 import com.nextcloud.ui.trashbinFileActions.TrashbinFileActionsBottomSheet;
@@ -81,6 +82,7 @@ import com.owncloud.android.ui.dialog.ChooseRichDocumentsTemplateDialogFragment;
 import com.owncloud.android.ui.dialog.ChooseTemplateDialogFragment;
 import com.owncloud.android.ui.dialog.ConfirmationDialogFragment;
 import com.owncloud.android.ui.dialog.ConflictsResolveDialog;
+import com.owncloud.android.ui.dialog.CreateAlbumDialogFragment;
 import com.owncloud.android.ui.dialog.CreateFolderDialogFragment;
 import com.owncloud.android.ui.dialog.ExpirationDatePickerDialogFragment;
 import com.owncloud.android.ui.dialog.IndeterminateProgressDialog;
@@ -114,6 +116,9 @@ import com.owncloud.android.ui.fragment.OCFileListBottomSheetDialog;
 import com.owncloud.android.ui.fragment.OCFileListFragment;
 import com.owncloud.android.ui.fragment.SharedListFragment;
 import com.owncloud.android.ui.fragment.UnifiedSearchFragment;
+import com.owncloud.android.ui.fragment.albums.AlbumItemsFragment;
+import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
+import com.owncloud.android.ui.fragment.albums.AlbumsPickerActivity;
 import com.owncloud.android.ui.fragment.contactsbackup.BackupFragment;
 import com.owncloud.android.ui.fragment.contactsbackup.BackupListFragment;
 import com.owncloud.android.ui.preview.FileDownloadFragment;
@@ -316,6 +321,15 @@ abstract class ComponentsModule {
     abstract GalleryFragment photoFragment();
 
     @ContributesAndroidInjector
+    abstract AlbumsFragment albumsFragment();
+
+    @ContributesAndroidInjector
+    abstract AlbumItemsFragment albumItemsFragment();
+
+    @ContributesAndroidInjector
+    abstract AlbumItemActionsBottomSheet albumItemActionsBottomSheet();
+
+    @ContributesAndroidInjector
     abstract MultipleAccountsDialog multipleAccountsDialog();
 
     @ContributesAndroidInjector
@@ -385,10 +399,16 @@ abstract class ComponentsModule {
     abstract CreateFolderDialogFragment createFolderDialogFragment();
 
     @ContributesAndroidInjector
+    abstract CreateAlbumDialogFragment createAlbumDialogFragment();
+
+    @ContributesAndroidInjector
     abstract ExpirationDatePickerDialogFragment expirationDatePickerDialogFragment();
 
     @ContributesAndroidInjector
     abstract FileActivity fileActivity();
+
+    @ContributesAndroidInjector
+    abstract AlbumsPickerActivity albumsPickerActivity();
 
     @ContributesAndroidInjector
     abstract FileDownloadFragment fileDownloadFragment();
