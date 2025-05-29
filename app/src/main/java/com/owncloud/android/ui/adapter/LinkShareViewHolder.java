@@ -15,12 +15,9 @@
 package com.owncloud.android.ui.adapter;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.nextcloud.android.lib.resources.files.FileDownloadLimit;
-import com.nextcloud.utils.mdm.MDMConfig;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileDetailsShareLinkShareItemBinding;
 import com.owncloud.android.lib.resources.shares.OCShare;
@@ -36,6 +33,7 @@ class LinkShareViewHolder extends RecyclerView.ViewHolder {
     private FileDetailsShareLinkShareItemBinding binding;
     private Context context;
     private ViewThemeUtils viewThemeUtils;
+    private boolean isTextFile;
 
     public LinkShareViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -43,25 +41,24 @@ class LinkShareViewHolder extends RecyclerView.ViewHolder {
 
     public LinkShareViewHolder(FileDetailsShareLinkShareItemBinding binding,
                                Context context,
-                               final ViewThemeUtils viewThemeUtils) {
+                               final ViewThemeUtils viewThemeUtils,
+                               boolean isTextFile) {
         this(binding.getRoot());
         this.binding = binding;
         this.context = context;
         this.viewThemeUtils = viewThemeUtils;
+        this.isTextFile = isTextFile;
     }
 
     public void bind(OCShare publicShare, ShareeListAdapterListener listener) {
         if (ShareType.EMAIL == publicShare.getShareType()) {
             binding.name.setText(publicShare.getSharedWithDisplayName());
             binding.icon.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),
-                                                                      R.drawable.ic_email,
+                                                                      R.drawable.ic_external_share,
                                                                       null));
+            binding.overflowMenu.setVisibility(View.VISIBLE);
             binding.copyLink.setVisibility(View.GONE);
-
-            binding.icon.getBackground().setColorFilter(context.getResources().getColor(R.color.nc_grey),
-                                                        PorterDuff.Mode.SRC_IN);
-            binding.icon.getDrawable().mutate().setColorFilter(context.getResources().getColor(R.color.icon_on_nc_grey),
-                                                               PorterDuff.Mode.SRC_IN);
+            binding.detailText.setVisibility(View.GONE);
         } else {
             if (!TextUtils.isEmpty(publicShare.getLabel())) {
                 String text = String.format(context.getString(R.string.share_link_with_label), publicShare.getLabel());
@@ -74,42 +71,56 @@ class LinkShareViewHolder extends RecyclerView.ViewHolder {
                 }
             }
 
-            viewThemeUtils.platform.colorImageViewBackgroundAndIcon(binding.icon);
-        }
+            binding.overflowMenu.setVisibility(View.GONE);
+            binding.copyLink.setVisibility(View.VISIBLE);
+            binding.detailText.setVisibility(View.VISIBLE);
 
-        FileDownloadLimit downloadLimit = publicShare.getFileDownloadLimit();
-        if (downloadLimit != null && downloadLimit.getLimit() > 0) {
-            int remaining = downloadLimit.getLimit() - downloadLimit.getCount();
-            String text = context.getResources().getQuantityString(R.plurals.share_download_limit_description, remaining, remaining);
-
-            binding.subline.setText(text);
-            binding.subline.setVisibility(View.VISIBLE);
-        } else {
-            binding.subline.setVisibility(View.GONE);
         }
 
         String permissionName = SharingMenuHelper.getPermissionName(context, publicShare);
-        setPermissionName(publicShare, permissionName);
+        setPermissionName(publicShare, permissionName, listener);
+        showHideCalendarIcon(publicShare.getExpirationDate());
+        showHidePasswordIcon(publicShare.isPasswordProtected());
 
         binding.overflowMenu.setOnClickListener(v -> listener.showSharingMenuActionSheet(publicShare));
-        if (!SharingMenuHelper.isSecureFileDrop(publicShare)) {
-            binding.shareByLinkContainer.setOnClickListener(v -> listener.showPermissionsDialog(publicShare));
-        }
+        binding.detailText.setOnClickListener(v -> listener.showSharingMenuActionSheet(publicShare));
+        binding.copyLink.setOnClickListener(v -> listener.copyLink(publicShare));
+    }
 
-        if (MDMConfig.INSTANCE.clipBoardSupport(context)) {
-            binding.copyLink.setOnClickListener(v -> listener.copyLink(publicShare));
+    private void setPermissionName(OCShare publicShare, String permissionName, ShareeListAdapterListener listener) {
+        if (!TextUtils.isEmpty(permissionName) && !SharingMenuHelper.isSecureFileDrop(publicShare)) {
+            binding.shareByLinkContainer.setOnClickListener(v -> listener.showPermissionsDialog(publicShare));
+            binding.quickPermissionLayout.permissionName.setText(permissionName);
+
+            setPermissionTypeIcon(permissionName);
+
+            binding.quickPermissionLayout.permissionLayout.setVisibility(View.VISIBLE);
         } else {
-            binding.copyLink.setVisibility(View.GONE);
+            binding.quickPermissionLayout.permissionLayout.setVisibility(View.GONE);
         }
     }
 
-    private void setPermissionName(OCShare publicShare, String permissionName) {
-        if (!TextUtils.isEmpty(permissionName) && !SharingMenuHelper.isSecureFileDrop(publicShare)) {
-            binding.permissionName.setText(permissionName);
-            binding.permissionName.setVisibility(View.VISIBLE);
-            viewThemeUtils.androidx.colorPrimaryTextViewElement(binding.permissionName);
+    private void showHideCalendarIcon(long expirationDate) {
+        binding.quickPermissionLayout.calendarPermissionIcon.setVisibility(expirationDate > 0 ? View.VISIBLE : View.GONE);
+    }
+
+    private void showHidePasswordIcon(boolean isPasswordProtected) {
+        binding.quickPermissionLayout.passwordPermissionIcon.setVisibility(isPasswordProtected ? View.VISIBLE : View.GONE);
+    }
+
+    private void setPermissionTypeIcon(String permissionName) {
+        if (permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_quick_permission_can_edit))) {
+            binding.quickPermissionLayout.permissionTypeIcon.setImageResource(R.drawable.ic_sharing_edit);
+            binding.quickPermissionLayout.permissionTypeIcon.setVisibility(View.VISIBLE);
+        } else if (permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_quick_permission_can_view))) {
+            binding.quickPermissionLayout.permissionTypeIcon.setImageResource(R.drawable.ic_sharing_read_only);
+            binding.quickPermissionLayout.permissionTypeIcon.setVisibility(View.VISIBLE);
+        } else if (permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_permission_secure_file_drop))
+            || permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_quick_permission_can_upload))) {
+            binding.quickPermissionLayout.permissionTypeIcon.setImageResource(R.drawable.ic_sharing_file_drop);
+            binding.quickPermissionLayout.permissionTypeIcon.setVisibility(View.VISIBLE);
         } else {
-            binding.permissionName.setVisibility(View.GONE);
+            binding.quickPermissionLayout.permissionTypeIcon.setVisibility(View.GONE);
         }
     }
 }
