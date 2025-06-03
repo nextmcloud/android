@@ -22,4 +22,10 @@
     <string name="media_picker_toolbar_title">Pick Media Files</string>
     <string name="empty_albums_title">Create Albums for your Photos</string>
     <string name="empty_albums_message">You can organize all your photos in as many albums as you like. You haven\'t created an album yet.</string>
+    <string name="add_to_album">Add to Album</string>
+    <string name="album_file_added_message">File added successfully</string>
+    <string name="empty_album_detailed_view_title">All that\'s missing are your photos</string>
+    <string name="empty_album_detailed_view_message">You can add as many photos as you like. A photo can also belong to more than one album.</string>
+    <string name="add_photos">Add photos</string>
+    <string name="album_items_text">%d Items — %s</string>
 </resources>

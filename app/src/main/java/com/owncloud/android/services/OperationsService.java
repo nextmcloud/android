@@ -681,12 +681,6 @@ public class OperationsService extends Service {
                         operation = new RenameFileOperation(remotePath, newName, fileDataStorageManager);
                         break;
 
-                    case ACTION_RENAME_ALBUM:
-                        remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
-                        String newAlbumName = operationIntent.getStringExtra(EXTRA_NEWNAME);
-                        operation = new RenameAlbumOperation(remotePath, newAlbumName, fileDataStorageManager);
-                        break;
-
                     case ACTION_REMOVE:
                         // Remove file or folder
                         OCFile file = IntentExtensionsKt.getParcelableArgument(operationIntent, EXTRA_FILE, OCFile.class);
@@ -700,23 +694,12 @@ public class OperationsService extends Service {
                                                             fileDataStorageManager);
                         break;
 
-                    case ACTION_REMOVE_ALBUM:
-                        String albumNameToRemove = operationIntent.getStringExtra(EXTRA_ALBUM_NAME);
-                        operation = new RemoveAlbumOperation(albumNameToRemove,
-                                                             fileDataStorageManager);
-                        break;
-
                     case ACTION_CREATE_FOLDER:
                         remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
                         operation = new CreateFolderOperation(remotePath,
                                                               user,
                                                               getApplicationContext(),
                                                               fileDataStorageManager);
-                        break;
-
-                    case ACTION_CREATE_ALBUM:
-                        String albumName = operationIntent.getStringExtra(EXTRA_ALBUM_NAME);
-                        operation = new CreateNewAlbumOperation(albumName);
                         break;
 
                     case ACTION_SYNC_FILE:
@@ -753,12 +736,6 @@ public class OperationsService extends Service {
                         operation = new CopyFileOperation(remotePath, newParentPath, fileDataStorageManager);
                         break;
 
-                    case ACTION_ALBUM_COPY_FILE:
-                        remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
-                        newParentPath = operationIntent.getStringExtra(EXTRA_NEW_PARENT_PATH);
-                        operation = new CopyFileToAlbumOperation(remotePath, newParentPath, fileDataStorageManager);
-                        break;
-
                     case ACTION_CHECK_CURRENT_CREDENTIALS:
                         operation = new CheckCurrentCredentialsOperation(user, fileDataStorageManager);
                         break;
@@ -776,6 +753,29 @@ public class OperationsService extends Service {
                         if (shareId > 0) {
                             operation = new SetFilesDownloadLimitOperation(shareId, newLimit, fileDataStorageManager, getApplicationContext());
                         }
+                        break;
+
+                    case ACTION_CREATE_ALBUM:
+                        String albumName = operationIntent.getStringExtra(EXTRA_ALBUM_NAME);
+                        operation = new CreateNewAlbumOperation(albumName);
+                        break;
+
+                    case ACTION_ALBUM_COPY_FILE:
+                        remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        newParentPath = operationIntent.getStringExtra(EXTRA_NEW_PARENT_PATH);
+                        operation = new CopyFileToAlbumOperation(remotePath, newParentPath, fileDataStorageManager);
+                        break;
+
+                    case ACTION_RENAME_ALBUM:
+                        remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        String newAlbumName = operationIntent.getStringExtra(EXTRA_NEWNAME);
+                        operation = new RenameAlbumOperation(remotePath, newAlbumName, fileDataStorageManager);
+                        break;
+
+                    case ACTION_REMOVE_ALBUM:
+                        String albumNameToRemove = operationIntent.getStringExtra(EXTRA_ALBUM_NAME);
+                        operation = new RemoveAlbumOperation(albumNameToRemove,
+                                                             fileDataStorageManager);
                         break;
 
                     default:

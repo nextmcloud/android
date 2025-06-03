@@ -27,6 +27,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
 import com.nextcloud.client.di.Injectable
@@ -124,7 +125,14 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         createMenu()
         setupContainingList()
         setupContent()
-        binding.createAlbum.setOnClickListener {
+        setUpEmptyView()
+    }
+
+    private fun setUpEmptyView() {
+        Glide.with(requireContext()).load(R.drawable.bg_image_albums)
+            .into(binding.albumEmptyView.albumsBgImage)
+
+        binding.albumEmptyView.createAlbum.setOnClickListener {
             showCreateAlbumDialog()
         }
     }
@@ -242,7 +250,7 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
     }
 
     private fun updateEmptyView(isEmpty: Boolean) {
-        binding.emptyViewLayout.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        binding.albumEmptyView.emptyViewLayout.visibility = if (isEmpty) View.VISIBLE else View.GONE
         binding.listRoot.visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
 

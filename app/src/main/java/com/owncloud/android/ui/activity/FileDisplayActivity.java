@@ -1922,24 +1922,6 @@ public class FileDisplayActivity extends FileActivity
         }
     }
 
-    private void onRemoveAlbumOperationFinish(RemoveAlbumOperation operation, RemoteOperationResult result) {
-
-        if (result.isSuccess()) {
-
-            Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
-            if (fragment instanceof AlbumItemsFragment albumItemsFragment) {
-                albumItemsFragment.onAlbumDeleted();
-            }
-        } else {
-            DisplayUtils.showSnackMessage(this, ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources()));
-
-            if (result.isSslRecoverableException()) {
-                mLastSslUntrustedServerResult = result;
-                showUntrustedCertDialog(mLastSslUntrustedServerResult);
-            }
-        }
-    }
-
     private void onRestoreFileVersionOperationFinish(RemoteOperationResult result) {
         if (result.isSuccess()) {
             OCFile file = getFile();
@@ -2014,26 +1996,6 @@ public class FileDisplayActivity extends FileActivity
         }
     }
 
-    private void onCopyAlbumFileOperationFinish(CopyFileToAlbumOperation operation, RemoteOperationResult result) {
-        if (result.isSuccess()) {
-            // when item added from inside of Album
-            Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
-            if (fragment instanceof AlbumItemsFragment albumItemsFragment) {
-                albumItemsFragment.refreshData();
-            } else {
-                // files added directly from Media tab
-                DisplayUtils.showSnackMessage(this, "File added successfully");
-            }
-            Log_OC.e(TAG, "Files copied successfully");
-        } else {
-            try {
-                DisplayUtils.showSnackMessage(this, ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources()));
-            } catch (NotFoundException e) {
-                Log_OC.e(TAG, "Error while trying to show fail message ", e);
-            }
-        }
-    }
-
     /**
      * Updates the view associated to the activity after the finish of an operation trying to rename a file.
      *
@@ -2086,24 +2048,6 @@ public class FileDisplayActivity extends FileActivity
     }
 
 
-    private void onRenameAlbumOperationFinish(RenameAlbumOperation operation, RemoteOperationResult result) {
-        if (result.isSuccess()) {
-
-            Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
-            if (fragment instanceof AlbumItemsFragment albumItemsFragment) {
-                albumItemsFragment.onAlbumRenamed(operation.getNewAlbumName());
-            }
-
-        } else {
-            DisplayUtils.showSnackMessage(this, ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources()));
-
-            if (result.isSslRecoverableException()) {
-                mLastSslUntrustedServerResult = result;
-                showUntrustedCertDialog(mLastSslUntrustedServerResult);
-            }
-        }
-    }
-
     private void onSynchronizeFileOperationFinish(SynchronizeFileOperation operation, RemoteOperationResult result) {
         if (result.isSuccess() && operation.transferWasRequested()) {
             OCFile syncedFile = operation.getLocalFile();
@@ -2134,6 +2078,62 @@ public class FileDisplayActivity extends FileActivity
                 }
             } catch (NotFoundException e) {
                 Log_OC.e(TAG, "Error while trying to show fail message ", e);
+            }
+        }
+    }
+
+    private void onRemoveAlbumOperationFinish(RemoveAlbumOperation operation, RemoteOperationResult result) {
+
+        if (result.isSuccess()) {
+
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
+            if (fragment instanceof AlbumItemsFragment albumItemsFragment) {
+                albumItemsFragment.onAlbumDeleted();
+            }
+        } else {
+            DisplayUtils.showSnackMessage(this, ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources()));
+
+            if (result.isSslRecoverableException()) {
+                mLastSslUntrustedServerResult = result;
+                showUntrustedCertDialog(mLastSslUntrustedServerResult);
+            }
+        }
+    }
+
+    private void onCopyAlbumFileOperationFinish(CopyFileToAlbumOperation operation, RemoteOperationResult result) {
+        if (result.isSuccess()) {
+            // when item added from inside of Album
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
+            if (fragment instanceof AlbumItemsFragment albumItemsFragment) {
+                albumItemsFragment.refreshData();
+            } else {
+                // files added directly from Media tab
+                DisplayUtils.showSnackMessage(this, getResources().getString(R.string.album_file_added_message));
+            }
+            Log_OC.e(TAG, "Files copied successfully");
+        } else {
+            try {
+                DisplayUtils.showSnackMessage(this, ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources()));
+            } catch (NotFoundException e) {
+                Log_OC.e(TAG, "Error while trying to show fail message ", e);
+            }
+        }
+    }
+
+    private void onRenameAlbumOperationFinish(RenameAlbumOperation operation, RemoteOperationResult result) {
+        if (result.isSuccess()) {
+
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG());
+            if (fragment instanceof AlbumItemsFragment albumItemsFragment) {
+                albumItemsFragment.onAlbumRenamed(operation.getNewAlbumName());
+            }
+
+        } else {
+            DisplayUtils.showSnackMessage(this, ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources()));
+
+            if (result.isSslRecoverableException()) {
+                mLastSslUntrustedServerResult = result;
+                showUntrustedCertDialog(mLastSslUntrustedServerResult);
             }
         }
     }

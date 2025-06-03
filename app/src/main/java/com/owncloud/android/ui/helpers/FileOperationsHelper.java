@@ -920,18 +920,6 @@ public class FileOperationsHelper {
         fileActivity.refreshList();
     }
 
-    public void renameAlbum(String oldAlbumName, String newAlbumName) {
-        Intent service = new Intent(fileActivity, OperationsService.class);
-
-        service.setAction(OperationsService.ACTION_RENAME_ALBUM);
-        service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
-        service.putExtra(OperationsService.EXTRA_REMOTE_PATH, oldAlbumName);
-        service.putExtra(OperationsService.EXTRA_NEWNAME, newAlbumName);
-        mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
-
-        fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
-    }
-
 
     /**
      * Start operations to delete one or several files
@@ -958,16 +946,6 @@ public class FileOperationsHelper {
         }
     }
 
-    public void removeAlbum(String albumName) {
-        Intent service = new Intent(fileActivity, OperationsService.class);
-        service.setAction(OperationsService.ACTION_REMOVE_ALBUM);
-        service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
-        service.putExtra(OperationsService.EXTRA_ALBUM_NAME, albumName);
-        mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
-
-        fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
-    }
-
 
     public void createFolder(String remotePath) {
         // Create Folder
@@ -975,17 +953,6 @@ public class FileOperationsHelper {
         service.setAction(OperationsService.ACTION_CREATE_FOLDER);
         service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
         service.putExtra(OperationsService.EXTRA_REMOTE_PATH, remotePath);
-        mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
-
-        fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
-    }
-
-    public void createAlbum(String albumName) {
-        // Create Album
-        Intent service = new Intent(fileActivity, OperationsService.class);
-        service.setAction(OperationsService.ACTION_CREATE_ALBUM);
-        service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
-        service.putExtra(OperationsService.EXTRA_ALBUM_NAME, albumName);
         mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
 
         fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
@@ -1032,8 +999,21 @@ public class FileOperationsHelper {
         fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
     }
 
+    public void createAlbum(String albumName) {
+        // Create Album
+        Intent service = new Intent(fileActivity, OperationsService.class);
+        service.setAction(OperationsService.ACTION_CREATE_ALBUM);
+        service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
+        service.putExtra(OperationsService.EXTRA_ALBUM_NAME, albumName);
+        mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
+
+        fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
+    }
+
     public void albumCopyFiles(final List<String> filePaths, final String targetFolder) {
-        if(filePaths == null || filePaths.isEmpty()) return;
+        if (filePaths == null || filePaths.isEmpty()) {
+            return;
+        }
 
         for (String path : filePaths) {
             Intent service = new Intent(fileActivity, OperationsService.class);
@@ -1043,6 +1023,28 @@ public class FileOperationsHelper {
             service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
             mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
         }
+        fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
+    }
+
+    public void renameAlbum(String oldAlbumName, String newAlbumName) {
+        Intent service = new Intent(fileActivity, OperationsService.class);
+
+        service.setAction(OperationsService.ACTION_RENAME_ALBUM);
+        service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
+        service.putExtra(OperationsService.EXTRA_REMOTE_PATH, oldAlbumName);
+        service.putExtra(OperationsService.EXTRA_NEWNAME, newAlbumName);
+        mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
+
+        fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
+    }
+
+    public void removeAlbum(String albumName) {
+        Intent service = new Intent(fileActivity, OperationsService.class);
+        service.setAction(OperationsService.ACTION_REMOVE_ALBUM);
+        service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
+        service.putExtra(OperationsService.EXTRA_ALBUM_NAME, albumName);
+        mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
+
         fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
     }
 

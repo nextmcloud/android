@@ -41,7 +41,7 @@ import com.owncloud.android.ui.adapter.GalleryAdapter;
 import com.owncloud.android.ui.asynctasks.GallerySearchTask;
 import com.owncloud.android.ui.events.ChangeMenuEvent;
 import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
-import com.owncloud.android.ui.fragment.albums.AlbumsPickerActivity;
+import com.owncloud.android.ui.activity.AlbumsPickerActivity;
 import com.owncloud.android.utils.DisplayUtils;
 
 import java.util.ArrayList;

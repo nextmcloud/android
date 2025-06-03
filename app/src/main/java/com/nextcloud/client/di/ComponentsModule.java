@@ -118,7 +118,7 @@ import com.owncloud.android.ui.fragment.SharedListFragment;
 import com.owncloud.android.ui.fragment.UnifiedSearchFragment;
 import com.owncloud.android.ui.fragment.albums.AlbumItemsFragment;
 import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
-import com.owncloud.android.ui.fragment.albums.AlbumsPickerActivity;
+import com.owncloud.android.ui.activity.AlbumsPickerActivity;
 import com.owncloud.android.ui.fragment.contactsbackup.BackupFragment;
 import com.owncloud.android.ui.fragment.contactsbackup.BackupListFragment;
 import com.owncloud.android.ui.preview.FileDownloadFragment;
@@ -321,15 +321,6 @@ abstract class ComponentsModule {
     abstract GalleryFragment photoFragment();
 
     @ContributesAndroidInjector
-    abstract AlbumsFragment albumsFragment();
-
-    @ContributesAndroidInjector
-    abstract AlbumItemsFragment albumItemsFragment();
-
-    @ContributesAndroidInjector
-    abstract AlbumItemActionsBottomSheet albumItemActionsBottomSheet();
-
-    @ContributesAndroidInjector
     abstract MultipleAccountsDialog multipleAccountsDialog();
 
     @ContributesAndroidInjector
@@ -399,16 +390,10 @@ abstract class ComponentsModule {
     abstract CreateFolderDialogFragment createFolderDialogFragment();
 
     @ContributesAndroidInjector
-    abstract CreateAlbumDialogFragment createAlbumDialogFragment();
-
-    @ContributesAndroidInjector
     abstract ExpirationDatePickerDialogFragment expirationDatePickerDialogFragment();
 
     @ContributesAndroidInjector
     abstract FileActivity fileActivity();
-
-    @ContributesAndroidInjector
-    abstract AlbumsPickerActivity albumsPickerActivity();
 
     @ContributesAndroidInjector
     abstract FileDownloadFragment fileDownloadFragment();
@@ -525,4 +510,19 @@ abstract class ComponentsModule {
 
     @ContributesAndroidInjector
     abstract TermsOfServiceDialog termsOfServiceDialog();
+
+    @ContributesAndroidInjector
+    abstract AlbumsPickerActivity albumsPickerActivity();
+
+    @ContributesAndroidInjector
+    abstract CreateAlbumDialogFragment createAlbumDialogFragment();
+
+    @ContributesAndroidInjector
+    abstract AlbumsFragment albumsFragment();
+
+    @ContributesAndroidInjector
+    abstract AlbumItemsFragment albumItemsFragment();
+
+    @ContributesAndroidInjector
+    abstract AlbumItemActionsBottomSheet albumItemActionsBottomSheet();
 }

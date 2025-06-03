@@ -23,9 +23,6 @@ import com.owncloud.android.datamodel.SyncedFolderProvider
 import com.owncloud.android.datamodel.ThumbnailsCacheManager
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.operations.albums.ReadAlbumsOperation.PhotoAlbumEntry
-import com.owncloud.android.ui.fragment.albums.AlbumGridItemViewHolder
-import com.owncloud.android.ui.fragment.albums.AlbumItemViewHolder
-import com.owncloud.android.ui.fragment.albums.AlbumListItemViewHolder
 import com.owncloud.android.utils.DisplayUtils
 import com.owncloud.android.utils.theme.ViewThemeUtils
 
@@ -61,25 +58,34 @@ class AlbumsAdapter(
 
         gridViewHolder.albumName.text = file.albumName
         gridViewHolder.thumbnail.tag = file.lastPhoto
-        gridViewHolder.albumInfo.text = "${file.nbItems} Items -- ${file.createdDate}"
+        gridViewHolder.albumInfo.text = String.format(
+            context.resources.getString(R.string.album_items_text),
+            file.nbItems, file.createdDate
+        )
 
         if (file.lastPhoto > 0) {
             val ocLocal = storageManager?.getFileByLocalId(file.lastPhoto)
-            DisplayUtils.setThumbnail(
-                ocLocal,
-                gridViewHolder.thumbnail,
-                user,
-                storageManager,
-                asyncTasks,
-                gridView,
-                context,
-                gridViewHolder.shimmerThumbnail,
-                preferences,
-                viewThemeUtils,
-                syncedFolderProvider
-            )
+            if (ocLocal == null) {
+                gridViewHolder.thumbnail.setImageResource(R.drawable.album_no_photo_placeholder)
+                gridViewHolder.thumbnail.visibility = View.VISIBLE
+                gridViewHolder.shimmerThumbnail.visibility = View.GONE
+            } else {
+                DisplayUtils.setThumbnail(
+                    ocLocal,
+                    gridViewHolder.thumbnail,
+                    user,
+                    storageManager,
+                    asyncTasks,
+                    gridView,
+                    context,
+                    gridViewHolder.shimmerThumbnail,
+                    preferences,
+                    viewThemeUtils,
+                    syncedFolderProvider
+                )
+            }
         } else {
-            gridViewHolder.thumbnail.setImageResource(R.drawable.file_image)
+            gridViewHolder.thumbnail.setImageResource(R.drawable.album_no_photo_placeholder)
             gridViewHolder.thumbnail.visibility = View.VISIBLE
             gridViewHolder.shimmerThumbnail.visibility = View.GONE
         }

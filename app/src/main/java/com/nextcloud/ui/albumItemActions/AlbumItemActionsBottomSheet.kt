@@ -4,6 +4,7 @@
  * SPDX-FileCopyrightText: 2024 TSI-mc <surinder.kumar@t-systems.com>
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 package com.nextcloud.ui.albumItemActions
 
 import android.os.Bundle
@@ -56,7 +57,7 @@ class AlbumItemActionsBottomSheet : BottomSheetDialogFragment(), Injectable {
         super.onViewCreated(view, savedInstanceState)
         binding.bottomSheetHeader.visibility = View.GONE
         binding.bottomSheetLoading.visibility = View.GONE
-        displayActions(AlbumItemAction.SORTED_VALUES)
+        displayActions()
     }
 
     override fun onDestroyView() {
@@ -78,9 +79,9 @@ class AlbumItemActionsBottomSheet : BottomSheetDialogFragment(), Injectable {
         return this
     }
 
-    private fun displayActions(actions: List<AlbumItemAction>) {
+    private fun displayActions() {
         if (binding.fileActionsList.isEmpty()) {
-            actions.forEach { action ->
+            AlbumItemAction.SORTED_VALUES.forEach { action ->
                 val view = inflateActionView(action)
                 binding.fileActionsList.addView(view)
             }

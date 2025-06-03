@@ -23,12 +23,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
+import android.widget.ImageView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
-import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
@@ -48,10 +47,9 @@ import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.client.utils.Throttler
 import com.nextcloud.ui.albumItemActions.AlbumItemActionsBottomSheet
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet.Companion.newInstance
-import com.nextcloud.utils.extensions.getTypedActivity
 import com.nextcloud.utils.extensions.isDialogFragmentReady
 import com.owncloud.android.R
-import com.owncloud.android.databinding.ListFragmentBinding
+import com.owncloud.android.databinding.AlbumsFragmentBinding
 import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.datamodel.SyncedFolderProvider
 import com.owncloud.android.datamodel.ThumbnailsCacheManager
@@ -60,13 +58,13 @@ import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.operations.albums.ReadAlbumItemsOperation
 import com.owncloud.android.operations.albums.RemoveAlbumFileRemoteOperation
 import com.owncloud.android.operations.albums.ToggleAlbumFavoriteRemoteOperation
-import com.owncloud.android.ui.activity.FileActivity
+import com.owncloud.android.ui.activity.AlbumsPickerActivity
+import com.owncloud.android.ui.activity.AlbumsPickerActivity.Companion.intentForPickingMediaFiles
 import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.adapter.GalleryAdapter
 import com.owncloud.android.ui.dialog.CreateAlbumDialogFragment
 import com.owncloud.android.ui.events.FavoriteEvent
 import com.owncloud.android.ui.fragment.FileFragment
-import com.owncloud.android.ui.fragment.albums.AlbumsPickerActivity.Companion.intentForPickingMediaFiles
 import com.owncloud.android.ui.interfaces.OCFileListFragmentInterface
 import com.owncloud.android.ui.preview.PreviewImageFragment
 import com.owncloud.android.ui.preview.PreviewMediaActivity
@@ -89,7 +87,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     private var client: OwnCloudClient? = null
     private var optionalUser: Optional<User>? = null
 
-    private lateinit var binding: ListFragmentBinding
+    private lateinit var binding: AlbumsFragmentBinding
 
     @Inject
     lateinit var viewThemeUtils: ViewThemeUtils
@@ -149,7 +147,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = ListFragmentBinding.inflate(inflater, container, false)
+        binding = AlbumsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -163,6 +161,22 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         // if fragment is opened when new albums is created
         // then open gallery to choose media to add
         if (isNewAlbum) {
+            openGalleryToAddMedia()
+        }
+
+        setUpEmptyView()
+    }
+
+    private fun setUpEmptyView() {
+        binding.albumEmptyView.albumsBgImage.setImageResource(R.drawable.empty_album_detailed_view)
+        binding.albumEmptyView.albumsBgImage.scaleType = ImageView.ScaleType.FIT_CENTER
+        binding.albumEmptyView.emptyAlbumLabel.text = resources.getString(R.string.empty_album_detailed_view_title)
+        binding.albumEmptyView.emptyAlbumMessageLabel.text =
+            resources.getString(R.string.empty_album_detailed_view_message)
+        binding.albumEmptyView.createAlbum.text = resources.getString(R.string.add_photos)
+
+        binding.albumEmptyView.createAlbum.setOnClickListener {
+            // open Gallery fragment as selection then add items to current album
             openGalleryToAddMedia()
         }
     }
@@ -265,7 +279,6 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     }
 
     private fun setupContent() {
-        binding.listRoot.setEmptyView(binding.emptyList.emptyListView)
         val layoutManager = GridLayoutManager(requireContext(), 1)
         binding.listRoot.layoutManager = layoutManager
         fetchAndSetData()
@@ -292,32 +305,23 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     }
 
     private fun fetchAndSetData() {
+        binding.swipeContainingList.isRefreshing = true
         mMultiChoiceModeListener?.exitSelectionMode()
         initializeAdapter()
-        setEmptyListLoadingMessage()
+        updateEmptyView(false)
         lifecycleScope.launch(Dispatchers.IO) {
             val getRemoteNotificationOperation = ReadAlbumItemsOperation(albumName, mContainerActivity?.storageManager)
             val result = client?.let { getRemoteNotificationOperation.execute(it) }
             withContext(Dispatchers.Main) {
                 if (result?.isSuccess == true && result.resultData != null) {
                     if (result.resultData.isEmpty()) {
-                        setMessageForEmptyList(
-                            R.string.file_list_empty_headline_server_search,
-                            resources.getString(R.string.file_list_empty_gallery),
-                            R.drawable.file_image,
-                            false
-                        )
+                        updateEmptyView(true)
                     }
                     populateList(result.resultData)
                 } else {
                     Log_OC.d(TAG, result?.logMessage)
                     // show error
-                    setMessageForEmptyList(
-                        R.string.file_list_empty_headline_server_search,
-                        resources.getString(R.string.file_list_empty_gallery),
-                        R.drawable.file_image,
-                        false
-                    )
+                    updateEmptyView(true)
                 }
                 hideRefreshLayoutLoader()
             }
@@ -326,16 +330,6 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
 
     private fun hideRefreshLayoutLoader() {
         binding.swipeContainingList.isRefreshing = false
-    }
-
-    private fun setEmptyListLoadingMessage() {
-        val fileActivity = this.getTypedActivity(FileActivity::class.java)
-        fileActivity?.connectivityService?.isNetworkAndServerAvailable { result: Boolean? ->
-            if (!result!!) return@isNetworkAndServerAvailable
-            binding.emptyList.emptyListViewHeadline.setText(R.string.file_list_loading)
-            binding.emptyList.emptyListViewText.text = ""
-            binding.emptyList.emptyListIcon.visibility = View.GONE
-        }
     }
 
     private fun initializeClient() {
@@ -372,25 +366,9 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         }
     }
 
-    private fun setMessageForEmptyList(
-        @StringRes headline: Int, message: String,
-        @DrawableRes icon: Int, tintIcon: Boolean
-    ) {
-        binding.emptyList.emptyListViewHeadline.setText(headline)
-        binding.emptyList.emptyListViewText.text = message
-
-        if (tintIcon) {
-            if (context != null) {
-                binding.emptyList.emptyListIcon.setImageDrawable(
-                    viewThemeUtils.platform.tintPrimaryDrawable(requireContext(), icon)
-                )
-            }
-        } else {
-            binding.emptyList.emptyListIcon.setImageResource(icon)
-        }
-
-        binding.emptyList.emptyListIcon.visibility = View.VISIBLE
-        binding.emptyList.emptyListViewText.visibility = View.VISIBLE
+    private fun updateEmptyView(isEmpty: Boolean) {
+        binding.albumEmptyView.emptyViewLayout.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        binding.listRoot.visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
 
     override fun onResume() {

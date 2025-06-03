@@ -1,11 +1,10 @@
 /*
  * Nextcloud - Android Client
  *
- * SPDX-FileCopyrightText: 2023 TSI-mc
- * SPDX-FileCopyrightText: 2022 Álvaro Brey <alvaro@alvarobrey.com>
- * SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+ * SPDX-FileCopyrightText: 2025 Your Name <your@email.com>
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  */
-package com.owncloud.android.ui.fragment.albums
+package com.owncloud.android.ui.activity
 
 import android.content.Intent
 import android.content.res.Resources
@@ -22,13 +21,12 @@ import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.lib.resources.files.SearchRemoteOperation
 import com.owncloud.android.operations.albums.CreateNewAlbumOperation
-import com.owncloud.android.ui.activity.FileActivity
 import com.owncloud.android.ui.activity.FolderPickerActivity.Companion.TAG_LIST_OF_FOLDERS
-import com.owncloud.android.ui.activity.OnEnforceableRefreshListener
 import com.owncloud.android.ui.events.SearchEvent
 import com.owncloud.android.ui.fragment.FileFragment
 import com.owncloud.android.ui.fragment.GalleryFragment
 import com.owncloud.android.ui.fragment.OCFileListFragment
+import com.owncloud.android.ui.fragment.albums.AlbumsFragment
 import com.owncloud.android.utils.DisplayUtils
 import com.owncloud.android.utils.ErrorMessageAdapter
 
