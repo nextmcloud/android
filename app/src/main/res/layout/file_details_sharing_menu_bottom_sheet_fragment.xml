@@ -12,17 +12,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/bottom_sheet_bg_color"
     android:orientation="vertical"
-    android:paddingTop="@dimen/dialog_padding"
-    android:background="@color/bg_default">
+    android:paddingTop="@dimen/standard_padding">
+
+    <LinearLayout
+        android:id="@+id/menu_share_open_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/minimum_size_for_touchable_area"
+        android:background="?android:attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/standard_padding"
+        android:paddingTop="@dimen/standard_half_padding"
+        android:paddingRight="@dimen/standard_padding"
+        android:paddingBottom="@dimen/standard_half_padding"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:id="@+id/menu_icon_open_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_open_in"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:text="@string/share_open_in"
+            android:textColor="@color/bottom_sheet_txt_color"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/menu_share_advanced_permissions"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_sheet_item_height"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/minimum_size_for_touchable_area"
         android:background="?android:attr/selectableItemBackground"
         android:orientation="horizontal"
-        android:layout_gravity="center_vertical"
         android:paddingLeft="@dimen/standard_padding"
         android:paddingTop="@dimen/standard_half_padding"
         android:paddingRight="@dimen/standard_padding"
@@ -35,16 +68,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:contentDescription="@null"
-            android:src="@drawable/ic_edit"
+            android:src="@drawable/ic_pencil_edit"
             app:tint="@color/primary" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
-            android:text="@string/share_settings"
-            android:textColor="@color/text_color"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:text="@string/advanced_settings"
+            android:textColor="@color/bottom_sheet_txt_color"
             android:textSize="@dimen/bottom_sheet_text_size" />
 
     </LinearLayout>
@@ -52,7 +85,8 @@
     <LinearLayout
         android:id="@+id/menu_share_send_new_email"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_sheet_item_height"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/minimum_size_for_touchable_area"
         android:background="?android:attr/selectableItemBackground"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/standard_padding"
@@ -74,9 +108,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
+            android:layout_marginStart="@dimen/standard_margin"
             android:text="@string/share_send_new_email"
-            android:textColor="@color/text_color"
+            android:textColor="@color/bottom_sheet_txt_color"
             android:textSize="@dimen/bottom_sheet_text_size" />
 
     </LinearLayout>
@@ -84,7 +118,8 @@
     <LinearLayout
         android:id="@+id/menu_share_send_link"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_sheet_item_height"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/minimum_size_for_touchable_area"
         android:background="?android:attr/selectableItemBackground"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/standard_padding"
@@ -108,9 +143,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
+            android:layout_marginStart="@dimen/standard_margin"
             android:text="@string/share_via_link_send_link_label"
-            android:textColor="@color/text_color"
+            android:textColor="@color/bottom_sheet_txt_color"
             android:textSize="@dimen/bottom_sheet_text_size" />
 
     </LinearLayout>
@@ -118,7 +153,8 @@
     <LinearLayout
         android:id="@+id/menu_share_unshare"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_sheet_item_height"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/minimum_size_for_touchable_area"
         android:background="?android:attr/selectableItemBackground"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/standard_padding"
@@ -133,16 +169,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:contentDescription="@null"
-            android:src="@drawable/ic_delete"
+            android:src="@drawable/nav_trashbin"
             app:tint="@color/primary" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
-            android:text="@string/delete_link"
-            android:textColor="@color/text_color"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:text="@string/unshare"
+            android:textColor="@color/bottom_sheet_txt_color"
             android:textSize="@dimen/bottom_sheet_text_size" />
 
     </LinearLayout>
