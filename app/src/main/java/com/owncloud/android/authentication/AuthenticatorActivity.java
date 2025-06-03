@@ -66,6 +66,7 @@ import com.nextcloud.utils.mdm.MDMConfig;
 import com.nmc.android.marketTracking.AdjustSdkUtils;
 import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.MainApp;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.AccountSetupBinding;
 import com.owncloud.android.databinding.AccountSetupWebviewBinding;
@@ -1177,6 +1178,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
             if (success) {
                 accountManager.setCurrentOwnCloudAccount(mAccount.name);
                 getUserCapabilitiesAndFinish();
+                // NMC: MoEngage user login event tracking
+                trackUserLoginEvent(result.getResultData());
             } else {
                 // init webView again
                 if (accountSetupWebviewBinding != null) {
@@ -1226,6 +1229,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
             Log_OC.d(TAG, "Access failed: " + result.getLogMessage());
         }
+    }
+
+    private void trackUserLoginEvent(UserInfo userInfo) {
+        MoEngageSdkUtils.trackUserLogin(this, userInfo);
     }
 
     private void endSuccess() {
