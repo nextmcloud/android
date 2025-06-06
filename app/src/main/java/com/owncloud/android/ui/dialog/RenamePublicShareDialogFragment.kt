@@ -14,10 +14,10 @@ import android.text.TextUtils
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.utils.extensions.getParcelableArgument
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.EditBoxDialogBinding
 import com.owncloud.android.lib.resources.shares.OCShare
@@ -40,23 +40,6 @@ class RenamePublicShareDialogFragment : DialogFragment(), DialogInterface.OnClic
     private lateinit var binding: EditBoxDialogBinding
     private var publicShare: OCShare? = null
 
-    override fun onStart() {
-        super.onStart()
-
-        val alertDialog = dialog as AlertDialog? ?: return
-
-        val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE) as? MaterialButton
-        val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE) as? MaterialButton
-
-        positiveButton?.let {
-            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(positiveButton)
-        }
-
-        negativeButton?.let {
-            viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(negativeButton)
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         keyboardUtils.showKeyboardForEditText(requireDialog().window, binding.userInput)
@@ -69,7 +52,6 @@ class RenamePublicShareDialogFragment : DialogFragment(), DialogInterface.OnClic
         binding = EditBoxDialogBinding.inflate(inflater, null, false)
         val view: View = binding.root
 
-        viewThemeUtils.material.colorTextInputLayout(binding.userInputContainer)
         binding.userInput.setText(publicShare?.label)
 
         val builder = MaterialAlertDialogBuilder(view.context)
@@ -78,7 +60,8 @@ class RenamePublicShareDialogFragment : DialogFragment(), DialogInterface.OnClic
             .setNegativeButton(R.string.common_cancel, this)
             .setTitle(R.string.public_share_name)
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.userInput.context, builder)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(binding.userInput.context, builder)
 
         return builder.create()
     }
