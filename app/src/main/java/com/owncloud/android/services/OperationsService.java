@@ -64,6 +64,10 @@ import com.owncloud.android.operations.UpdateNoteForShareOperation;
 import com.owncloud.android.operations.UpdateShareInfoOperation;
 import com.owncloud.android.operations.UpdateSharePermissionsOperation;
 import com.owncloud.android.operations.UpdateShareViaLinkOperation;
+import com.owncloud.android.operations.albums.CopyFileToAlbumOperation;
+import com.owncloud.android.operations.albums.CreateNewAlbumOperation;
+import com.owncloud.android.operations.albums.RemoveAlbumOperation;
+import com.owncloud.android.operations.albums.RenameAlbumOperation;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -122,6 +126,11 @@ public class OperationsService extends Service {
     public static final String ACTION_CHECK_CURRENT_CREDENTIALS = "CHECK_CURRENT_CREDENTIALS";
     public static final String ACTION_RESTORE_VERSION = "RESTORE_VERSION";
     public static final String ACTION_UPDATE_FILES_DOWNLOAD_LIMIT = "UPDATE_FILES_DOWNLOAD_LIMIT";
+    public static final String ACTION_CREATE_ALBUM = "CREATE_ALBUM";
+    public static final String EXTRA_ALBUM_NAME = "ALBUM_NAME";
+    public static final String ACTION_ALBUM_COPY_FILE = "ALBUM_COPY_FILE";
+    public static final String ACTION_RENAME_ALBUM = "RENAME_ALBUM";
+    public static final String ACTION_REMOVE_ALBUM = "REMOVE_ALBUM";
 
     private ServiceHandler mOperationsHandler;
     private OperationsServiceBinder mOperationsBinder;
@@ -744,6 +753,29 @@ public class OperationsService extends Service {
                         if (shareId > 0) {
                             operation = new SetFilesDownloadLimitOperation(shareId, newLimit, fileDataStorageManager, getApplicationContext());
                         }
+                        break;
+
+                    case ACTION_CREATE_ALBUM:
+                        String albumName = operationIntent.getStringExtra(EXTRA_ALBUM_NAME);
+                        operation = new CreateNewAlbumOperation(albumName);
+                        break;
+
+                    case ACTION_ALBUM_COPY_FILE:
+                        remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        newParentPath = operationIntent.getStringExtra(EXTRA_NEW_PARENT_PATH);
+                        operation = new CopyFileToAlbumOperation(remotePath, newParentPath, fileDataStorageManager);
+                        break;
+
+                    case ACTION_RENAME_ALBUM:
+                        remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        String newAlbumName = operationIntent.getStringExtra(EXTRA_NEWNAME);
+                        operation = new RenameAlbumOperation(remotePath, newAlbumName, fileDataStorageManager);
+                        break;
+
+                    case ACTION_REMOVE_ALBUM:
+                        String albumNameToRemove = operationIntent.getStringExtra(EXTRA_ALBUM_NAME);
+                        operation = new RemoveAlbumOperation(albumNameToRemove,
+                                                             fileDataStorageManager);
                         break;
 
                     default:
