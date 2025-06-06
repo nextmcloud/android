@@ -12,6 +12,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -19,6 +22,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -89,7 +93,8 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         } catch (e: ClassCastException) {
             throw IllegalArgumentException(
                 context.toString() + " must implement " +
-                    FileFragment.ContainerActivity::class.java.simpleName, e
+                    FileFragment.ContainerActivity::class.java.simpleName,
+                e
             )
         }
         arguments?.let {
@@ -108,9 +113,9 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         maxColumnSize = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            4
+            MAX_COLUMN_SIZE_LANDSCAPE
         } else {
-            2
+            MAX_COLUMN_SIZE_PORTRAIT
         }
     }
 
@@ -139,23 +144,38 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
 
     private fun createMenu() {
         val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menu.clear() // important: clears any existing activity menu
-                menuInflater.inflate(R.menu.fragment_create_album, menu)
-            }
+        menuHost.addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menu.clear() // important: clears any existing activity menu
+                    menuInflater.inflate(R.menu.fragment_create_album, menu)
 
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.action_create_new_album -> {
-                        showCreateAlbumDialog()
-                        true
+                    val addItem = menu.findItem(R.id.action_create_new_album)
+                    val coloredTitle = SpannableString(addItem.title).apply {
+                        setSpan(
+                            ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.primary)),
+                            0,
+                            length,
+                            Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                        )
                     }
-
-                    else -> false
+                    addItem.title = coloredTitle
                 }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        R.id.action_create_new_album -> {
+                            showCreateAlbumDialog()
+                            true
+                        }
+
+                        else -> false
+                    }
+                }
+            },
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED
+        )
     }
 
     private fun showCreateAlbumDialog() {
@@ -307,9 +327,9 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         super.onConfigurationChanged(newConfig)
         if (isGridEnabled) {
             if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                maxColumnSize = 4
+                maxColumnSize = MAX_COLUMN_SIZE_LANDSCAPE
             } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                maxColumnSize = 2
+                maxColumnSize = MAX_COLUMN_SIZE_PORTRAIT
             }
             (binding.listRoot.layoutManager as GridLayoutManager).setSpanCount(maxColumnSize)
         }
@@ -319,6 +339,9 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         val TAG: String = AlbumsFragment::class.java.simpleName
         private const val ARG_IS_SELECTION_MODE = "is_selection_mode"
         const val ARG_SELECTED_ALBUM_NAME = "selected_album_name"
+
+        private const val MAX_COLUMN_SIZE_LANDSCAPE: Int = 4
+        private const val MAX_COLUMN_SIZE_PORTRAIT: Int = 2
 
         fun newInstance(isSelectionMode: Boolean = false): AlbumsFragment {
             val args = Bundle()
