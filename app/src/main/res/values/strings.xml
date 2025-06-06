@@ -1168,6 +1168,7 @@
     <string name="link_name">Link Name</string>
     <string name="delete_link">Delete Link</string>
     <string name="share_settings">Settings</string>
+    <string name="camera_permission_rationale">Please navigate to App info in settings and give permission manually.</string>
     <string name="common_confirm">Confirm</string>
     <string name="destination_filename">Destination filename</string>
     <string name="suggest">Suggest</string>
@@ -1198,6 +1199,8 @@
     <string name="error_creating_file_from_template">Error creating file from template</string>
     <string name="no_send_app">No app available for sending the selected files</string>
     <string name="pdf_zoom_tip">Tap on a page to zoom in</string>
+    <string name="choose_location">Choose location</string>
+    <string name="common_select">Select</string>
     <string name="storage_permission_full_access">Full access</string>
     <string name="storage_permission_media_read_only">Media read-only</string>
     <string name="subtitle_photos_videos">Photos and videos</string>
