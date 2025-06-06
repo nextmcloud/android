@@ -19,6 +19,7 @@ import com.nextcloud.common.NextcloudClient;
 import com.owncloud.android.databinding.VersionListItemBinding;
 import com.owncloud.android.lib.resources.activities.model.Activity;
 import com.owncloud.android.lib.resources.files.model.FileVersion;
+import com.owncloud.android.operations.comments.Comments;
 import com.owncloud.android.ui.interfaces.ActivityListInterface;
 import com.owncloud.android.ui.interfaces.VersionListInterface;
 import com.owncloud.android.utils.DisplayUtils;
@@ -42,14 +43,16 @@ public class ActivityAndVersionListAdapter extends ActivityListAdapter {
         ActivityListInterface activityListInterface,
         VersionListInterface.View versionListInterface,
         ClientFactory clientFactory,
-        ViewThemeUtils viewThemeUtils
+        ViewThemeUtils viewThemeUtils,
+        String userId
                                         ) {
         super(context,
               currentAccountProvider,
               activityListInterface,
               clientFactory,
               true,
-              viewThemeUtils);
+              viewThemeUtils,
+              userId);
 
         this.versionListInterface = versionListInterface;
     }
@@ -65,12 +68,16 @@ public class ActivityAndVersionListAdapter extends ActivityListAdapter {
                 long o2Date;
                 if (o1 instanceof Activity) {
                     o1Date = ((Activity) o1).getDatetime().getTime();
+                } else if (o1 instanceof Comments) {
+                    o1Date = ((Comments) o1).getCreationDateTime().getTime();
                 } else {
                     o1Date = ((FileVersion) o1).getModifiedTimestamp();
                 }
 
                 if (o2 instanceof Activity) {
                     o2Date = ((Activity) o2).getDatetime().getTime();
+                } else if (o2 instanceof Comments) {
+                    o2Date = ((Comments) o2).getCreationDateTime().getTime();
                 } else {
                     o2Date = ((FileVersion) o2).getModifiedTimestamp();
                 }
@@ -85,6 +92,9 @@ public class ActivityAndVersionListAdapter extends ActivityListAdapter {
 
             if (item instanceof Activity activity) {
                 time = getHeaderDateString(context, activity.getDatetime().getTime()).toString();
+            } else if (item instanceof Comments) {
+                Comments comments = (Comments) item;
+                time = getHeaderDateString(context, comments.getCreationDateTime().getTime()).toString();
             } else {
                 FileVersion version = (FileVersion) item;
                 time = getHeaderDateString(context, version.getModifiedTimestamp()).toString();
@@ -136,6 +146,8 @@ public class ActivityAndVersionListAdapter extends ActivityListAdapter {
 
         if (value instanceof Activity) {
             return ACTIVITY_TYPE;
+        } else if (value instanceof Comments) {
+            return COMMENT_TYPE;
         } else if (value instanceof FileVersion) {
             return VERSION_TYPE;
         } else {
