@@ -159,6 +159,7 @@
     <!--Adaptive Icon size specified here:  https://developer.android.com/develop/ui/views/launch/icon_design_adaptive -->
     <dimen name="adaptive_icon_size">108dp</dimen>
     <dimen name="adaptive_icon_padding">18dp</dimen>
+    <dimen name="empty_list_icon_size">120dp</dimen>
     <dimen name="tag_height">18dp</dimen>
     <dimen name="recommended_files_thumbnail_height">120dp</dimen>
     <dimen name="recommended_files_layout_width">150dp</dimen>
