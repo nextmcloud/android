@@ -28,8 +28,9 @@ on:
           - stable-3.15
           - stable-3.30
           - stable-3.31
+          - stable-3.32
           # - stable-3.27.1
-        default: stable-3.31
+        default: stable-3.32
 
 jobs:
   backport-custom:
