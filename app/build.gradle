@@ -49,6 +49,8 @@ apply plugin: "io.gitlab.arturbosch.detekt"
 if (shotTest) {
     apply plugin: "shot"
 }
+// apply In-App Update SDK for NMC
+apply from: "$rootProject.projectDir/nmc_app_update-dependencies.gradle"
 apply plugin: "com.google.devtools.ksp"
 
 
@@ -430,6 +432,11 @@ dependencies {
     gplayImplementation "com.google.android.play:review-ktx:2.0.2"
 
     implementation "com.github.nextcloud.android-common:ui:$androidCommonLibraryVersion"
+
+    // apply the dependencies from nmc_auto_update-dependencies.gradle
+    // as auto update dependencies need to be included only in gplay variant
+    // this is the way to do this
+    project.ext.addDependencies(project)
 
     implementation "io.coil-kt:coil:2.7.0"
 }
