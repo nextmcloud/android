@@ -60,16 +60,31 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
     private RemoteFile createdRemoteFolder;
     private User user;
     private Context context;
+    private boolean encrypted;
 
     /**
      * Constructor
      */
-    public CreateFolderOperation(String remotePath, User user, Context context, FileDataStorageManager storageManager) {
+    public CreateFolderOperation(String remotePath,
+                                 User user,
+                                 Context context,
+                                 FileDataStorageManager storageManager
+                                ) {
+        this(remotePath, false, user, context, storageManager);
+    }
+
+    public CreateFolderOperation(String remotePath,
+                                 boolean encrypted,
+                                 User user,
+                                 Context context,
+                                 FileDataStorageManager storageManager
+                                ) {
         super(storageManager);
 
         this.remotePath = remotePath;
         this.user = user;
         this.context = context;
+        this.encrypted = encrypted;
     }
 
     @Override
@@ -105,7 +120,7 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
             }
             return new RemoteOperationResult(new IllegalStateException("E2E not supported"));
         } else {
-            return normalCreate(client);
+            return normalCreate(client, encrypted);
         }
     }
 
@@ -473,7 +488,7 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
         return encryptedFileName;
     }
 
-    private RemoteOperationResult normalCreate(OwnCloudClient client) {
+    private RemoteOperationResult normalCreate(OwnCloudClient client, boolean encrypted) {
         RemoteOperationResult result = new CreateFolderRemoteOperation(remotePath, true).execute(client);
 
         if (result.isSuccess()) {
@@ -482,8 +497,118 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
 
             createdRemoteFolder = (RemoteFile) remoteFolderOperationResult.getData().get(0);
             saveFolderInDB();
-        } else {
-            Log_OC.e(TAG, remotePath + " hasn't been created");
+
+            if (encrypted) {
+                final OCFile folder = getStorageManager().getFileByDecryptedRemotePath(remotePath);
+
+                final RemoteOperationResult remoteOperationResult =
+                    new ToggleEncryptionRemoteOperation(folder.getLocalId(),
+                                                        remotePath,
+                                                        true)
+                        .execute(client);
+
+                if (remoteOperationResult.isSuccess()) {
+
+                    ArbitraryDataProvider arbitraryDataProvider = new ArbitraryDataProviderImpl(context);
+                    String privateKey = arbitraryDataProvider.getValue(user.getAccountName(), EncryptionUtils.PRIVATE_KEY);
+                    String publicKey = arbitraryDataProvider.getValue(user.getAccountName(), EncryptionUtils.PUBLIC_KEY);
+                    String token = null;
+                    E2EVersion e2EVersion = getStorageManager().getCapability(user.getAccountName()).getEndToEndEncryptionApiVersion();
+
+                    try {
+                        // lock folder
+                        token = EncryptionUtils.lockFolder(folder, client);
+
+                        if (e2EVersion == E2EVersion.V2_0) {
+                            // Update metadata
+                            Pair<Boolean, DecryptedFolderMetadataFile> metadataPair = EncryptionUtils.retrieveMetadata(folder,
+                                                                                                                       client,
+                                                                                                                       privateKey,
+                                                                                                                       publicKey,
+                                                                                                                       getStorageManager(),
+                                                                                                                       user,
+                                                                                                                       context,
+                                                                                                                       arbitraryDataProvider);
+
+                            boolean metadataExists = metadataPair.first;
+                            DecryptedFolderMetadataFile metadata = metadataPair.second;
+
+                            new EncryptionUtilsV2().serializeAndUploadMetadata(folder,
+                                                                               metadata,
+                                                                               token,
+                                                                               client,
+                                                                               metadataExists,
+                                                                               context,
+                                                                               user,
+                                                                               getStorageManager());
+
+                            // unlock folder
+                            RemoteOperationResult unlockFolderResult = EncryptionUtils.unlockFolder(folder, client, token);
+
+                            if (unlockFolderResult.isSuccess()) {
+                                token = null;
+                            } else {
+                                // TODO E2E: do better
+                                throw new RuntimeException("Could not unlock folder!");
+                            }
+
+                        } else if (e2EVersion == E2EVersion.V1_0 ||
+                            e2EVersion == E2EVersion.V1_1 ||
+                            e2EVersion == E2EVersion.V1_2
+                        ) {
+                            // unlock folder
+                            RemoteOperationResult unlockFolderResult = EncryptionUtils.unlockFolderV1(folder, client, token);
+
+                            if (unlockFolderResult.isSuccess()) {
+                                token = null;
+                            } else {
+                                // TODO E2E: do better
+                                throw new RuntimeException("Could not unlock folder!");
+                            }
+                        } else if (e2EVersion == E2EVersion.UNKNOWN) {
+                            return new RemoteOperationResult(new IllegalStateException("E2E not supported"));
+                        }
+
+                        folder.setEncrypted(true);
+                        getStorageManager().saveFile(folder);
+                    } catch (Throwable e) {
+                        if (token != null) {
+                            if (e2EVersion == E2EVersion.V2_0) {
+                                if (!EncryptionUtils.unlockFolder(folder, client, token).isSuccess()) {
+                                    throw new RuntimeException("Could not clean up after failing folder creation!", e);
+                                }
+                            } else if (e2EVersion == E2EVersion.V1_0 ||
+                                e2EVersion == E2EVersion.V1_1 ||
+                                e2EVersion == E2EVersion.V1_2) {
+                                if (!EncryptionUtils.unlockFolderV1(folder, client, token).isSuccess()) {
+                                    throw new RuntimeException("Could not clean up after failing folder creation!", e);
+                                }
+                            }
+                        }
+                        // TODO E2E: do better
+                        return new RemoteOperationResult(new Exception(e));
+                    } finally {
+                        // unlock folder
+                        if (token != null) {
+                            RemoteOperationResult unlockFolderResult = null;
+                            if (e2EVersion == E2EVersion.V2_0) {
+                                unlockFolderResult = EncryptionUtils.unlockFolder(folder, client, token);
+                            } else if (e2EVersion == E2EVersion.V1_0 ||
+                                e2EVersion == E2EVersion.V1_1 ||
+                                e2EVersion == E2EVersion.V1_2) {
+                                unlockFolderResult = EncryptionUtils.unlockFolderV1(folder, client, token);
+                            }
+
+                            if (unlockFolderResult != null && !unlockFolderResult.isSuccess()) {
+                                // TODO E2E: do better
+                                throw new RuntimeException("Could not unlock folder!");
+                            }
+                        }
+                    }
+                }
+            } else {
+                Log_OC.e(TAG, remotePath + " hasn't been created");
+            }
         }
 
         return result;
