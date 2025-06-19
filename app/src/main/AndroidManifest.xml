@@ -108,6 +108,7 @@
         </intent>
     </queries>
 
+    <!-- largeHeap true required for Scanbot OCR   -->
     <application
         android:name=".MainApp"
         android:allowBackup="false"
@@ -116,6 +117,7 @@
         android:icon="@mipmap/ic_launcher"
         android:installLocation="internalOnly"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:manageSpaceActivity="com.owncloud.android.ui.activity.ManageSpaceActivity"
         android:networkSecurityConfig="@xml/network_security_config"
         android:requestLegacyExternalStorage="true"
@@ -649,6 +651,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.nmc.android.scans.ScanActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
+
     </application>
 
 </manifest>
