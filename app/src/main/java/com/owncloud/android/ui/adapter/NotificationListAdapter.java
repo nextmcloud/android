@@ -208,7 +208,11 @@ public class NotificationListAdapter extends RecyclerView.Adapter<NotificationLi
                         }
                     });
 
-                    viewThemeUtils.material.colorMaterialButtonPrimaryFilled(button);
+                    //NMC Customization
+                    button.setBackgroundColor(ResourcesCompat.getColor(resources,
+                                                                       R.color.shared_with_me_color, null));
+                    button.setTextColor(ResourcesCompat.getColor(resources,
+                                                                 R.color.white, null));
                     holder.binding.buttons.addView(button);
                 } else {
                     overflowActions.add(action);
@@ -220,8 +224,12 @@ public class NotificationListAdapter extends RecyclerView.Adapter<NotificationLi
             moreButton.setBackgroundColor(ResourcesCompat.getColor(resources,
                                                                android.R.color.transparent,
                                                                null));
-            viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(moreButton);
-
+            //NMC Customization
+            moreButton.setBackgroundColor(ResourcesCompat.getColor(resources,
+                                                               android.R.color.transparent,
+                                                               null));
+            moreButton.setTextColor(ResourcesCompat.getColor(resources,
+                                                         R.color.shared_with_me_color, null));
             moreButton.setAllCaps(false);
 
             moreButton.setText(R.string.more);
@@ -263,12 +271,16 @@ public class NotificationListAdapter extends RecyclerView.Adapter<NotificationLi
                 final MaterialButton button = new MaterialButton(notificationsActivity);
 
                 if (action.primary) {
-                    viewThemeUtils.material.colorMaterialButtonPrimaryFilled(button);
+                    button.setBackgroundColor(ResourcesCompat.getColor(resources,
+                                                                       R.color.shared_with_me_color, null));
+                    button.setTextColor(ResourcesCompat.getColor(resources,
+                                                                 R.color.white, null));
                 } else {
                     button.setBackgroundColor(ResourcesCompat.getColor(resources,
                                                                        android.R.color.transparent,
                                                                        null));
-                    viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(button);
+                    button.setTextColor(ResourcesCompat.getColor(resources,
+                                                                 R.color.shared_with_me_color, null));
                 }
 
                 button.setAllCaps(false);
