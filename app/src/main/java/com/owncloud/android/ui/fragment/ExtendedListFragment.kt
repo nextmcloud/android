@@ -60,6 +60,7 @@ import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.client.preferences.AppPreferencesImpl
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.nmc.android.utils.SearchViewThemeUtils
+import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ListFragmentBinding
@@ -343,7 +344,8 @@ open class ExtendedListFragment :
 
         mRefreshListLayout = binding?.swipeContainingList
         mRefreshListLayout?.let {
-            viewThemeUtils.androidx.themeSwipeRefreshLayout(it)
+            // NMC Customisation
+            SwipeRefreshThemeUtils.themeSwipeRefreshLayout(requireContext(), it)
             it.setOnRefreshListener(this)
         }
 
