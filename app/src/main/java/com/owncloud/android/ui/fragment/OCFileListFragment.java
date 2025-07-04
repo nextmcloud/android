@@ -88,6 +88,7 @@ import com.owncloud.android.lib.resources.files.ToggleFavoriteRemoteOperation;
 import com.owncloud.android.lib.resources.status.E2EVersion;
 import com.owncloud.android.lib.resources.status.OCCapability;
 import com.owncloud.android.ui.activity.DrawerActivity;
+import com.nmc.android.scans.ScanActivity;
 import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.ui.activity.FileDisplayActivity;
 import com.owncloud.android.ui.activity.FolderPickerActivity;
@@ -262,6 +263,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
         REMOVE_GRID_AND_SORT,
         ADD_GRID_AND_SORT_WITH_SEARCH
     }
+
+    private boolean mShowOnlyFolder, mHideEncryptedFolder;
 
     protected MenuItemAddRemove menuItemAddRemoveValue = MenuItemAddRemove.ADD_GRID_AND_SORT_WITH_SEARCH;
 
@@ -674,6 +677,24 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 DisplayUtils.showSnackMessage(getView(), R.string.failed_to_start_editor);
             }
         }).start();
+    }
+
+    @Override
+    public void scanDocument() {
+        //remote file to store the scans in the selected path
+        OCFile remoteFile = new OCFile(ROOT_PATH); // default root folder
+        if (getActivity() != null && ((FileActivity) getActivity()).getCurrentDir() != null){
+            remoteFile = ((FileActivity) getActivity()).getCurrentDir();
+        }
+
+        //remote path used so that user can directly save at the selected sub folder location
+        ScanActivity.openScanActivity(getActivity(), remoteFile, FileDisplayActivity.REQUEST_CODE__SCAN_DOCUMENT);
+
+        //track event on Scan Document button click
+        //implementation and logic will be available in nmc/1925-market_tracking
+        if (trackingScanInterface != null) {
+            trackingScanInterface.sendScanEvent(preferences);
+        }
     }
 
     @Override
@@ -1592,6 +1613,12 @@ public class OCFileListFragment extends ExtendedListFragment implements
         listDirectory(null, onlyOnDevice, fromSearch);
     }
 
+    public void listDirectoryFolder(boolean onlyOnDevice, boolean fromSearch, boolean showOnlyFolder, boolean hideEncryptedFolder) {
+        mShowOnlyFolder = showOnlyFolder;
+        mHideEncryptedFolder = hideEncryptedFolder;
+        listDirectory(null, onlyOnDevice, fromSearch);
+    }
+
     public void refreshDirectory() {
         searchFragment = false;
 
@@ -1656,7 +1683,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 directory,
                 storageManager,
                 onlyOnDevice,
-                mLimitToMimeType);
+                mLimitToMimeType,
+                mShowOnlyFolder,
+                mHideEncryptedFolder);
 
             OCFile previousDirectory = mFile;
             mFile = directory;

@@ -138,6 +138,38 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/menu_scan_document"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_sheet_item_height"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/standard_padding"
+                android:paddingTop="@dimen/standard_half_padding"
+                android:paddingRight="@dimen/standard_padding"
+                android:paddingBottom="@dimen/standard_half_padding"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:id="@+id/menu_icon_scan_document"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_scan_document"
+                    app:tint="@color/bottom_sheet_icon_color" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
+                    android:text="@string/upload_scan_document"
+                    android:textColor="@color/bottom_sheet_txt_color"
+                    android:textSize="@dimen/bottom_sheet_text_size" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/menu_scan_doc_upload"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/bottom_sheet_item_height"
