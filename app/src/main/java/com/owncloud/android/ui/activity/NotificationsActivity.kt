@@ -30,6 +30,7 @@ import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.common.NextcloudClient
 import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.R
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.databinding.NotificationsLayoutBinding
 import com.owncloud.android.datamodel.ArbitraryDataProvider
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl
@@ -88,6 +89,9 @@ class NotificationsActivity : AppCompatActivity(), NotificationsContract.View, I
         if (optionalUser?.isPresent == false) {
             showError()
         }
+
+        // NMC: track notification screen event
+        MoEngageSdkUtils.trackNotificationsScreenEvent(this)
     }
 
     private fun initUser() {
