@@ -1,0 +1,12 @@
+// way to add auto update dependencies to only gplay variant
+ext {
+    addDependencies = {
+        project ->
+            project.dependencies {
+                // Kotlin extensions library for Play In-App Update ref: https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#groovy
+                gplayImplementation 'com.google.android.play:app-update-ktx:2.1.0'
+                // firebase remote config
+                gplayImplementation "com.google.firebase:firebase-config-ktx:22.0.0"
+            }
+    }
+}
