@@ -382,12 +382,18 @@ class OCFileListFragmentStaticServerIT : AbstractIT() {
 
             testFolder.richWorkspace = " "
             activity.storageManager.saveFile(testFolder)
-            sut.adapter.swapDirectory(user, testFolder, activity.storageManager, false, "")
+            sut.adapter.swapDirectory(user, testFolder, activity.storageManager, false, "",
+                showOnlyFolder = false,
+                hideEncryptedFolder = false
+            )
             Assert.assertFalse(sut.adapter.shouldShowHeader())
 
             testFolder.richWorkspace = null
             activity.storageManager.saveFile(testFolder)
-            sut.adapter.swapDirectory(user, testFolder, activity.storageManager, false, "")
+            sut.adapter.swapDirectory(user, testFolder, activity.storageManager, false, "",
+                showOnlyFolder = false,
+                hideEncryptedFolder = false
+            )
             Assert.assertFalse(sut.adapter.shouldShowHeader())
 
             testFolder.richWorkspace = "1"
