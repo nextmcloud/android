@@ -71,8 +71,6 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
             getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        viewThemeUtils.platform.themeDialog(binding.getRoot());
-
         setUpRecyclerView();
         setOnShowListener(d ->
                               BottomSheetBehavior.from((View) binding.getRoot().getParent())
@@ -87,8 +85,8 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
             new QuickSharingPermissionsAdapter.QuickSharingPermissionViewHolder.OnPermissionChangeListener() {
                 @Override
                 public void onCustomPermissionSelected() {
+                    // NMC Customizations: No action will be required
                     dismiss();
-                    actions.openShareDetailWithCustomPermissions(ocShare);
                 }
 
                 @Override
@@ -118,9 +116,9 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
         int permissionFlag = 0;
         if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_can_edit)) || permissionName.equalsIgnoreCase(res.getString(R.string.link_share_editing))) {
             permissionFlag = ocShare.isFolder() ? MAXIMUM_PERMISSIONS_FOR_FOLDER : MAXIMUM_PERMISSIONS_FOR_FILE;
-        } else if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_view_only))) {
+        } else if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_read_only))) {
             permissionFlag = READ_PERMISSION_FLAG;
-        } else if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_file_request))) {
+        } else if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_file_drop))) {
             permissionFlag = CREATE_PERMISSION_FLAG + READ_PERMISSION_FLAG;
         }
 
@@ -146,7 +144,5 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
 
     public interface QuickPermissionSharingBottomSheetActions {
         void onQuickPermissionChanged(OCShare share, int permission);
-
-        void openShareDetailWithCustomPermissions(OCShare share);
     }
 }

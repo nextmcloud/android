@@ -338,15 +338,17 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     // validate view shown on screen
                     onView(ViewMatchers.withId(R.id.view_only_radio_button)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.can_edit_radio_button)).check(matches(isDisplayed()))
-                    onView(ViewMatchers.withId(R.id.file_request_radio_button)).check(matches(isDisplayed()))
+                    onView(ViewMatchers.withId(R.id.file_drop_radio_button)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.share_process_hide_download_checkbox)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.share_process_set_password_switch)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.share_process_change_name_switch)).check(matches(isDisplayed()))
+                    onView(ViewMatchers.withId(R.id.share_process_allow_resharing_checkbox)).check(matches(not(isDisplayed())))
+                    onView(ViewMatchers.withId(R.id.share_process_download_limit_switch)).check(matches(not(isDisplayed())))
 
                     // read-only
                     onView(ViewMatchers.withId(R.id.view_only_radio_button)).check(matches(isChecked()))
                     onView(ViewMatchers.withId(R.id.can_edit_radio_button)).check(matches(isNotChecked()))
-                    onView(ViewMatchers.withId(R.id.file_request_radio_button)).check(matches(isNotChecked()))
+                    onView(ViewMatchers.withId(R.id.file_drop_radio_button)).check(matches(isNotChecked()))
                     goBack()
 
                     // upload and editing
@@ -354,15 +356,15 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     openAdvancedPermissions(sut, publicShare)
                     onView(ViewMatchers.withId(R.id.view_only_radio_button)).check(matches(isNotChecked()))
                     onView(ViewMatchers.withId(R.id.can_edit_radio_button)).check(matches(isChecked()))
-                    onView(ViewMatchers.withId(R.id.file_request_radio_button)).check(matches(isNotChecked()))
+                    onView(ViewMatchers.withId(R.id.file_drop_radio_button)).check(matches(isNotChecked()))
                     goBack()
 
-                    // file request
+                    // file drop
                     publicShare.permissions = 4
                     openAdvancedPermissions(sut, publicShare)
                     onView(ViewMatchers.withId(R.id.view_only_radio_button)).check(matches(isNotChecked()))
                     onView(ViewMatchers.withId(R.id.can_edit_radio_button)).check(matches(isNotChecked()))
-                    onView(ViewMatchers.withId(R.id.file_request_radio_button)).check(matches(isChecked()))
+                    onView(ViewMatchers.withId(R.id.file_drop_radio_button)).check(matches(isChecked()))
                     goBack()
 
                     // password protection
@@ -485,12 +487,12 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     // validate view shown on screen
                     onView(ViewMatchers.withId(R.id.view_only_radio_button)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.can_edit_radio_button)).check(matches(isDisplayed()))
-                    onView(
-                        ViewMatchers.withId(R.id.file_request_radio_button)
-                    ).check(matches(not(isDisplayed())))
+                    onView(ViewMatchers.withId(R.id.file_drop_radio_button)).check(matches(not(isDisplayed())))
                     onView(ViewMatchers.withId(R.id.share_process_hide_download_checkbox)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.share_process_set_password_switch)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.share_process_change_name_switch)).check(matches(isDisplayed()))
+                    onView(ViewMatchers.withId(R.id.share_process_allow_resharing_checkbox)).check(matches(not(isDisplayed())))
+                    onView(ViewMatchers.withId(R.id.share_process_download_limit_switch)).check(matches(isDisplayed()))
 
                     // read-only
                     publicShare.permissions = 17 // from server
@@ -618,7 +620,7 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     onView(ViewMatchers.withId(R.id.view_only_radio_button)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.can_edit_radio_button)).check(matches(isDisplayed()))
                     onView(
-                        ViewMatchers.withId(R.id.file_request_radio_button)
+                        ViewMatchers.withId(R.id.file_drop_radio_button)
                     ).check(matches(not(isDisplayed())))
                     onView(
                         ViewMatchers.withId(R.id.share_process_hide_download_checkbox)
@@ -629,6 +631,8 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     onView(
                         ViewMatchers.withId(R.id.share_process_change_name_switch)
                     ).check(matches(not(isDisplayed())))
+                    onView(ViewMatchers.withId(R.id.share_process_allow_resharing_checkbox)).check(matches(isDisplayed()))
+                    onView(ViewMatchers.withId(R.id.share_process_download_limit_switch)).check(matches(not(isDisplayed())))
 
                     // read-only
                     userShare.permissions = 17 // from server
@@ -750,7 +754,7 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     // validate view shown on screen
                     onView(ViewMatchers.withId(R.id.view_only_radio_button)).check(matches(isDisplayed()))
                     onView(ViewMatchers.withId(R.id.can_edit_radio_button)).check(matches(isDisplayed()))
-                    onView(ViewMatchers.withId(R.id.file_request_radio_button)).check(matches(isDisplayed()))
+                    onView(ViewMatchers.withId(R.id.file_drop_radio_button)).check(matches(isDisplayed()))
                     onView(
                         ViewMatchers.withId(R.id.share_process_hide_download_checkbox)
                     ).check(matches(not(isDisplayed())))
@@ -760,12 +764,13 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     onView(
                         ViewMatchers.withId(R.id.share_process_change_name_switch)
                     ).check(matches(not(isDisplayed())))
+                    onView(ViewMatchers.withId(R.id.share_process_download_limit_switch)).check(matches(not(isDisplayed())))
 
                     // read-only
                     userShare.permissions = 17 // from server
                     onView(ViewMatchers.withId(R.id.view_only_radio_button)).check(matches(isChecked()))
                     onView(ViewMatchers.withId(R.id.can_edit_radio_button)).check(matches(isNotChecked()))
-                    onView(ViewMatchers.withId(R.id.file_request_radio_button)).check(matches(isNotChecked()))
+                    onView(ViewMatchers.withId(R.id.file_drop_radio_button)).check(matches(isNotChecked()))
                     goBack()
 
                     // allow upload & editing
@@ -773,7 +778,7 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     openAdvancedPermissions(sut, userShare)
                     onView(ViewMatchers.withId(R.id.view_only_radio_button)).check(matches(isNotChecked()))
                     onView(ViewMatchers.withId(R.id.can_edit_radio_button)).check(matches(isChecked()))
-                    onView(ViewMatchers.withId(R.id.file_request_radio_button)).check(matches(isNotChecked()))
+                    onView(ViewMatchers.withId(R.id.file_drop_radio_button)).check(matches(isNotChecked()))
                     goBack()
 
                     // file request
@@ -781,7 +786,7 @@ class FileDetailSharingFragmentIT : AbstractIT() {
                     openAdvancedPermissions(sut, userShare)
                     onView(ViewMatchers.withId(R.id.view_only_radio_button)).check(matches(isNotChecked()))
                     onView(ViewMatchers.withId(R.id.can_edit_radio_button)).check(matches(isNotChecked()))
-                    onView(ViewMatchers.withId(R.id.file_request_radio_button)).check(matches(isChecked()))
+                    onView(ViewMatchers.withId(R.id.file_drop_radio_button)).check(matches(isChecked()))
                     goBack()
 
                     // set expiration date

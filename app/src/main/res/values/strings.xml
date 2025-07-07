@@ -624,7 +624,7 @@
     <string name="share_with_title">Share with…</string>
     <string name="share_via_link_unset_password">Unset</string>
 
-    <string name="share_search">Name, Federated Cloud ID or email address…</string>
+    <string name="share_search">Contact name or email</string>
     <string name="share_search_internal">Add users and teams</string>
     <string name="secure_share_search">Secure share…</string>
 
@@ -1072,8 +1072,8 @@
     <string name="create_new">New</string>
     <string name="editor_placeholder" translatable="false">%1$s %2$s</string>
 
-    <string name="share_permission_file_request">File request</string>
-    <string name="share_permission_view_only">View only</string>
+    <string name="share_permission_file_drop">Filedrop only</string>
+    <string name="share_permission_read_only">Read only</string>
     <string name="share_permission_can_edit">Can edit</string>
     <string name="share_permission_secure_file_drop">Secure file drop</string>
 
@@ -1094,7 +1094,7 @@
     <string name="note_icon_hint">Note icon</string>
     <string name="add_new_public_share">Add new public share link</string>
     <string name="public_share_name">New name</string>
-    <string name="share_link_with_label">Share link (%1$s)</string>
+    <string name="share_link_with_label">Link \'%1$s\'</string>
     <string name="share_link">Share link</string>
     <string name="share_custom_permission">Custom permissions</string>
     <string name="share_read_permission">Read</string>
@@ -1172,7 +1172,7 @@
     <string name="create">Create</string>
     <string name="select_one_template">Please select one template</string>
     <string name="choose_template_helper_text">Please choose a template and enter a file name.</string>
-    <string name="share_permissions">Share permissions</string>
+    <string name="share_permissions">Permissions</string>
     <string name="common_next">Next</string>
     <string name="send_share">Send share</string>
     <string name="no_share_permission_selected">Please select at least one permission to share.</string>
@@ -1340,7 +1340,6 @@
     <string name="show_less">Show less</string>
     <string name="internal_shares">Internal shares</string>
     <string name="external_shares">External shares</string>
-    <string name="create_link">Create link</string>
     <string name="folder_best_viewed_in">This folder is best viewed in %1$s.</string>
     <string name="open_in_app">Open in %1$s</string>
     <string name="auto_upload_sub_folder_warning">This folder is already included in the parent folder’s sync, which may cause duplicate uploads</string>
