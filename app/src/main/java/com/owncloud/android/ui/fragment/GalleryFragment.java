@@ -399,6 +399,8 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
     public void selectMediaFolder() {
         Intent action = new Intent(requireActivity(), FolderPickerActivity.class);
         action.putExtra(FolderPickerActivity.EXTRA_ACTION, FolderPickerActivity.CHOOSE_LOCATION);
+        action.putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true);
+        action.putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true);
         startActivityForResult(action, SELECT_LOCATION_REQUEST_CODE);
     }
 
