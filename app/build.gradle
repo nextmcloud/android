@@ -58,7 +58,8 @@ apply plugin: "com.google.devtools.ksp"
 apply from: "$rootProject.projectDir/nmc_marketing-dependencies.gradle"
 
 println "Gradle uses Java ${Jvm.current()}"
-
+// apply MoEngage SDK for NMC
+apply from: "$rootProject.projectDir/nmc_moengage-dependencies.gradle"
 configurations {
     configureEach {
         exclude group: "org.jetbrains", module: "annotations-java5" // via prism4j, already using annotations explicitly
@@ -115,6 +116,8 @@ android {
         targetSdkVersion 35
         compileSdk 35
 
+        // NMC Customization
+        buildConfigField "String", "MOENGAGE_APP_ID", "${MOENGAGE_APP_ID}"
         buildConfigField "boolean", "CI", ciBuild.toString()
         buildConfigField "boolean", "RUNTIME_PERF_ANALYSIS", perfAnalysis.toString()
 
