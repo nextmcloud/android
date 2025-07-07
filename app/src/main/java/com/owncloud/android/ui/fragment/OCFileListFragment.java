@@ -1919,11 +1919,21 @@ public class OCFileListFragment extends ExtendedListFragment implements
                     setTitle(R.string.drawer_item_shared);
                     break;
                 default:
-                    setTitle(themeUtils.getDefaultDisplayNameForRootFolder(getContext()), false);
+                    setTitle(themeUtils.getDefaultDisplayNameForRootFolder(getContext()), isRoot());
                     break;
             }
         }
 
+    }
+
+    //NMC Customization
+    //for NMC we are using defaultToolbar instead searchToolbar for which we needed customization
+    private boolean isRoot() {
+        Activity activity;
+        if ((activity = getActivity()) != null && activity instanceof FileDisplayActivity) {
+            return ((FileDisplayActivity) activity).isRoot(((FileDisplayActivity) activity).getFile());
+        }
+        return false;
     }
 
     protected void prepareActionBarItems(SearchEvent event) {
@@ -1986,7 +1996,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 ((FileDisplayActivity) activity).initSyncBroadcastReceiver();
             }
 
-            setTitle(themeUtils.getDefaultDisplayNameForRootFolder(getContext()), false);
+            setTitle(themeUtils.getDefaultDisplayNameForRootFolder(getContext()), isRoot());
             activity.getIntent().removeExtra(OCFileListFragment.SEARCH_EVENT);
         }
 
