@@ -175,7 +175,8 @@ class FileDetailsSharingProcessFragment :
 
         requireNotNull(fileActivity) { "FileActivity may not be null" }
 
-        permission = capabilities.defaultPermissions ?: OCShare.NO_PERMISSION
+        permission = share?.permissions
+            ?: capabilities.defaultPermissions ?: OCShare.NO_PERMISSION
     }
 
     private fun initArguments() {
@@ -218,7 +219,11 @@ class FileDetailsSharingProcessFragment :
         super.onViewCreated(view, savedInstanceState)
         if (isShareProcessStepIsPermission()) {
             setupUI()
+            setVisibilitiesOfShareOption()
+            toggleNextButtonAvailability(isAnyShareOptionChecked())
         } else {
+            // NMC Customization: for note share directly enable button
+            toggleNextButtonAvailability(true)
             updateViewForNoteScreenType()
         }
 
@@ -231,8 +236,6 @@ class FileDetailsSharingProcessFragment :
         implementClickEvents()
         setCheckboxStates()
         themeView()
-        setVisibilitiesOfShareOption()
-        toggleNextButtonAvailability(isAnyShareOptionChecked())
         logShareInfo()
     }
 
@@ -525,7 +528,6 @@ class FileDetailsSharingProcessFragment :
                 noteText.setText(R.string.empty)
             }
             shareProcessStep = SCREEN_TYPE_NOTE
-            shareProcessBtnNext.performClick()
         }
     }
     // endregion
@@ -592,7 +594,8 @@ class FileDetailsSharingProcessFragment :
         return binding.run {
             viewOnlyRadioButton.isChecked ||
                 canEditRadioButton.isChecked ||
-                fileDropRadioButton.isChecked}
+                fileDropRadioButton.isChecked
+        } || permission != OCShare.NO_PERMISSION
     }
 
     private fun toggleNextButtonAvailability(value: Boolean) {
@@ -860,7 +863,6 @@ class FileDetailsSharingProcessFragment :
             binding.shareProcessChangeNameEt.text.toString().trim(),
             true
         )
-        removeCurrentFragment()
     }
 
     /**
