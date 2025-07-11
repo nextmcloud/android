@@ -24,6 +24,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.SslUntrustedCertLayoutBinding
 import com.owncloud.android.lib.common.network.CertificateCombinedException
@@ -104,7 +105,8 @@ open class SslUntrustedCertDialog : DialogFragment(), Injectable {
             setView(layoutBinding.getRoot())
         }
 
-        viewThemeUtils?.dialog?.colorMaterialAlertDialogBackground(requireContext(), builder)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireContext(), builder)
 
         return builder.create().apply {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
