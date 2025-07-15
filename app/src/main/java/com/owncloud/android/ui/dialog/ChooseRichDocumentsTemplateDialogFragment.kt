@@ -28,6 +28,7 @@ import com.nextcloud.client.network.ClientFactory
 import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.fileNameValidator.FileNameValidator
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ChooseTemplateBinding
@@ -99,14 +100,8 @@ class ChooseRichDocumentsTemplateDialogFragment :
         alertDialog?.let {
             positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE) as? MaterialButton
             positiveButton?.let {
-                viewThemeUtils.material.colorMaterialButtonPrimaryTonal(it)
                 it.setOnClickListener(this)
                 it.isEnabled = false
-            }
-
-            val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE) as? MaterialButton
-            negativeButton?.let {
-                viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(negativeButton)
             }
         }
 
@@ -131,7 +126,6 @@ class ChooseRichDocumentsTemplateDialogFragment :
 
         initClient()
         initFilenames(arguments)
-        viewThemeUtils.material.colorTextInputLayout(binding.filenameContainer)
 
         val type = Type.valueOf(arguments.getString(ARG_TYPE) ?: "")
         FetchTemplateTask(this, client).execute(type)
@@ -194,8 +188,8 @@ class ChooseRichDocumentsTemplateDialogFragment :
             .setNegativeButton(R.string.common_cancel, null)
             .setTitle(titleTextId)
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(activity, builder)
-
+        //NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(activity, builder)
         return builder
     }
 
