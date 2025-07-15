@@ -13,7 +13,6 @@
  */
 package com.owncloud.android.ui.activity;
 
-import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AuthenticatorException;
 import android.annotation.SuppressLint;
@@ -66,20 +65,18 @@ import com.nextcloud.client.utils.IntentUtil;
 import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.nextcloud.model.WorkerState;
 import com.nextcloud.model.WorkerStateLiveData;
-import com.nextcloud.utils.BuildHelper;
 import com.nextcloud.utils.extensions.ActivityExtensionsKt;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.nextcloud.utils.extensions.FileExtensionsKt;
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
 import com.nextcloud.utils.fileNameValidator.FileNameValidator;
 import com.nextcloud.utils.view.FastScrollUtils;
+import com.nmc.android.utils.SearchViewThemeUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FilesBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
-import com.owncloud.android.datamodel.MediaFolderType;
 import com.owncloud.android.datamodel.OCFile;
-import com.owncloud.android.datamodel.SyncedFolder;
 import com.owncloud.android.datamodel.SyncedFolderProvider;
 import com.nmc.android.scans.SaveScannedDocumentFragment;
 import com.owncloud.android.datamodel.VirtualFolderType;
@@ -441,19 +438,19 @@ public class FileDisplayActivity extends FileActivity
             DisplayUtils.showServerOutdatedSnackbar(this, Snackbar.LENGTH_LONG);
         }
     }
-    
+
     private void checkNotifications() {
         new Thread(() -> {
             try {
                 RemoteOperationResult<List<Notification>> result = new GetNotificationsRemoteOperation()
                     .execute(clientFactory.createNextcloudClient(accountManager.getUser()));
-                
+
                 if (result.isSuccess() && !result.getResultData().isEmpty()) {
                     runOnUiThread(() -> mNotificationButton.setVisibility(View.VISIBLE));
                 } else {
                     runOnUiThread(() -> mNotificationButton.setVisibility(View.GONE));
                 }
-                
+
             } catch (ClientFactory.CreationException e) {
                 Log_OC.e(TAG, "Could not fetch notifications!");
             }
@@ -789,7 +786,8 @@ public class FileDisplayActivity extends FileActivity
             searchView.setIconified(false);
         });
 
-        viewThemeUtils.androidx.themeToolbarSearchView(searchView);
+        //NMC customization
+        SearchViewThemeUtils.INSTANCE.themeSearchView(this, searchView);
 
         // populate list of menu items to show/hide when drawer is opened/closed
         mDrawerMenuItemstoShowHideList = new ArrayList<>(1);
