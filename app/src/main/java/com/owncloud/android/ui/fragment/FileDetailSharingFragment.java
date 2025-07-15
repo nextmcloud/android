@@ -61,6 +61,9 @@ import com.owncloud.android.ui.activity.FileDisplayActivity;
 import com.owncloud.android.ui.adapter.ShareeListAdapter;
 import com.owncloud.android.ui.adapter.ShareeListAdapterListener;
 import com.owncloud.android.ui.asynctasks.RetrieveHoverCardAsyncTask;
+import com.nextcloud.client.preferences.AppPreferences;
+import com.nmc.android.marketTracking.AdjustSdkUtils;
+import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.ui.dialog.SharePasswordDialogFragment;
 import com.owncloud.android.ui.events.ShareSearchViewFocusEvent;
 import com.owncloud.android.ui.fragment.util.FileDetailSharingFragmentHelper;
@@ -115,6 +118,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     @Inject EditorUtils editorUtils;
     @Inject ViewThemeUtils viewThemeUtils;
     @Inject UsersAndGroupsSearchConfig searchConfig;
+    @Inject AppPreferences appPreferences;
 
     public static FileDetailSharingFragment newInstance(OCFile file, User user) {
         FileDetailSharingFragment fragment = new FileDetailSharingFragment();
@@ -437,6 +441,10 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
             // create without password if not enforced by server or we don't know if enforced;
             fileOperationsHelper.shareFileViaPublicShare(file, null);
         }
+
+        //track event on creating share link
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_CREATE_SHARING_LINK, appPreferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_CREATE_SHARING_LINK, appPreferences);
     }
 
     @Override
