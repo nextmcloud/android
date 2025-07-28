@@ -198,6 +198,12 @@ class GalleryAdapter(
         Handler(Looper.getMainLooper()).post { notifyDataSetChanged() }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun showAlbumItems(albumItems: List<OCFile>) {
+        files = albumItems.toGalleryItems()
+        Handler(Looper.getMainLooper()).post { notifyDataSetChanged() }
+    }
+
     private fun transformToRows(list: List<OCFile>): List<GalleryRow> = list
         .sortedBy { it.modificationTimestamp }
         .reversed()
@@ -285,6 +291,10 @@ class GalleryAdapter(
 
     override fun notifyItemChanged(file: OCFile) {
         notifyItemChanged(getItemPosition(file))
+    }
+
+    fun setCheckedItem(files: Set<OCFile>?) {
+        ocFileListDelegate.setCheckedItem(files)
     }
 
     override fun getFilesCount(): Int = files.fold(0) { acc, item -> acc + item.rows.size }
