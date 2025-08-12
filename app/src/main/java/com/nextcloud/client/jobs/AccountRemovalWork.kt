@@ -23,6 +23,7 @@ import com.nextcloud.client.core.Clock
 import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.common.NextcloudClient
 import com.owncloud.android.MainApp
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.ArbitraryDataProvider
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl
@@ -142,6 +143,8 @@ class AccountRemovalWork(
 
         if (userRemoved) {
             eventBus.post(AccountRemovedEvent())
+            // NMC: track user logout
+            MoEngageSdkUtils.trackUserLogout(context)
         }
 
         return Result.success()
