@@ -21,7 +21,6 @@ import com.nextcloud.utils.extensions.OCShareExtensionsKt;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.QuickSharingPermissionsBottomSheetFragmentBinding;
 import com.owncloud.android.datamodel.quickPermission.QuickPermission;
-import com.owncloud.android.datamodel.quickPermission.QuickPermissionType;
 import com.owncloud.android.lib.resources.shares.OCShare;
 import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.ui.adapter.QuickSharingPermissionsAdapter;
@@ -33,9 +32,8 @@ import java.util.List;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import static com.owncloud.android.lib.resources.shares.OCShare.CREATE_PERMISSION_FLAG;
-import static com.owncloud.android.lib.resources.shares.OCShare.MAXIMUM_PERMISSIONS_FOR_FILE;
-import static com.owncloud.android.lib.resources.shares.OCShare.MAXIMUM_PERMISSIONS_FOR_FOLDER;
 import static com.owncloud.android.lib.resources.shares.OCShare.READ_PERMISSION_FLAG;
+import static com.owncloud.android.lib.resources.shares.OCShare.SHARE_PERMISSION_FLAG;
 
 /**
  * File Details Quick Sharing permissions options {@link Dialog} styled as a bottom sheet for main actions.
@@ -71,8 +69,6 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
             getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        viewThemeUtils.platform.themeDialog(binding.getRoot());
-
         setUpRecyclerView();
         setOnShowListener(d ->
                               BottomSheetBehavior.from((View) binding.getRoot().getParent())
@@ -87,8 +83,8 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
             new QuickSharingPermissionsAdapter.QuickSharingPermissionViewHolder.OnPermissionChangeListener() {
                 @Override
                 public void onCustomPermissionSelected() {
+                    // NMC Customizations: No action will be required
                     dismiss();
-                    actions.openShareDetailWithCustomPermissions(ocShare);
                 }
 
                 @Override
@@ -112,8 +108,24 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
      * Handle permission changed on click of selected permission
      */
     private void handlePermissionChanged(List<QuickPermission> quickPermissionList, int position) {
-        final var type = quickPermissionList.get(position).getType();
-        int permissionFlag = type.getPermissionFlag(ocShare.isFolder());
+        final var permissionName = quickPermissionList.get(position).getType().getText(getContext());
+        final var res = fileActivity.getResources();
+
+        int permissionFlag = 0;
+        if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_can_edit)) || permissionName.equalsIgnoreCase(res.getString(R.string.link_share_editing))) {
+            permissionFlag = SharePermissionManager.INSTANCE.getMaximumPermission(ocShare.isFolder());
+        } else if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_read_only))) {
+            permissionFlag = READ_PERMISSION_FLAG;
+        } else if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_file_drop))) {
+            permissionFlag = CREATE_PERMISSION_FLAG + READ_PERMISSION_FLAG;
+        }
+
+        // NMC Customization: after permission change check if share already has reshare allowed
+        // if allowed then toggle permission flag
+        if (SharePermissionManager.INSTANCE.canReshare(ocShare)) {
+            permissionFlag = SharePermissionManager.INSTANCE.togglePermission(true, permissionFlag, SHARE_PERMISSION_FLAG);
+        }
+
         actions.onQuickPermissionChanged(ocShare, permissionFlag);
         dismiss();
     }
@@ -135,7 +147,5 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
 
     public interface QuickPermissionSharingBottomSheetActions {
         void onQuickPermissionChanged(OCShare share, int permission);
-
-        void openShareDetailWithCustomPermissions(OCShare share);
     }
 }
