@@ -632,6 +632,15 @@
             android:exported="false"
             android:theme="@style/Theme.ownCloud.OverlayGrey" />
         <activity
+            android:name="com.nmc.android.ui.PrivacySettingsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:name="com.nmc.android.ui.LoginPrivacySettingsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
             android:name="com.nextcloud.client.documentscan.DocumentScanActivity"
             android:exported="false"
             android:theme="@style/Theme.ownCloud.Toolbar" />
