@@ -62,6 +62,7 @@ import com.nextcloud.client.preferences.AppPreferencesImpl
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.nextcloud.utils.extensions.handleBackButtonEvent
 import com.nmc.android.utils.SwipeRefreshThemeUtils
+import com.nmc.android.utils.SearchViewThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ListFragmentBinding
@@ -172,7 +173,8 @@ open class ExtendedListFragment :
         // there will be no search option so it we have to return it
         val item = menu.findItem(R.id.action_search) ?: return
         searchView = MenuItemCompat.getActionView(item) as SearchView?
-        viewThemeUtils.androidx.themeToolbarSearchView(searchView!!)
+        // NMC customization
+        SearchViewThemeUtils.themeSearchView(requireActivity(), searchView!!);
         closeButton = searchView?.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
         searchView?.setOnQueryTextListener(this)
         searchView?.setOnCloseListener(this)
