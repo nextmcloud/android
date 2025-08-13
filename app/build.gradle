@@ -78,6 +78,10 @@ configurations.configureEach {
 
 // semantic versioning for version code
 def versionMajor = 3
+// NMC: to avoid merge conflicts, we do not change the original version settings.
+// NMC: Instead, we override the local values with our own here and not touch the definition above.
+versionMajor = 7
+// NMC: end
 def versionMinor = 32
 def versionPatch = 0
 def versionBuild = 51 // 0-50=Alpha / 51-98=RC / 90-99=stable
@@ -105,10 +109,6 @@ android {
 
     defaultConfig {
         applicationId "com.nextcloud.client"
-        // NMC: to avoid merge conflicts, we do not change the original version settings.
-        // NMC: Instead, we override the local values with our own here and not touch the definition above.
-        versionMajor = 7
-        // NMC: end
         minSdkVersion 26
         targetSdkVersion 35
         compileSdk 35
