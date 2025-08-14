@@ -228,7 +228,8 @@
     <string name="request_account_deletion">Request account deletion</string>
     <string name="request_account_deletion_button">Request deletion</string>
     <string name="request_account_deletion_details">Request permanent deletion of account by service provider</string>
-    <string name="delete_account">Remove account</string>
+    <string name="delete_account">Logout user</string>
+    <string name="delete_account_warning">Log out user %s on this device and delete local data?</string>
     <string name="avatar">Avatar</string>
     <string name="active_user">Active user</string>
     <string name="upload_chooser_title">Upload from…</string>
