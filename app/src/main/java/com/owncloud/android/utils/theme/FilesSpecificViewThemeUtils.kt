@@ -28,7 +28,9 @@ import com.nextcloud.android.common.ui.theme.MaterialSchemes
 import com.nextcloud.android.common.ui.theme.ViewThemeUtilsBase
 import com.nextcloud.android.common.ui.theme.utils.AndroidViewThemeUtils
 import com.nextcloud.android.common.ui.theme.utils.AndroidXViewThemeUtils
+import com.nmc.android.utils.ToolbarThemeUtils
 import com.nextcloud.utils.view.FastScrollPopupBackground
+import com.nmc.android.utils.DrawableThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.lib.resources.shares.ShareType
@@ -134,18 +136,11 @@ class FilesSpecificViewThemeUtils @Inject constructor(
     // TODO move back arrow resource to lib and use lib method directly?
     @JvmOverloads
     fun themeActionBar(context: Context, actionBar: ActionBar, title: String, isMenu: Boolean = false) {
-        val icon = getHomeAsUpIcon(isMenu)
-        val backArrow = ResourcesCompat.getDrawable(
-            context.resources,
-            icon,
-            null
-        )!!
-        androidXViewThemeUtils.themeActionBar(
-            context,
-            actionBar,
-            title,
-            backArrow
-        )
+        //custom styling for action bar title required for NMC
+        ToolbarThemeUtils.setColoredTitle(context, actionBar, title)
+
+        //custom color for back arrow for NMC
+        themeActionBar(context, actionBar, isMenu)
     }
 
     /**
@@ -172,7 +167,13 @@ class FilesSpecificViewThemeUtils @Inject constructor(
             getHomeAsUpIcon(isMenu),
             null
         )!!
-        androidXViewThemeUtils.themeActionBar(context, actionBar, backArrow)
+        //custom color for back arrow for NMC
+        actionBar.setHomeAsUpIndicator(
+            DrawableThemeUtils.tintDrawable(
+                backArrow,
+                context.resources.getColor(R.color.fontAppbar, null)
+            )
+        )
     }
 
     fun themeTemplateCardView(cardView: MaterialCardView) {
