@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -1062,15 +1063,10 @@ public class SettingsActivity extends PreferenceActivity
         actionBar.setDisplayShowTitleEnabled(true);
 
         if (getResources() == null) return;
-        Drawable menuIcon = ResourcesCompat.getDrawable(getResources(),
-                                                        R.drawable.ic_arrow_back,
-                                                        null);
-
-        if (menuIcon == null) return;
-        viewThemeUtils.androidx.themeActionBar(this,
-                                               actionBar,
-                                               getString(R.string.actionbar_settings),
-                                               menuIcon);
+        // custom color for back arrow for NMC
+        viewThemeUtils.files.themeActionBar(this, actionBar, getResources().getString(R.string.actionbar_settings));
+        // required for NMC
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.bg_default, null)));
     }
 
     private void launchDavDroidLogin() {
