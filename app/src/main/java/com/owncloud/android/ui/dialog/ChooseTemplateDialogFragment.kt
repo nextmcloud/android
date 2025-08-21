@@ -34,6 +34,7 @@ import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.fileNameValidator.FileNameValidator
 import com.nmc.android.utils.DialogThemeUtils
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ChooseTemplateBinding
@@ -340,6 +341,11 @@ class ChooseTemplateDialogFragment : DialogFragment(), View.OnClickListener, Tem
                 putExtra(ExternalSiteWebView.EXTRA_URL, url)
                 putExtra(ExternalSiteWebView.EXTRA_FILE, file)
                 putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false)
+            }
+
+            // NMC: track create text file event
+            file?.let {
+                MoEngageSdkUtils.trackCreateFileEvent(MainApp.getAppContext(), it)
             }
 
             fragment.run {

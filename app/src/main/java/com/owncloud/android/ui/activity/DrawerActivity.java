@@ -52,6 +52,7 @@ import com.nextcloud.utils.extensions.ViewExtensionsKt;
 import com.nextcloud.utils.mdm.MDMConfig;
 import com.nmc.android.utils.DrawableThemeUtils;
 import com.owncloud.android.MainApp;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.PassCodeManager;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -430,13 +431,19 @@ public abstract class DrawerActivity extends ToolbarActivity
             resetOnlyPersonalAndOnDevice();
             setupToolbar();
             handleSearchEvents(new SearchEvent("", SearchRemoteOperation.SearchType.FAVORITE_SEARCH), menuItem.getItemId());
+            // NMC: track fav screen event
+            MoEngageSdkUtils.trackFavouriteScreenEvent(this);
         } else if (itemId == R.id.nav_gallery) {
             resetOnlyPersonalAndOnDevice();
             setupToolbar();
             startPhotoSearch(menuItem.getItemId());
+            // NMC: track media screen event
+            MoEngageSdkUtils.trackMediaScreenEvent(this);
         } else if (itemId == R.id.nav_on_device) {
             EventBus.getDefault().post(new ChangeMenuEvent());
             showFiles(true, false);
+            // NMC: track offline files screen event
+            MoEngageSdkUtils.trackOfflineFilesScreenEvent(this);
         } else if (itemId == R.id.nav_uploads) {
             resetOnlyPersonalAndOnDevice();
             startActivity(UploadListActivity.class, Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -468,6 +475,8 @@ public abstract class DrawerActivity extends ToolbarActivity
         } else if (itemId == R.id.nav_shared) {
             resetOnlyPersonalAndOnDevice();
             startSharedSearch(menuItem);
+            // NMC: track shared screen event
+            MoEngageSdkUtils.trackSharedScreenEvent(this);
         } else if (itemId == R.id.nav_recently_modified) {
             resetOnlyPersonalAndOnDevice();
             startRecentlyModifiedSearch(menuItem);
@@ -902,6 +911,9 @@ public abstract class DrawerActivity extends ToolbarActivity
                             showQuota(false);
                         }
                     });
+
+                    // NMC: track quota storage
+                    MoEngageSdkUtils.trackQuotaStorage(this, quota);
                 }
             }
         });
