@@ -19,6 +19,7 @@ import android.view.View
 import android.widget.AdapterView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.nmc.android.utils.DialogThemeUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.preferences.SubFolderRule
@@ -95,7 +96,8 @@ class SyncedFolderPreferencesDialogFragment : DialogFragment(), Injectable {
         val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setView(binding!!.getRoot())
 
-        viewThemeUtils?.dialog?.colorMaterialAlertDialogBackground(requireContext(), builder)
+        //NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireContext(), builder)
 
         return builder.create()
     }
@@ -154,10 +156,6 @@ class SyncedFolderPreferencesDialogFragment : DialogFragment(), Injectable {
             binding.settingInstantUploadPathUseSubfoldersCheckbox,
             binding.settingInstantUploadExcludeHiddenCheckbox
         )
-
-        viewThemeUtils?.material?.colorMaterialButtonPrimaryTonal(binding.btnPositive)
-        viewThemeUtils?.material?.colorMaterialButtonPrimaryBorderless(binding.btnNegative)
-        viewThemeUtils?.material?.colorMaterialButtonPrimaryBorderless(binding.btnNeutral)
     }
 
     private fun setButtonOrder(binding: SyncedFoldersSettingsLayoutBinding) {
@@ -421,7 +419,8 @@ class SyncedFolderPreferencesDialogFragment : DialogFragment(), Injectable {
         }
 
         behaviourDialogShown = true
-        viewThemeUtils?.dialog?.colorMaterialAlertDialogBackground(requireActivity(), builder)
+        //NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireActivity(), builder)
 
         behaviourDialog = builder.create()
         behaviourDialog?.show()
@@ -440,7 +439,8 @@ class SyncedFolderPreferencesDialogFragment : DialogFragment(), Injectable {
 
             nameCollisionPolicyDialogShown = true
 
-            viewThemeUtils?.dialog?.colorMaterialAlertDialogBackground(requireActivity(), builder)
+            //NMC customization
+            DialogThemeUtils.colorMaterialAlertDialogBackground(requireActivity(), builder)
             behaviourDialog = builder.create()
             behaviourDialog?.show()
         }
