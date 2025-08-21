@@ -31,3 +31,7 @@ fun List<OCFile>.limitToPersonalFiles(userId: String): List<OCFile> = filter { f
         ownerId == userId && !file.isSharedWithMe && !file.isGroupFolder
     } == true
 }
+
+// NMC method to filter only folders with/without e2ee folders
+fun List<OCFile>.filterByFolder(hideEncryptedFolder: Boolean = false): List<OCFile> =
+    filter { it.isFolder && (!hideEncryptedFolder || !it.isEncrypted) }

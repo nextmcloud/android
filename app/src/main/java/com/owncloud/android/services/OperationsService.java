@@ -49,6 +49,7 @@ import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.lib.resources.users.GetUserInfoRemoteOperation;
 import com.owncloud.android.operations.CheckCurrentCredentialsOperation;
 import com.owncloud.android.operations.CopyFileOperation;
+import com.owncloud.android.operations.CreateFolderIfNotExistOperation;
 import com.owncloud.android.operations.CreateFolderOperation;
 import com.owncloud.android.operations.CreateShareViaLinkOperation;
 import com.owncloud.android.operations.CreateShareWithShareeOperation;
@@ -105,6 +106,7 @@ public class OperationsService extends Service {
     public static final String EXTRA_IN_BACKGROUND = "IN_BACKGROUND";
     public static final String EXTRA_FILES_DOWNLOAD_LIMIT = "FILES_DOWNLOAD_LIMIT";
     public static final String EXTRA_SHARE_ATTRIBUTES = "SHARE_ATTRIBUTES";
+    public static final String EXTRA_CHECK_ONLY_FOLDER_EXISTENCE = "CHECK_ONLY_FOLDER_EXISTENCE";
 
     public static final String ACTION_CREATE_SHARE_VIA_LINK = "CREATE_SHARE_VIA_LINK";
     public static final String ACTION_CREATE_SECURE_FILE_DROP = "CREATE_SECURE_FILE_DROP";
@@ -127,6 +129,7 @@ public class OperationsService extends Service {
     public static final String ACTION_GET_SHARE_DOWNLOAD_LIMIT = "GET_SHARE_DOWNLOAD_LIMIT";
     public static final String ACTION_RESTORE_VERSION = "RESTORE_VERSION";
     public static final String ACTION_UPDATE_FILES_DOWNLOAD_LIMIT = "UPDATE_FILES_DOWNLOAD_LIMIT";
+    public static final String ACTION_CREATE_FOLDER_NOT_EXIST = "CREATE_FOLDER_NOT_EXIST";
 
     private ServiceHandler mOperationsHandler;
     private OperationsServiceBinder mOperationsBinder;
@@ -713,6 +716,13 @@ public class OperationsService extends Service {
                                                               user,
                                                               getApplicationContext(),
                                                               fileDataStorageManager);
+                        break;
+
+                    case ACTION_CREATE_FOLDER_NOT_EXIST:
+                        remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        operation = new CreateFolderIfNotExistOperation(remotePath, user,
+                                                                        operationIntent.getBooleanExtra(EXTRA_CHECK_ONLY_FOLDER_EXISTENCE, false),
+                                                                        getApplicationContext(), fileDataStorageManager);
                         break;
 
                     case ACTION_SYNC_FILE:
