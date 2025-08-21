@@ -15,10 +15,10 @@
     android:layout_height="match_parent">
 
     <FrameLayout
-        style="@style/Widget.Material3.BottomSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:behavior_peekHeight="350dp"
+        android:background="@color/bottom_sheet_bg_color"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <LinearLayout
@@ -48,7 +48,9 @@
                     android:text="@string/show_images"
                     app:iconPadding="@dimen/standard_half_padding"
                     android:textSize="@dimen/bottom_sheet_text_size"
-                    app:icon="@drawable/ic_camera" />
+                    android:textColor="@color/bottom_sheet_txt_color"
+                    app:icon="@drawable/ic_camera"
+                    app:iconTint="@color/bottom_sheet_icon_color"/>
 
                 <View
                     android:layout_width="0dp"
@@ -84,7 +86,9 @@
                     android:text="@string/show_video"
                     app:iconPadding="@dimen/standard_half_padding"
                     android:textSize="@dimen/bottom_sheet_text_size"
-                    app:icon="@drawable/ic_video_camera" />
+                    android:textColor="@color/bottom_sheet_txt_color"
+                    app:icon="@drawable/ic_video_camera"
+                    app:iconTint="@color/bottom_sheet_icon_color"/>
 
                 <View
                     android:layout_width="0dp"
@@ -118,7 +122,9 @@
                     app:iconPadding="@dimen/standard_half_padding"
                     android:text="@string/select_media_folder"
                     android:textSize="@dimen/bottom_sheet_text_size"
-                    app:icon="@drawable/nav_photos" />
+                    android:textColor="@color/bottom_sheet_txt_color"
+                    app:icon="@drawable/nav_photos"
+                    app:iconTint="@color/bottom_sheet_icon_color"/>
 
                 <View
                     android:layout_width="0dp"
