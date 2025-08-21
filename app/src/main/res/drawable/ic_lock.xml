@@ -5,9 +5,14 @@
   ~ SPDX-License-Identifier: Apache-2.0
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:height="24dp"
     android:width="24dp"
+    android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path android:fillColor="#000" android:pathData="M12,17C10.89,17 10,16.1 10,15C10,13.89 10.89,13 12,13A2,2 0 0,1 14,15A2,2 0 0,1 12,17M18,20V10H6V20H18M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V10C4,8.89 4.89,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z" />
+    <path
+        android:pathData="M12,1C15.6,1 18.5,3.9 18.5,7.5L18.5,7.5L18.5,9.5L21,9.5L21,19C21,20.65 19.65,22 18,22L18,22L6,22C4.35,22 3,20.65 3,19L3,19L3,9.5L5.5,9.5L5.5,7.5C5.5,3.9 8.4,1 12,1ZM19.5,11L4.5,11L4.5,19C4.5,19.85 5.15,20.5 6,20.5L6,20.5L18,20.5C18.85,20.5 19.5,19.85 19.5,19L19.5,19L19.5,11ZM12,13.5C12.85,13.5 13.5,14.15 13.5,15C13.5,15.45 13.3,15.85 13,16.1L13,16.1L13,18L11,18L11,16.1C10.7,15.85 10.5,15.45 10.5,15C10.5,14.15 11.15,13.5 12,13.5ZM12,2.5C9.25,2.5 7,4.75 7,7.5L7,7.5L7,9.5L17,9.5L17,7.5C17,4.75 14.75,2.5 12,2.5Z"
+        android:strokeWidth="1"
+        android:fillColor="#262626"
+        android:fillType="evenOdd"
+        android:strokeColor="#00000000"/>
 </vector>
