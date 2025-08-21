@@ -354,7 +354,9 @@ class PreviewMediaFragment : FileFragment(), OnTouchListener, Injectable {
                 R.id.action_move_or_copy,
                 R.id.action_favorite,
                 R.id.action_unset_favorite,
-                R.id.action_pin_to_homescreen
+                R.id.action_pin_to_homescreen,
+                // hide this option for NMC
+                R.id.action_see_details
             )
         )
 
