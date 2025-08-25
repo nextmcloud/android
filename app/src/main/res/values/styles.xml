@@ -188,10 +188,11 @@
 
     <style name="OutlinedButton" parent="Widget.Material3.Button.OutlinedButton">
         <item name="colorAccent">@color/transparent</item>
-        <item name="android:textColor">@color/primary_dark</item>
+        <item name="android:textColor">@color/text_color</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:typeface">sans</item>
         <item name="android:textStyle">bold</item>
+        <item name="strokeColor">@color/text_color</item>
     </style>
 
     <style name="OutlineLoginButton" parent="Widget.Material3.Button.OutlinedButton">
@@ -201,9 +202,11 @@
         <item name="strokeColor">@color/login_btn_stroke</item>
     </style>
 
+    <!-- custom colors for NMC -->
     <style name="Button.Primary" parent="Button">
         <item name="colorButtonNormal">@color/primary_button_background_color</item>
-        <item name="android:textColor">@color/primary_button_text_color</item>
+        <item name="android:textColor">@color/primary_button_text_color_state</item>
+        <item name="iconTint">@color/primary_button_text_color_state</item>
         <item name="android:typeface">sans</item>
         <item name="android:textStyle">bold</item>
     </style>
