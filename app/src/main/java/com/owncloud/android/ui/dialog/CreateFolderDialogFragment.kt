@@ -29,6 +29,7 @@ import com.nextcloud.utils.autoRename.AutoRename
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.extensions.typedActivity
 import com.nextcloud.utils.fileNameValidator.FileNameValidator
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.EditBoxDialogBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -85,12 +86,6 @@ class CreateFolderDialogFragment :
             positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE) as? MaterialButton
             positiveButton?.let {
                 it.isEnabled = false
-                viewThemeUtils.material.colorMaterialButtonPrimaryTonal(it)
-            }
-
-            val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE) as? MaterialButton
-            negativeButton?.let {
-                viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(it)
             }
         }
     }
@@ -109,7 +104,6 @@ class CreateFolderDialogFragment :
         binding = EditBoxDialogBinding.inflate(inflater, null, false)
 
         binding.userInput.setText(R.string.empty)
-        viewThemeUtils.material.colorTextInputLayout(binding.userInputContainer)
 
         val parentFolder = requireArguments().getParcelableArgument(ARG_PARENT_FOLDER, OCFile::class.java)
 
@@ -128,7 +122,8 @@ class CreateFolderDialogFragment :
         })
 
         val builder = buildMaterialAlertDialog(binding.root)
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.userInputContainer.context, builder)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(binding.userInputContainer.context, builder)
         return builder.create()
     }
 
