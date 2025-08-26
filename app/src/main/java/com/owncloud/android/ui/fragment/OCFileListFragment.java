@@ -54,6 +54,7 @@ import com.nextcloud.common.NextcloudClient;
 import com.nextcloud.ui.fileactions.FileAction;
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet;
 import com.nextcloud.utils.EditorUtils;
+import com.nmc.android.utils.FabThemeUtils;
 import com.nextcloud.utils.ShortcutUtil;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.nextcloud.utils.extensions.FileExtensionsKt;
@@ -335,7 +336,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
         if (mFabMain != null) {
             // is not available in FolderPickerActivity
-            viewThemeUtils.material.themeFAB(mFabMain);
+            //NMC customization
+            FabThemeUtils.colorFloatingActionButton(requireContext(), mFabMain);
         }
 
         Log_OC.i(TAG, "onCreateView() end");
@@ -510,7 +512,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
         if (mFabMain != null) {
             // is not available in FolderPickerActivity
-            viewThemeUtils.material.themeFAB(mFabMain);
+            //NMC customization
+            FabThemeUtils.colorFloatingActionButton(requireContext(), mFabMain);
             mFabMain.setOnClickListener(v -> {
                 PermissionUtil.requestMediaLocationPermission(activity);
 
@@ -2247,7 +2250,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
         activity.runOnUiThread(() -> {
             if (visible) {
                 mFabMain.show();
-                viewThemeUtils.material.themeFAB(mFabMain);
+                // NMC customization
+                FabThemeUtils.colorFloatingActionButton(requireContext(), mFabMain);
             } else {
                 mFabMain.hide();
             }
@@ -2279,10 +2283,12 @@ public class OCFileListFragment extends ExtendedListFragment implements
             getActivity().runOnUiThread(() -> {
                 if (enabled) {
                     mFabMain.setEnabled(true);
-                    viewThemeUtils.material.themeFAB(mFabMain);
+                    //NMC customization
+                    FabThemeUtils.colorFloatingActionButton(requireContext(), mFabMain);
                 } else {
                     mFabMain.setEnabled(false);
-                    viewThemeUtils.material.themeFAB(mFabMain);
+                    //NMC customization
+                    FabThemeUtils.colorFloatingActionButton(requireContext(), mFabMain);
                 }
             });
         }
