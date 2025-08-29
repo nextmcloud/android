@@ -117,7 +117,7 @@ public class QuickSharingPermissionsBottomSheetDialog extends BottomSheetDialog 
         } else if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_read_only))) {
             permissionFlag = READ_PERMISSION_FLAG;
         } else if (permissionName.equalsIgnoreCase(res.getString(R.string.share_permission_file_drop))) {
-            permissionFlag = CREATE_PERMISSION_FLAG + READ_PERMISSION_FLAG;
+            permissionFlag = CREATE_PERMISSION_FLAG;
         }
 
         // NMC Customization: after permission change check if share already has reshare allowed
