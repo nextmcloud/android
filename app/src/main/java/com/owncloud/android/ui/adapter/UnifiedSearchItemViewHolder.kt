@@ -116,6 +116,7 @@ class UnifiedSearchItemViewHolder(
 
         val defaultDrawable = MimeTypeUtil.getFileTypeIcon(mimetype, entry.title, context, viewThemeUtils)
         val drawable: Drawable = ResourcesCompat.getDrawable(context.resources, iconId, null) ?: defaultDrawable
-        return viewThemeUtils.platform.tintDrawable(context, drawable, ColorRole.PRIMARY)
+        // NMC Customization: No tinting required
+        return drawable
     }
 }
