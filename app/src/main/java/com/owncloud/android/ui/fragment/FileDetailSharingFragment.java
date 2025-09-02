@@ -624,6 +624,11 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
      */
     @SuppressFBWarnings("PSC")
     public void refreshSharesFromDB() {
+        // NMC-4582 NPE fix
+        if (binding == null) {
+            return;
+        }
+
         OCFile newFile = fileDataStorageManager.getFileById(file.getFileId());
         if (newFile != null) {
             file = newFile;
