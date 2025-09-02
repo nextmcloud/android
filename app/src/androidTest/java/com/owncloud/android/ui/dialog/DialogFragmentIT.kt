@@ -451,6 +451,7 @@ class DialogFragmentIT : AbstractIT() {
             override fun createFolder() = Unit
             override fun uploadFromApp() = Unit
             override fun uploadFiles() = Unit
+            override fun scanDocument() = Unit
             override fun newDocument() = Unit
             override fun newSpreadsheet() = Unit
             override fun newPresentation() = Unit
