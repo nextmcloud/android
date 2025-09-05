@@ -77,8 +77,9 @@ class GalleryRowHolder(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                gravity = Gravity.TOP or Gravity.START
-                marginStart = checkBoxMargin.toInt()
+                // NMC Customization: align checkbox on top right
+                gravity = Gravity.TOP or Gravity.END
+                marginEnd = checkBoxMargin.toInt()
                 topMargin = checkBoxMargin.toInt()
             }
         }
@@ -189,10 +190,12 @@ class GalleryRowHolder(
 
     @Suppress("MagicNumber")
     private fun adjustRowCell(imageView: ImageView, isChecked: Boolean) {
+        // NMC Customization: no need to scaling and rounding
+        // we want a normal view without any corners
         imageView.apply {
-            scaleX = if (isChecked) 0.8f else 1.0f
+            scaleX = 1.0f
             scaleY = scaleX
-            makeRounded(context, if (isChecked) iconRadius else 0f)
+            makeRounded(context, 0f)
         }
     }
 
@@ -200,11 +203,8 @@ class GalleryRowHolder(
         if (ocFileListDelegate.isMultiSelect) {
             val checkboxDrawable = (
                 if (isChecked) {
-                    val drawable = ContextCompat.getDrawable(context, R.drawable.ic_checkbox_marked)
-                    drawable?.let {
-                        viewThemeUtils.platform.tintDrawable(context, drawable, ColorRole.PRIMARY)
-                    }
-                    drawable
+                    // NMC Customization: no need to tint the color
+                    ContextCompat.getDrawable(context, R.drawable.ic_checkbox_marked)
                 } else {
                     ContextCompat.getDrawable(context, R.drawable.ic_checkbox_blank_outline)
                 }
