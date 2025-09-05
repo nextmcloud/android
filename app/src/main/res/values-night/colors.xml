@@ -97,6 +97,7 @@
     <color name="share_disabled_txt_color">@color/grey_60</color>
     <color name="share_txt_color">@color/grey_0</color>
     <color name="share_et_divider">#FFFFFF</color>
+    <color name="share_blue_color">#7d94f9</color>
 
     <!-- Scan Colors -->
     <color name="scan_doc_bg_color">#121212</color>
