@@ -24,7 +24,10 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -35,18 +38,16 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.webkit.CookieManager;
 import android.webkit.URLUtil;
-import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.blikoon.qrcodescanner.QrCodeActivity;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -56,13 +57,10 @@ import com.nextcloud.client.account.User;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.device.DeviceInfo;
 import com.nextcloud.client.di.Injectable;
-import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.client.onboarding.FirstRunActivity;
 import com.nmc.android.ui.LoginPrivacySettingsActivity;
 import com.nextcloud.client.onboarding.OnboardingService;
 import com.nextcloud.client.preferences.AppPreferences;
-import com.nextcloud.common.PlainClient;
-import com.nextcloud.operations.PostMethod;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.nextcloud.utils.mdm.MDMConfig;
 import com.owncloud.android.BuildConfig;
@@ -72,6 +70,8 @@ import com.owncloud.android.databinding.AccountSetupBinding;
 import com.owncloud.android.databinding.AccountSetupWebviewBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.lib.common.OwnCloudAccount;
+import com.owncloud.android.lib.common.OwnCloudClient;
+import com.owncloud.android.lib.common.OwnCloudClientFactory;
 import com.owncloud.android.lib.common.OwnCloudClientManagerFactory;
 import com.owncloud.android.lib.common.OwnCloudCredentials;
 import com.owncloud.android.lib.common.OwnCloudCredentialsFactory;
@@ -85,6 +85,9 @@ import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult.ResultCode;
 import com.owncloud.android.lib.common.utils.Log_OC;
+import com.owncloud.android.lib.resources.status.GetCapabilitiesRemoteOperation;
+import com.owncloud.android.lib.resources.status.NextcloudVersion;
+import com.owncloud.android.lib.resources.status.OCCapability;
 import com.owncloud.android.lib.resources.status.OwnCloudVersion;
 import com.owncloud.android.lib.resources.users.GetUserInfoRemoteOperation;
 import com.owncloud.android.operations.DetectAuthenticationMethodOperation.AuthenticationMethod;
@@ -114,27 +117,22 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.ProcessLifecycleOwner;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import okhttp3.FormBody;
-import okhttp3.RequestBody;
 
 import static com.owncloud.android.utils.PermissionUtil.PERMISSIONS_CAMERA;
 
@@ -172,9 +170,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     private static final String KEY_USERNAME = "USERNAME";
     private static final String KEY_PASSWORD = "PASSWORD";
     private static final String KEY_ASYNC_TASK_IN_PROGRESS = "AUTH_IN_PROGRESS";
-
-    public static final String WEB_LOGIN = "/index.php/login/v2";
-
+    public static final String WEB_LOGIN = "/index.php/login/flow";
     public static final String PROTOCOL_SUFFIX = "://";
     public static final String LOGIN_URL_DATA_KEY_VALUE_SEPARATOR = ":";
     public static final String HTTPS_PROTOCOL = "https://";
@@ -225,10 +221,11 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     @Inject PassCodeManager passCodeManager;
     @Inject ViewThemeUtils.Factory viewThemeUtilsFactory;
     @Inject ColorUtil colorUtil;
-    @Inject ClientFactory clientFactory;
 
-    private AuthObject authObject = null;
     private boolean onlyAdd = false;
+    @SuppressLint("ResourceAsColor") @ColorInt
+    private int primaryColor = R.color.primary;
+    private boolean strictMode = false;
 
     private final Gson gson = new Gson();
 
@@ -315,7 +312,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         if (webViewLoginMethod) {
             accountSetupWebviewBinding = AccountSetupWebviewBinding.inflate(getLayoutInflater());
             setContentView(accountSetupWebviewBinding.getRoot());
-            anonymouslyPostLoginRequest(webloginUrl);
+            initWebViewLogin(webloginUrl, false);
         } else {
             accountSetupBinding = AccountSetupBinding.inflate(getLayoutInflater());
             setContentView(accountSetupBinding.getRoot());
@@ -331,11 +328,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
             } else {
                 showEnforcedServers();
             }
-            
+
             initServerPreFragment(savedInstanceState);
         }
-
-        ProcessLifecycleOwner.get().getLifecycle().addObserver(lifecycleEventObserver);
     }
 
     private void showEnforcedServers() {
@@ -390,140 +385,62 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         }
     }
 
-    // region LoginFlow
-    private final ScheduledExecutorService loginFlowExecutorService = Executors.newSingleThreadScheduledExecutor();
-    private boolean isLoginProcessCompleted = false;
-    private boolean isRedirectedToTheDefaultBrowser = false;
-    private String baseUrl;
-
-    private void poolLogin() {
-        loginFlowExecutorService.scheduleWithFixedDelay(() -> {
-            if (!isLoginProcessCompleted) {
-                performLoginFlowV2();
-            }
-        }, 0, 30, TimeUnit.SECONDS);
+    private static String getWebLoginUserAgent() {
+        return Build.MANUFACTURER.substring(0, 1).toUpperCase(Locale.getDefault()) +
+            Build.MANUFACTURER.substring(1).toLowerCase(Locale.getDefault()) + " " + Build.MODEL + " (Android)";
     }
 
-    /**
-     * This function facilitates the login process by anonymously posting a login request to a specified URL.
-     * After posting the request, it retrieves the login URL for completing the login flow.
-     * The login flow version used is v2.
-     *
-     * @param url The URL where the login request is to be anonymously posted.
-     *            This URL should handle the login request and return the login URL.
-     *            It's typically the entry point for the login process.
-     *            Example: "<a href="https://example.com/index.php/login/v2">...</a>"
-     */
-    private void anonymouslyPostLoginRequest(String url) {
-        baseUrl = url;
+    @SuppressFBWarnings("ANDROID_WEB_VIEW_JAVASCRIPT")
+    @SuppressLint("SetJavaScriptEnabled")
+    private void initWebViewLogin(String baseURL, boolean useGenericUserAgent) {
+        viewThemeUtils.platform.colorCircularProgressBar(accountSetupWebviewBinding.loginWebviewProgressBar, ColorRole.ON_PRIMARY_CONTAINER);
+        accountSetupWebviewBinding.loginWebview.setVisibility(View.GONE);
+        new WebViewUtil().setProxyKKPlus(accountSetupWebviewBinding.loginWebview);
 
-        Thread thread = new Thread(() -> {
-            String response = getResponseOfAnonymouslyPostLoginRequest();
+        accountSetupWebviewBinding.loginWebview.getSettings().setAllowFileAccess(false);
+        accountSetupWebviewBinding.loginWebview.getSettings().setJavaScriptEnabled(true);
+        accountSetupWebviewBinding.loginWebview.getSettings().setDomStorageEnabled(true);
 
-            try {
-                authObject = gson.fromJson(response, AuthObject.class);
-                runOnUiThread(() -> {
-                    String loginUrl = getResources().getString(R.string.webview_login_url);
-                    if (authObject != null && !TextUtils.isEmpty(authObject.getLogin())) {
-                        loginUrl = authObject.getLogin();
-                    }
-                    initLoginInfoView();
-                    launchDefaultWebBrowser(loginUrl);
-                });
-            } catch (Throwable t) {
-                Log_OC.d(TAG, "Error caught at anonymouslyPostLoginRequest: " + t);
-                DisplayUtils.showSnackMessage(this, R.string.authenticator_activity_login_error);
-            }
-        });
+        if (useGenericUserAgent) {
+            accountSetupWebviewBinding.loginWebview.getSettings().setUserAgentString(MainApp.getUserAgent());
+        } else {
+            accountSetupWebviewBinding.loginWebview.getSettings().setUserAgentString(getWebLoginUserAgent());
+        }
+        accountSetupWebviewBinding.loginWebview.getSettings().setSaveFormData(false);
+        accountSetupWebviewBinding.loginWebview.getSettings().setSavePassword(false);
 
-        thread.start();
-    }
+        Map<String, String> headers = new HashMap<>();
+        headers.put(RemoteOperation.OCS_API_HEADER, RemoteOperation.OCS_API_HEADER_VALUE);
 
-    private String getResponseOfAnonymouslyPostLoginRequest() {
-        PostMethod post = new PostMethod(baseUrl, false, new FormBody.Builder().build());
-        PlainClient client = clientFactory.createPlainClient();
-        post.execute(client);
-        return post.getResponseBodyAsString();
-    }
-
-    private void launchDefaultWebBrowser(String url) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
-    private void performLoginFlowV2() {
-        final String pollUrl = authObject.getPoll().getEndpoint();
-        if (TextUtils.isEmpty(pollUrl)) {
-            Log_OC.e(TAG, "pollUrl is empty.");
-            return;
+        String url;
+        if (baseURL != null && !baseURL.isEmpty()) {
+            url = baseURL;
+        } else {
+            url = getResources().getString(R.string.webview_login_url);
         }
 
-        final String token = authObject.getPoll().getToken();
-        if (TextUtils.isEmpty(authObject.getPoll().getToken())) {
-            Log_OC.e(TAG, "token is empty.");
-            return;
+        new WebViewUtil().setProxyKKPlus(accountSetupWebviewBinding.loginWebview);
+        if (url.startsWith(HTTPS_PROTOCOL)) {
+            strictMode = true;
         }
 
-        RequestBody requestBody = new FormBody.Builder()
-            .add("token", token)
-            .build();
+        accountSetupWebviewBinding.loginWebview.loadUrl(url, headers);
 
-        PlainClient client = clientFactory.createPlainClient();
-        PostMethod post = new PostMethod(pollUrl, false, requestBody);
-        int status = post.execute(client);
-        String response = post.getResponseBodyAsString();
-
-        Log_OC.d(TAG, "performLoginFlowV2 status: " + status);
-        Log_OC.d(TAG, "performLoginFlowV2 response: " + response);
-
-        if (!response.isEmpty()) {
-            runOnUiThread(() -> completeLoginFlow(response, status));
-        }
+        setClient();
     }
-
-    private void completeLoginFlow(String response, int status) {
-        try {
-            LoginUrlInfo loginUrlInfo = gson.fromJson(response, LoginUrlInfo.class);
-            if (loginUrlInfo == null) {
-                Log_OC.e(TAG, "cannot complete login flow loginUrl is null");
-                return;
-            }
-            isLoginProcessCompleted = loginUrlInfo.isValid(status);
-
-            if (accountSetupBinding != null) {
-                accountSetupBinding.hostUrlInput.setText("");
-            }
-
-            mServerInfo.mBaseUrl = AuthenticatorUrlUtils.INSTANCE.normalizeUrlSuffix(loginUrlInfo.getServer());
-            webViewUser = loginUrlInfo.getLoginName();
-            webViewPassword = loginUrlInfo.getAppPassword();
-        } catch (Exception e) {
-            Log_OC.d(TAG, "Error completeLoginFlow: " + e);
-            mServerStatusIcon = R.drawable.ic_alert;
-            mServerStatusText = getString(R.string.qr_could_not_be_read);
-            showServerStatus();
-        }
-
-        checkOcServer();
-        loginFlowExecutorService.shutdown();
-        ProcessLifecycleOwner.get().getLifecycle().removeObserver(lifecycleEventObserver);
-    }
-
-    private final LifecycleEventObserver lifecycleEventObserver = ((lifecycleOwner, event) -> {
-        if (event == Lifecycle.Event.ON_START && authObject != null && !TextUtils.isEmpty(authObject.getPoll().getToken())) {
-            Log_OC.d(TAG, "Start poolLogin");
-            poolLogin();
-        }
-    });
-    // endregion
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (accountSetupWebviewBinding != null && event.getAction() == KeyEvent.ACTION_DOWN &&
             keyCode == KeyEvent.KEYCODE_BACK) {
             if (accountSetupWebviewBinding.loginWebview.canGoBack()) {
-                accountSetupWebviewBinding.loginWebview.goBack();
+                // NMC-2602 Fix
+                // On back press "Webpage not available" error comes
+                // because login urls doesn't maintain the backstack hierarchy
+                // to solve it we are recreating the activity with the actual login url
+                // if user presses back from other urls which is not first or login url
+                // it will recreate the activity else it will finish the activity
+                recreate();
             } else {
                 finish();
             }
@@ -535,8 +452,29 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     private void setClient() {
         accountSetupWebviewBinding.loginWebview.setWebViewClient(new NextcloudWebViewClient(getSupportFragmentManager()) {
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                String url = request.getUrl().toString();
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                return super.shouldInterceptRequest(view, request);
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                // NMC-3773 fix: close activity if access_denied error comes
+                if (url.endsWith("&error=access_denied")){
+                    finish();
+                    return true;
+                }
+
+                // NMC-4351 fix: recreate activity to show login screen when timeout occurs
+                if (url.contains("error=interaction_required")) {
+                    recreate();
+                    return true;
+                }
+
                 if (url.startsWith(getString(R.string.login_data_own_scheme) + PROTOCOL_SUFFIX + "login/")) {
                     parseAndLoginFromWebView(url);
                     return true;
@@ -548,12 +486,24 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
 
+                //scroll to top when url loads
+                //because directly loading Telekom login page it scrolls down automatically
+                view.scrollTo(0,0);
+
                 accountSetupWebviewBinding.loginWebviewProgressBar.setVisibility(View.GONE);
                 accountSetupWebviewBinding.loginWebview.setVisibility(View.VISIBLE);
+
+                if (mServerInfo.mVersion != null && mServerInfo.mVersion.isOlderThan(NextcloudVersion.nextcloud_25)) {
+                    viewThemeUtils.platform.colorStatusBar(AuthenticatorActivity.this, primaryColor);
+                    getWindow().setNavigationBarColor(primaryColor);
+                } else {
+                    viewThemeUtils.platform.resetStatusBar(AuthenticatorActivity.this);
+                    getWindow().setNavigationBarColor(ContextCompat.getColor(AuthenticatorActivity.this, R.color.bg_default));
+                }
             }
 
             @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 accountSetupWebviewBinding.loginWebviewProgressBar.setVisibility(View.GONE);
                 accountSetupWebviewBinding.loginWebview.setVisibility(View.VISIBLE);
 
@@ -805,34 +755,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         if (intent.getBooleanExtra(EXTRA_USE_PROVIDER_AS_WEBLOGIN, false)) {
             accountSetupWebviewBinding = AccountSetupWebviewBinding.inflate(getLayoutInflater());
             setContentView(accountSetupWebviewBinding.getRoot());
-            initSimpleSignupLogin();
+            initWebViewLogin(getString(R.string.provider_registration_server), true);
         }
-    }
-
-    @SuppressFBWarnings("ANDROID_WEB_VIEW_JAVASCRIPT")
-    @SuppressLint("SetJavaScriptEnabled")
-    private void initSimpleSignupLogin() {
-        viewThemeUtils.platform.colorCircularProgressBar(accountSetupWebviewBinding.loginWebviewProgressBar, ColorRole.ON_PRIMARY_CONTAINER);
-        accountSetupWebviewBinding.loginWebview.setVisibility(View.GONE);
-        new WebViewUtil().setProxyKKPlus(accountSetupWebviewBinding.loginWebview);
-
-        accountSetupWebviewBinding.loginWebview.getSettings().setAllowFileAccess(false);
-        accountSetupWebviewBinding.loginWebview.getSettings().setJavaScriptEnabled(true);
-        accountSetupWebviewBinding.loginWebview.getSettings().setDomStorageEnabled(true);
-
-        accountSetupWebviewBinding.loginWebview.getSettings().setUserAgentString(MainApp.getUserAgent());
-        accountSetupWebviewBinding.loginWebview.getSettings().setSaveFormData(false);
-        accountSetupWebviewBinding.loginWebview.getSettings().setSavePassword(false);
-
-        Map<String, String> headers = new HashMap<>();
-        headers.put(RemoteOperation.OCS_API_HEADER, RemoteOperation.OCS_API_HEADER_VALUE);
-
-        new WebViewUtil().setProxyKKPlus(accountSetupWebviewBinding.loginWebview);
-
-        accountSetupWebviewBinding.loginWebview.loadUrl(getString(R.string.provider_registration_server), headers);
-        accountSetupWebviewBinding.loginFlowV2.loginFlowInfoV2.setVisibility(View.GONE);
-
-        setClient();
     }
 
     private boolean checkIfViaSSO(Intent intent) {
@@ -1048,17 +972,27 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
                 webViewPassword != null && !webViewPassword.isEmpty()) {
                 checkBasicAuthorization(webViewUser, webViewPassword);
             } else {
+                new Thread(() -> {
+                    OwnCloudClient client = OwnCloudClientFactory.createOwnCloudClient(Uri.parse(mServerInfo.mBaseUrl),
+                                                                                       this,
+                                                                                       true);
+                    RemoteOperationResult remoteOperationResult = new GetCapabilitiesRemoteOperation().execute(client);
+
+                    if (remoteOperationResult.isSuccess() &&
+                        remoteOperationResult.getData() != null &&
+                        remoteOperationResult.getData().size() > 0) {
+                        OCCapability capability = (OCCapability) remoteOperationResult.getData().get(0);
+                        try {
+                            primaryColor = Color.parseColor(capability.getServerColor());
+                        } catch (Exception e) {
+                            // falls back to primary color
+                        }
+                    }
+                }).start();
+
                 accountSetupWebviewBinding = AccountSetupWebviewBinding.inflate(getLayoutInflater());
                 setContentView(accountSetupWebviewBinding.getRoot());
-
-                if (!isLoginProcessCompleted) {
-                    if (!isRedirectedToTheDefaultBrowser) {
-                        anonymouslyPostLoginRequest(mServerInfo.mBaseUrl + WEB_LOGIN);
-                        isRedirectedToTheDefaultBrowser = true;
-                    } else {
-                        initLoginInfoView();
-                    }
-                }
+                initWebViewLogin(mServerInfo.mBaseUrl + WEB_LOGIN, false);
             }
         } else {
             updateServerStatusIconAndText(result);
@@ -1070,20 +1004,6 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
             showUntrustedCertDialog(result);
         }
     }
-
-    // region LoginInfoView
-    private void initLoginInfoView() {
-        LinearLayout loginFlowLayout = accountSetupWebviewBinding.loginFlowV2.getRoot();
-        MaterialButton cancelButton = accountSetupWebviewBinding.loginFlowV2.cancelButton;
-        loginFlowLayout.setVisibility(View.VISIBLE);
-
-        cancelButton.setOnClickListener(v -> {
-            loginFlowExecutorService.shutdown();
-            ProcessLifecycleOwner.get().getLifecycle().removeObserver(lifecycleEventObserver);
-            recreate();
-        });
-    }
-    // endregion
 
     /**
      * Chooses the right icon and text to show to the user for the received operation result.
@@ -1296,6 +1216,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
                 accountManager.setCurrentOwnCloudAccount(mAccount.name);
                 getUserCapabilitiesAndFinish();
             } else {
+                // init webView again
+                if (accountSetupWebviewBinding != null) {
+                    accountSetupWebviewBinding.loginWebview.setVisibility(View.GONE);
+                }
                 accountSetupBinding = AccountSetupBinding.inflate(getLayoutInflater());
                 setContentView(accountSetupBinding.getRoot());
                 initOverallUi();
@@ -1322,7 +1246,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
         } else {    // authorization fail due to client side - probably wrong credentials
             if (accountSetupWebviewBinding != null) {
-                anonymouslyPostLoginRequest(mServerInfo.mBaseUrl + WEB_LOGIN);
+                initWebViewLogin(mServerInfo.mBaseUrl + WEB_LOGIN, false);
+                DisplayUtils.showSnackMessage(this,
+                                              accountSetupWebviewBinding.loginWebview, R.string.auth_access_failed,
+                                              result.getLogMessage(this));
             } else {
                 DisplayUtils.showSnackMessage(this, R.string.auth_access_failed, result.getLogMessage(this));
 
@@ -1665,7 +1592,6 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
             }
         }
     }
-
 
     /**
      * Called from SslValidatorDialog when a new server certificate was correctly saved.
