@@ -1514,21 +1514,22 @@ public class FileDisplayActivity extends FileActivity
     private void setBackgroundText() {
         final OCFileListFragment ocFileListFragment = getListOfFilesFragment();
         if (ocFileListFragment != null) {
-            if (mSyncInProgress || getFile().getFileLength() > 0 && getStorageManager().getFolderContent(getFile(), false).isEmpty()) {
-                ocFileListFragment.setEmptyListLoadingMessage();
-            } else {
-                if (MainApp.isOnlyOnDevice()) {
-                    ocFileListFragment.setMessageForEmptyList(R.string.file_list_empty_headline, R.string.file_list_empty_on_device, R.drawable.ic_list_empty_folder, true);
+
+            connectivityService.isNetworkAndServerAvailable(result -> {
+                if (mSyncInProgress || getFile().getFileLength() > 0 && getStorageManager().getFolderContent(getFile(), false).isEmpty()) {
+                    ocFileListFragment.setEmptyListLoadingMessage();
                 } else {
-                    connectivityService.isNetworkAndServerAvailable(result -> {
+                    if (MainApp.isOnlyOnDevice()) {
+                        ocFileListFragment.setMessageForEmptyList(R.string.file_list_empty_headline, R.string.file_list_empty_on_device, R.drawable.ic_list_empty_folder, true);
+                    } else {
                         if (result) {
                             ocFileListFragment.setEmptyListMessage(SearchType.NO_SEARCH);
                         } else {
                             ocFileListFragment.setEmptyListMessage(SearchType.OFFLINE_MODE);
                         }
-                    });
+                    }
                 }
-            }
+            });
         } else {
             Log_OC.e(TAG, "OCFileListFragment is null");
         }
