@@ -89,7 +89,7 @@ def versionMajor = 3
 versionMajor = 7
 // NMC: end
 def versionMinor = 32
-def versionPatch = 6
+def versionPatch = 7
 def versionBuild = 90 // 0-50=Alpha / 51-98=RC / 90-99=stable
 
 
