@@ -15,9 +15,9 @@ import com.owncloud.android.lib.resources.shares.OCShare
 
 enum class QuickPermissionType(val iconId: Int, val textId: Int) {
     NONE(R.drawable.ic_unknown, R.string.unknown),
-    VIEW_ONLY(R.drawable.ic_eye, R.string.share_permission_view_only),
+    VIEW_ONLY(R.drawable.ic_eye, R.string.share_permission_read_only),
     CAN_EDIT(R.drawable.ic_edit, R.string.share_permission_can_edit),
-    FILE_REQUEST(R.drawable.ic_file_request, R.string.share_permission_file_request),
+    FILE_REQUEST(R.drawable.ic_file_request, R.string.share_permission_file_drop),
     SECURE_FILE_DROP(R.drawable.ic_file_request, R.string.share_permission_secure_file_drop),
     CUSTOM_PERMISSIONS(R.drawable.ic_custom_permissions, R.string.share_custom_permission);
 
@@ -38,7 +38,9 @@ enum class QuickPermissionType(val iconId: Int, val textId: Int) {
     }
 
     fun getAvailablePermissions(hasFileRequestPermission: Boolean): List<QuickPermission> {
-        val permissions = listOf(VIEW_ONLY, CAN_EDIT, FILE_REQUEST, CUSTOM_PERMISSIONS)
+        // NMC Customization: not required Custom Permissions
+        // File Request is File Drop
+        val permissions = listOf(VIEW_ONLY, CAN_EDIT, FILE_REQUEST)
         val result = if (hasFileRequestPermission) permissions else permissions.filter { it != FILE_REQUEST }
 
         return result.map { type ->
