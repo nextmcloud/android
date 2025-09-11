@@ -221,8 +221,10 @@
     <string name="create">Erstellen</string>
     <string name="create_dir_fail_msg">Verzeichnis konnte nicht erstellt werden</string>
     <string name="create_new">Neu</string>
+    <string name="create_text_document">Neues Textdokument erstellen</string>
     <string name="create_new_document">Neues Dokument</string>
     <string name="create_new_folder">Neuer Ordner</string>
+    <string name="create_new_encrypted_folder">Verschlüsselten Ordner erstellen</string>
     <string name="create_new_presentation">Neue Präsentation</string>
     <string name="create_new_spreadsheet">Neue Tabelle</string>
     <string name="create_rich_workspace">Ordnerbeschreibung hinzufügen</string>
