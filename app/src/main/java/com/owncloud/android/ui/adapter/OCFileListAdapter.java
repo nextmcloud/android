@@ -344,6 +344,10 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Nullable
     public OCFile getItem(int position) {
+        if (position == -1) {
+            return null;
+        }
+
         int newPosition = position;
 
         if (shouldShowHeader() && position > 0) {
@@ -874,7 +878,9 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         @NonNull OCFile directory,
         @NonNull FileDataStorageManager updatedStorageManager,
         boolean onlyOnDevice,
-        @NonNull String limitToMimeType) {
+        @NonNull String limitToMimeType,
+        boolean showOnlyFolder,
+        boolean hideEncryptedFolder) {
         this.onlyOnDevice = onlyOnDevice;
 
         if (!updatedStorageManager.equals(mStorageManager)) {
@@ -886,6 +892,10 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (mStorageManager != null) {
             // TODO refactor filtering mechanism for mFiles
             mFiles = mStorageManager.getFolderContent(directory, onlyOnDevice);
+            // NMC filter condition
+            if(showOnlyFolder){
+                mFiles = OCFileExtensionsKt.filterByFolder(mFiles, hideEncryptedFolder);
+            }
             if (!preferences.isShowHiddenFilesEnabled()) {
                 mFiles = OCFileExtensionsKt.filterHiddenFiles(mFiles);
             }
