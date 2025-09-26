@@ -6,89 +6,45 @@
   ~ SPDX-FileCopyrightText: 2018 Nextcloud GmbH
   ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@color/primary">
 
-    <LinearLayout
+    <com.nmc.android.helper.LoopViewPager
+        android:id="@+id/contentPanel"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.owncloud.android.ui.whatsnew.ProgressIndicator
+        android:id="@+id/progressIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_marginBottom="@dimen/alternate_double_margin"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:layout_marginBottom="@dimen/standard_margin"
-        android:layout_marginTop="@dimen/standard_margin">
+        app:layout_constraintBottom_toTopOf="@+id/login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/contentPanel"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/login"
+        android:layout_width="@dimen/login_btn_width"
+        android:layout_height="@dimen/login_btn_height"
+        android:layout_marginBottom="@dimen/login_btn_bottom_margin"
+        android:text="@string/common_login"
+        android:textAllCaps="false"
+        android:textColor="@color/primary"
+        android:textSize="@dimen/txt_size_16sp"
+        app:backgroundTint="@color/white"
+        app:cornerRadius="@dimen/button_corner_radius"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <com.owncloud.android.ui.whatsnew.ProgressIndicator
-            android:id="@+id/progressIndicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/standard_margin">
-
-        </com.owncloud.android.ui.whatsnew.ProgressIndicator>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/bottomLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_weight="0"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/buttonLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/login"
-                android:theme="@style/Button.Login"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:maxWidth="400dp"
-                android:minWidth="300dp"
-                android:textStyle="bold"
-                android:text="@string/login"
-                android:padding="@dimen/standard_padding"
-                app:cornerRadius="@dimen/button_corner_radius" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/signup"
-                android:theme="@style/OutlineLoginButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="5dp"
-                android:maxWidth="500dp"
-                android:minWidth="300dp"
-                android:textStyle="bold"
-                android:padding="@dimen/standard_padding"
-                android:text="@string/signup_with_provider"
-                app:cornerRadius="@dimen/button_corner_radius" />
-        </LinearLayout>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/host_own_server"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="@dimen/minimum_size_for_touchable_area"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center_horizontal"
-            android:text="@string/host_your_own_server"/>
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
