@@ -29,7 +29,7 @@
         android:layout_width="@dimen/iconized_single_line_item_icon_size"
         android:layout_height="@dimen/iconized_single_line_item_icon_size"
         android:contentDescription="@null"
-        app:tint="@color/primary"
+        app:tint="@color/bottom_sheet_icon_color"
         tools:src="@drawable/ic_delete" />
 
     <LinearLayout
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/bottom_sheet_text_start_margin"
-            android:textColor="@color/text_color"
+            android:textColor="@color/bottom_sheet_txt_color"
             android:textSize="@dimen/bottom_sheet_text_size"
             tools:text="Delete file" />
 
