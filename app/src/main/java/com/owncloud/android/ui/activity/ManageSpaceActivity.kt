@@ -23,6 +23,7 @@ import com.owncloud.android.lib.common.utils.Log_OC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.owncloud.android.utils.theme.ViewThemeUtils
 import java.io.File
 import javax.inject.Inject
 import kotlin.system.exitProcess
@@ -36,6 +37,9 @@ class ManageSpaceActivity :
 
     @Inject
     lateinit var userAccountManager: UserAccountManager
+
+    @Inject
+    lateinit var viewThemeUtils: ViewThemeUtils
 
     override fun onCreate(savedInstanceState: Bundle?) {
         applyEdgeToEdgeWithSystemBarPadding()
