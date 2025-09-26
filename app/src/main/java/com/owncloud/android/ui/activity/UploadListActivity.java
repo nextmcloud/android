@@ -31,6 +31,7 @@ import com.nextcloud.client.jobs.upload.FileUploadWorker;
 import com.nextcloud.client.utils.Throttler;
 import com.nextcloud.model.WorkerState;
 import com.nextcloud.model.WorkerStateLiveData;
+import com.nmc.android.utils.SwipeRefreshThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.UploadListLayoutBinding;
 import com.owncloud.android.datamodel.OCFile;
@@ -175,7 +176,8 @@ public class UploadListActivity extends FileActivity {
         addListItemDecorator();
         binding.list.setAdapter(uploadListAdapter);
 
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(swipeListRefreshLayout);
+        //NMC Customisation
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(this, swipeListRefreshLayout);
         swipeListRefreshLayout.setOnRefreshListener(this::refresh);
 
         loadItems();
