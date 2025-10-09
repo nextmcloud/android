@@ -450,6 +450,7 @@ class DialogFragmentIT : AbstractIT() {
 
         val action: OCFileListBottomSheetActions = object : OCFileListBottomSheetActions {
             override fun createFolder() = Unit
+            override fun createEncryptedFolder() = Unit
             override fun uploadFromApp() = Unit
             override fun uploadFiles() = Unit
             override fun scanDocument() = Unit
