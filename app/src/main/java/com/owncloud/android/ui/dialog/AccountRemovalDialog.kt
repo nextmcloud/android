@@ -16,6 +16,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.account.User
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.jobs.BackgroundJobManager
+import com.nextcloud.client.preferences.AppPreferences
+import com.nmc.android.marketTracking.AdjustSdkUtils
+import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
@@ -31,6 +34,9 @@ class AccountRemovalDialog : DialogFragment(), Injectable {
     @Inject
     lateinit var viewThemeUtils: ViewThemeUtils
 
+    @Inject
+    lateinit var appPreferences: AppPreferences
+
     private var user: User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +50,9 @@ class AccountRemovalDialog : DialogFragment(), Injectable {
             .setMessage(resources.getString(R.string.delete_account_warning, user!!.accountName))
             .setIcon(R.drawable.ic_warning)
             .setPositiveButton(R.string.common_ok) { _: DialogInterface?, _: Int ->
+                // track adjust and tealium events on logout confirmed
+                AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_SETTINGS_LOGOUT, appPreferences)
+                TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_SETTINGS_LOGOUT, appPreferences)
                 backgroundJobManager.startAccountRemovalJob(
                     user!!.accountName,
                     false
