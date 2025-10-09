@@ -57,13 +57,6 @@ public class FileDetailSharingMenuBottomSheetDialog extends BottomSheetDialog {
             getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        viewThemeUtils.platform.themeDialog(binding.getRoot());
-
-        viewThemeUtils.platform.colorImageView(binding.menuIconAdvancedPermissions, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconSendLink, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconUnshare, ColorRole.PRIMARY);
-        viewThemeUtils.platform.colorImageView(binding.menuIconSendNewEmail, ColorRole.PRIMARY);
-
         updateUI();
 
         setupClickListener();
@@ -75,12 +68,18 @@ public class FileDetailSharingMenuBottomSheetDialog extends BottomSheetDialog {
     }
 
     private void updateUI() {
+        if (ocShare.isFolder()) {
+            binding.menuShareOpenIn.setVisibility(View.GONE);
+        } else {
+            binding.menuShareOpenIn.setVisibility(View.VISIBLE);
+        }
+
         if (ocShare.getShareType() == ShareType.PUBLIC_LINK) {
             if (MDMConfig.INSTANCE.sendFilesSupport(getContext())) {
-                binding.menuShareSendLink.setVisibility(View.VISIBLE);
+                binding.menuShareSendNewEmail.setVisibility(View.GONE);
             }
         } else {
-            binding.menuShareSendLink.setVisibility(View.GONE);
+            binding.menuShareSendNewEmail.setVisibility(View.VISIBLE);
         }
 
         if (SharePermissionManager.INSTANCE.isSecureFileDrop(ocShare) && encrypted) {
@@ -89,6 +88,11 @@ public class FileDetailSharingMenuBottomSheetDialog extends BottomSheetDialog {
     }
 
     private void setupClickListener() {
+        binding.menuShareOpenIn.setOnClickListener(v -> {
+            actions.openIn(ocShare);
+            dismiss();
+        });
+
         binding.menuShareAdvancedPermissions.setOnClickListener(v -> {
             actions.advancedPermissions(ocShare);
             dismiss();
