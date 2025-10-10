@@ -30,6 +30,7 @@ import com.owncloud.android.utils.MimeTypeUtil
 import com.owncloud.android.utils.theme.ThemeUtils
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import androidx.core.content.ContextCompat
+import com.nmc.android.utils.ScanBotSdkUtils
 
 @Suppress("LongParameterList")
 class OCFileListBottomSheetDialog(
@@ -64,6 +65,13 @@ class OCFileListBottomSheetDialog(
 
         if (!deviceInfo.hasCamera(context)) {
             binding.menuDirectCameraUpload.visibility = View.GONE
+            binding.menuScanDocument.visibility = View.GONE
+        }
+
+        // check if scanbot sdk licence is valid or not
+        // hide the view if license is not valid
+        if (!ScanBotSdkUtils.isScanBotLicenseValid(fileActivity)) {
+            binding.menuScanDocument.visibility = View.GONE;
         }
 
         setupClickListener()
@@ -216,6 +224,11 @@ class OCFileListBottomSheetDialog(
 
             menuNewPresentation.setOnClickListener {
                 actions.newPresentation()
+                dismiss()
+            }
+
+            menuScanDocument.setOnClickListener{
+                actions.scanDocument()
                 dismiss()
             }
         }
