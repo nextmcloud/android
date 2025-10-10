@@ -167,6 +167,7 @@
     <string name="common_switch_account">Konto wechseln</string>
     <string name="common_switch_to_account">Zu Konto wechseln</string>
     <string name="common_yes">Ja</string>
+    <string name="common_login">Anmelden</string>
     <string name="community_beta_headline">Testen Sie die Entwickler-Version</string>
     <string name="community_beta_text">Dies beinhaltet neue Funktionalitäten und ist nicht komplett qualitätsgesichert. Es können daher Fehler/Bugs auftreten, melden Sie uns solche bitte.</string>
     <string name="community_contribute_forum_forum">Forum</string>
