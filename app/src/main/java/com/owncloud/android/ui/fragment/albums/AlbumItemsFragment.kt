@@ -60,6 +60,7 @@ import com.owncloud.android.datamodel.VirtualFolderType
 import com.owncloud.android.db.ProviderMeta
 import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.utils.Log_OC
+import com.owncloud.android.lib.resources.files.model.RemoteFile
 import com.owncloud.android.operations.albums.ReadAlbumItemsRemoteOperation
 import com.owncloud.android.operations.albums.RemoveAlbumFileRemoteOperation
 import com.owncloud.android.operations.albums.ToggleAlbumFavoriteRemoteOperation
@@ -123,6 +124,8 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     private var isNewAlbum: Boolean = false
 
     private var mMultiChoiceModeListener: MultiChoiceModeListener? = null
+
+    private val albumRemoteFileList = mutableListOf<RemoteFile>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -323,8 +326,10 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
             if (result?.isSuccess == true && result.resultData != null) {
                 mContainerActivity?.storageManager?.deleteVirtuals(VirtualFolderType.ALBUM)
                 val contentValues = mutableListOf<ContentValues>()
+                albumRemoteFileList.clear()
+                albumRemoteFileList.addAll(result.resultData)
 
-                for (remoteFile in result.resultData) {
+                for (remoteFile in albumRemoteFileList) {
                     val ocFile = mContainerActivity?.storageManager?.getFileByLocalId(remoteFile.localId)
                     ocFile?.let {
                         ocFileList.add(it)
@@ -667,7 +672,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
                 }
                 if (files.size == 1) {
                     val removeAlbumFileRemoteOperation = RemoveAlbumFileRemoteOperation(
-                        files.first().remotePath
+                        getAlbumRemotePathForRemoval(files.first())
                     )
                     val remoteOperationResult = removeAlbumFileRemoteOperation.execute(client)
 
@@ -686,7 +691,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
                 } else {
                     for (file in files) {
                         val removeAlbumFileRemoteOperation = RemoveAlbumFileRemoteOperation(
-                            file.remotePath
+                            getAlbumRemotePathForRemoval(file)
                         )
                         val remoteOperationResult = removeAlbumFileRemoteOperation.execute(client)
 
@@ -714,6 +719,16 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
                 fetchAndSetData()
             }
         }
+    }
+
+    // NMC-4816 fix
+    // since after files data are fetched in media the file remote path will be actual instead of Albums prefixed
+    // to remove the file properly form the albums we have to provide the correct album path
+    private fun getAlbumRemotePathForRemoval(ocFile: OCFile) : String{
+        if(!ocFile.remotePath.startsWith("/albums/$albumName")){
+            return albumRemoteFileList.find { it.etag == ocFile.etag || it.etag == ocFile.etagOnServer}?.remotePath ?: ocFile.remotePath
+        }
+        return ocFile.remotePath
     }
 
     private fun showConfirmationDialog(isAlbum: Boolean, files: Collection<OCFile>?) {

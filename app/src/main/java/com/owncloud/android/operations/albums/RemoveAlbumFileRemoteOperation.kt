@@ -6,10 +6,10 @@
  */
 package com.owncloud.android.operations.albums
 
-import android.net.Uri
 import com.nextcloud.common.SessionTimeOut
 import com.nextcloud.common.defaultSessionTimeOut
 import com.owncloud.android.lib.common.OwnCloudClient
+import com.owncloud.android.lib.common.network.WebdavUtils
 import com.owncloud.android.lib.common.operations.RemoteOperation
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.common.utils.Log_OC
@@ -29,7 +29,7 @@ class RemoveAlbumFileRemoteOperation
             var result: RemoteOperationResult<Any>
             var delete: DeleteMethod? = null
             val webDavUrl = "${client.davUri}/photos/"
-            val encodedPath = ("${client.userId}${Uri.encode(this.mRemotePath)}").replace("%2F", "/")
+            val encodedPath = "${client.userId}${WebdavUtils.encodePath(this.mRemotePath)}"
             val fullFilePath = "$webDavUrl$encodedPath"
 
             try {

@@ -6,11 +6,11 @@
  */
 package com.owncloud.android.operations.albums
 
-import android.net.Uri
 import com.nextcloud.common.SessionTimeOut
 import com.nextcloud.common.defaultSessionTimeOut
 import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.network.WebdavEntry
+import com.owncloud.android.lib.common.network.WebdavUtils
 import com.owncloud.android.lib.common.operations.RemoteOperation
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.resources.files.ToggleFavoriteRemoteOperation
@@ -41,20 +41,16 @@ class ToggleAlbumFavoriteRemoteOperation
             var propPatchMethod: PropPatchMethod? = null
             val newProps = DavPropertySet()
             val removeProperties = DavPropertyNameSet()
-            if (this.makeItFavorited) {
-                val favoriteProperty =
-                    DefaultDavProperty<Any>(
-                        "oc:favorite",
-                        "1",
-                        Namespace.getNamespace(WebdavEntry.NAMESPACE_OC)
-                    )
-                newProps.add(favoriteProperty)
-            } else {
-                removeProperties.add("oc:favorite", Namespace.getNamespace(WebdavEntry.NAMESPACE_OC))
-            }
+            val favoriteProperty =
+                DefaultDavProperty<Any>(
+                    "oc:favorite",
+                    if (this.makeItFavorited) "1" else "0",
+                    Namespace.getNamespace(WebdavEntry.NAMESPACE_OC)
+                )
+            newProps.add(favoriteProperty)
 
             val webDavUrl = "${client.davUri}/photos/"
-            val encodedPath = ("${client.userId}${Uri.encode(this.filePath)}").replace("%2F", "/")
+            val encodedPath = "${client.userId}${WebdavUtils.encodePath(this.filePath)}"
             val fullFilePath = "$webDavUrl$encodedPath"
 
             try {
