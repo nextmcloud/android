@@ -41,6 +41,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.appbar.AppBarLayout
 import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
 import com.nextcloud.client.di.Injectable
@@ -166,6 +167,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         optionalUser = Optional.of(accountManager.user)
+        showAppBar()
         createMenu()
         setupContainingList()
         setupContent()
@@ -177,6 +179,14 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         }
 
         setUpEmptyView()
+    }
+
+    // NMC-4790 fix
+    private fun showAppBar() {
+        if (requireActivity() is FileDisplayActivity) {
+            val appBarLayout = requireActivity().findViewById<AppBarLayout>(R.id.appbar)
+            appBarLayout?.setExpanded(true, false)
+        }
     }
 
     private fun setUpEmptyView() {
