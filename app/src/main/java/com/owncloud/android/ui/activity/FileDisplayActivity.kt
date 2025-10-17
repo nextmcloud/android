@@ -503,6 +503,9 @@ class FileDisplayActivity :
                             fragment.directCameraUpload()
                         }
                     })
+                } else if (!shouldShowRequestPermissionRationale(permissions[0])) {
+                    // user CHECKED "never ask again"
+                    DisplayUtils.showSnackMessage(this, R.string.camera_permission_rationale)
                 }
 
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -633,7 +636,9 @@ class FileDisplayActivity :
         val accountName = accountManager.user.accountName
         val message = getString(R.string.logged_in_as)
         val snackBarMessage = String.format(message, accountName)
-        DisplayUtils.showSnackMessage(this, snackBarMessage)
+        // NMC-2576 fix: no toast message required
+        // this will show when user logs out then login  again
+        // DisplayUtils.showSnackMessage(this, snackBarMessage)
     }
 
     private fun handleSearchIntent(intent: Intent) {
