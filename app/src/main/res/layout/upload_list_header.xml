@@ -10,6 +10,7 @@
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ListItemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -31,7 +32,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/upload_list_expand_header"
-            android:src="@drawable/ic_expand_less" />
+            android:src="@drawable/ic_expand_less"
+            app:tint="@color/list_icon_color"/>
     </FrameLayout>
 
     <TextView
@@ -58,5 +60,6 @@
         android:paddingTop="@dimen/standard_half_padding"
         android:paddingEnd="@dimen/zero"
         android:paddingBottom="@dimen/standard_half_padding"
-        android:src="@drawable/nav_trashbin" />
+        android:src="@drawable/nav_trashbin"
+        app:tint="@color/list_icon_color"/>
 </RelativeLayout>
