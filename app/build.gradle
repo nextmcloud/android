@@ -51,6 +51,8 @@ apply from: "$rootProject.projectDir/nmc_scan-dependencies.gradle"
 if (shotTest) {
     apply plugin: "shot"
 }
+// apply In-App Update SDK for NMC
+apply from: "$rootProject.projectDir/nmc_app_update-dependencies.gradle"
 apply plugin: "com.google.devtools.ksp"
 // apply marketing SDK for NMC
 apply from: "$rootProject.projectDir/nmc_marketing-dependencies.gradle"
@@ -497,6 +499,11 @@ dependencies {
     // region UI
     implementation libs.ui
     // endregion
+
+    // apply the dependencies from nmc_auto_update-dependencies.gradle
+    // as auto update dependencies need to be included only in gplay variant
+    // this is the way to do this
+    project.ext.addDependencies(project)
 
     // region Image loading
     implementation libs.coil
