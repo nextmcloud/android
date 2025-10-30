@@ -36,6 +36,9 @@
     <color name="grey_600">#666666</color>
     <color name="grey_800_transparent">#CC000000</color>
 
+    <!-- Notification Colors -->
+    <color name="notification_icon_color">#191919</color>
+
     <!-- level colors for info notifications/visualisations -->
     <color name="infolevel_warning">#e9322d</color>
 
@@ -170,6 +173,7 @@
     <color name="sharing_warning_border_color">#C16F81</color>
     <color name="share_color">#0D39DF</color>
     <color name="shared_with_me_color">#0099ff</color>
+    <color name="share_blue_color">#2238df</color>
 
     <!--  Scan Colors  -->
     <color name="scan_doc_bg_color">@color/grey_0</color>
