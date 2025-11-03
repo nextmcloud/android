@@ -2826,9 +2826,13 @@ class FileDisplayActivity :
             }
         }
 
-        val newLastDisplayedAccountName = optionalUser.orElse(null).accountName
-        preferences.lastDisplayedAccountName = newLastDisplayedAccountName
-        lastDisplayedAccountName = newLastDisplayedAccountName
+        // NMC-4743 crash fix
+        // added a user present check
+        if (optionalUser.isPresent) {
+            val newLastDisplayedAccountName = optionalUser.orElse(null).accountName
+            preferences.lastDisplayedAccountName = newLastDisplayedAccountName
+            lastDisplayedAccountName = newLastDisplayedAccountName
+        }
 
         EventBus.getDefault().post(TokenPushEvent())
         checkForNewDevVersionNecessary(applicationContext)
