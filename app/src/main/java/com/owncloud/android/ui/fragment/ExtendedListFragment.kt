@@ -582,15 +582,8 @@ open class ExtendedListFragment :
             mEmptyListMessage?.setText(message)
 
             if (icon != null) {
-                if (tintIcon) {
-                    context?.let { context ->
-                        val drawable = viewThemeUtils.platform.tintDrawable(context, icon, ColorRole.PRIMARY)
-                        mEmptyListIcon?.setImageDrawable(drawable)
-                    }
-                } else {
-                    mEmptyListIcon?.setImageResource(icon)
-                }
-
+                // tinting is not required in NMC
+                mEmptyListIcon?.setImageResource(icon)
                 mEmptyListIcon?.visibility = View.VISIBLE
             } else {
                 mEmptyListIcon?.visibility = View.GONE
@@ -679,7 +672,7 @@ open class ExtendedListFragment :
                 setMessageForEmptyList(
                     R.string.folder_list_empty_headline,
                     R.string.file_list_empty_moving,
-                    R.drawable.ic_list_empty_create_folder,
+                    R.drawable.ic_list_empty_folder,
                     true
                 )
             }
