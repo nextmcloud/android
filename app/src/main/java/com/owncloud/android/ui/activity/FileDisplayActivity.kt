@@ -85,6 +85,7 @@ import com.nextcloud.utils.extensions.logFileSize
 import com.nextcloud.utils.fileNameValidator.FileNameValidator.checkFolderPath
 import com.nextcloud.utils.view.FastScrollUtils
 import com.nmc.android.scans.SaveScannedDocumentFragment
+import com.nmc.android.utils.KeyboardUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FilesBinding
@@ -1261,6 +1262,8 @@ class FileDisplayActivity :
     private fun popBack() {
         binding.fabMain.setImageResource(R.drawable.ic_plus)
         resetScrolling(true)
+        // NMC: hide the keyboard on back press if showing
+        KeyboardUtils.hideKeyboardFrom(this, binding.root)
         showSortListGroup(false)
         super.onBackPressed()
     }
