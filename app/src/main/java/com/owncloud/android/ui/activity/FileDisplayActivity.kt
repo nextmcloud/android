@@ -113,6 +113,10 @@ import com.owncloud.android.operations.RemoveFileOperation
 import com.owncloud.android.operations.RenameFileOperation
 import com.owncloud.android.operations.SynchronizeFileOperation
 import com.owncloud.android.operations.UploadFileOperation
+import com.owncloud.android.operations.albums.CopyFileToAlbumOperation
+import com.owncloud.android.operations.albums.CreateNewAlbumRemoteOperation
+import com.owncloud.android.operations.albums.RemoveAlbumRemoteOperation
+import com.owncloud.android.operations.albums.RenameAlbumRemoteOperation
 import com.owncloud.android.syncadapter.FileSyncAdapter
 import com.owncloud.android.ui.CompletionCallback
 import com.owncloud.android.ui.asynctasks.CheckAvailableSpaceTask
@@ -137,6 +141,8 @@ import com.owncloud.android.ui.fragment.SearchType
 import com.owncloud.android.ui.fragment.SharedListFragment
 import com.owncloud.android.ui.fragment.TaskRetainerFragment
 import com.owncloud.android.ui.fragment.UnifiedSearchFragment
+import com.owncloud.android.ui.fragment.albums.AlbumItemsFragment
+import com.owncloud.android.ui.fragment.albums.AlbumsFragment
 import com.owncloud.android.ui.helpers.FileOperationsHelper
 import com.owncloud.android.ui.helpers.UriUploader
 import com.owncloud.android.ui.interfaces.TransactionInterface
@@ -594,6 +600,12 @@ class FileDisplayActivity :
                 leftFragment = GroupfolderListFragment()
                 supportFragmentManager.executePendingTransactions()
             }
+            ALBUMS == action -> {
+                Log_OC.d(this, "Switch to list albums fragment")
+                menuItemId = R.id.nav_album
+                replaceAlbumFragment()
+                supportFragmentManager.executePendingTransactions()
+            }
         }
     }
 
@@ -983,6 +995,7 @@ class FileDisplayActivity :
                 !isSearchOpen() &&
                 isRoot(getCurrentDir()) &&
                 this.leftFragment is OCFileListFragment
+                && !isAlbumItemsFragment()
             ) {
                 openDrawer()
             } else {
@@ -1225,6 +1238,12 @@ class FileDisplayActivity :
 
         if (isDrawerOpen) {
             super.onBackPressed()
+            return
+        }
+
+        // NMC Customization: pop back if current fragment is AlbumItemsFragment
+        if (isAlbumItemsFragment()) {
+            popBack()
             return
         }
 
@@ -1731,6 +1750,14 @@ class FileDisplayActivity :
                     // TODO what about other kind of previews?
                 }
             }
+
+            // NMC Customization
+            // notify when upload is finshed and user is on albums screen
+            if (isAlbumsFragment()) {
+                (supportFragmentManager.findFragmentByTag(AlbumsFragment.Companion.TAG) as AlbumsFragment).refreshAlbums()
+            } else if (isAlbumItemsFragment()) {
+                (supportFragmentManager.findFragmentByTag(AlbumItemsFragment.Companion.TAG) as AlbumItemsFragment).refreshData()
+            }
         }
 
         // TODO refactor this receiver, and maybe DownloadFinishReceiver; this method is duplicated :S
@@ -2067,6 +2094,22 @@ class FileDisplayActivity :
             is RestoreFileVersionRemoteOperation -> {
                 onRestoreFileVersionOperationFinish(result)
             }
+
+            is CreateNewAlbumRemoteOperation -> {
+                onCreateAlbumOperationFinish(operation, result)
+            }
+
+            is CopyFileToAlbumOperation -> {
+                onCopyAlbumFileOperationFinish(operation, result)
+            }
+
+            is RenameAlbumRemoteOperation -> {
+                onRenameAlbumOperationFinish(operation, result)
+            }
+
+            is RemoveAlbumRemoteOperation -> {
+                onRemoveAlbumOperationFinish(operation, result)
+            }
         }
     }
 
@@ -2307,6 +2350,94 @@ class FileDisplayActivity :
             try {
                 if (RemoteOperationResult.ResultCode.FOLDER_ALREADY_EXISTS == result.code) {
                     DisplayUtils.showSnackMessage(this, R.string.folder_already_exists)
+                } else {
+                    DisplayUtils.showSnackMessage(
+                        this,
+                        ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources())
+                    )
+                }
+            } catch (e: Resources.NotFoundException) {
+                Log_OC.e(TAG, "Error while trying to show fail message ", e)
+            }
+        }
+    }
+
+    private fun onRemoveAlbumOperationFinish(operation: RemoveAlbumRemoteOperation, result: RemoteOperationResult<*>) {
+        if (result.isSuccess) {
+
+            val fragment = supportFragmentManager.findFragmentByTag(AlbumItemsFragment.TAG)
+            if (fragment is AlbumItemsFragment) {
+                fragment.onAlbumDeleted()
+            }
+        } else {
+            DisplayUtils.showSnackMessage(
+                this,
+                ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources())
+            )
+
+            if (result.isSslRecoverableException) {
+                mLastSslUntrustedServerResult = result
+                showUntrustedCertDialog(mLastSslUntrustedServerResult)
+            }
+        }
+    }
+
+    private fun onCopyAlbumFileOperationFinish(operation: CopyFileToAlbumOperation, result: RemoteOperationResult<*>) {
+        if (result.isSuccess) {
+            // when item added from inside of Album
+            val fragment = supportFragmentManager.findFragmentByTag(AlbumItemsFragment.TAG)
+            if (fragment is AlbumItemsFragment) {
+                fragment.refreshData()
+            } else {
+                // files added directly from Media tab
+                DisplayUtils.showSnackMessage(this, getResources().getString(R.string.album_file_added_message))
+            }
+            Log_OC.e(TAG, "Files copied successfully")
+        } else {
+            try {
+                DisplayUtils.showSnackMessage(
+                    this,
+                    ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources())
+                )
+            } catch (e: Resources.NotFoundException) {
+                Log_OC.e(TAG, "Error while trying to show fail message ", e)
+            }
+        }
+    }
+
+    private fun onRenameAlbumOperationFinish(operation: RenameAlbumRemoteOperation, result: RemoteOperationResult<*>) {
+        if (result.isSuccess) {
+
+            val fragment = supportFragmentManager.findFragmentByTag(AlbumItemsFragment.TAG)
+            if (fragment is AlbumItemsFragment) {
+                fragment.onAlbumRenamed(operation.newAlbumName)
+            }
+        } else {
+            DisplayUtils.showSnackMessage(
+                this,
+                ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources())
+            )
+
+            if (result.isSslRecoverableException) {
+                mLastSslUntrustedServerResult = result
+                showUntrustedCertDialog(mLastSslUntrustedServerResult)
+            }
+        }
+    }
+
+    private fun onCreateAlbumOperationFinish(
+        operation: CreateNewAlbumRemoteOperation,
+        result: RemoteOperationResult<*>
+    ) {
+        if (result.isSuccess) {
+            val fragment = supportFragmentManager.findFragmentByTag(AlbumsFragment.TAG)
+            if (fragment is AlbumsFragment) {
+                fragment.navigateToAlbumItemsFragment(operation.newAlbumName, true)
+            }
+        } else {
+            try {
+                if (RemoteOperationResult.ResultCode.FOLDER_ALREADY_EXISTS == result.code) {
+                    DisplayUtils.showSnackMessage(this, R.string.album_already_exists)
                 } else {
                     DisplayUtils.showSnackMessage(
                         this,
@@ -2742,7 +2873,10 @@ class FileDisplayActivity :
         val ocFileListFragment = this.listOfFilesFragment
         if (ocFileListFragment != null &&
             (ocFileListFragment !is GalleryFragment) &&
-            (ocFileListFragment !is SharedListFragment)
+            (ocFileListFragment !is SharedListFragment) &&
+            // album fragment check will help in showing offline files screen
+            // when navigating from Albums to Offline Files
+            !isAlbumsFragment && !isAlbumItemsFragment
         ) {
             ocFileListFragment.refreshDirectory()
         } else {
@@ -3056,6 +3190,7 @@ class FileDisplayActivity :
         const val RESTART: String = "RESTART"
         const val ALL_FILES: String = "ALL_FILES"
         const val LIST_GROUPFOLDERS: String = "LIST_GROUPFOLDERS"
+        const val ALBUMS: String = "ALBUMS"
         const val SINGLE_USER_SIZE: Int = 1
         const val OPEN_FILE: String = "NC_OPEN_FILE"
 
