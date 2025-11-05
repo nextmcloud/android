@@ -40,7 +40,8 @@ plugins {
 apply(from = "${rootProject.projectDir}/jacoco.gradle.kts")
 
 println("Gradle uses Java ${Jvm.current()}")
-
+// apply MoEngage SDK for NMC
+apply(from = "${rootProject.projectDir}/nmc_moengage-dependencies.gradle")
 configurations.configureEach {
     // via prism4j, already using annotations explicitly
     exclude(group = "org.jetbrains", module = "annotations-java5")
@@ -82,6 +83,8 @@ val configProps = Properties().apply {
 val ncTestServerUsername = configProps["NC_TEST_SERVER_USERNAME"]
 val ncTestServerPassword = configProps["NC_TEST_SERVER_PASSWORD"]
 val ncTestServerBaseUrl = configProps["NC_TEST_SERVER_BASEURL"]
+// NMC Customization
+val moengageAppId = configProps["MOENGAGE_APP_ID"]
 
 android {
     // install this NDK version and Cmake to produce smaller APKs. Build will still work if not installed
@@ -98,6 +101,8 @@ android {
         targetSdk = 36
         compileSdk = 36
 
+        // NMC Customization
+        buildConfigField("String", "MOENGAGE_APP_ID", moengageAppId.toString())
         buildConfigField("boolean", "CI", ciBuild.toString())
         buildConfigField("boolean", "RUNTIME_PERF_ANALYSIS", perfAnalysis.toString())
 
@@ -515,4 +520,7 @@ dependencies {
 
     // kotlinx.serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // NMC: dependency required to capture Advertising ID for Adjust & MoEngage SDK
+    implementation("com.google.android.gms:play-services-ads-identifier:18.0.1")
 }
