@@ -1977,9 +1977,11 @@ public class OCFileListFragment extends ExtendedListFragment implements
             } else if (!isGridViewPreferred(mFile) && isGridEnabled()) {
                 switchToListView();
             }
-        };
 
-        updateSortButton();
+            // NMC-4749 fix
+            // move the ui operation inside runnable to execute it on Main Thread
+            updateSortButton();
+        };
 
         new Handler(Looper.getMainLooper()).post(switchViewsRunnable);
 
