@@ -167,7 +167,9 @@ open class ExtendedListFragment :
 
     @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        val item = menu.findItem(R.id.action_search)
+        // NMC Customization: while picking Media files from Gallery Fragment through AlbumPickerActivity
+        // there will be no search option so it we have to return it
+        val item = menu.findItem(R.id.action_search) ?: return
         searchView = item.actionView as SearchView?
         // NMC customization
         SearchViewThemeUtils.themeSearchView(requireActivity(), searchView!!)
