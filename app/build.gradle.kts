@@ -16,6 +16,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
 
+// apply In-App Update SDK for NMC
+apply (from = "${rootProject.projectDir}/nmc_app_update-dependencies.gradle")
 val shotTest = System.getenv("SHOT_TEST") == "true"
 val ciBuild = System.getenv("CI") == "true"
 val perfAnalysis = project.hasProperty("perfAnalysis")
@@ -512,6 +514,11 @@ dependencies {
     // region UI
     implementation(libs.ui)
     // endregion
+
+    // apply the dependencies from nmc_auto_update-dependencies.gradle
+    // as auto update dependencies need to be included only in gplay variant
+    // this is the way to do this
+    project.ext.addDependencies(project)
 
     // region Image loading
     implementation(libs.coil)
