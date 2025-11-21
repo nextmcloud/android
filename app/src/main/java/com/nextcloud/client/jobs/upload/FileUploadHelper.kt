@@ -222,6 +222,41 @@ class FileUploadHelper {
         backgroundJobManager.startFilesUploadJob(user, uploads.getUploadIds(), showSameFileAlreadyExistsNotification)
     }
 
+    @JvmOverloads
+    @Suppress("LongParameterList")
+    fun uploadAndCopyNewFilesForAlbum(
+        user: User,
+        localPaths: Array<String>,
+        remotePaths: Array<String>,
+        albumName: String,
+        localBehavior: Int,
+        createRemoteFolder: Boolean,
+        createdBy: Int,
+        requiresWifi: Boolean,
+        requiresCharging: Boolean,
+        nameCollisionPolicy: NameCollisionPolicy,
+        showSameFileAlreadyExistsNotification: Boolean = true
+    ) {
+        val uploads = localPaths.mapIndexed { index, localPath ->
+            OCUpload(localPath, remotePaths[index], user.accountName).apply {
+                this.nameCollisionPolicy = nameCollisionPolicy
+                isUseWifiOnly = requiresWifi
+                isWhileChargingOnly = requiresCharging
+                uploadStatus = UploadStatus.UPLOAD_IN_PROGRESS
+                this.createdBy = createdBy
+                isCreateRemoteFolder = createRemoteFolder
+                localAction = localBehavior
+            }
+        }
+        uploadsStorageManager.storeUploads(uploads)
+        backgroundJobManager.startAlbumFilesUploadJob(
+            user,
+            uploads.getUploadIds(),
+            albumName,
+            showSameFileAlreadyExistsNotification
+        )
+    }
+
     fun removeFileUpload(remotePath: String, accountName: String) {
         try {
             val user = accountManager.getUser(accountName).get()
@@ -339,7 +374,7 @@ class FileUploadHelper {
 
     @Suppress("ReturnCount")
     fun isUploadingNow(upload: OCUpload?): Boolean {
-        val currentUploadFileOperation = currentUploadFileOperation
+        val currentUploadFileOperation = currentUploadFileOperation ?: AlbumFileUploadWorker.currentUploadFileOperation
         if (currentUploadFileOperation == null || currentUploadFileOperation.user == null) return false
         if (upload == null || upload.accountName != currentUploadFileOperation.user.accountName) return false
 
