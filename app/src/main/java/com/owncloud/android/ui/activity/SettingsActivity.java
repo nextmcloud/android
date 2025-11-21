@@ -489,10 +489,14 @@ public class SettingsActivity extends PreferenceActivity
         Preference preference = findPreference("setup_e2e");
 
         if (preference != null) {
+
+            if (!CapabilityUtils.getCapability(this).getEndToEndEncryption().isTrue()) {
+                preferenceCategoryMore.removePreference(preference);
+                return;
+            }
+
             if (FileOperationsHelper.isEndToEndEncryptionSetup(this, user) ||
-                CapabilityUtils.getCapability(this).getEndToEndEncryptionKeysExist().isTrue() ||
-                CapabilityUtils.getCapability(this).getEndToEndEncryptionKeysExist().isUnknown()
-            ) {
+                CapabilityUtils.getCapability(this).getEndToEndEncryptionKeysExist().isTrue()) {
                 preferenceCategoryMore.removePreference(preference);
             } else {
                 preference.setOnPreferenceClickListener(p -> {
@@ -573,7 +577,7 @@ public class SettingsActivity extends PreferenceActivity
     }
 
     private void showRemoveE2EAlertDialog(PreferenceCategory preferenceCategoryMore, Preference preference) {
-        new MaterialAlertDialogBuilder(this, R.style.FallbackTheming_Dialog)
+        new MaterialAlertDialogBuilder(this)
             .setTitle(R.string.prefs_e2e_mnemonic)
             .setMessage(getString(R.string.remove_e2e_message))
             .setCancelable(true)
@@ -586,6 +590,9 @@ public class SettingsActivity extends PreferenceActivity
                 if (pMnemonic != null) {
                     preferenceCategoryMore.removePreference(pMnemonic);
                 }
+
+                // NMC: restart to show the preferences correctly
+                restartSettingsActivity();
 
                 dialog.dismiss();
             })
@@ -1042,10 +1049,8 @@ public class SettingsActivity extends PreferenceActivity
         } else if (requestCode == ACTION_SHOW_MNEMONIC && resultCode == RESULT_OK) {
             handleMnemonicRequest(data);
         } else if (requestCode == ACTION_E2E && data != null && data.getBooleanExtra(SetupEncryptionDialogFragment.SUCCESS, false)) {
-            Intent i = new Intent(this, SettingsActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(i);
+            //restart to show the preferences correctly
+            restartSettingsActivity();
         } else if (requestCode == ACTION_SET_STORAGE_LOCATION && data != null) {
             String newPath = data.getStringExtra(ChooseStorageLocationActivity.KEY_RESULT_STORAGE_LOCATION);
 
@@ -1055,6 +1060,13 @@ public class SettingsActivity extends PreferenceActivity
                 storageMigration.migrate();
             }
         }
+    }
+
+    private void restartSettingsActivity() {
+        Intent i = new Intent(this, SettingsActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(i);
     }
 
     @VisibleForTesting
@@ -1074,8 +1086,8 @@ public class SettingsActivity extends PreferenceActivity
     }
 
     private void showMnemonicAlertDialogDialog(String mnemonic) {
-        new MaterialAlertDialogBuilder(this, R.style.FallbackTheming_Dialog)
-            .setTitle(R.string.prefs_e2e_mnemonic)
+        new MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.dialog_e2e_mnemonic_title)
             .setMessage(mnemonic)
             .setPositiveButton(R.string.common_ok, (dialog, which) -> dialog.dismiss())
             .setNegativeButton(R.string.common_cancel, (dialog, i) -> dialog.dismiss())
