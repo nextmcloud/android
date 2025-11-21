@@ -36,14 +36,16 @@ class ShowErrorActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbarInclude.toolbar)
         supportActionBar!!.title = createErrorTitle()
 
-        val snackbar = DisplayUtils.createSnackbar(
+        // NMC-4862
+        // deactivate github report snackbar
+        /* val snackbar = DisplayUtils.createSnackbar(
             binding.errorPageContainer,
             R.string.error_report_issue_text,
             Snackbar.LENGTH_INDEFINITE
         )
             .setAction(R.string.error_report_issue_action) { reportIssue() }
 
-        snackbar.show()
+        snackbar.show() */
     }
 
     private fun createErrorTitle() = String.format(getString(R.string.error_crash_title), getString(R.string.app_name))
