@@ -51,4 +51,5 @@ dependencyResolutionManagement {
 //    }
 //}
 
-include(":app", ":appscan")
+// Not required this module in NMC
+include(":app")
