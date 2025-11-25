@@ -64,3 +64,5 @@ dependencyResolutionManagement {
         }
     }
 }
+// Not required this module in NMC
+include(":app")
