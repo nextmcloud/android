@@ -58,6 +58,7 @@ import com.nextcloud.client.preferences.AppPreferencesImpl;
 import com.nextcloud.utils.extensions.ViewExtensionsKt;
 import com.nextcloud.utils.mdm.MDMConfig;
 import com.owncloud.android.MainApp;
+import com.nmc.android.ui.PrivacySettingsInterfaceImpl;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.AuthenticatorActivity;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -182,6 +183,9 @@ public class SettingsActivity extends PreferenceActivity
         listView.setDivider(ResourcesCompat.getDrawable(getResources(), R.drawable.item_divider, null));
 
         setupActionBar();
+
+        //NMC customization will be initialised in nmc/1878-privacy
+        privacySettingsInterface = new PrivacySettingsInterfaceImpl();
 
         // Register context menu for list of preferences.
         registerForContextMenu(getListView());
