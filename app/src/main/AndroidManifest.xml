@@ -162,7 +162,7 @@
 
                 <data android:scheme="http" />
                 <data
-                    android:host="*"
+                    <android:host="magentacloud.de"
                     tools:ignore="AppLinkUrlError" />
                 <data android:pathPattern="/f/..*" />
             </intent-filter>
@@ -174,7 +174,7 @@
 
                 <data android:scheme="http" />
                 <data
-                    android:host="*"
+                    <android:host="magentacloud.de"
                     tools:ignore="AppLinkUrlError" />
                 <data android:pathPattern="/..*/f/..*" />
             </intent-filter>
@@ -186,7 +186,7 @@
 
                 <data android:scheme="http" />
                 <data
-                    android:host="*"
+                    <android:host="magentacloud.de"
                     tools:ignore="AppLinkUrlError" />
                 <data android:pathPattern="/..*/..*/f/..*" />
             </intent-filter>
@@ -198,7 +198,7 @@
 
                 <data android:scheme="http" />
                 <data
-                    android:host="*"
+                    <android:host="magentacloud.de"
                     tools:ignore="AppLinkUrlError" />
                 <data android:pathPattern="/..*/..*/..*/f/..*" />
             </intent-filter>
@@ -210,7 +210,7 @@
 
                 <data android:scheme="https" />
                 <data
-                    android:host="*"
+                    <android:host="magentacloud.de"
                     tools:ignore="AppLinkUrlError" />
                 <data android:pathPattern="/f/..*" />
             </intent-filter>
@@ -222,7 +222,7 @@
 
                 <data android:scheme="https" />
                 <data
-                    android:host="*"
+                    <android:host="magentacloud.de"
                     tools:ignore="AppLinkUrlError" />
                 <data android:pathPattern="/..*/f/..*" />
             </intent-filter>
@@ -234,7 +234,7 @@
 
                 <data android:scheme="https" />
                 <data
-                    android:host="*"
+                    <android:host="magentacloud.de"
                     tools:ignore="AppLinkUrlError" />
                 <data android:pathPattern="/..*/..*/f/..*" />
             </intent-filter>
@@ -246,7 +246,7 @@
 
                 <data android:scheme="https" />
                 <data
-                    android:host="*"
+                    <android:host="magentacloud.de"
                     tools:ignore="AppLinkUrlError" />
                 <data android:pathPattern="/..*/..*/..*/f/..*" />
                 <!-- path pattern to handle deep link -->
