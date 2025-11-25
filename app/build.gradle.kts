@@ -21,7 +21,8 @@ apply (from = "${rootProject.projectDir}/nmc_app_update-dependencies.gradle")
 val shotTest = System.getenv("SHOT_TEST") == "true"
 val ciBuild = System.getenv("CI") == "true"
 val perfAnalysis = project.hasProperty("perfAnalysis")
-
+// apply marketing SDK for NMC
+apply (from = "${rootProject.projectDir}/nmc_marketing-dependencies.gradle")
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
