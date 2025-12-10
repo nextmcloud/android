@@ -2439,6 +2439,94 @@ class FileDisplayActivity :
         }
     }
 
+    private fun onRemoveAlbumOperationFinish(operation: RemoveAlbumRemoteOperation, result: RemoteOperationResult<*>) {
+        if (result.isSuccess) {
+
+            val fragment = supportFragmentManager.findFragmentByTag(AlbumItemsFragment.TAG)
+            if (fragment is AlbumItemsFragment) {
+                fragment.onAlbumDeleted()
+            }
+        } else {
+            DisplayUtils.showSnackMessage(
+                this,
+                ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources())
+            )
+
+            if (result.isSslRecoverableException) {
+                mLastSslUntrustedServerResult = result
+                showUntrustedCertDialog(mLastSslUntrustedServerResult)
+            }
+        }
+    }
+
+    private fun onCopyAlbumFileOperationFinish(operation: CopyFileToAlbumOperation, result: RemoteOperationResult<*>) {
+        if (result.isSuccess) {
+            // when item added from inside of Album
+            val fragment = supportFragmentManager.findFragmentByTag(AlbumItemsFragment.TAG)
+            if (fragment is AlbumItemsFragment) {
+                fragment.refreshData()
+            } else {
+                // files added directly from Media tab
+                DisplayUtils.showSnackMessage(this, getResources().getString(R.string.album_file_added_message))
+            }
+            Log_OC.e(TAG, "Files copied successfully")
+        } else {
+            try {
+                DisplayUtils.showSnackMessage(
+                    this,
+                    ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources())
+                )
+            } catch (e: Resources.NotFoundException) {
+                Log_OC.e(TAG, "Error while trying to show fail message ", e)
+            }
+        }
+    }
+
+    private fun onRenameAlbumOperationFinish(operation: RenameAlbumRemoteOperation, result: RemoteOperationResult<*>) {
+        if (result.isSuccess) {
+
+            val fragment = supportFragmentManager.findFragmentByTag(AlbumItemsFragment.TAG)
+            if (fragment is AlbumItemsFragment) {
+                fragment.onAlbumRenamed(operation.newAlbumName)
+            }
+        } else {
+            DisplayUtils.showSnackMessage(
+                this,
+                ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources())
+            )
+
+            if (result.isSslRecoverableException) {
+                mLastSslUntrustedServerResult = result
+                showUntrustedCertDialog(mLastSslUntrustedServerResult)
+            }
+        }
+    }
+
+    private fun onCreateAlbumOperationFinish(
+        operation: CreateNewAlbumRemoteOperation,
+        result: RemoteOperationResult<*>
+    ) {
+        if (result.isSuccess) {
+            val fragment = supportFragmentManager.findFragmentByTag(AlbumsFragment.TAG)
+            if (fragment is AlbumsFragment) {
+                fragment.navigateToAlbumItemsFragment(operation.newAlbumName, true)
+            }
+        } else {
+            try {
+                if (RemoteOperationResult.ResultCode.FOLDER_ALREADY_EXISTS == result.code) {
+                    DisplayUtils.showSnackMessage(this, R.string.album_already_exists)
+                } else {
+                    DisplayUtils.showSnackMessage(
+                        this,
+                        ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources())
+                    )
+                }
+            } catch (e: Resources.NotFoundException) {
+                Log_OC.e(TAG, "Error while trying to show fail message ", e)
+            }
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
