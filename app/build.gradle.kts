@@ -82,6 +82,7 @@ val configProps = Properties().apply {
 val ncTestServerUsername = configProps["NC_TEST_SERVER_USERNAME"]
 val ncTestServerPassword = configProps["NC_TEST_SERVER_PASSWORD"]
 val ncTestServerBaseUrl = configProps["NC_TEST_SERVER_BASEURL"]
+val moengageAppId = project.properties["MOENGAGE_APP_ID"]
 
 android {
     // install this NDK version and Cmake to produce smaller APKs. Build will still work if not installed
@@ -98,6 +99,8 @@ android {
         targetSdk = 36
         compileSdk = 36
 
+        // NMC Customization
+        buildConfigField("String", "MOENGAGE_APP_ID", moengageAppId.toString())
         buildConfigField("boolean", "CI", ciBuild.toString())
         buildConfigField("boolean", "RUNTIME_PERF_ANALYSIS", perfAnalysis.toString())
 
@@ -486,6 +489,15 @@ dependencies {
     testImplementation(libs.bundles.unit.test)
     // endregion
 
+    // NMC region
+    // core moengage features
+    implementation(moengage.core)
+    // optionally add this to use the Push Templates feature
+    implementation(moengage.richNotification)
+    // optionally add this to use the InApp feature
+    implementation(moengage.inapp)
+    // endregion
+
     // region Mocking support
     androidTestImplementation(libs.bundles.mocking)
     // endregion
@@ -520,4 +532,7 @@ dependencies {
 
     // kotlinx.serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // NMC: dependency required to capture Advertising ID for Adjust & MoEngage SDK
+    implementation(libs.play.services.ads.identifier)
 }
