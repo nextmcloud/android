@@ -772,6 +772,32 @@ public final class DisplayUtils {
         return df.format(timestamp);
     }
 
+    public static void setThumbnail(OCFile file,
+                                    ImageView thumbnailView,
+                                    User user,
+                                    FileDataStorageManager storageManager,
+                                    List<ThumbnailsCacheManager.ThumbnailGenerationTask> asyncTasks,
+                                    boolean gridView,
+                                    Context context,
+                                    LoaderImageView shimmerThumbnail,
+                                    AppPreferences preferences,
+                                    ViewThemeUtils viewThemeUtils,
+                                    SyncedFolderProvider syncedFolderProvider
+                                    ) {
+        setThumbnail(file,
+                     thumbnailView,
+                     user,
+                     storageManager,
+                     asyncTasks,
+                     gridView,
+                     context,
+                     shimmerThumbnail,
+                     preferences,
+                     viewThemeUtils,
+                     syncedFolderProvider,
+                     false);
+    }
+
     /**
      * Sets a thumbnail for a offline file, file or folder with various display options and states.
      * <p>
@@ -812,7 +838,8 @@ public final class DisplayUtils {
                                     LoaderImageView shimmerThumbnail,
                                     AppPreferences preferences,
                                     ViewThemeUtils viewThemeUtils,
-                                    SyncedFolderProvider syncedFolderProvider) {
+                                    SyncedFolderProvider syncedFolderProvider,
+                                    boolean hideVideoOverlay) {
         if (file == null || thumbnailView == null || context == null) {
             return;
         }
@@ -832,7 +859,7 @@ public final class DisplayUtils {
             return;
         }
 
-        setThumbnailFromCache(file, thumbnailView, storageManager, asyncTasks, gridView, shimmerThumbnail, user, preferences, context, viewThemeUtils);
+        setThumbnailFromCache(file, thumbnailView, storageManager, asyncTasks, gridView, shimmerThumbnail, user, preferences, context, viewThemeUtils, hideVideoOverlay);
     }
 
     private static void setThumbnailFirstTimeForFile(OCFile file, ImageView thumbnailView, FileDataStorageManager storageManager, List<ThumbnailsCacheManager.ThumbnailGenerationTask> asyncTasks, boolean gridView, LoaderImageView shimmerThumbnail, User user, AppPreferences preferences, Context context, ViewThemeUtils viewThemeUtils) {
@@ -879,7 +906,17 @@ public final class DisplayUtils {
         thumbnailView.setImageDrawable(fileIcon);
     }
 
-    private static void setThumbnailFromCache(OCFile file, ImageView thumbnailView, FileDataStorageManager storageManager, List<ThumbnailsCacheManager.ThumbnailGenerationTask> asyncTasks, boolean gridView, LoaderImageView shimmerThumbnail, User user, AppPreferences preferences, Context context, ViewThemeUtils viewThemeUtils) {
+    private static void setThumbnailFromCache(OCFile file,
+                                              ImageView thumbnailView,
+                                              FileDataStorageManager storageManager,
+                                              List<ThumbnailsCacheManager.ThumbnailGenerationTask> asyncTasks,
+                                              boolean gridView,
+                                              LoaderImageView shimmerThumbnail,
+                                              User user,
+                                              AppPreferences preferences,
+                                              Context context,
+                                              ViewThemeUtils viewThemeUtils,
+                                              boolean hideVideoOverlay) {
         final var thumbnail = ThumbnailsCacheManager.getBitmapFromDiskCache(ThumbnailsCacheManager.PREFIX_THUMBNAIL + file.getRemoteId());
         if (thumbnail == null || file.isUpdateThumbnailNeeded()) {
             generateNewThumbnail(file, thumbnailView, user, storageManager, new ArrayList<>(asyncTasks), gridView, context, shimmerThumbnail, preferences, viewThemeUtils);
@@ -890,8 +927,12 @@ public final class DisplayUtils {
         stopShimmer(shimmerThumbnail, thumbnailView);
 
         if (MimeTypeUtil.isVideo(file)) {
-            final var withOverlay = ThumbnailsCacheManager.addVideoOverlay(thumbnail, context);
-            thumbnailView.setImageBitmap(withOverlay);
+            if (hideVideoOverlay) {
+                thumbnailView.setImageBitmap(thumbnail);
+            } else {
+                final var withOverlay = ThumbnailsCacheManager.addVideoOverlay(thumbnail, context);
+                thumbnailView.setImageBitmap(withOverlay);
+            }
         } else {
             BitmapUtils.setRoundedBitmapAccordingToListType(gridView, thumbnail, thumbnailView);
         }
