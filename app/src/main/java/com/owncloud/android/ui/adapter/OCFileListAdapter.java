@@ -182,6 +182,7 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                                     true,
                                                     true,
                                                     viewThemeUtils,
+                                                    false,
                                                     syncedFolderProvider);
 
         setHasStableIds(true);
@@ -404,6 +405,8 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                 return new OCFileListHeaderViewHolder(binding);
             }
+            // change required for NMC
+            // default case will be used for VIEW_TYPE_IMAGE & VIEWTYPE_ITEM also
             default -> {
                 if (gridView) {
                     return new OCFileListGridItemViewHolder(
@@ -422,7 +425,6 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof OCFileListFooterViewHolder footerViewHolder) {
             footerViewHolder.getFooterText().setText(getFooterText());
-            viewThemeUtils.platform.colorCircularProgressBar(footerViewHolder.getLoadingProgressBar(), ColorRole.ON_SURFACE_VARIANT);
             footerViewHolder.getLoadingProgressBar().setVisibility(
                 ocFileListFragmentInterface.isLoading() ? View.VISIBLE : View.GONE);
         } else if (holder instanceof OCFileListHeaderViewHolder headerViewHolder) {
@@ -998,6 +1000,7 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void setGridView(boolean bool) {
         gridView = bool;
+        ocFileListDelegate.setGridView(bool);
     }
 
     public void setShowMetadata(boolean bool) {
