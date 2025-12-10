@@ -89,7 +89,6 @@ class AlbumsAdapter(
                 preferences,
                 viewThemeUtils,
                 syncedFolderProvider,
-                // used to avoid build issue
                 true
             )
         } else {
