@@ -23,7 +23,10 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.Pair;
 import android.util.DisplayMetrics;
@@ -88,6 +91,7 @@ import com.owncloud.android.lib.resources.files.SearchRemoteOperation;
 import com.owncloud.android.lib.resources.files.ToggleFavoriteRemoteOperation;
 import com.owncloud.android.lib.resources.status.E2EVersion;
 import com.owncloud.android.lib.resources.status.OCCapability;
+import com.owncloud.android.ui.activity.AlbumsPickerActivity;
 import com.owncloud.android.ui.activity.DrawerActivity;
 import com.nmc.android.scans.ScanActivity;
 import com.owncloud.android.ui.activity.FileActivity;
@@ -939,6 +943,27 @@ public class OCFileListFragment extends ExtendedListFragment implements
             // hide FAB in multi selection mode
             setFabVisible(false);
 
+            if (OCFileListFragment.this instanceof GalleryFragment) {
+                final MenuItem addAlbumItem = menu.findItem(R.id.add_to_album);
+                // show add to album button for gallery to add media to Album
+                addAlbumItem.setVisible(true);
+                if (addAlbumItem.getTitle() != null) {
+                    SpannableString coloredTitle = new SpannableString(addAlbumItem.getTitle());
+                    coloredTitle.setSpan(
+                        new ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.primary)),
+                        0,
+                        addAlbumItem.getTitle().length(),
+                        Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                                        );
+                    addAlbumItem.setTitle(coloredTitle);
+                }
+
+                // hide the 3 dot menu icon while picking media for Albums
+                if (requireActivity() instanceof AlbumsPickerActivity) {
+                    item.setVisible(false);
+                }
+            }
+
             getCommonAdapter().setMultiSelect(true);
             return true;
         }
@@ -975,6 +1000,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
             final Set<OCFile> checkedFiles = getCommonAdapter().getCheckedItems();
             if (item.getItemId() == R.id.custom_menu_placeholder_item) {
                 openActionsMenu(getCommonAdapter().getFilesCount(), checkedFiles, false);
+            } else if (item.getItemId() == R.id.add_to_album){
+                if (OCFileListFragment.this instanceof GalleryFragment galleryFragment) {
+                    galleryFragment.addImagesToAlbum(checkedFiles);
+                }
             }
             return true;
         }
@@ -2333,6 +2362,14 @@ public class OCFileListFragment extends ExtendedListFragment implements
     protected void setTitle(final String title, Boolean showBackAsMenu) {
         requireActivity().runOnUiThread(() -> {
             if (getActivity() != null) {
+                // NMC region
+                // NMC-5040 fix
+                // skip updating title if user is on Albums screen
+                if (((FileDisplayActivity) getActivity()).isAlbumsFragment()
+                    || ((FileDisplayActivity) getActivity()).isAlbumItemsFragment()) {
+                    return;
+                }
+                // endregion
                 final ActionBar actionBar = ((FileDisplayActivity) getActivity()).getSupportActionBar();
                 final Context context = getContext();
 
@@ -2470,6 +2507,14 @@ public class OCFileListFragment extends ExtendedListFragment implements
     public void setFabVisible(final boolean visible) {
         if (mFabMain == null) {
             // is not available in FolderPickerActivity
+            return;
+        }
+
+        // NMC Customizations: to hide the fab if user is on Albums Fragment
+        if (requireActivity() instanceof FileDisplayActivity fda
+            && (fda.isAlbumsFragment()
+            || fda.isAlbumItemsFragment())) {
+            mFabMain.hide();
             return;
         }
 
