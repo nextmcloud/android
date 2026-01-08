@@ -39,7 +39,8 @@ open class WorkerNotificationManager(
             setVibrate(null)
             setOnlyAlertOnce(true)
             setSilent(true)
-            viewThemeUtils.androidx.themeNotificationCompatBuilder(context, this)
+            // NMC Customization
+            setColor(context.resources.getColor(R.color.primary, null))
         }
 
     fun showNotification() {
