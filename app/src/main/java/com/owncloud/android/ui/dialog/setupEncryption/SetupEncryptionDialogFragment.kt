@@ -336,7 +336,7 @@ class SetupEncryptionDialogFragment :
             val isCertificateValid = certificateValidator?.validate(serverKey, certificateAsString)
 
             if (isCertificateValid == false) {
-                return@withContext DownloadKeyResult.CertificateVerificationFailed()
+                Log_OC.d(TAG, "Could not save certificate, certificate is not valid")
             }
 
             dataProvider.storeOrUpdateKeyValue(
