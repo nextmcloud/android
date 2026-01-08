@@ -784,6 +784,18 @@ public class FileOperationsHelper {
         queueShareIntent(updateShareIntent);
     }
 
+    public void getComments(long fileId) {
+        if (fileActivity != null && fileActivity.getOperationsServiceBinder() != null) {
+            Intent commentsIntent = new Intent(fileActivity, OperationsService.class);
+            commentsIntent.setAction(OperationsService.ACTION_GET_COMMENTS);
+            commentsIntent.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
+            commentsIntent.putExtra(OperationsService.EXTRA_FILE_ID, fileId);
+
+            mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(commentsIntent);
+        } else {
+            Log_OC.d(TAG, "File activity or operation service binder is null.");
+        }
+    }
 
     public void sendShareFile(OCFile file, boolean hideNcSharingOptions) {
         // Show dialog

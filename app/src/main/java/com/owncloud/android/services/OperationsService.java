@@ -48,6 +48,7 @@ import com.owncloud.android.lib.resources.shares.OCShare;
 import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.lib.resources.users.GetUserInfoRemoteOperation;
 import com.owncloud.android.operations.CheckCurrentCredentialsOperation;
+import com.owncloud.android.operations.CommentFileOperation;
 import com.owncloud.android.operations.CopyFileOperation;
 import com.owncloud.android.operations.CreateFolderOperation;
 import com.owncloud.android.operations.CreateShareViaLinkOperation;
@@ -64,6 +65,7 @@ import com.owncloud.android.operations.UpdateNoteForShareOperation;
 import com.owncloud.android.operations.UpdateShareInfoOperation;
 import com.owncloud.android.operations.UpdateSharePermissionsOperation;
 import com.owncloud.android.operations.UpdateShareViaLinkOperation;
+import com.owncloud.android.operations.comments.GetCommentsRemoteOperation;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -104,6 +106,7 @@ public class OperationsService extends Service {
     public static final String EXTRA_IN_BACKGROUND = "IN_BACKGROUND";
     public static final String EXTRA_FILES_DOWNLOAD_LIMIT = "FILES_DOWNLOAD_LIMIT";
     public static final String EXTRA_SHARE_ATTRIBUTES = "SHARE_ATTRIBUTES";
+    public static final String EXTRA_FILE_ID = "FILE_ID";
 
     public static final String ACTION_CREATE_SHARE_VIA_LINK = "CREATE_SHARE_VIA_LINK";
     public static final String ACTION_CREATE_SECURE_FILE_DROP = "CREATE_SECURE_FILE_DROP";
@@ -125,6 +128,7 @@ public class OperationsService extends Service {
     public static final String ACTION_CHECK_CURRENT_CREDENTIALS = "CHECK_CURRENT_CREDENTIALS";
     public static final String ACTION_RESTORE_VERSION = "RESTORE_VERSION";
     public static final String ACTION_UPDATE_FILES_DOWNLOAD_LIMIT = "UPDATE_FILES_DOWNLOAD_LIMIT";
+    public static final String ACTION_GET_COMMENTS = "GET_COMMENTS";
 
     private ServiceHandler mOperationsHandler;
     private OperationsServiceBinder mOperationsBinder;
@@ -771,6 +775,15 @@ public class OperationsService extends Service {
 
                         if (shareId > 0) {
                             operation = new SetFilesDownloadLimitOperation(shareId, newLimit, fileDataStorageManager, getApplicationContext());
+                        }
+                        break;
+
+                    case ACTION_GET_COMMENTS:
+                        long fileId = operationIntent.getLongExtra(EXTRA_FILE_ID, 0L);
+                        if (fileId > 0) {
+                            operation = new GetCommentsRemoteOperation(fileId, 0, 0);
+                        } else {
+                            Log_OC.d(TAG, "Get Comments: empty or null fileId.");
                         }
                         break;
 
