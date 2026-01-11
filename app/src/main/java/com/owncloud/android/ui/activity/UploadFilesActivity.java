@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.nextcloud.android.common.ui.theme.utils.ColorRole;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.core.Clock;
+import com.nmc.android.utils.SearchViewThemeUtils;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.jobs.upload.FileUploadHelper;
 import com.nextcloud.client.jobs.upload.FileUploadWorker;
@@ -291,7 +292,10 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
 
         final MenuItem item = menu.findItem(R.id.action_search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(item);
-        viewThemeUtils.androidx.themeToolbarSearchView(mSearchView);
+        // NMC customization
+        SearchViewThemeUtils.INSTANCE.themeSearchView(this, mSearchView);
+        viewThemeUtils.platform.colorDrawable(menu.findItem(R.id.action_choose_storage_path).getIcon(),
+                                              getResources().getColor(R.color.fontAppbar, null));
 
         mSearchView.setOnSearchClickListener(v -> mToolbarSpinner.setVisibility(View.GONE));
 
