@@ -30,6 +30,7 @@ import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.common.NextcloudClient
 import com.nextcloud.utils.BuildHelper.isFlavourGPlay
+import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.NotificationsLayoutBinding
 import com.owncloud.android.datamodel.ArbitraryDataProvider
@@ -135,8 +136,10 @@ class NotificationsActivity :
     }
 
     private fun setupContainingList() {
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingList)
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingEmpty)
+        //NMC Customisation
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(this, binding.swipeContainingList);
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(this, binding.swipeContainingEmpty);
+
         binding.swipeContainingList.setOnRefreshListener {
             setLoadingMessage()
             binding.swipeContainingList.isRefreshing = true
