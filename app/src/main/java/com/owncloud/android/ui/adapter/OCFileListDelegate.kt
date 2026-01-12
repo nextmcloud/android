@@ -34,6 +34,8 @@ import com.owncloud.android.ui.activity.ComponentsGetter
 import com.owncloud.android.ui.activity.FolderPickerActivity
 import com.owncloud.android.ui.fragment.GalleryFragment
 import com.owncloud.android.ui.fragment.SearchType
+import com.owncloud.android.ui.fragment.albums.AlbumItemsFragment
+import com.owncloud.android.ui.activity.AlbumsPickerActivity
 import com.owncloud.android.ui.interfaces.OCFileListFragmentInterface
 import com.owncloud.android.utils.DisplayUtils
 import com.owncloud.android.utils.EncryptionUtils
@@ -159,8 +161,16 @@ class OCFileListDelegate(
         GalleryImageGenerationJob.storeJob(job, imageView)
 
         imageView.setOnClickListener {
-            ocFileListFragmentInterface.onItemClicked(file)
-            GalleryFragment.setLastMediaItemPosition(galleryRowHolder.absoluteAdapterPosition)
+            // NMC Customization: while picking media directly perform long click
+            if (context is AlbumsPickerActivity) {
+                ocFileListFragmentInterface.onLongItemClicked(
+                    file
+                )
+            } else {
+                ocFileListFragmentInterface.onItemClicked(file)
+                GalleryFragment.setLastMediaItemPosition(galleryRowHolder.absoluteAdapterPosition)
+                AlbumItemsFragment.lastMediaItemPosition = galleryRowHolder.absoluteAdapterPosition
+            }
         }
 
         if (!hideItemOptions) {
