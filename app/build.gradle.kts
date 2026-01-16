@@ -83,6 +83,7 @@ val adjustAppToken = project.properties["ADJUST_APP_TOKEN"]
 val ncTestServerUsername = configProps["NC_TEST_SERVER_USERNAME"]
 val ncTestServerPassword = configProps["NC_TEST_SERVER_PASSWORD"]
 val ncTestServerBaseUrl = configProps["NC_TEST_SERVER_BASEURL"]
+val moengageAppId = project.properties["MOENGAGE_APP_ID"]
 
 android {
     // install this NDK version and Cmake to produce smaller APKs. Build will still work if not installed
@@ -102,6 +103,8 @@ android {
         targetSdk = 36
         compileSdk = 36
 
+        // NMC Customization
+        buildConfigField("String", "MOENGAGE_APP_ID", moengageAppId.toString())
         buildConfigField("boolean", "CI", ciBuild.toString())
         buildConfigField("boolean", "RUNTIME_PERF_ANALYSIS", perfAnalysis.toString())
         // NMC Customization: adjust token
@@ -492,6 +495,15 @@ dependencies {
 
     // region Local Unit Test
     testImplementation(libs.bundles.unit.test)
+    // endregion
+
+    // NMC region
+    // core moengage features
+    implementation(moengage.core)
+    // optionally add this to use the Push Templates feature
+    implementation(moengage.richNotification)
+    // optionally add this to use the InApp feature
+    implementation(moengage.inapp)
     // endregion
 
     // region Mocking support
