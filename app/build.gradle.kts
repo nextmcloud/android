@@ -62,7 +62,7 @@ configurations.configureEach {
 }
 
 // semantic versioning for version code
-val versionMajor = 3
+var versionMajor = 3
 val versionMinor = 35
 val versionPatch = 0
 val versionBuild = 90 // 0-50=Alpha / 51-98=RC / 90-99=stable
@@ -94,6 +94,11 @@ android {
 
     defaultConfig {
         applicationId = "com.t_systems.android.webdav"
+        applicationId = "com.nextcloud.client"
+        // NMC: to avoid merge conflicts, we do not change the original version settings.
+        // NMC: Instead, we override the local values with our own here and not touch the definition above.
+        versionMajor = 7
+        // NMC: end
         minSdk = 28
         targetSdk = 36
         compileSdk = 36
@@ -116,12 +121,9 @@ android {
         )
         testInstrumentationRunnerArguments["disableAnalytics"] = "true"
 
-        versionCode = versionMajor * 10000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
-        versionName = when {
-            versionBuild > 89 -> "${versionMajor}.${versionMinor}.${versionPatch}"
-            versionBuild > 50 -> "${versionMajor}.${versionMinor}.${versionPatch} RC" + (versionBuild - 50)
-            else -> "${versionMajor}.${versionMinor}.${versionPatch} Alpha" + (versionBuild + 1)
-        }
+        // NMC: using short version number for more readability
+        versionCode = Integer.parseInt("${versionMajor}${versionMinor}${versionPatch}${versionBuild}")
+        versionName = "${versionMajor}.${versionMinor}.${versionPatch}"
 
         // adapt structure from Eclipse to Gradle/Android Studio expectations;
         // see http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Configuring-the-Structure
