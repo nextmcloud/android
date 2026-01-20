@@ -18,6 +18,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.DocumentsContract;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.nextcloud.client.account.User;
@@ -54,6 +55,9 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
      * needs to exist until the end of the AsyncTask although the caller Activity were finished before.
      */
     private final Context mAppContext;
+
+    // will be used when uploading is happening for Albums
+    private final String mAlbumName;
 
     /**
      * Helper method building a correct array of parameters to be passed to {@link #execute(Object[])} )}
@@ -98,9 +102,10 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
         };
     }
 
-    public CopyAndUploadContentUrisTask(OnCopyTmpFilesTaskListener listener, Context context) {
+    public CopyAndUploadContentUrisTask(OnCopyTmpFilesTaskListener listener, Context context, String albumName) {
         mListener = new WeakReference<>(listener);
         mAppContext = context.getApplicationContext();
+        mAlbumName = albumName;
     }
 
     /**
@@ -180,16 +185,31 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
                 }
             }
 
-            FileUploadHelper.Companion.instance().uploadNewFiles(
-                user,
-                localPaths,
-                currentRemotePaths,
-                behaviour,
-                false,      // do not create parent folder if not existent
-                UploadFileOperation.CREATED_BY_USER,
-                false,
-                false,
-                NameCollisionPolicy.ASK_USER);
+            if (TextUtils.isEmpty(mAlbumName)) {
+                FileUploadHelper.Companion.instance().uploadNewFiles(
+                    user,
+                    localPaths,
+                    currentRemotePaths,
+                    behaviour,
+                    false,      // do not create parent folder if not existent
+                    UploadFileOperation.CREATED_BY_USER,
+                    false,
+                    false,
+                    NameCollisionPolicy.ASK_USER);
+            } else {
+                FileUploadHelper.Companion.instance().uploadAndCopyNewFilesForAlbum(
+                    user,
+                    localPaths,
+                    currentRemotePaths,
+                    mAlbumName,
+                    behaviour,
+                    true,      // create parent folder if not existent
+                    UploadFileOperation.CREATED_BY_USER,
+                    false,
+                    false,
+                    // use RENAME policy to make sure all files are uploaded
+                    NameCollisionPolicy.RENAME);
+            }
 
             result = ResultCode.OK;
 
