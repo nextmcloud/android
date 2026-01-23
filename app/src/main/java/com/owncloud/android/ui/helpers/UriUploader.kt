@@ -51,6 +51,23 @@ class UriUploader(
     private val mShowWaitingDialog: Boolean,
     private val mCopyTmpTaskListener: OnCopyTmpFilesTaskListener?
 ) {
+    // NMC Customization
+    // used when uploading from Albums
+    var albumName: String? = null
+
+    constructor(
+        activity: FileActivity,
+        urisToUpload: List<Parcelable?>,
+        uploadPath: String,
+        albumName: String?,
+        user: User,
+        behaviour: Int,
+        showWaitingDialog: Boolean,
+        copyTmpTaskListener: OnCopyTmpFilesTaskListener?
+    ) : this(activity, urisToUpload, uploadPath,
+        user, behaviour, showWaitingDialog, copyTmpTaskListener){
+        this.albumName = albumName
+    }
 
     enum class UriUploaderResultCode {
         OK,
@@ -132,18 +149,34 @@ class UriUploader(
      * @param remotePaths    Absolute paths in the current OC account to set to the uploaded file.
      */
     private fun requestUpload(localPaths: Array<String>, remotePaths: Array<String>) {
-        FileUploadHelper.instance().uploadNewFiles(
-            user,
-            localPaths,
-            remotePaths,
-            mBehaviour,
-            // do not create parent folder if not existent
-            false,
-            UploadFileOperation.CREATED_BY_USER,
-            requiresWifi = false,
-            requiresCharging = false,
-            nameCollisionPolicy = NameCollisionPolicy.ASK_USER
-        )
+        if (albumName.isNullOrEmpty()) {
+            FileUploadHelper.instance().uploadNewFiles(
+                user,
+                localPaths,
+                remotePaths,
+                mBehaviour,
+                // do not create parent folder if not existent
+                false,
+                UploadFileOperation.CREATED_BY_USER,
+                requiresWifi = false,
+                requiresCharging = false,
+                nameCollisionPolicy = NameCollisionPolicy.ASK_USER
+            )
+        } else {
+            FileUploadHelper.instance().uploadAndCopyNewFilesForAlbum(
+                user,
+                localPaths,
+                remotePaths,
+                albumName!!,
+                mBehaviour,
+                // create parent folder if not existent
+                true,
+                UploadFileOperation.CREATED_BY_USER,
+                requiresWifi = false,
+                requiresCharging = false,
+                nameCollisionPolicy = NameCollisionPolicy.RENAME // use RENAME policy to make sure all files are uploaded
+            )
+        }
     }
 
     /**
@@ -155,7 +188,7 @@ class UriUploader(
         if (mShowWaitingDialog) {
             mActivity.showLoadingDialog(mActivity.resources.getString(R.string.wait_for_tmp_copy_from_private_storage))
         }
-        val copyTask = CopyAndUploadContentUrisTask(mCopyTmpTaskListener, mActivity)
+        val copyTask = CopyAndUploadContentUrisTask(mCopyTmpTaskListener, mActivity, albumName)
         val fm = mActivity.supportFragmentManager
 
         // Init Fragment without UI to retain AsyncTask across configuration changes
