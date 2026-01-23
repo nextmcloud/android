@@ -157,6 +157,13 @@ interface BackgroundJobManager {
 
     fun startPdfGenerateAndUploadWork(user: User, uploadFolder: String, imagePaths: List<String>, pdfPath: String)
 
+    fun scheduleImmediateScanDocUploadJob(
+        saveFileTypes: String,
+        docFileName: String,
+        remotePathToUpload: String,
+        pdfPassword: String?
+    ): LiveData<JobInfo?>
+
     fun scheduleTestJob()
     fun startImmediateTestJob()
     fun cancelTestJob()
@@ -173,4 +180,6 @@ interface BackgroundJobManager {
     fun startMetadataSyncJob(currentDirPath: String)
     fun downloadFolder(folder: OCFile, accountName: String)
     fun cancelFolderDownload()
+
+    fun isWorkScheduled(tag: String): Boolean
 }
