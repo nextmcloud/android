@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2025 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<resources>
+    <!-- NMC-4861 fix -->
+    <!-- later remove the log_config and enable it only in main setup.xml -->
+    <!-- keeping it now if later we have to hide the Logs option from release builds -->
+    <!-- enable logs in debug builds -->
+    <bool name="logger_enabled">true</bool>
+</resources>
