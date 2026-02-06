@@ -49,7 +49,6 @@ class UnifiedSearchCurrentDirItemViewHolder(
             binding.filename.text = filename
         }
 
-        viewThemeUtils.platform.colorImageView(binding.thumbnail, ColorRole.PRIMARY)
         DisplayUtils.setThumbnail(
             file,
             binding.thumbnail,
