@@ -28,6 +28,7 @@ import com.nextcloud.client.jobs.download.FileDownloadWorker
 import com.nextcloud.client.jobs.folderDownload.FolderDownloadWorker
 import com.nextcloud.client.jobs.metadata.MetadataWorker
 import com.nextcloud.client.jobs.offlineOperations.OfflineOperationsWorker
+import com.nextcloud.client.jobs.upload.AlbumFileUploadWorker
 import com.nextcloud.client.jobs.upload.FileUploadWorker
 import com.nextcloud.client.logger.Logger
 import com.nextcloud.client.network.ConnectivityService
@@ -98,6 +99,7 @@ class BackgroundJobFactory @Inject constructor(
                 FilesExportWork::class -> createFilesExportWork(context, workerParameters)
                 FileUploadWorker::class -> createFilesUploadWorker(context, workerParameters)
                 FileDownloadWorker::class -> createFilesDownloadWorker(context, workerParameters)
+                AlbumFileUploadWorker::class -> createAlbumsFilesUploadWorker(context, workerParameters)
                 GeneratePdfFromImagesWork::class -> createPDFGenerateWork(context, workerParameters)
                 ScanDocUploadWorker::class -> createScanDocUploadWork(context, workerParameters)
                 HealthStatusWork::class -> createHealthStatusWork(context, workerParameters)
@@ -249,6 +251,20 @@ class BackgroundJobFactory @Inject constructor(
             viewThemeUtils.get(),
             accountManager,
             localBroadcastManager.get(),
+            context,
+            params
+        )
+
+    private fun createAlbumsFilesUploadWorker(context: Context, params: WorkerParameters): AlbumFileUploadWorker =
+        AlbumFileUploadWorker(
+            uploadsStorageManager,
+            connectivityService,
+            powerManagementService,
+            accountManager,
+            viewThemeUtils.get(),
+            localBroadcastManager.get(),
+            backgroundJobManager.get(),
+            preferences,
             context,
             params
         )

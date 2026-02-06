@@ -95,6 +95,8 @@ import com.owncloud.android.ui.fragment.FileDetailFragment;
 import com.owncloud.android.ui.fragment.FileDetailSharingFragment;
 import com.owncloud.android.ui.fragment.FileDetailsSharingProcessFragment;
 import com.owncloud.android.ui.fragment.OCFileListFragment;
+import com.owncloud.android.ui.fragment.albums.AlbumItemsFragment;
+import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
 import com.owncloud.android.ui.fragment.filesRepository.FilesRepository;
 import com.owncloud.android.ui.fragment.filesRepository.RemoteFilesRepository;
 import com.owncloud.android.ui.helpers.FileOperationsHelper;
@@ -111,6 +113,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -845,11 +848,19 @@ public abstract class FileActivity extends DrawerActivity
     }
 
     public void refreshList() {
-        final Fragment fragment = getSupportFragmentManager().findFragmentByTag(FileDisplayActivity.TAG_LIST_OF_FILES);
-        if (fragment instanceof OCFileListFragment listFragment) {
-            listFragment.onRefresh();
-        } else if (fragment instanceof FileDetailFragment detailFragment) {
-            detailFragment.goBackToOCFileListFragment();
+        // NMC Customization
+        // first check for album fragments
+        if (isAlbumsFragment()) {
+            ((AlbumsFragment) Objects.requireNonNull(getSupportFragmentManager().findFragmentByTag(AlbumsFragment.Companion.getTAG()))).refreshAlbums();
+        } else if (isAlbumItemsFragment()) {
+            ((AlbumItemsFragment) Objects.requireNonNull(getSupportFragmentManager().findFragmentByTag(AlbumItemsFragment.Companion.getTAG()))).refreshData();
+        } else {
+            final Fragment fragment = getSupportFragmentManager().findFragmentByTag(FileDisplayActivity.TAG_LIST_OF_FILES);
+            if (fragment instanceof OCFileListFragment listFragment) {
+                listFragment.onRefresh();
+            } else if (fragment instanceof FileDetailFragment detailFragment) {
+                detailFragment.goBackToOCFileListFragment();
+            }
         }
     }
 
