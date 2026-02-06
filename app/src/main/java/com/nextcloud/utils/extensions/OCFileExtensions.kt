@@ -80,3 +80,7 @@ fun OCFile?.getDepth(): OCFileDepth? {
     // Otherwise, it's a subdirectory of a subdirectory
     return DeepLevel
 }
+
+// NMC method to filter only folders with/without e2ee folders
+fun List<OCFile>.filterByFolder(hideEncryptedFolder: Boolean = false): List<OCFile> =
+    filter { it.isFolder && (!hideEncryptedFolder || !it.isEncrypted) }
