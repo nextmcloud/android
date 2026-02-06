@@ -267,6 +267,12 @@ class UnifiedSearchFragment :
             )
             emptyListViewHeadline.text = requireContext().getString(state.titleId)
             emptyListViewText.text = requireContext().getString(state.descriptionId)
+            emptyListViewHeadline.text =
+                requireContext().getString(R.string.file_list_empty_headline_server_search)
+            emptyListViewText.text =
+                requireContext().getString(R.string.file_list_empty_unified_search_no_results)
+            // NMC Customization
+            emptyListIcon.setImageResource(R.drawable.ic_search_empty)
         }
     }
 
