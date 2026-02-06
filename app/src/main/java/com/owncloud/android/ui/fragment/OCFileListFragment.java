@@ -74,6 +74,7 @@ import com.nextcloud.utils.view.FastScrollUtils;
 import com.nmc.android.marketTracking.AdjustSdkUtils;
 import com.nmc.android.marketTracking.TrackingScanInterfaceImpl;
 import com.nmc.android.marketTracking.TealiumSdkUtils;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.MainApp;
 import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.R;
@@ -620,7 +621,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
             .setPositiveButton(R.string.upload_direct_camera_video, (dialog, which) -> fileDisplayActivity.getFileOperationsHelper().uploadFromCamera(fileDisplayActivity, FileDisplayActivity.REQUEST_CODE__UPLOAD_FROM_VIDEO_CAMERA, true))
             .setNegativeButton(R.string.upload_direct_camera_photo, (dialog, which) -> fileDisplayActivity.getFileOperationsHelper().uploadFromCamera(fileDisplayActivity, FileDisplayActivity.REQUEST_CODE__UPLOAD_FROM_CAMERA, false));
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(fileDisplayActivity, builder);
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(fileDisplayActivity, builder);
 
         builder.create();
         builder.show();
