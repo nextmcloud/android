@@ -41,6 +41,7 @@ import com.nextcloud.utils.extensions.searchFilesByName
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.nextcloud.utils.extensions.typedActivity
 import com.owncloud.android.R
+import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.databinding.ListFragmentBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
 import com.owncloud.android.datamodel.OCFile
@@ -346,6 +347,8 @@ class UnifiedSearchFragment :
     }
 
     private fun setUpBinding() {
+        // NMC Customization
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(requireContext(), binding.swipeContainingList)
         binding.swipeContainingList.setOnRefreshListener {
             vm.initialQuery()
         }
