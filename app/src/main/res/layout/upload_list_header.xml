@@ -33,7 +33,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/upload_list_expand_header"
-            android:src="@drawable/ic_expand_less" />
+            android:src="@drawable/ic_expand_less"
+            app:tint="@color/list_icon_color"/>
     </FrameLayout>
 
     <TextView
@@ -60,8 +61,8 @@
         android:paddingTop="@dimen/standard_half_padding"
         android:paddingEnd="@dimen/zero"
         android:paddingBottom="@dimen/standard_half_padding"
-        android:src="@drawable/ic_delete"
-        app:tint="#757575" />
+        android:src="@drawable/nav_trashbin"
+        app:tint="@color/list_icon_color"/>
 
     <include
         android:id="@+id/auto_upload_battery_saver_warning_card"
