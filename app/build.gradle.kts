@@ -79,6 +79,7 @@ val configProps = Properties().apply {
     if (file.exists()) load(FileInputStream(file))
 }
 
+val adjustAppToken = project.properties["ADJUST_APP_TOKEN"]
 val ncTestServerUsername = configProps["NC_TEST_SERVER_USERNAME"]
 val ncTestServerPassword = configProps["NC_TEST_SERVER_PASSWORD"]
 val ncTestServerBaseUrl = configProps["NC_TEST_SERVER_BASEURL"]
@@ -100,7 +101,8 @@ android {
 
         buildConfigField("boolean", "CI", ciBuild.toString())
         buildConfigField("boolean", "RUNTIME_PERF_ANALYSIS", perfAnalysis.toString())
-
+        // NMC Customization: adjust token
+        buildConfigField("String", "ADJUST_APP_TOKEN", adjustAppToken.toString())
         javaCompileOptions.annotationProcessorOptions {
             arguments += mapOf("room.schemaLocation" to "$projectDir/schemas")
         }
@@ -502,6 +504,14 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     // endregion
 
+    // NMC region
+    // Adjust SDK --> https://github.com/adjust/android_sdk
+    implementation(libs.adjust.android)
+    implementation(libs.installreferrer)
+    // tealium sdk
+    implementation(libs.tealium.library)
+    // endregion
+
     // region Stateless
     implementation(libs.stateless4j)
     // endregion
@@ -520,4 +530,7 @@ dependencies {
 
     // kotlinx.serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // NMC: dependency required to capture Advertising ID for Adjust & MoEngage SDK
+    implementation(libs.play.services.ads.identifier)
 }
