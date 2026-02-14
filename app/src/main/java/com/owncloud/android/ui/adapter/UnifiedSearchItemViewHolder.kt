@@ -10,7 +10,6 @@ package com.owncloud.android.ui.adapter
 import android.content.Context
 import android.view.View
 import com.afollestad.sectionedrecyclerview.SectionedViewHolder
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.common.NextcloudClient
 import com.nextcloud.model.SearchResultEntryType
 import com.nextcloud.utils.CalendarEventManager
@@ -53,7 +52,6 @@ class UnifiedSearchItemViewHolder(
         }
 
         val entryType = entry.getType()
-        viewThemeUtils.platform.colorImageView(binding.thumbnail, ColorRole.PRIMARY)
         GlideHelper.loadIntoImageView(
             context,
             nextcloudClient,
