@@ -20,12 +20,13 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.nextcloud.utils.extensions.remainingDownloadLimit
 import com.nextcloud.utils.mdm.MDMConfig
+import com.nmc.android.utils.EllipsizeListener
+import com.nmc.android.utils.TextViewUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FileDetailsShareLinkShareItemBinding
-import com.owncloud.android.datamodel.quickPermission.QuickPermissionType
 import com.owncloud.android.lib.resources.shares.OCShare
 import com.owncloud.android.lib.resources.shares.ShareType
-import com.owncloud.android.ui.fragment.util.SharePermissionManager.getSelectedType
+import com.owncloud.android.ui.fragment.util.SharePermissionManager
 import com.owncloud.android.ui.fragment.util.SharePermissionManager.isSecureFileDrop
 import com.owncloud.android.utils.theme.ViewThemeUtils
 
@@ -48,11 +49,10 @@ internal class LinkShareViewHolder(itemView: View) : RecyclerView.ViewHolder(ite
     }
 
     fun bind(publicShare: OCShare, listener: ShareeListAdapterListener, position: Int) {
-        val quickPermissionType = getSelectedType(publicShare, encrypted)
-
         setName(binding, context, publicShare, position)
-        setSubline(binding, context, publicShare)
-        setPermissionName(binding, context, publicShare, quickPermissionType)
+        setPermissionName(binding, context, publicShare)
+        showHideCalendarIcon(publicShare.expirationDate)
+        showHidePasswordIcon(publicShare.isPasswordProtected)
         setOnClickListeners(binding, listener, publicShare)
         configureCopyLink(binding, context, listener, publicShare)
     }
@@ -80,15 +80,22 @@ internal class LinkShareViewHolder(itemView: View) : RecyclerView.ViewHolder(ite
                 else ->
                     context.getString(R.string.share_link_with_label, label)
             }
+
+            binding.overflowMenu.setVisibility(View.GONE)
+            binding.copyLink.setVisibility(View.VISIBLE)
+            binding.detailText.visibility = View.VISIBLE
+
             return
         }
 
         if (ShareType.EMAIL == publicShare.shareType) {
             binding.name.text = publicShare.sharedWithDisplayName
 
-            val emailDrawable = ResourcesCompat.getDrawable(context.resources, R.drawable.ic_email, null)
+            val emailDrawable = ResourcesCompat.getDrawable(context.resources, R.drawable.ic_external_share, null)
             binding.icon.setImageDrawable(emailDrawable)
+            binding.overflowMenu.setVisibility(View.VISIBLE)
             binding.copyLink.visibility = View.GONE
+            binding.detailText.visibility = View.GONE
             return
         }
 
@@ -100,48 +107,65 @@ internal class LinkShareViewHolder(itemView: View) : RecyclerView.ViewHolder(ite
         binding.name.text = context.getString(R.string.share_link_with_label, label)
     }
 
-    private fun setSubline(binding: FileDetailsShareLinkShareItemBinding?, context: Context?, publicShare: OCShare) {
-        if (binding == null || context == null) {
-            return
-        }
-
-        val downloadLimit = publicShare.fileDownloadLimit
-        if (downloadLimit != null) {
-            val remaining = publicShare.remainingDownloadLimit() ?: return
-            val text = context.resources.getQuantityString(
-                R.plurals.share_download_limit_description,
-                remaining,
-                remaining
-            )
-
-            binding.subline.text = text
-            binding.subline.visibility = View.VISIBLE
-            return
-        }
-
-        binding.subline.visibility = View.GONE
-    }
-
     private fun setPermissionName(
         binding: FileDetailsShareLinkShareItemBinding?,
         context: Context?,
-        publicShare: OCShare?,
-        quickPermissionType: QuickPermissionType
+        publicShare: OCShare?
     ) {
         if (binding == null || context == null) {
             return
         }
 
-        val permissionName = quickPermissionType.getText(context)
+        val permissionName = SharePermissionManager.getPermissionName(context, publicShare)
 
         if (TextUtils.isEmpty(permissionName) || (isSecureFileDrop(publicShare) && encrypted)) {
-            binding.permissionName.visibility = View.GONE
+            binding.quickPermissionLayout.permissionLayout.visibility = View.GONE
             return
         }
 
-        binding.permissionName.text = permissionName
-        binding.permissionName.visibility = View.VISIBLE
-        viewThemeUtils?.androidx?.colorPrimaryTextViewElement(binding.permissionName)
+        binding.quickPermissionLayout.permissionName.text = permissionName
+
+        TextViewUtils.isTextEllipsized(binding.quickPermissionLayout.permissionName, object : EllipsizeListener {
+            override fun onResult(isEllipsized: Boolean) {
+                if (isEllipsized) {
+                    binding.quickPermissionLayout.permissionName.text =
+                        SharePermissionManager.getShortPermissionName(context, permissionName)
+                }
+            }
+        })
+        setPermissionTypeIcon(permissionName)
+        binding.quickPermissionLayout.permissionLayout.visibility = View.VISIBLE
+    }
+
+    private fun showHideCalendarIcon(expirationDate: Long) {
+        binding?.quickPermissionLayout?.calendarPermissionIcon?.setVisibility(if (expirationDate > 0) View.VISIBLE else View.GONE)
+    }
+
+    private fun showHidePasswordIcon(isPasswordProtected: Boolean) {
+        binding?.quickPermissionLayout?.passwordPermissionIcon?.setVisibility(if (isPasswordProtected) View.VISIBLE else View.GONE)
+    }
+
+    private fun setPermissionTypeIcon(permissionName: String?) {
+        when (permissionName) {
+            context?.resources?.getString(R.string.share_quick_permission_can_edit) -> {
+                binding?.quickPermissionLayout?.permissionTypeIcon?.setImageResource(R.drawable.ic_sharing_edit)
+                binding?.quickPermissionLayout?.permissionTypeIcon?.setVisibility(View.VISIBLE)
+            }
+
+            context?.resources?.getString(R.string.share_quick_permission_can_view) -> {
+                binding?.quickPermissionLayout?.permissionTypeIcon?.setImageResource(R.drawable.ic_sharing_read_only)
+                binding?.quickPermissionLayout?.permissionTypeIcon?.setVisibility(View.VISIBLE)
+            }
+
+            context?.resources?.getString(R.string.share_permission_secure_file_drop), context?.resources?.getString(R.string.share_quick_permission_can_upload) -> {
+                binding?.quickPermissionLayout?.permissionTypeIcon?.setImageResource(R.drawable.ic_sharing_file_drop)
+                binding?.quickPermissionLayout?.permissionTypeIcon?.setVisibility(View.VISIBLE)
+            }
+
+            else -> {
+                binding?.quickPermissionLayout?.permissionTypeIcon?.setVisibility(View.GONE)
+            }
+        }
     }
 
     private fun setOnClickListeners(
@@ -153,13 +177,14 @@ internal class LinkShareViewHolder(itemView: View) : RecyclerView.ViewHolder(ite
             return
         }
 
-        viewThemeUtils?.platform?.colorImageViewBackgroundAndIcon(binding.icon)
-
         binding.overflowMenu.setOnClickListener {
             listener.showSharingMenuActionSheet(publicShare)
         }
         binding.shareByLinkContainer.setOnClickListener {
             listener.showPermissionsDialog(publicShare)
+        }
+        binding.detailText.setOnClickListener {
+            listener.showSharingMenuActionSheet(publicShare)
         }
     }
 
