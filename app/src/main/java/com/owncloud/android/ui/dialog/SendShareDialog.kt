@@ -226,7 +226,8 @@ class SendShareDialog :
         dismiss()
 
         if (activity is FileDisplayActivity) {
-            (activity as FileDisplayActivity?)?.showDetails(file, 1)
+            // NMC: use 0 as activeTab
+            (activity as FileDisplayActivity?)?.showDetails(file, 0)
         } else {
             fileOperationsHelper?.showShareFile(file)
         }
