@@ -66,6 +66,7 @@ import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.nmc.android.ui.LauncherActivity;
 import com.nmc.android.marketTracking.AdjustSdkUtils;
 import com.nmc.android.marketTracking.TealiumSdkUtils;
+import com.nmc.android.utils.ScanBotSdkUtils;
 import com.owncloud.android.authentication.PassCodeManager;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl;
@@ -123,6 +124,8 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.scanbot.sap.SdkFeature;
+import io.scanbot.sdk.ScanbotSDKInitializer;
 
 import static com.owncloud.android.ui.activity.ContactsPreferenceActivity.PREFERENCE_CONTACTS_AUTOMATIC_BACKUP;
 
@@ -391,7 +394,7 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
             disableDocumentsStorageProvider();
         }
 
-
+        initialiseScanBotSDK();
     }
 
     public void disableDocumentsStorageProvider() {
@@ -732,6 +735,10 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
                               R.string.notification_channel_content_observer_description,
                               context,
                               NotificationManager.IMPORTANCE_LOW);
+
+                createChannel(notificationManager, NotificationUtils.NOTIFICATION_CHANNEL_IMAGE_SAVE,
+                              R.string.notification_channel_image_save,
+                              R.string.notification_channel_image_save_description, context);
             } else {
                 Log_OC.e(TAG, "Notification manager is null");
             }
@@ -1070,5 +1077,25 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
     public void onTerminate() {
         super.onTerminate();
         ReceiversHelper.shutdown();
+    }
+
+    /**
+     * method to initialise the ScanBot SDK
+     */
+    private void initialiseScanBotSDK() {
+        new ScanbotSDKInitializer()
+            .withLogging(BuildConfig.DEBUG, BuildConfig.DEBUG)
+            .license(this, ScanBotSdkUtils.LICENSE_KEY)
+            .licenceErrorHandler((status, sdkFeature, statusMessage) -> {
+                // Handle license errors here:
+                Log_OC.d(TAG, "License status: " + status.name());
+                if (sdkFeature != SdkFeature.NoSdkFeature) {
+                    Log_OC.d(TAG, "Missing SDK feature in license: " + sdkFeature.name());
+                }
+            })
+            // enable sdkFilesDir if custom file directory has to be set
+            //.sdkFilesDirectory(this,getExternalFilesDir(null))
+            .prepareOCRLanguagesBlobs(true)
+            .initialize(this);
     }
 }

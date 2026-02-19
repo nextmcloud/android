@@ -134,10 +134,22 @@ open class FolderPickerActivity :
 
         action = intent.getStringExtra(EXTRA_ACTION)
 
-        if (action != null && action == CHOOSE_LOCATION) {
-            setupUIForChooseButton()
+        if (action != null) {
+            when (action) {
+                MOVE_OR_COPY -> {
+                    captionText = resources.getText(R.string.folder_picker_choose_caption_text).toString()
+                    mSearchOnlyFolders = true
+                    isDoNotEnterEncryptedFolder = true
+                }
+
+                CHOOSE_LOCATION -> {
+                    setupUIForChooseButton()
+                }
+
+                else -> configureDefaultCase()
+            }
         } else {
-            captionText = themeUtils.getDefaultDisplayNameForRootFolder(this)
+            configureDefaultCase()
         }
     }
 
@@ -146,9 +158,12 @@ open class FolderPickerActivity :
     }
 
     private fun setupUIForChooseButton() {
-        captionText = resources.getText(R.string.folder_picker_choose_caption_text).toString()
+        captionText = resources.getText(R.string.choose_location).toString()
         mSearchOnlyFolders = true
-        isDoNotEnterEncryptedFolder = true
+        // NMC-3671 fix
+        // allow entering into e2ee folder while choosing location
+        isDoNotEnterEncryptedFolder = false
+        mShowOnlyFolder = true
 
         if (this is FilePickerActivity) {
             return
@@ -156,9 +171,16 @@ open class FolderPickerActivity :
             folderPickerBinding.folderPickerBtnCopy.visibility = View.GONE
             folderPickerBinding.folderPickerBtnMove.visibility = View.GONE
             folderPickerBinding.folderPickerBtnChoose.visibility = View.VISIBLE
-            folderPickerBinding.chooseButtonSpacer.visibility = View.VISIBLE
             folderPickerBinding.moveOrCopyButtonSpacer.visibility = View.GONE
+
+            // NMC Customization
+            folderPickerBinding.folderPickerBtnChoose.text = resources.getString(R.string.common_select)
         }
+    }
+
+    // NMC Customization
+    private fun configureDefaultCase() {
+        captionText = themeUtils.getDefaultDisplayNameForRootFolder(this)
     }
 
     private fun handleBackPress() {
@@ -534,7 +556,8 @@ open class FolderPickerActivity :
     private fun onCreateFolderOperationFinish(operation: CreateFolderOperation, result: RemoteOperationResult<*>) {
         if (result.isSuccess) {
             val fileListFragment = listOfFilesFragment
-            fileListFragment?.onItemClicked(storageManager.getFileByPath(operation.remotePath))
+            // NMC-3702 fix: requires getFileByDecryptedRemotePath instead of getFileByPath
+            fileListFragment?.onItemClicked(storageManager.getFileByDecryptedRemotePath(operation.remotePath))
         } else {
             try {
                 DisplayUtils.showSnackMessage(
