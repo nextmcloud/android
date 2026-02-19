@@ -8,6 +8,7 @@
  */
 package com.owncloud.android.ui.fragment;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nextcloud.client.network.ConnectivityService;
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
 import com.owncloud.android.BuildConfig;
 import com.owncloud.android.R;
@@ -37,9 +40,17 @@ import com.owncloud.android.ui.adapter.CommonOCFileListAdapterInterface;
 import com.owncloud.android.ui.adapter.GalleryAdapter;
 import com.owncloud.android.ui.asynctasks.GallerySearchTask;
 import com.owncloud.android.ui.events.ChangeMenuEvent;
+import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
+import com.owncloud.android.ui.activity.AlbumsPickerActivity;
+import com.owncloud.android.utils.DisplayUtils;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -66,9 +77,13 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
     private GalleryFragmentBottomSheetDialog galleryFragmentBottomSheetDialog;
 
     @Inject FileDataStorageManager fileDataStorageManager;
+    @Inject ConnectivityService connectivityService;
     private final static int maxColumnSizeLandscape = 5;
     private final static int maxColumnSizePortrait = 2;
     private int columnSize;
+
+    // NMC: required for Albums
+    private boolean isFromAlbum; // when opened from Albums to add items
 
     protected void setPhotoSearchQueryRunning(boolean value) {
         this.photoSearchQueryRunning = value;
@@ -83,7 +98,12 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
         super.onCreate(savedInstanceState);
         searchFragment = true;
 
-        setHasOptionsMenu(true);
+        if (getArguments() != null) {
+            isFromAlbum = getArguments().getBoolean(AlbumsPickerActivity.Companion.getEXTRA_FROM_ALBUM(), false);
+        }
+
+        // NMC Customization: only show menu when not opened from media picker
+        setHasOptionsMenu(!isFromAlbum);
 
         if (galleryFragmentBottomSheetDialog == null) {
             galleryFragmentBottomSheetDialog = new GalleryFragmentBottomSheetDialog(this);
@@ -407,6 +427,11 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
     }
 
     private void updateSubtitle(GalleryFragmentBottomSheetDialog.MediaState mediaState) {
+        // NMC Customization: while picking media don't show subtitle
+        if (isFromAlbum) {
+            return;
+        }
+
         requireActivity().runOnUiThread(() -> {
             if (!isAdded()) {
                 return;
@@ -432,5 +457,15 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
 
     public void markAsFavorite(String remotePath, boolean favorite) {
         mAdapter.markAsFavorite(remotePath, favorite);
+    }
+
+    public void addImagesToAlbum(Set<OCFile> checkedFiles) {
+        if (isFromAlbum) {
+            if (requireActivity() instanceof AlbumsPickerActivity albumsPickerActivity) {
+                albumsPickerActivity.addFilesToAlbum(checkedFiles);
+            }
+            exitSelectionMode();
+            requireActivity().finish();
+        }
     }
 }
