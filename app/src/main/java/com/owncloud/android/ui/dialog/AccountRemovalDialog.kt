@@ -20,6 +20,7 @@ import com.nextcloud.client.preferences.AppPreferences
 import com.nmc.android.marketTracking.AdjustSdkUtils
 import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.nextcloud.utils.extensions.getParcelableArgument
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import javax.inject.Inject
@@ -58,6 +59,9 @@ class AccountRemovalDialog : DialogFragment(), Injectable {
                 )
             }
             .setNegativeButton(R.string.common_cancel, null)
+
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireActivity(), builder)
 
         return builder.create()
     }
