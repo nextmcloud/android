@@ -1840,6 +1840,16 @@ public class OCFileListFragment extends ExtendedListFragment implements
         return currentSearchType;
     }
 
+    //NMC Customization
+    //for NMC we are using defaultToolbar instead searchToolbar for which we needed customization
+    private boolean isRoot() {
+        Activity activity;
+        if ((activity = getActivity()) != null && activity instanceof FileDisplayActivity) {
+            return ((FileDisplayActivity) activity).isRoot(((FileDisplayActivity) activity).getFile());
+        }
+        return false;
+    }
+
     protected void prepareActionBarItems(SearchEvent event) {
         if (event != null) {
             switch (event.getSearchType()) {
