@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.account.User
 import com.nextcloud.client.device.DeviceInfo
 import com.nextcloud.client.di.Injectable
@@ -34,6 +33,7 @@ import com.owncloud.android.utils.MimeTypeUtil
 import com.owncloud.android.utils.PermissionUtil
 import com.owncloud.android.utils.theme.ThemeUtils
 import com.owncloud.android.utils.theme.ViewThemeUtils
+import androidx.core.content.ContextCompat
 
 @Suppress("LongParameterList")
 class OCFileListBottomSheetDialog(
@@ -56,7 +56,8 @@ class OCFileListBottomSheetDialog(
         binding = FileListActionsBottomSheetFragmentBinding.inflate(layoutInflater)
         setContentView(binding.getRoot())
 
-        applyBranding()
+        // NMC Customization
+        reorderUploadFromOtherAppsView()
         binding.addToCloud.text = context.resources.getString(
             R.string.add_to_cloud,
             themeUtils.getDefaultDisplayNameForRootFolder(context)
@@ -69,7 +70,6 @@ class OCFileListBottomSheetDialog(
             binding.menuDirectCameraUpload.visibility = View.GONE
         }
 
-        createRichWorkspace()
         setupClickListener()
         filterActionsForOfflineOperations()
 
@@ -94,21 +94,6 @@ class OCFileListBottomSheetDialog(
             // if we take AppPreferences as parameter in constructor it will affect the other NMC PRs test cases
             AppPreferencesImpl.fromContext(fileActivity)
         )
-    }
-
-    private fun applyBranding() {
-        viewThemeUtils.platform.run {
-            binding.run {
-                colorImageView(menuIconUploadFiles, ColorRole.PRIMARY)
-                colorImageView(menuIconUploadFromApp, ColorRole.PRIMARY)
-                colorImageView(menuIconDirectCameraUpload, ColorRole.PRIMARY)
-                colorImageView(menuIconScanDocUpload, ColorRole.PRIMARY)
-                colorImageView(menuIconMkdir, ColorRole.PRIMARY)
-                colorImageView(menuIconAddFolderInfo, ColorRole.PRIMARY)
-
-                colorViewBackground(binding.bottomSheet, ColorRole.SURFACE)
-            }
-        }
     }
 
     @Suppress("ComplexCondition")
@@ -142,21 +127,24 @@ class OCFileListBottomSheetDialog(
                     FileListActionsBottomSheetCreatorBinding.inflate(layoutInflater)
 
                 val creatorView: View = creatorViewBinding.getRoot()
+                //for NMC we have different text and icon for Markdown(.md) menu
+                if (creator.mimetype == MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN) {
+                    creatorViewBinding.creatorName.text = fileActivity.getString(R.string.create_text_document)
+                    creatorViewBinding.creatorThumbnail.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            context,
+                        R.drawable.ic_new_txt_doc))
+                } else {
+                    creatorViewBinding.creatorName.text = String.format(fileActivity.getString(R.string.editor_placeholder),
+                        fileActivity.getString(R.string.create_new),
+                        creator.name)
 
-                creatorViewBinding.creatorName.text = String.format(
-                    fileActivity.getString(R.string.editor_placeholder),
-                    fileActivity.getString(R.string.create_new),
-                    creator.name
-                )
-
-                creatorViewBinding.creatorThumbnail.setImageDrawable(
-                    MimeTypeUtil.getFileTypeIcon(
-                        creator.mimetype,
-                        creator.extension,
-                        creatorViewBinding.creatorThumbnail.context,
-                        viewThemeUtils
-                    )
-                )
+                    creatorViewBinding.creatorThumbnail.setImageDrawable(
+                        MimeTypeUtil.getFileTypeIcon(creator.mimetype,
+                            creator.extension,
+                            creatorViewBinding.creatorThumbnail.context,
+                            viewThemeUtils))
+                }
 
                 creatorView.setOnClickListener {
                     actions.showTemplate(creator, creatorViewBinding.creatorName.text.toString())
@@ -165,25 +153,6 @@ class OCFileListBottomSheetDialog(
 
                 binding.creators.addView(creatorView)
             }
-        }
-    }
-
-    private fun createRichWorkspace() {
-        if (editorUtils.isEditorAvailable(user, MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN) && !file.isEncrypted) {
-            // richWorkspace
-            // == "": no info set -> show button
-            // == null: disabled on server side -> hide button
-            // != "": info set -> hide button
-            if (file.richWorkspace == null || "" != file.richWorkspace) {
-                binding.menuCreateRichWorkspace.visibility = View.GONE
-                binding.menuCreateRichWorkspaceDivider.visibility = View.GONE
-            } else {
-                binding.menuCreateRichWorkspace.visibility = View.VISIBLE
-                binding.menuCreateRichWorkspaceDivider.visibility = View.VISIBLE
-            }
-        } else {
-            binding.menuCreateRichWorkspace.visibility = View.GONE
-            binding.menuCreateRichWorkspaceDivider.visibility = View.GONE
         }
     }
 
@@ -238,6 +207,17 @@ class OCFileListBottomSheetDialog(
                 dismiss()
             }
         }
+    }
+
+    private fun reorderUploadFromOtherAppsView() {
+        // move the upload from other app option
+        // below Create new folder or Create new e2ee folder
+        // NMC-3095 requirement
+        binding.actionLinear.removeView(binding.menuUploadFromApp)
+        binding.actionLinear.addView(
+            binding.menuUploadFromApp,
+            binding.actionLinear.indexOfChild(binding.menuEncryptedMkdir) + 1
+        )
     }
 
     private fun filterActionsForOfflineOperations() {
