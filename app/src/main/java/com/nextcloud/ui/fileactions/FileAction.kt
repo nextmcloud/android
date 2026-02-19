@@ -26,13 +26,13 @@ enum class FileAction(
 
     // generic file actions
     EDIT(R.id.action_edit, R.string.action_edit, R.drawable.ic_edit),
-    SEE_DETAILS(R.id.action_see_details, R.string.actionbar_see_details, R.drawable.ic_information_outline),
+    SEE_DETAILS(R.id.action_see_details, R.string.actionbar_see_details, R.drawable.ic_share),
     REMOVE_FILE(R.id.action_remove_file, R.string.common_remove, R.drawable.ic_delete),
     LEAVE_SHARE(R.id.action_remove_file, R.string.common_leave_this_share, R.drawable.ic_cancel),
 
     // File moving
     RENAME_FILE(R.id.action_rename_file, R.string.common_rename, R.drawable.ic_rename),
-    MOVE_OR_COPY(R.id.action_move_or_copy, R.string.actionbar_move_or_copy, R.drawable.ic_external),
+    MOVE_OR_COPY(R.id.action_move_or_copy, R.string.actionbar_move_or_copy, R.drawable.ic_content_copy),
 
     // favorites
     FAVORITE(R.id.action_favorite, R.string.favorite, R.drawable.ic_star_outline),
@@ -40,7 +40,7 @@ enum class FileAction(
 
     // Uploads and downloads
     DOWNLOAD_FILE(R.id.action_download_file, R.string.filedetails_download, R.drawable.ic_cloud_download),
-    DOWNLOAD_FOLDER(R.id.action_sync_file, R.string.filedetails_sync_file, R.drawable.ic_sync),
+    DOWNLOAD_FOLDER(R.id.action_sync_file, R.string.filedetails_sync_file, R.drawable.ic_cloud_download),
     CANCEL_SYNC(R.id.action_cancel_sync, R.string.common_cancel_sync, R.drawable.ic_sync_off),
 
     // File sharing
@@ -113,7 +113,9 @@ enum class FileAction(
                 R.id.action_move_or_copy,
                 R.id.action_favorite,
                 R.id.action_unset_favorite,
-                R.id.action_pin_to_homescreen
+                R.id.action_pin_to_homescreen,
+                // hide this option for NMC
+                R.id.action_see_details
             )
 
             if (file != null) {
@@ -178,7 +180,6 @@ enum class FileAction(
             if (checkedFiles.any { it.isAPKorAAB }) {
                 result.addAll(
                     listOf(
-                        R.id.action_send_share_file,
                         R.id.action_export_file,
                         R.id.action_sync_file,
                         R.id.action_download_file
@@ -188,7 +189,8 @@ enum class FileAction(
 
             val actionsToHide = getActionsToHide(checkedFiles)
             result.addAll(actionsToHide)
-
+            // NMC: always hide the share menu because we have renamed another menu for sharing (NMC)
+            result.add(R.id.action_send_share_file)
             return result.toList()
         }
 
