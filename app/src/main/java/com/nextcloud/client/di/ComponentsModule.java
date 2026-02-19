@@ -36,6 +36,7 @@ import com.nextcloud.ui.albumItemActions.AlbumItemActionsBottomSheet;
 import com.nextcloud.ui.composeActivity.ComposeActivity;
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet;
 import com.nextcloud.ui.trashbinFileActions.TrashbinFileActionsBottomSheet;
+import com.nmc.android.ui.conflict.ConflictsResolveConsentDialog;
 import com.nmc.android.ui.LauncherActivity;
 import com.nmc.android.scans.SaveScannedDocumentFragment;
 import com.nmc.android.scans.ScanActivity;
@@ -390,6 +391,9 @@ abstract class ComponentsModule {
 
     @ContributesAndroidInjector
     abstract ConflictsResolveDialog conflictsResolveDialog();
+
+    @ContributesAndroidInjector
+    abstract ConflictsResolveConsentDialog conflictsResolveConsentDialog();
 
     @ContributesAndroidInjector
     abstract CreateFolderDialogFragment createFolderDialogFragment();
