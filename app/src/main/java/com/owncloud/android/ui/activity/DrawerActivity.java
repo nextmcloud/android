@@ -70,6 +70,7 @@ import com.nextcloud.utils.extensions.NavigationViewExtensionsKt;
 import com.nextcloud.utils.extensions.ViewExtensionsKt;
 import com.nextcloud.utils.mdm.MDMConfig;
 import com.owncloud.android.MainApp;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.PassCodeManager;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -341,12 +342,16 @@ public abstract class DrawerActivity extends ToolbarActivity
         setupToolbar();
         SearchEvent searchEvent = new SearchEvent("", SearchRemoteOperation.SearchType.FAVORITE_SEARCH);
         launchActivityForSearch(searchEvent, R.id.nav_favorites);
+        // NMC: track fav screen event
+        MoEngageSdkUtils.trackFavouriteScreenEvent(this);
     }
 
     private void openMediaTab(int menuItemId) {
         resetOnlyPersonalAndOnDevice();
         setupToolbar();
         startPhotoSearch(menuItemId);
+        // NMC: track media screen event
+        MoEngageSdkUtils.trackMediaScreenEvent(this);
     }
 
     @Nullable
@@ -641,6 +646,8 @@ public abstract class DrawerActivity extends ToolbarActivity
             }
         } else if (itemId == R.id.nav_shared) {
             openSharedTab();
+            // NMC: track shared screen event
+            MoEngageSdkUtils.trackSharedScreenEvent(this);
         } else if (itemId == R.id.nav_recently_modified) {
             resetOnlyPersonalAndOnDevice();
             startRecentlyModifiedSearch(menuItem);
@@ -1077,6 +1084,9 @@ public abstract class DrawerActivity extends ToolbarActivity
                             showQuota(false);
                         }
                     });
+
+                    // NMC: track quota storage
+                    MoEngageSdkUtils.trackQuotaStorage(this, quota);
                 }
             }
         });
@@ -1297,6 +1307,9 @@ public abstract class DrawerActivity extends ToolbarActivity
     }
 
     private void showOnDeviceFiles() {
+        // NMC: track offline files screen event
+        MoEngageSdkUtils.trackOfflineFilesScreenEvent(this);
+
         MainApp.showOnlyFilesOnDevice(true);
         MainApp.showOnlyPersonalFiles(false);
 
