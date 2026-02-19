@@ -266,9 +266,8 @@ class UnifiedSearchFragment :
         toggleEmptyListVisible(show = true)
 
         binding.emptyList.run {
-            emptyListIcon.setImageDrawable(
-                viewThemeUtils.platform.tintDrawable(requireContext(), state.iconId)
-            )
+            // NMC Customization: no icon tinting required
+            emptyListIcon.setImageResource(state.iconId)
             emptyListViewHeadline.text = requireContext().getString(state.titleId)
             emptyListViewText.text = requireContext().getString(state.descriptionId)
         }
