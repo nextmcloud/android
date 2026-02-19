@@ -77,6 +77,8 @@ import com.owncloud.android.operations.UpdateShareInfoOperation;
 import com.owncloud.android.operations.UpdateSharePermissionsOperation;
 import com.owncloud.android.operations.UpdateShareViaLinkOperation;
 import com.owncloud.android.providers.UsersAndGroupsSearchConfig;
+import com.owncloud.android.operations.share_download_limit.DownloadLimitResponse;
+import com.owncloud.android.operations.share_download_limit.GetShareDownloadLimitOperation;
 import com.owncloud.android.providers.UsersAndGroupsSearchProvider;
 import com.owncloud.android.services.OperationsService;
 import com.owncloud.android.services.OperationsService.OperationsServiceBinder;
@@ -91,6 +93,7 @@ import com.owncloud.android.ui.events.DialogEventType;
 import com.owncloud.android.ui.events.FavoriteEvent;
 import com.owncloud.android.ui.fragment.FileDetailFragment;
 import com.owncloud.android.ui.fragment.FileDetailSharingFragment;
+import com.owncloud.android.ui.fragment.FileDetailsSharingProcessFragment;
 import com.owncloud.android.ui.fragment.OCFileListFragment;
 import com.owncloud.android.ui.fragment.albums.AlbumItemsFragment;
 import com.owncloud.android.ui.fragment.albums.AlbumsFragment;
@@ -418,7 +421,8 @@ public abstract class FileActivity extends DrawerActivity
             operation instanceof UnshareOperation ||
             operation instanceof SynchronizeFolderOperation ||
             operation instanceof UpdateShareViaLinkOperation ||
-            operation instanceof UpdateSharePermissionsOperation
+            operation instanceof UpdateSharePermissionsOperation ||
+            operation instanceof UpdateShareInfoOperation
         ) {
             if (result.isSuccess()) {
                 updateFileFromDB();
@@ -458,6 +462,8 @@ public abstract class FileActivity extends DrawerActivity
             onUpdateShareInformation(result, R.string.unsharing_failed);
         } else if (operation instanceof UpdateNoteForShareOperation) {
             onUpdateNoteForShareOperationFinish(result);
+        } else if (operation instanceof GetShareDownloadLimitOperation) {
+            onShareDownloadLimitFetched(result);
         }
     }
 
@@ -863,7 +869,6 @@ public abstract class FileActivity extends DrawerActivity
     private void onCreateShareViaLinkOperationFinish(CreateShareViaLinkOperation operation,
                                                      RemoteOperationResult result) {
         FileDetailSharingFragment sharingFragment = getShareFileFragment();
-        final Fragment fileListFragment = getSupportFragmentManager().findFragmentByTag(FileDisplayActivity.TAG_LIST_OF_FILES);
 
         if (result.isSuccess()) {
             updateFileFromDB();
@@ -890,6 +895,8 @@ public abstract class FileActivity extends DrawerActivity
                 sharingFragment.onUpdateShareInformation(result, file);
             }
 
+            // this has to be here to avoid the crash when creating link from inside of FileDetailSharingFragment
+            Fragment fileListFragment = getSupportFragmentManager().findFragmentByTag(FileDisplayActivity.TAG_LIST_OF_FILES);
             if (fileListFragment instanceof OCFileListFragment ocFileListFragment && file != null) {
                 if (ocFileListFragment.getAdapterFiles().contains(file)) {
                     ocFileListFragment.updateOCFile(file);
@@ -926,6 +933,22 @@ public abstract class FileActivity extends DrawerActivity
                 viewThemeUtils.material.themeSnackbar(snackbar);
                 snackbar.show();
             }
+        }
+    }
+
+    /**
+     * method will be called when download limit is fetched
+     *
+     * @param result
+     */
+    private void onShareDownloadLimitFetched(RemoteOperationResult result) {
+        FileDetailSharingFragment sharingFragment = getShareFileFragment();
+
+        if (result.isSuccess() && sharingFragment != null && result.getResultData() != null
+            && result.getResultData() instanceof DownloadLimitResponse) {
+            onLinkShareDownloadLimitFetched(((DownloadLimitResponse) result.getResultData()).getLimit(),
+                                            ((DownloadLimitResponse) result.getResultData()).getCount());
+
         }
     }
 
@@ -996,11 +1019,17 @@ public abstract class FileActivity extends DrawerActivity
      * @param shareType
      */
     protected void doShareWith(String shareeName, ShareType shareType) {
-        FileDetailFragment fragment = getFileDetailFragment();
+        Fragment fragment = getFileDetailFragment();
         if (fragment != null) {
-            fragment.initiateSharingProcess(shareeName,
-                                            shareType,
-                                            usersAndGroupsSearchConfig.getSearchOnlyUsers());
+            ((FileDetailFragment) fragment).initiateSharingProcess(shareeName,
+                                                                   shareType,
+                                                                   usersAndGroupsSearchConfig.getSearchOnlyUsers());
+        } else {
+            //if user sharing from Preview Image Fragment
+            fragment = getSupportFragmentManager().findFragmentByTag(ShareActivity.TAG_SHARE_FRAGMENT);
+            if (fragment != null) {
+                ((FileDetailSharingFragment) fragment).initiateSharingProcess(shareeName, shareType, usersAndGroupsSearchConfig.getSearchOnlyUsers());
+            }
         }
     }
 
@@ -1012,9 +1041,23 @@ public abstract class FileActivity extends DrawerActivity
      */
     @Override
     public void editExistingShare(OCShare share, int screenTypePermission, boolean isReshareShown) {
-        FileDetailFragment fragment = getFileDetailFragment();
+        Fragment fragment = getFileDetailFragment();
         if (fragment != null) {
-            fragment.editExistingShare(share, screenTypePermission, isReshareShown);
+            ((FileDetailFragment) fragment).editExistingShare(share, screenTypePermission, isReshareShown);
+        } else {
+            //if user editing from Preview Image Fragment
+            fragment = getSupportFragmentManager().findFragmentByTag(ShareActivity.TAG_SHARE_FRAGMENT);
+            if (fragment != null) {
+                ((FileDetailSharingFragment) fragment).editExistingShare(share, screenTypePermission, isReshareShown);
+            }
+        }
+    }
+
+    @Override
+    public void onLinkShareDownloadLimitFetched(long downloadLimit, long downloadCount) {
+        Fragment fileDetailsSharingProcessFragment = getSupportFragmentManager().findFragmentByTag(FileDetailsSharingProcessFragment.TAG);
+        if (fileDetailsSharingProcessFragment != null) {
+            ((FileDetailsSharingProcessFragment) fileDetailsSharingProcessFragment).onLinkShareDownloadLimitFetched(downloadLimit, downloadCount);
         }
     }
 
@@ -1025,7 +1068,7 @@ public abstract class FileActivity extends DrawerActivity
     public void onShareProcessClosed() {
         FileDetailFragment fragment = getFileDetailFragment();
         if (fragment != null) {
-            fragment.showHideFragmentView(false);
+            //do something
         }
     }
 
