@@ -623,6 +623,10 @@ public class OCFile implements Parcelable, Comparable<OCFile>, ServerFileInterfa
     }
 
     /**
+     * The unique fileId for the file within the instance This only works if we have 12 digits for instanceId RemoteId
+     * is a combination of localId + instanceId If a file has remoteId: 4174305739oc97a8ddfc96, in this 4174305739 is
+     * localId & oc97a8ddfc96 is instanceId which is of 12 digits
+     *
      * unique fileId for the file within the instance
      */
     @SuppressFBWarnings("STT")
@@ -630,7 +634,8 @@ public class OCFile implements Parcelable, Comparable<OCFile>, ServerFileInterfa
         if (localId > 0) {
             return localId;
         } else if (remoteId != null && remoteId.length() > 8) {
-            return Long.parseLong(remoteId.substring(0, 8).replaceAll("^0*", ""));
+            //NMC Customization --> for long remote id's
+            return Long.parseLong(remoteId.substring(0, remoteId.length() - 12).replaceAll("^0*", ""));
         } else {
             return -1;
         }
