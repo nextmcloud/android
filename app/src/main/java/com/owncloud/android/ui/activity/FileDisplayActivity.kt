@@ -88,6 +88,7 @@ import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.nmc.android.utils.DialogThemeUtils
 import com.nmc.android.utils.SearchViewThemeUtils
+import com.nmc.android.utils.KeyboardUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FilesBinding
@@ -1347,6 +1348,8 @@ class FileDisplayActivity :
     private fun popBack() {
         binding.fabMain.setImageResource(R.drawable.ic_plus)
         resetScrolling(true)
+        // NMC: hide the keyboard on back press if showing
+        KeyboardUtils.hideKeyboardFrom(this, binding.root)
         showSortListGroup(false)
         supportFragmentManager.popBackStack()
     }
