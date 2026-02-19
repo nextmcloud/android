@@ -13,6 +13,7 @@ import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.OCFile
+import com.owncloud.android.utils.MimeTypeUtil
 
 enum class FileAction(
     @param:IdRes val id: Int,
@@ -62,7 +63,10 @@ enum class FileAction(
     PIN_TO_HOMESCREEN(R.id.action_pin_to_homescreen, R.string.pin_home, R.drawable.add_to_home_screen),
 
     // Retry for offline operation
-    RETRY(R.id.action_retry, R.string.retry, R.drawable.ic_retry);
+    RETRY(R.id.action_retry, R.string.retry, R.drawable.ic_retry),
+
+    // Add to Album operation for image and video files
+    ADD_TO_ALBUM(R.id.action_add_to_album, R.string.add_to_album, R.drawable.nav_albums);
 
     constructor(id: Int, title: Int) : this(id, title, null)
 
@@ -79,6 +83,7 @@ enum class FileAction(
                 SEE_DETAILS,
                 LOCK_FILE,
                 RENAME_FILE,
+                ADD_TO_ALBUM,
                 MOVE_OR_COPY,
                 DOWNLOAD_FILE,
                 EXPORT_FILE,
@@ -206,6 +211,10 @@ enum class FileAction(
 
             if (files.any { !it.canWrite() }) {
                 result.add(R.id.action_edit)
+            }
+
+            if (files.any { !MimeTypeUtil.isImage(it) && !MimeTypeUtil.isVideo(it) }) {
+                result.add(R.id.action_add_to_album)
             }
 
             if (files.any { it.isRecommendedFile }) {

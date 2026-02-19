@@ -17,6 +17,7 @@ import android.content.ComponentName
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -85,8 +86,10 @@ import com.owncloud.android.lib.common.operations.RemoteOperation
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.operations.DownloadType
+import com.owncloud.android.operations.FetchRemoteFileOperation
 import com.owncloud.android.operations.RemoveFileOperation
 import com.owncloud.android.operations.SynchronizeFileOperation
+import com.owncloud.android.operations.albums.CopyFileToAlbumOperation
 import com.owncloud.android.ui.activity.FileActivity
 import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.dialog.ConfirmationDialogFragment
@@ -523,17 +526,57 @@ class PreviewMediaActivity :
         }
 
         if (item.itemId == R.id.custom_menu_placeholder_item) {
-            val file = file
+            // NMC Customization for Albums
+            onOverflowClick()
+        }
 
-            if (storageManager != null && file != null) {
-                val updatedFile = storageManager.getFileById(file.fileId)
+        return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * @param isManualClick if true skip album check to avoid calling api in loop if file fetch fails
+     */
+    private fun onOverflowClick(isManualClick: Boolean = false) {
+        val file = file
+        if (storageManager != null && file != null) {
+            val updatedFile = storageManager.getFileById(file.fileId)
+            // check for albums file
+            // for album file both local and remoteId will be same configured at operation level
+            if (!isManualClick && updatedFile != null && updatedFile.localId.toString() == updatedFile.remoteId) {
+                fetchFileMetaDataIfAbsent(updatedFile)
+            } else {
                 setFile(updatedFile)
                 val fileNew = getFile()
                 fileNew?.let { showFileActions(it) }
             }
         }
+    }
 
-        return super.onOptionsItemSelected(item)
+    private fun fetchFileMetaDataIfAbsent(ocFile: OCFile) {
+        showLoadingDialog(getString(R.string.wait_a_moment))
+        lifecycleScope.launch(Dispatchers.IO) {
+            val fetchRemoteFileOperation =
+                FetchRemoteFileOperation(
+                    this@PreviewMediaActivity,
+                    accountManager.user,
+                    ocFile,
+                    removeFileFromDb = true,
+                    storageManager = storageManager,
+                )
+            val result = fetchRemoteFileOperation.execute(this@PreviewMediaActivity)
+            withContext(Dispatchers.Main) {
+                dismissLoadingDialog()
+                if (result?.isSuccess == true && result.resultData != null) {
+                    file = result.resultData as OCFile
+
+                    onOverflowClick(isManualClick = true)
+                } else {
+                    Log_OC.d(TAG, result?.logMessage)
+                    // show error
+                    DisplayUtils.showSnackMessage(binding.root, result.getLogMessage(this@PreviewMediaActivity))
+                }
+            }
+        }
     }
 
     private fun showFileActions(file: OCFile) {
@@ -602,6 +645,12 @@ class PreviewMediaActivity :
             R.id.action_download_file -> {
                 requestForDownload(file, null)
             }
+
+            R.id.action_add_to_album -> {
+                file?.let {
+                    fileOperationsHelper.addFileToAlbum(listOf(it))
+                }
+            }
         }
     }
 
@@ -621,12 +670,30 @@ class PreviewMediaActivity :
             }
         } else if (operation is SynchronizeFileOperation) {
             onSynchronizeFileOperationFinish(result)
+        } else if(operation is  CopyFileToAlbumOperation){
+            onCopyAlbumFileOperationFinish(operation, result)
         }
     }
 
     private fun onSynchronizeFileOperationFinish(result: RemoteOperationResult<*>?) {
         result?.let {
             invalidateOptionsMenu()
+        }
+    }
+
+    private fun onCopyAlbumFileOperationFinish(operation: CopyFileToAlbumOperation, result: RemoteOperationResult<*>?) {
+        if (result?.isSuccess == true) {
+            DisplayUtils.showSnackMessage(this, getResources().getString(R.string.album_file_added_message))
+            Log_OC.e(PreviewImageActivity.Companion.TAG, "Files copied successfully")
+        } else {
+            try {
+                DisplayUtils.showSnackMessage(
+                    this,
+                    ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources())
+                )
+            } catch (e: Resources.NotFoundException) {
+                Log_OC.e(PreviewImageActivity.Companion.TAG, "Error while trying to show fail message ", e)
+            }
         }
     }
 
