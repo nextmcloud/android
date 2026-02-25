@@ -34,6 +34,7 @@ import com.nextcloud.client.jobs.NotificationWork
 import com.nextcloud.client.jobs.upload.FileUploadWorker
 import com.nextcloud.client.preferences.SubFolderRule
 import com.nextcloud.utils.BatteryOptimizationHelper
+import com.nmc.android.utils.DialogThemeUtils
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.extensions.isDialogFragmentReady
 import com.nextcloud.utils.extensions.setVisibleIf
@@ -228,7 +229,8 @@ class SyncedFoldersActivity :
             .setTitle(R.string.autoupload_disable_power_save_check)
             .setMessage(getString(R.string.power_save_check_dialog_message))
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(this, builder)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(this, builder)
 
         return builder.create()
     }
@@ -867,7 +869,7 @@ class SyncedFoldersActivity :
             return
         }
 
-        val dialog = MaterialAlertDialogBuilder(this, R.style.Theme_ownCloud_Dialog)
+        val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.battery_optimization_title)
             .setMessage(R.string.battery_optimization_message)
             .setPositiveButton(R.string.battery_optimization_disable) { _, _ ->
@@ -876,11 +878,9 @@ class SyncedFoldersActivity :
             .setNeutralButton(R.string.battery_optimization_close, null)
             .setIcon(R.drawable.ic_battery_alert)
 
-        val alertDialog = dialog.show()
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(this, dialog)
 
-        viewThemeUtils.platform.colorTextButtons(
-            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE),
-            alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL)
-        )
+        dialog.show()
     }
 }
