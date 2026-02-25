@@ -537,6 +537,13 @@ dependencies {
     implementation(libs.common.core)
     // endregion
 
+    // region NMC in-app-update
+    // Kotlin extensions library for Play In-App Update ref: https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#groovy
+    "gplayImplementation"(libs.app.update.ktx)
+    // firebase remote config
+    "gplayImplementation"(libs.firebase.config)
+    // endregion
+
     // region Image loading
     implementation(libs.coil)
     // endregion
