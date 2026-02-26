@@ -92,8 +92,6 @@ android {
     namespace = "com.owncloud.android"
     testNamespace = "${namespace}.test"
 
-    androidResources.generateLocaleConfig = true
-
     defaultConfig {
         testInstrumentationRunnerArguments += mapOf(
             "TEST_SERVER_URL" to ncTestServerBaseUrl.toString(),
@@ -172,6 +170,11 @@ android {
                 versionName = "1"
             }
         }
+
+        // NMC customization to only include German and English translations and exclude the others
+        // By doing this no need to delete the other strings which aren't required for NMC
+        // Refer: https://developer.android.com/guide/topics/resources/providing-resources#AlternativeResources
+        resConfigs("en", "de_DE", "de")
     }
 
     applicationVariants.configureEach {
