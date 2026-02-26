@@ -65,8 +65,8 @@ class OCFileListGridItemViewHolder(var binding: GridItemBinding) :
     override val hasVisibleFeatureIndicators: Boolean
         get() = localFileIndicator.isVisible || gridLivePhotoIndicator?.isVisible == true || unreadComments.isVisible ||
             shared.isVisible || binding.videoOverlay.isVisible || favorite.isVisible
-    override val fileFeaturesLayout: LinearLayout
-        get() = binding.fileFeaturesLayout
+    override val fileFeaturesLayout: LinearLayout?
+        get() = null
     override val more: ImageButton
         get() = if (binding.bidiFilenameContainer.isVisible) {
             binding.bidiMore
