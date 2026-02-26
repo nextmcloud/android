@@ -73,6 +73,7 @@ playServicesBaseVersion = "18.10.0"
 prismVersion = "2.0.0"
 qrcodescannerVersion = "0.1.2.4"
 reviewKtxVersion = "2.0.2"
+playServicesAdsIdentifierVersion = "18.0.1"
 roomVersion = "2.8.4"
 screengrabVersion = "2.1.1"
 sectionedRecyclerviewVersion = "0.6.1"
@@ -137,6 +138,7 @@ flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbo
 gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
 html = { module = "io.noties.markwon:html", version.ref = "markwonVersion" }
 ical4j = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4jVersion" }
+play-services-ads-identifier = { module = "com.google.android.gms:play-services-ads-identifier", version.ref = "playServicesAdsIdentifierVersion" }
 jackrabbit-webdav = { module = "org.apache.jackrabbit:jackrabbit-webdav", version.ref = "jackrabbitWebdavVersion" }
 json = { module = "org.json:json", version.ref = "jsonVersion" }
 juniversalchardet = { module = "com.github.albfernandez:juniversalchardet", version.ref = "juniversalchardetVersion" }
