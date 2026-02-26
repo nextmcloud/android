@@ -30,6 +30,8 @@ import com.owncloud.android.operations.UnshareOperation;
 import com.owncloud.android.operations.UpdateSharePermissionsOperation;
 import com.owncloud.android.operations.UpdateShareViaLinkOperation;
 import com.owncloud.android.operations.UploadFileOperation;
+import com.owncloud.android.operations.albums.CopyFileToAlbumOperation;
+import com.owncloud.android.operations.albums.RenameAlbumRemoteOperation;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 
@@ -149,6 +151,10 @@ public final class ErrorMessageAdapter {
 
         } else if (operation instanceof CopyFileOperation) {
             message = getMessageForCopyFileOperation(result, res);
+        } else if (operation instanceof CopyFileToAlbumOperation) {
+            message = getMessageForCopyFileToAlbumOperation(result, res);
+        } else if (operation instanceof RenameAlbumRemoteOperation) {
+            message = getMessageForRenameAlbumOperation(result, res);
         }
 
         return message;
@@ -506,5 +512,22 @@ public final class ErrorMessageAdapter {
         }
 
         return message;
+    }
+
+    private static @Nullable
+    String getMessageForCopyFileToAlbumOperation(RemoteOperationResult result, Resources res) {
+        // NMC-4948 fix
+        if (result.getCode() == ResultCode.CONFLICT) {
+            return res.getString(R.string.album_copy_file_conflict);
+        }
+        return null;
+    }
+
+    private static @Nullable
+    String getMessageForRenameAlbumOperation(RemoteOperationResult result, Resources res) {
+        if (result.getCode() == ResultCode.INVALID_OVERWRITE) {
+            return res.getString(R.string.album_rename_conflict);
+        }
+        return null;
     }
 }

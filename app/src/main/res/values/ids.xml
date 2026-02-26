@@ -33,4 +33,5 @@
     <item name="action_remove_file" type="id"/>
     <item name="action_pin_to_homescreen" type="id"/>
     <item name="action_retry" type="id"/>
+    <item name="action_add_to_album" type="id"/>
 </resources>
