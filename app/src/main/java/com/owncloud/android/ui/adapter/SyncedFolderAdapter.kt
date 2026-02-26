@@ -18,10 +18,10 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.core.content.res.ResourcesCompat
 import com.afollestad.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import com.afollestad.sectionedrecyclerview.SectionedViewHolder
 import com.google.android.material.button.MaterialButton
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.core.Clock
 import com.nextcloud.client.device.PowerManagementService
 import com.nextcloud.client.network.ConnectivityService
@@ -431,6 +431,9 @@ class SyncedFolderAdapter(
                 MediaThumbnailGenerationTask(
                     holder.binding.thumbnail,
                     context,
+                    // due to 512dp(NMC) thumb size there was scroll lagging in auto upload
+                    // so for auto upload we have to use different thumb size (NMC-2589)
+                    R.dimen.auto_upload_file_thumb_size,
                     viewThemeUtils
                 )
 
@@ -538,8 +541,15 @@ class SyncedFolderAdapter(
 
     private fun setSyncButtonActiveIcon(syncStatusButton: MaterialButton, enabled: Boolean) {
         if (enabled) {
-            syncStatusButton.icon =
-                viewThemeUtils.platform.tintDrawable(context, R.drawable.ic_cloud_sync_on, ColorRole.PRIMARY)
+            // NMC Customization theme color icon
+            val drawable = ResourcesCompat.getDrawable(context.resources, R.drawable.ic_cloud_sync_on, null)
+            drawable?.let {
+                syncStatusButton.icon =
+                    viewThemeUtils.platform.colorDrawable(
+                        it,
+                        ResourcesCompat.getColor(context.resources, R.color.primary, null)
+                    )
+            }
         } else {
             syncStatusButton.icon = ContextCompat.getDrawable(context, R.drawable.ic_cloud_sync_off)
         }
