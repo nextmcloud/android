@@ -8,14 +8,19 @@
  */
 package com.owncloud.android.ui.fragment;
 
+import android.accounts.AccountManager;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.nextcloud.client.account.User;
@@ -25,6 +30,7 @@ import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.common.NextcloudClient;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
 import com.nextcloud.utils.extensions.FileExtensionsKt;
+import com.nmc.android.ui.CommentsActionsBottomSheetDialog;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileDetailsActivitiesFragmentBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -32,15 +38,18 @@ import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
-import com.owncloud.android.lib.resources.activities.GetActivitiesRemoteOperation;
 import com.owncloud.android.lib.resources.activities.model.RichObject;
 import com.owncloud.android.lib.resources.comments.MarkCommentsAsReadRemoteOperation;
-import com.owncloud.android.lib.resources.files.ReadFileVersionsRemoteOperation;
 import com.owncloud.android.lib.resources.files.model.FileVersion;
 import com.owncloud.android.lib.resources.status.OCCapability;
 import com.owncloud.android.operations.CommentFileOperation;
+import com.owncloud.android.operations.comments.Comments;
+import com.owncloud.android.operations.comments.DeleteCommentRemoteOperation;
+import com.owncloud.android.operations.comments.GetCommentsRemoteOperation;
+import com.owncloud.android.operations.comments.UpdateCommentRemoteOperation;
 import com.owncloud.android.ui.activity.ComponentsGetter;
 import com.owncloud.android.ui.adapter.ActivityAndVersionListAdapter;
+import com.owncloud.android.ui.dialog.EditCommentDialogFragment;
 import com.owncloud.android.ui.events.CommentsEvent;
 import com.owncloud.android.ui.helpers.FileOperationsHelper;
 import com.owncloud.android.ui.interfaces.ActivityListInterface;
@@ -52,7 +61,6 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.greenrobot.eventbus.EventBus;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -60,17 +68,18 @@ import javax.inject.Inject;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class FileDetailActivitiesFragment extends Fragment implements
     ActivityListInterface,
     DisplayUtils.AvatarGenerationListener,
     VersionListInterface.View,
+    CommentsActionsBottomSheetDialog.CommentsBottomSheetActions,
     Injectable {
 
     private static final String TAG = FileDetailActivitiesFragment.class.getSimpleName();
@@ -95,7 +104,7 @@ public class FileDetailActivitiesFragment extends Fragment implements
     private VersionListInterface.CommentCallback callback;
 
     private SubmitCommentTask submitCommentTask;
-    
+
     FileDetailsActivitiesFragmentBinding binding;
 
     @Inject UserAccountManager accountManager;
@@ -172,7 +181,16 @@ public class FileDetailActivitiesFragment extends Fragment implements
 
         binding.submitComment.setOnClickListener(v -> submitComment());
 
-        viewThemeUtils.material.colorTextInputLayout(binding.commentInputFieldContainer);
+        binding.commentInputField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    submitComment();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         DisplayUtils.setAvatar(user,
                                this,
@@ -253,19 +271,24 @@ public class FileDetailActivitiesFragment extends Fragment implements
         binding.emptyList.emptyListIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_activity, null));
         binding.emptyList.emptyListView.setVisibility(View.GONE);
 
+        AccountManager acctManager = AccountManager.get(getContext());
+        String userId = acctManager.getUserData(user.toPlatformAccount(),
+                                                com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_USER_ID);
+
         adapter = new ActivityAndVersionListAdapter(getContext(),
                                                     accountManager,
                                                     this,
                                                     this,
                                                     clientFactory,
-                                                    viewThemeUtils
+                                                    viewThemeUtils,
+                                                    userId
         );
         binding.list.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
 
         binding.list.setLayoutManager(layoutManager);
-        binding.list.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        /*binding.list.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -282,17 +305,82 @@ public class FileDetailActivitiesFragment extends Fragment implements
                     fetchAndSetData(lastGiven);
                 }
             }
-        });
+        });*/
     }
 
     public void reload() {
         fetchAndSetData(-1);
     }
 
+    private void fetchAndSetData(int lastGiven) {
+        final FragmentActivity activity = getActivity();
+
+        if (activity == null) {
+            Log_OC.e(this, "Activity is null, aborting!");
+            return;
+        }
+
+        final User user = accountManager.getUser();
+
+        if (user.isAnonymous()) {
+            activity.runOnUiThread(() -> {
+                setEmptyContent(getString(R.string.common_error), getString(R.string.file_detail_comment_error));
+            });
+            return;
+        }
+
+        Thread t = new Thread(() -> {
+            try {
+                ownCloudClient = clientFactory.create(user);
+                nextcloudClient = clientFactory.createNextcloudClient(user);
+
+                isLoadingActivities = true;
+
+                GetCommentsRemoteOperation getCommentsRemoteOperation = new GetCommentsRemoteOperation(file.getLocalId(), 0, 0);
+
+                Log_OC.d(TAG, "BEFORE getCommentsRemoteOperation.execute");
+                RemoteOperationResult result = getCommentsRemoteOperation.execute(ownCloudClient);
+
+
+                if (result.isSuccess() && result.getResultData() != null) {
+                    List<Object> commentsList = (List<Object>) result.getResultData();
+
+
+                    activity.runOnUiThread(() -> {
+                        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+                            populateList(commentsList, lastGiven == -1);
+                        }
+                    });
+                } else {
+                    Log_OC.d(TAG, result.getLogMessage());
+                    // show error
+                    String logMessage = result.getLogMessage();
+                    if (result.getHttpCode() == HttpStatus.SC_NOT_MODIFIED) {
+                        logMessage = getString(R.string.activities_no_results_message);
+                    }
+                    final String finalLogMessage = logMessage;
+                    activity.runOnUiThread(() -> {
+                        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+                            setErrorContent(finalLogMessage);
+                            isLoadingActivities = false;
+                        }
+                    });
+                }
+
+                hideRefreshLayoutLoader(activity);
+            } catch (ClientFactory.CreationException e) {
+                Log_OC.e(TAG, "Error fetching file details comments", e);
+            }
+        });
+
+        t.start();
+    }
+
+    // NMC: Not using this method as we don't have to show the activities
     /**
      * @param lastGiven long; -1 to disable
      */
-    private void fetchAndSetData(long lastGiven) {
+    /*private void fetchAndSetData(long lastGiven) {
         final FragmentActivity activity = getActivity();
 
         if (activity == null) {
@@ -388,7 +476,7 @@ public class FileDetailActivitiesFragment extends Fragment implements
         });
 
         t.start();
-    }
+    }*/
 
     public void markCommentsAsRead() {
         new Thread(() -> {
@@ -414,8 +502,8 @@ public class FileDetailActivitiesFragment extends Fragment implements
 
         if (adapter.getItemCount() == 0) {
             setEmptyContent(
-                getString(R.string.activities_no_results_headline),
-                getString(R.string.activities_no_results_message)
+                getString(R.string.comments_no_results_headline),
+                getString(R.string.comments_no_results_message)
                            );
         } else {
             binding.swipeContainingList.setVisibility(View.VISIBLE);
@@ -426,7 +514,8 @@ public class FileDetailActivitiesFragment extends Fragment implements
     }
 
     private void setEmptyContent(String headline, String message) {
-        setInfoContent(R.drawable.ic_activity, headline, message);
+        // NMC: no icon required for empty state
+        setInfoContent(0, headline, message);
     }
 
     @VisibleForTesting
@@ -439,9 +528,16 @@ public class FileDetailActivitiesFragment extends Fragment implements
             return;
         }
 
-        binding.emptyList.emptyListIcon.setImageDrawable(ResourcesCompat.getDrawable(requireContext().getResources(),
-                                                                                     icon,
-                                                                                     null));
+        // NMC: to handle no icon visibility
+        if (icon != 0) {
+            binding.emptyList.emptyListIcon.setImageDrawable(ResourcesCompat.getDrawable(requireContext().getResources(),
+                                                                                         icon,
+                                                                                         null));
+            binding.emptyList.emptyListIcon.setVisibility(View.VISIBLE);
+        } else {
+            binding.emptyList.emptyListIcon.setVisibility(View.GONE);
+        }
+
         binding.emptyList.emptyListViewHeadline.setText(headline);
         binding.emptyList.emptyListViewText.setText(message);
 
@@ -450,7 +546,6 @@ public class FileDetailActivitiesFragment extends Fragment implements
 
         binding.emptyList.emptyListViewHeadline.setVisibility(View.VISIBLE);
         binding.emptyList.emptyListViewText.setVisibility(View.VISIBLE);
-        binding.emptyList.emptyListIcon.setVisibility(View.VISIBLE);
         binding.emptyList.emptyListView.setVisibility(View.VISIBLE);
         binding.swipeContainingEmpty.setVisibility(View.VISIBLE);
     }
@@ -460,7 +555,6 @@ public class FileDetailActivitiesFragment extends Fragment implements
             if (binding != null && getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
                 binding.swipeContainingList.setRefreshing(false);
                 binding.swipeContainingEmpty.setRefreshing(false);
-                binding.emptyList.emptyListView.setVisibility(View.GONE);
                 isLoadingActivities = false;
             }
         });
@@ -469,6 +563,11 @@ public class FileDetailActivitiesFragment extends Fragment implements
     @Override
     public void onActivityClicked(RichObject richObject) {
         // TODO implement activity click
+    }
+
+    @Override
+    public void onCommentsOverflowMenuClicked(Comments comments) {
+        new CommentsActionsBottomSheetDialog(requireContext(), comments, this).show();
     }
 
     @Override
@@ -499,6 +598,26 @@ public class FileDetailActivitiesFragment extends Fragment implements
     @VisibleForTesting
     public void disableLoadingActivities() {
         isLoadingActivities = false;
+    }
+
+    @Override
+    public void onUpdateComment(@NonNull Comments comments) {
+        EditCommentDialogFragment dialog = EditCommentDialogFragment.newInstance(comments);
+        dialog.setOnEditCommentListener((comments1, message) -> {
+            new UpdateCommentTask(message, file.getLocalId(), comments1.getCommentId(), callback, ownCloudClient).execute();
+        });
+        dialog.show(requireActivity().getSupportFragmentManager(), EditCommentDialogFragment.EDIT_COMMENT_FRAGMENT_TAG);
+    }
+
+    @Override
+    public void onDeleteComment(@NonNull Comments comments) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+        builder.setPositiveButton(R.string.common_yes, (dialogInterface, i) -> new DeleteCommentTask(file.getLocalId(), comments.getCommentId(),
+                                                                                                     callback, ownCloudClient).execute())
+            .setNegativeButton(R.string.common_no, null)
+            .setMessage(R.string.delete_comment_dialog_message);
+        Dialog dialog = builder.create();
+        dialog.show();
     }
 
     private static class SubmitCommentTask extends AsyncTask<Void, Void, Boolean> {
@@ -543,12 +662,88 @@ public class FileDetailActivitiesFragment extends Fragment implements
                 // Fragment was destroyed, callback was GC'd
                 return;
             }
-            
+
             if (success) {
                 callback.onSuccess();
             } else {
                 callback.onError(R.string.error_comment_file);
 
+            }
+        }
+    }
+
+    private static class UpdateCommentTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final String message;
+        private final long fileId;
+        private final int commentId;
+        private final VersionListInterface.CommentCallback callback;
+        private final OwnCloudClient client;
+
+        private UpdateCommentTask(String message, long fileId, int commentId, VersionListInterface.CommentCallback callback,
+                                  OwnCloudClient client) {
+            this.message = message;
+            this.fileId = fileId;
+            this.commentId = commentId;
+            this.callback = callback;
+            this.client = client;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            UpdateCommentRemoteOperation updateCommentRemoteOperation = new UpdateCommentRemoteOperation(fileId, commentId, message);
+
+            RemoteOperationResult result = updateCommentRemoteOperation.execute(client);
+
+            return result.isSuccess();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            super.onPostExecute(success);
+            if (success) {
+                callback.onSuccess();
+                //call error to show success message
+                callback.onError(R.string.success_update_comment_file);
+            } else {
+                callback.onError(R.string.error_update_comment_file);
+            }
+        }
+    }
+
+    private static class DeleteCommentTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final long fileId;
+        private final int commentId;
+        private final VersionListInterface.CommentCallback callback;
+        private final OwnCloudClient client;
+
+        private DeleteCommentTask(long fileId, int commentId, VersionListInterface.CommentCallback callback,
+                                  OwnCloudClient client) {
+            this.fileId = fileId;
+            this.commentId = commentId;
+            this.callback = callback;
+            this.client = client;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            DeleteCommentRemoteOperation deleteCommentRemoteOperation = new DeleteCommentRemoteOperation(fileId, commentId);
+
+            RemoteOperationResult result = deleteCommentRemoteOperation.execute(client);
+
+            return result.isSuccess();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            super.onPostExecute(success);
+            if (success) {
+                callback.onSuccess();
+                //call error to show success message
+                callback.onError(R.string.success_delete_comment_file);
+            } else {
+                callback.onError(R.string.error_delete_comment_file);
             }
         }
     }
