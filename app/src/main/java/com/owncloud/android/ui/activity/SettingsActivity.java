@@ -55,6 +55,7 @@ import com.nextcloud.client.preferences.AppPreferencesImpl;
 import com.nextcloud.client.preferences.DarkMode;
 import com.nextcloud.utils.extensions.ContextExtensionsKt;
 import com.nextcloud.utils.mdm.MDMConfig;
+import com.nmc.android.utils.DialogThemeUtils;
 import com.owncloud.android.MainApp;
 import com.nmc.android.ui.PrivacySettingsInterfaceImpl;
 import com.owncloud.android.R;
@@ -639,7 +640,7 @@ public class SettingsActivity extends PreferenceActivity
     }
 
     private void showRemoveE2EAlertDialog(PreferenceCategory preferenceCategoryMore, Preference preference) {
-        new MaterialAlertDialogBuilder(this, R.style.FallbackTheming_Dialog)
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.FallbackTheming_Dialog)
             .setTitle(R.string.prefs_e2e_mnemonic)
             .setMessage(getString(R.string.remove_e2e_message))
             .setCancelable(true)
@@ -657,8 +658,10 @@ public class SettingsActivity extends PreferenceActivity
                 restartSettingsActivity();
 
                 dialog.dismiss();
-            })
-            .create()
+            });
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(this, builder);
+        builder.create()
             .show();
     }
 
@@ -1237,14 +1240,16 @@ public class SettingsActivity extends PreferenceActivity
     }
 
     private void showMnemonicAlertDialogDialog(String mnemonic) {
-        new MaterialAlertDialogBuilder(this, R.style.FallbackTheming_Dialog)
-            .setTitle(R.string.prefs_e2e_mnemonic)
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.FallbackTheming_Dialog)
+            .setTitle(R.string.dialog_e2e_mnemonic_title)
             .setMessage(mnemonic)
             .setPositiveButton(R.string.common_ok, (dialog, which) -> dialog.dismiss())
             .setNegativeButton(R.string.common_cancel, (dialog, i) -> dialog.dismiss())
             .setNeutralButton(R.string.common_copy, (dialog, i) ->
-                ClipboardUtil.copyToClipboard(this, mnemonic, false))
-            .create()
+                ClipboardUtil.copyToClipboard(this, mnemonic, false));
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.INSTANCE.colorMaterialAlertDialogBackground(this, builder);
+        builder.create()
             .show();
     }
 
