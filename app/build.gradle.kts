@@ -188,7 +188,7 @@ android {
     // adapt structure from Eclipse to Gradle/Android Studio expectations;
     // see http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Configuring-the-Structure
     packaging.resources {
-        excludes.addAll(listOf("META-INF/LICENSE*", "META-INF/versions/9/OSGI-INF/MANIFEST*"))
+        excludes.addAll(listOf("META-INF/LICENSE*", "META-INF/versions/9/OSGI-INF/MANIFEST*", "META-INF/DEPENDENCIES"))
         pickFirsts.add("MANIFEST.MF") // workaround for duplicated manifest on some dependencies
     }
 
@@ -425,10 +425,11 @@ dependencies {
     implementation(libs.emoji.google)
     // endregion
 
+    // NextCloud scan is not required in NMC
     // region AppScan, document scanner not available on FDroid (generic) due to OpenCV binaries
-    "gplayImplementation"(project(":appscan"))
-    "huaweiImplementation"(project(":appscan"))
-    "qaImplementation"(project(":appscan"))
+    // "gplayImplementation"(project(":appscan"))
+    // "huaweiImplementation"(project(":appscan"))
+    // "qaImplementation"(project(":appscan"))
     // endregion
 
     // region SpotBugs
@@ -523,6 +524,15 @@ dependencies {
 
     // region Image loading
     implementation(libs.coil)
+    // endregion
+
+    // region scanbot sdk
+    // scanbot sdk: https://github.com/doo/scanbot-sdk-example-android
+    implementation(libs.scanbot.sdk)
+    // apache pdf-box for encrypting pdf files
+    implementation("org.apache.pdfbox:pdfbox:2.0.1") {
+        exclude(group = "commons-logging")
+    }
     // endregion
 
     // kotlinx.serialization
