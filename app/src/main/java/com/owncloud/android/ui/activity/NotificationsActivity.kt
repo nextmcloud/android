@@ -18,6 +18,9 @@ import android.view.View
 import android.view.WindowInsetsController
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.nextcloud.android.common.ui.util.extensions.applyEdgeToEdgeWithSystemBarPadding
@@ -109,11 +112,19 @@ class NotificationsActivity :
     }
 
     private fun setupActionBar() {
-        setSupportActionBar(findViewById(R.id.toolbar_back_button))
+        // NMC Customization
+        val toolbar = findViewById<Toolbar>(R.id.toolbar_back_button)
+        setSupportActionBar(toolbar)
+        // custom color for overflow icon required for NMC
+        toolbar.getOverflowIcon()?.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                getResources().getColor(R.color.fontAppbar, null),
+                BlendModeCompat.SRC_ATOP
+            )
+        viewThemeUtils.platform.themeStatusBar(this)
         supportActionBar?.apply {
-            setTitle(R.string.drawer_item_notifications)
             setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_arrow_back_foreground)
+            viewThemeUtils.files.themeActionBar(this@NotificationsActivity, this,R.string.drawer_item_notifications)
         }
     }
 
@@ -216,14 +227,17 @@ class NotificationsActivity :
                         Snackbar.LENGTH_INDEFINITE
                     )
                 } else {
-                    val pushValue = arbitraryDataProvider.getValue(accountName, PushUtils.KEY_PUSH)
+                    // NMC Note -> Need to disable this error message for now as we will configure our
+                    // own push notification server later not now
+                    // once we will configure our server we will uncomment the below code.
+                   /* val pushValue = arbitraryDataProvider.getValue(accountName, PushUtils.KEY_PUSH)
                     if (pushValue.isEmpty()) {
                         snackbar = Snackbar.make(
                             binding.emptyList.emptyListView,
                             R.string.push_notifications_temp_error,
                             Snackbar.LENGTH_INDEFINITE
                         )
-                    }
+                    }*/
                 }
             }
 
