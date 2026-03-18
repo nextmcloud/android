@@ -148,7 +148,8 @@ public class UploadListAdapter extends SectionedRecyclerViewAdapter<SectionedVie
 
         headerViewHolder.binding.uploadListTitle.setText(
             String.format(parentActivity.getString(R.string.uploads_view_group_header), title, count));
-        viewThemeUtils.platform.colorPrimaryTextViewElement(headerViewHolder.binding.uploadListTitle);
+        // NMC Customization
+        headerViewHolder.binding.uploadListTitle.setTextColor(parentActivity.getResources().getColor(R.color.primary, null));
 
         headerViewHolder.binding.uploadListTitle.setOnClickListener(v -> {
             toggleSectionExpanded(section);
