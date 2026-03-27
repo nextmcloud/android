@@ -136,6 +136,10 @@ abstract class NextcloudDatabase : RoomDatabase() {
                     .addMigrations(Migration67to68())
                     .addMigrations(MIGRATION_88_89)
                     .addMigrations(MIGRATION_97_98)
+                    // NMC-5368 & NMC-5364 fix
+                    // users upgrading from older sqlite or room version i.e. 62 or 64
+                    // the migration fails and app crashes
+                    .fallbackToDestructiveMigration(true)
                     .build()
             }
             return instance!!
