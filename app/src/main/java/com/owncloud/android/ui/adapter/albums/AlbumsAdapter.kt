@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.nextcloud.client.account.User
 import com.nextcloud.client.preferences.AppPreferences
+import com.nextcloud.utils.extensions.setVisibleIf
 import com.owncloud.android.R
 import com.owncloud.android.databinding.AlbumsGridItemBinding
 import com.owncloud.android.databinding.AlbumsListItemBinding
@@ -64,6 +65,12 @@ class AlbumsAdapter(
             context.resources.getString(R.string.album_items_text),
             file.nbItems,
             file.createdDate
+        )
+        gridViewHolder.albumName.setCompoundDrawablesWithIntrinsicBounds(
+            0,
+            0,
+            if (file.collaborators.isNotEmpty()) R.drawable.ic_share else 0,
+            0
         )
 
         if (file.lastPhoto > 0) {

@@ -54,7 +54,6 @@ class AlbumsPickerActivity : FileActivity(), FileFragment.ContainerActivity, OnE
 
         initBinding()
         setupToolbar()
-        showHideDefaultToolbarDivider(true)
         setupAction()
         setupActionBar()
         initExtras()

@@ -59,7 +59,7 @@ constructor(
                 val albumsList =
                     propfind.responseBodyAsMultiStatus.responses
                         .filter { it.status[0].statusCode == HttpStatus.SC_OK }
-                        .map { res -> PhotoAlbumEntry(res) }
+                        .map { res -> PhotoAlbumEntry(client.baseUri.toString(), res) }
                 result = RemoteOperationResult<List<PhotoAlbumEntry>>(true, propfind)
                 result.resultData = albumsList
             } else {

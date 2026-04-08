@@ -16,6 +16,7 @@
     <string name="hidden_album_name">Der Albumname darf nicht mit einem ungültigen Zeichen beginnen</string>
     <string name="add_more">Mehr hinzufügen</string>
     <string name="album_rename">Album umbenennen</string>
+    <string name="album_share">Album teilen</string>
     <string name="album_delete">Album löschen</string>
     <string name="album_delete_failed_message">Einige Dateien konnten nicht gelöscht werden.</string>
     <string name="album_already_exists">Das Album existiert bereits</string>
@@ -29,9 +30,11 @@
     <string name="empty_album_detailed_view_message">Sie können so viele Fotos hinzufügen, wie Sie möchten. Ein Foto kann auch mehreren Alben zugeordnet werden.</string>
     <string name="add_photos">Fotos hinzufügen</string>
     <string name="album_items_text">%d Elemente — %s</string>
+    <string name="album_elements_text">%d Elemente</string>
     <string name="album_unsupported_file">Nicht unterstützte Medien</string>
     <string name="album_upload_from_camera_roll">Dateien hochladen</string>
     <string name="album_upload_from_account">Dateien auswählen</string>
     <string name="album_rename_conflict">Dieser Name wird bereits verwendet.</string>
     <string name="album_copy_file_conflict">Existiert bereits.</string>
+    <string name="album_default_sharing_text">Jeder kann nur sehen</string>
 </resources>

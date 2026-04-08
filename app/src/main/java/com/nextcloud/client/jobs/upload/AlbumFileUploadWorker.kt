@@ -71,10 +71,6 @@ class AlbumFileUploadWorker(
     companion object {
         val TAG: String = AlbumFileUploadWorker::class.java.simpleName
 
-        var currentUploadFileOperation: UploadFileOperation? = null
-
-        private const val BATCH_SIZE = 100
-
         const val ALBUM_NAME = "album_name"
 
         const val ACCOUNT = "data_account"

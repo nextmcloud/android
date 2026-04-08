@@ -1128,6 +1128,18 @@ public class FileOperationsHelper {
         fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
     }
 
+
+    public void albumPublicShareLink(String albumName, boolean isCreateShare) {
+        Intent service = new Intent(fileActivity, OperationsService.class);
+        service.setAction(OperationsService.ACTION_PUBLIC_SHARE_LINK_ALBUM);
+        service.putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.getAccount());
+        service.putExtra(OperationsService.EXTRA_ALBUM_NAME, albumName);
+        service.putExtra(OperationsService.EXTRA_CREATE_ALBUM_SHARE, isCreateShare);
+        mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
+
+        fileActivity.showLoadingDialog(fileActivity.getString(R.string.wait_a_moment));
+    }
+
     public void exportFiles(Collection<OCFile> files,
                             Context context,
                             View view,

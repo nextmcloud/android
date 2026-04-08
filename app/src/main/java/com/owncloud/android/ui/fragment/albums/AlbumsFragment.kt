@@ -39,7 +39,6 @@ import com.nextcloud.client.network.ClientFactory
 import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.client.utils.Throttler
-import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.AlbumsFragmentBinding
 import com.owncloud.android.lib.common.OwnCloudClient
@@ -224,7 +223,6 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
     }
 
     private fun setupContainingList() {
-        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(requireContext(), binding.swipeContainingList)
         binding.swipeContainingList.setOnRefreshListener {
             fetchAndSetData()
         }
@@ -321,7 +319,6 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
             }
             (requireActivity() as FileDisplayActivity).showSortListGroup(false)
             (requireActivity() as FileDisplayActivity).setMainFabVisible(false)
-            (requireActivity() as FileDisplayActivity).showHideDefaultToolbarDivider(true)
             // clear the subtitle while navigating to any other screen from Media screen
             (requireActivity() as FileDisplayActivity).clearToolbarSubtitle()
             // highlight album menu item
@@ -351,9 +348,6 @@ class AlbumsFragment : Fragment(), AlbumFragmentInterface, Injectable {
         super.onPause()
         adapter?.cancelAllPendingTasks()
         listState = binding.listRoot.layoutManager?.onSaveInstanceState()
-        if (requireActivity() is FileDisplayActivity) {
-            (requireActivity() as FileDisplayActivity).showHideDefaultToolbarDivider(false)
-        }
     }
 
     private val isGridEnabled: Boolean

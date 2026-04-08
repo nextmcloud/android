@@ -49,11 +49,11 @@ import com.nextcloud.client.jobs.upload.FileUploadWorker
 import com.nextcloud.client.network.ClientFactory
 import com.nextcloud.client.network.ClientFactory.CreationException
 import com.nextcloud.client.preferences.AppPreferences
+import com.nextcloud.client.utils.IntentUtil
 import com.nextcloud.client.utils.Throttler
 import com.nextcloud.ui.albumItemActions.AlbumItemActionsBottomSheet
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet
 import com.nextcloud.utils.extensions.isDialogFragmentReady
-import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.AlbumsFragmentBinding
 import com.owncloud.android.datamodel.OCFile
@@ -65,7 +65,9 @@ import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.lib.resources.files.model.RemoteFile
 import com.owncloud.android.lib.resources.status.Type
+import com.owncloud.android.operations.albums.PhotoAlbumEntry
 import com.owncloud.android.operations.albums.ReadAlbumItemsRemoteOperation
+import com.owncloud.android.operations.albums.ReadAlbumsRemoteOperation
 import com.owncloud.android.operations.albums.RemoveAlbumFileRemoteOperation
 import com.owncloud.android.operations.albums.ToggleAlbumFavoriteRemoteOperation
 import com.owncloud.android.ui.activity.AlbumsPickerActivity
@@ -81,6 +83,7 @@ import com.owncloud.android.ui.helpers.UriUploader
 import com.owncloud.android.ui.interfaces.OCFileListFragmentInterface
 import com.owncloud.android.ui.preview.PreviewImageFragment
 import com.owncloud.android.ui.preview.PreviewMediaActivity.Companion.canBePreviewed
+import com.owncloud.android.utils.ClipboardUtil
 import com.owncloud.android.utils.DisplayUtils
 import com.owncloud.android.utils.ErrorMessageAdapter
 import com.owncloud.android.utils.theme.ViewThemeUtils
@@ -100,7 +103,7 @@ import java.util.function.Supplier
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
-class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
+class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, AlbumSharingBottomSheetActions, Injectable {
 
     private var adapter: GalleryAdapter? = null
     private var client: OwnCloudClient? = null
@@ -136,8 +139,13 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     private var mMultiChoiceModeListener: MultiChoiceModeListener? = null
 
     private var albumRemoteFileList = listOf<RemoteFile>()
+    private var albumsOCFileList = mutableListOf<OCFile>()
 
     private val refreshFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    private var photoAlbumEntry: PhotoAlbumEntry? = null
+
+    private var albumSharingBottomSheet: AlbumSharingBottomSheet? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -314,6 +322,23 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
         }
     }
 
+    private fun openAlbumSharingBottomSheet() {
+        throttler.run("albumSharingSheet") {
+            photoAlbumEntry?.let {
+                val supportFragmentManager = requireActivity().supportFragmentManager
+
+                albumSharingBottomSheet =
+                    AlbumSharingBottomSheet.newInstance(
+                        it,
+                        albumsOCFileList.take(AlbumSharingBottomSheet.IMAGE_COLLAGE_MAX_LIMIT),
+                        this
+                    )
+
+                albumSharingBottomSheet?.show(supportFragmentManager, "album_sharing_sheet")
+            }
+        }
+    }
+
     private fun onAlbumActionChosen(@IdRes itemId: Int): Boolean {
         return when (itemId) {
             // action to rename album
@@ -323,6 +348,12 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
                         requireActivity().supportFragmentManager,
                         CreateAlbumDialogFragment.TAG
                     )
+                true
+            }
+
+            // action to share album
+            R.id.action_share_album -> {
+                openAlbumSharingBottomSheet()
                 true
             }
 
@@ -342,7 +373,6 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     }
 
     private fun setupContainingList() {
-        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(requireContext(), binding.swipeContainingList)
         binding.swipeContainingList.setOnRefreshListener {
             binding.swipeContainingList.isRefreshing = true
             refreshData()
@@ -370,7 +400,6 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
             val readAlbumItemsRemoteOperation =
                 ReadAlbumItemsRemoteOperation(albumName, mContainerActivity?.storageManager)
             val result = client?.let { readAlbumItemsRemoteOperation.execute(it) }
-            val ocFileList = mutableListOf<OCFile>()
 
             if (result?.isSuccess == true && result.resultData != null) {
                 mContainerActivity?.storageManager?.deleteVirtuals(VirtualFolderType.ALBUM)
@@ -380,7 +409,7 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
                 for (remoteFile in albumRemoteFileList) {
                     val ocFile = mContainerActivity?.storageManager?.getFileByLocalId(remoteFile.localId)
                     ocFile?.let {
-                        ocFileList.add(it)
+                        albumsOCFileList.add(it)
 
                         val cv = ContentValues()
                         cv.put(ProviderMeta.ProviderTableMeta.VIRTUAL_TYPE, VirtualFolderType.ALBUM.toString())
@@ -394,16 +423,56 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
             }
             withContext(Dispatchers.Main) {
                 if (result?.isSuccess == true && result.resultData != null) {
-                    if (result.resultData.isEmpty() || ocFileList.isEmpty()) {
+                    if (result.resultData.isEmpty() || albumsOCFileList.isEmpty()) {
                         updateEmptyView(true)
                     }
-                    populateList(ocFileList)
+                    populateList(albumsOCFileList)
                 } else {
                     Log_OC.d(TAG, result?.logMessage)
                     // show error
                     updateEmptyView(true)
                 }
+
+                // refresh album meta data to update share id
+                refreshAlbumMetaData()
+
                 hideRefreshLayoutLoader()
+            }
+        }
+    }
+
+    // will also be called from FileDisplayActivity when PublicShareLinkAlbumRemoteOperation completed
+    // to refresh and update the album sharing info
+    fun refreshAlbumMetaData() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val albumsRemoteOperation = ReadAlbumsRemoteOperation(albumName)
+            val result = client?.let { albumsRemoteOperation.execute(it) }
+            withContext(Dispatchers.Main) {
+                if (result?.isSuccess == true && result.resultData != null) {
+                    photoAlbumEntry = if (!result.resultData.isEmpty()) {
+                        result.resultData[0]
+                    } else {
+                        // no info
+                        null
+                    }
+                } else {
+                    Log_OC.d(TAG, result?.logMessage)
+                }
+
+                sendRefreshedShareIdToAlbumsSharingSheet()
+            }
+        }
+    }
+
+    private fun sendRefreshedShareIdToAlbumsSharingSheet() {
+        if (isAdded && !isDetached) {
+            albumSharingBottomSheet?.let {
+                if (it.isAdded && it.isVisible) {
+                    photoAlbumEntry?.let { album ->
+                        val shareId = if (album.collaborators.isNotEmpty()) album.collaborators[0].id else null
+                        it.updateShareId(shareId)
+                    }
+                }
             }
         }
     }
@@ -460,7 +529,6 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
             }
             (requireActivity() as FileDisplayActivity).showSortListGroup(false)
             (requireActivity() as FileDisplayActivity).setMainFabVisible(false)
-            (requireActivity() as FileDisplayActivity).showHideDefaultToolbarDivider(true)
             // clear the subtitle while navigating to any other screen from Media screen
             (requireActivity() as FileDisplayActivity).clearToolbarSubtitle()
             // highlight album menu item
@@ -471,9 +539,6 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
     override fun onPause() {
         super.onPause()
         adapter?.cancelAllPendingTasks()
-        if (requireActivity() is FileDisplayActivity) {
-            (requireActivity() as FileDisplayActivity).showHideDefaultToolbarDivider(false)
-        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -1119,6 +1184,31 @@ class AlbumItemsFragment : Fragment(), OCFileListFragmentInterface, Injectable {
 
             uploader.uploadUris()
         }
+    }
+
+    override fun createShare() {
+        mContainerActivity?.getFileOperationsHelper()?.albumPublicShareLink(albumName, true)
+    }
+
+    override fun removeShare() {
+        mContainerActivity?.getFileOperationsHelper()?.albumPublicShareLink(albumName, false)
+    }
+
+    override fun copyShareLink() {
+        ClipboardUtil.copyToClipboard(requireActivity(), getShareLink())
+    }
+
+    override fun shareAlbumLink() {
+        IntentUtil.showShareLinkDialog(requireActivity(), getShareLink())
+    }
+
+    private fun getShareLink(): String? {
+        photoAlbumEntry?.let {
+            if (it.collaborators.isNotEmpty()) {
+                return it.collaborators[0].shareLink
+            }
+        }
+        return null
     }
 
     companion object {

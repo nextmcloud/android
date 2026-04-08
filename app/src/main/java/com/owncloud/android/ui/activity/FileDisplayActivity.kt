@@ -113,6 +113,7 @@ import com.owncloud.android.operations.SynchronizeFileOperation
 import com.owncloud.android.operations.UploadFileOperation
 import com.owncloud.android.operations.albums.CopyFileToAlbumOperation
 import com.owncloud.android.operations.albums.CreateNewAlbumRemoteOperation
+import com.owncloud.android.operations.albums.PublicShareLinkAlbumRemoteOperation
 import com.owncloud.android.operations.albums.RemoveAlbumRemoteOperation
 import com.owncloud.android.operations.albums.RenameAlbumRemoteOperation
 import com.owncloud.android.syncadapter.FileSyncAdapter
@@ -2162,6 +2163,10 @@ class FileDisplayActivity :
             is RemoveAlbumRemoteOperation -> {
                 onRemoveAlbumOperationFinish(operation, result)
             }
+
+            is PublicShareLinkAlbumRemoteOperation -> {
+                onAlbumPublicLinkOperationFinish(operation, result)
+            }
         }
     }
 
@@ -2500,6 +2505,24 @@ class FileDisplayActivity :
         }
     }
 
+    private fun onAlbumPublicLinkOperationFinish(operation: PublicShareLinkAlbumRemoteOperation, result: RemoteOperationResult<*>) {
+        if (result.isSuccess) {
+            val fragment = supportFragmentManager.findFragmentByTag(AlbumItemsFragment.TAG)
+            if (fragment is AlbumItemsFragment) {
+                fragment.refreshAlbumMetaData()
+            }
+        } else {
+            DisplayUtils.showSnackMessage(
+                this,
+                ErrorMessageAdapter.getErrorCauseMessage(result, operation, getResources())
+            )
+
+            if (result.isSslRecoverableException) {
+                mLastSslUntrustedServerResult = result
+                showUntrustedCertDialog(mLastSslUntrustedServerResult)
+            }
+        }
+    }
     private fun onCopyAlbumFileOperationFinish(operation: CopyFileToAlbumOperation, result: RemoteOperationResult<*>) {
         if (result.isSuccess) {
             // when item added from inside of Album

@@ -14,6 +14,7 @@ import com.owncloud.android.R
 
 enum class AlbumItemAction(@IdRes val id: Int, @StringRes val title: Int, @DrawableRes val icon: Int? = null) {
     RENAME_ALBUM(R.id.action_rename_file, R.string.album_rename, R.drawable.ic_edit),
+    SHARE_ALBUM(R.id.action_share_album, R.string.album_share, R.drawable.ic_share),
     DELETE_ALBUM(R.id.action_delete, R.string.album_delete, R.drawable.ic_delete);
 
     companion object {
@@ -23,6 +24,7 @@ enum class AlbumItemAction(@IdRes val id: Int, @StringRes val title: Int, @Drawa
         @JvmField
         val SORTED_VALUES = listOf(
             RENAME_ALBUM,
+            SHARE_ALBUM,
             DELETE_ALBUM
         )
     }

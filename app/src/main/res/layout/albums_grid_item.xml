@@ -61,15 +61,17 @@
 
         <TextView
             android:id="@+id/Filename"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/grid_bottom_view_height"
             android:layout_marginTop="@dimen/standard_quarter_margin"
+            android:drawablePadding="@dimen/standard_half_padding"
             android:ellipsize="middle"
             android:singleLine="true"
             android:text="@string/placeholder_filename"
             android:textColor="@color/text_color"
             android:textSize="@dimen/grid_item_text_size"
-            app:layout_constraintEnd_toEndOf="@+id/album_thumb_card"
+            tools:drawableEndCompat="@drawable/ic_share"
+            app:drawableTint="@color/text_color"
             app:layout_constraintStart_toStartOf="@+id/album_thumb_card"
             app:layout_constraintTop_toBottomOf="@+id/album_thumb_card"
             tools:visibility="visible" />
