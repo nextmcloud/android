@@ -1614,6 +1614,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
         action.putExtra(FolderPickerActivity.EXTRA_FOLDER, getCurrentFile());
         action.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION); // No animation since we stay in the same folder
         action.putExtra(FolderPickerActivity.EXTRA_ACTION, extraAction);
+        action.putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true);
+        action.putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true);
         getActivity().startActivityForResult(action, requestCode);
     }
 
