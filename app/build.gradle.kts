@@ -81,8 +81,13 @@ val ncTestServerPassword = configProps["NC_TEST_SERVER_PASSWORD"]
 val ncTestServerBaseUrl = configProps["NC_TEST_SERVER_BASEURL"]
 
 android {
-    // install this NDK version and Cmake to produce smaller APKs. Build will still work if not installed
+    // install this NDK version and CMake to produce smaller APKs. Build will still work if not installed
     ndkVersion = "${ndkEnv["NDK_VERSION"]}"
+    externalNativeBuild {
+        cmake {
+            version = "${ndkEnv["CMAKE_VERSION"]}"
+        }
+    }
 
     namespace = "com.owncloud.android"
     testNamespace = "${namespace}.test"
@@ -100,6 +105,12 @@ android {
         minSdk = 28
         targetSdk = 36
         compileSdk = 36
+
+        ndk {
+            // arm64-v8a: Apple Silicon (M-series) emulator & ARM devices
+            // x86_64 / x86: Intel/AMD emulators and x86 devices
+            abiFilters += listOf("arm64-v8a", "x86_64", "x86")
+        }
 
         buildConfigField("boolean", "CI", ciBuild.toString())
         buildConfigField("boolean", "RUNTIME_PERF_ANALYSIS", perfAnalysis.toString())
