@@ -17,4 +17,8 @@ class InAppReviewHelperImpl(appPreferences: AppPreferences) : InAppReviewHelper 
 
     override fun showInAppReview(activity: AppCompatActivity) {
     }
+
+    override fun performNativeReview(activity: AppCompatActivity){
+
+    }
 }
