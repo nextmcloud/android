@@ -59,8 +59,8 @@ internal class OCFileListViewHolder(var binding: GridItemBinding) :
         } else {
             binding.more
         }
-    override val fileFeaturesLayout: LinearLayout
-        get() = binding.fileFeaturesLayout
+    override val fileFeaturesLayout: LinearLayout?
+        get() = null
     override val gridLivePhotoIndicator: ImageView
         get() = binding.gridLivePhotoIndicator
     override val livePhotoIndicator: TextView?

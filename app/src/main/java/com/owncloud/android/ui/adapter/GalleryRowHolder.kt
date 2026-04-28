@@ -48,9 +48,8 @@ class GalleryRowHolder(
     private val checkBoxMargin by lazy { context.resources.getDimension(R.dimen.standard_quarter_padding) }
 
     private val checkedDrawable by lazy {
-        ContextCompat.getDrawable(context, R.drawable.ic_checkbox_marked)?.also {
-            viewThemeUtils.platform.tintDrawable(context, it, ColorRole.PRIMARY)
-        }
+        // NMC Customization: no need to tint the color
+        ContextCompat.getDrawable(context, R.drawable.ic_checkbox_marked)
     }
 
     private val uncheckedDrawable by lazy {
@@ -92,8 +91,9 @@ class GalleryRowHolder(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                gravity = Gravity.TOP or Gravity.START
-                marginStart = checkBoxMargin.toInt()
+                // NMC Customization: align checkbox on top right
+                gravity = Gravity.TOP or Gravity.END
+                marginEnd = checkBoxMargin.toInt()
                 topMargin = checkBoxMargin.toInt()
             }
         }
@@ -175,8 +175,10 @@ class GalleryRowHolder(
 
     @Suppress("MagicNumber")
     private fun adjustRowCell(imageView: ImageView, isChecked: Boolean) {
-        val scale = if (isChecked) 0.8f else 1.0f
-        val radius = if (isChecked) iconRadius else 0f
+        // NMC Customization: no need to scaling and rounding
+        // we want a normal view without any corners
+        val scale = 1.0f
+        val radius = 0f
         imageView.scaleX = scale
         imageView.scaleY = scale
         imageView.makeRounded(context, radius)
