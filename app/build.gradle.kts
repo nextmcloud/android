@@ -107,8 +107,6 @@ android {
         compileSdk = 36
 
         ndk {
-            // arm64-v8a: Apple Silicon (M-series) emulator & ARM devices
-            // x86_64 / x86: Intel/AMD emulators and x86 devices
             abiFilters += listOf("arm64-v8a", "x86_64", "x86")
         }
 
