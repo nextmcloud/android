@@ -225,7 +225,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
     private FloatingActionButton mFabMain;
     public static boolean isMultipleFileSelectedForCopyOrMove = false;
     public final ParentFolderFinder parentFolderFinder = new ParentFolderFinder();
-    public FileListLayoutManager fileListLayoutManager;
+    private FileListLayoutManager fileListLayoutManager;
 
     private static final Intent scanIntentExternalApp = new Intent("org.fairscan.app.action.SCAN_TO_PDF");
 
@@ -2269,5 +2269,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
         return this instanceof GalleryFragment ||
             isSearchEventFavorite() ||
             isSearchEventShared();
+    }
+
+    public FileListLayoutManager getFileListLayoutManager() {
+        return fileListLayoutManager;
     }
 }
