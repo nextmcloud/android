@@ -324,7 +324,7 @@ class GalleryFragment :
 
     private fun loadMoreWhenEndReached(recyclerView: RecyclerView, dy: Int) {
         if (dy <= 0 || isPhotoSearchQueryRunning) {
-            Log_OC.d(TAG, "scrolling up or search query already active, do not search gallery")
+// scrolling up or search query already active, do not search gallery
             return
         }
 
