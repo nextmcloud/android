@@ -125,8 +125,6 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
 
         LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(refreshSearchEventReceiver);
 
-        setLastMediaItemPosition(null);
-
         mAdapter.cleanup();
 
         super.onDestroyView();
@@ -176,31 +174,37 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
     }
 
     @Override
-    protected void setAdapter(Bundle args) {
-        mAdapter = new GalleryAdapter(requireContext(),
-                                      accountManager.getUser(),
-                                      this,
-                                      preferences,
-                                      mContainerActivity,
-                                      viewThemeUtils,
-                                      columnSize,
-                                      ThumbnailsCacheManager.getThumbnailDimension());
+    public void setAdapter(Bundle args) {
+        final var recyclerView = getRecyclerView();
+        mAdapter = new GalleryAdapter(
+            requireContext(),
+            accountManager.getUser(),
+            this,
+            preferences,
+            mContainerActivity,
+            viewThemeUtils,
+            columnSize,
+            ThumbnailsCacheManager.getThumbnailDimension()
+        );
         mAdapter.setHasStableIds(true);
         setRecyclerViewAdapter(mAdapter);
-
-        //update the footer as there is no footer shown in media view
-        if (getRecyclerView() instanceof EmptyRecyclerView) {
-            ((EmptyRecyclerView) getRecyclerView()).setHasFooter(false);
+        // update the footer as there is no footer shown in media view
+        if (recyclerView instanceof EmptyRecyclerView emptyRecyclerView) {
+            emptyRecyclerView.setHasFooter(false);
         }
 
-        if (getRecyclerView() != null) {
+        if (recyclerView != null) {
             GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
             mAdapter.setLayoutManager(layoutManager);
-            getRecyclerView().setLayoutManager(layoutManager);
-
-            if (lastMediaItemPosition != null) {
-                layoutManager.scrollToPosition(lastMediaItemPosition);
-            }
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.post(() -> {
+                if (lastMediaItemPosition != null) {
+                    RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
+                    if (lm != null) {
+                        lm.scrollToPosition(lastMediaItemPosition);
+                    }
+                }
+            });
         }
     }
 
