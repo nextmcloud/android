@@ -351,5 +351,7 @@ class MediaControlView(context: Context, attrs: AttributeSet?) :
     companion object {
         private val TAG = MediaControlView::class.java.getSimpleName()
         private const val SHOW_PROGRESS = 1
+        // NMC-3192 Fix
+        private const val FIVE_SECONDS_IN_MILLIS = 5000
     }
 }
