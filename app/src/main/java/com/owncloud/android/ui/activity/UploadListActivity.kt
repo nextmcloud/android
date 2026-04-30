@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -49,6 +50,8 @@ import com.owncloud.android.ui.adapter.uploadList.helper.UploadListAdapterAction
 import com.owncloud.android.ui.adapter.uploadList.helper.UploadListAdapterHelper
 import com.owncloud.android.ui.adapter.uploadList.helper.UploadListItemOnClick
 import com.owncloud.android.ui.decoration.MediaGridItemDecoration
+import com.nmc.android.utils.DisplayUtils
+import com.owncloud.android.ui.decoration.SimpleListItemDividerDecoration
 import com.owncloud.android.utils.FilesSyncHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -80,6 +83,8 @@ class UploadListActivity :
     private lateinit var uploadListAdapter: UploadListAdapter
     private lateinit var adapterActionHandler: UploadListAdapterAction
     private lateinit var adapterHelper: UploadListAdapterHelper
+
+    private var simpleListItemDividerDecoration : SimpleListItemDividerDecoration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,11 +125,14 @@ class UploadListActivity :
 
         val lm = GridLayoutManager(this, 1)
         uploadListAdapter.setLayoutManager(lm)
+        // NMC decorator
+        simpleListItemDividerDecoration = SimpleListItemDividerDecoration(this, R.drawable.item_divider, true)
 
         val spacing = getResources().getDimensionPixelSize(R.dimen.media_grid_spacing)
         binding?.list?.run {
             addItemDecoration(MediaGridItemDecoration(spacing))
             setLayoutManager(lm)
+            addListItemDecorator()
             setAdapter(uploadListAdapter)
         }
 
@@ -132,6 +140,25 @@ class UploadListActivity :
         swipeListRefreshLayout?.let { SwipeRefreshThemeUtils.themeSwipeRefreshLayout(this, it) }
         swipeListRefreshLayout?.setOnRefreshListener { this.refresh() }
         loadItems()
+    }
+
+    private fun addListItemDecorator() {
+        if (DisplayUtils.isShowDividerForList()) {
+            //check and remove divider item decorator if exist then add item decorator
+            removeListDividerDecorator()
+            simpleListItemDividerDecoration?.let { binding?.list?.addItemDecoration(it) }
+        }
+    }
+
+    /**
+     * method to remove the divider item decorator
+     */
+    private fun removeListDividerDecorator() {
+        binding?.list?.itemDecorationCount?.let {
+            if (it > 0) {
+                simpleListItemDividerDecoration?.let { decor -> binding?.list?.removeItemDecoration(decor) }
+            }
+        }
     }
 
     private fun setupEmptyList() {
@@ -361,6 +388,21 @@ class UploadListActivity :
             setText(messageId)
             setDuration(Snackbar.LENGTH_LONG)
             show()
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        //this should only run when device is not tablet because we are adding dividers in tablet for both the
+        // orientations
+        if (!DisplayUtils.isTablet()) {
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                //add the divider item decorator when orientation is landscape
+                addListItemDecorator()
+            } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                //remove the divider item decorator when orientation is portrait
+                removeListDividerDecorator()
+            }
         }
     }
 
