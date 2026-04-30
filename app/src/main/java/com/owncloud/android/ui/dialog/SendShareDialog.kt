@@ -23,7 +23,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.utils.IntentUtil.createSendIntent
 import com.nextcloud.utils.extensions.getParcelableArgument
@@ -86,7 +85,6 @@ class SendShareDialog :
             binding.btnLink.visibility = View.GONE
         }
 
-        applyTintColor()
         setupBottomSheetBehaviour()
         checkButtonVisibilities()
         setupSendButtonRecyclerView()
@@ -113,12 +111,6 @@ class SendShareDialog :
         bottomSheetDialog.behavior.skipCollapsed = true
     }
 
-    private fun applyTintColor() {
-        viewThemeUtils?.material?.colorMaterialButtonPrimaryFilled(binding.btnLink)
-        viewThemeUtils?.material?.colorMaterialButtonPrimaryFilled(binding.btnShare)
-        viewThemeUtils?.platform?.colorViewBackground(binding.bottomSheet, ColorRole.SURFACE)
-    }
-
     @Suppress("MagicNumber")
     private fun checkButtonVisibilities() {
         if (hideNcSharingOptions) {
@@ -142,6 +134,9 @@ class SendShareDialog :
     }
 
     private fun shareByLink() {
+        // NMC Customization
+        isPeopleShareClicked = false
+
         val fileOperationsHelper = (requireActivity() as FileActivity).fileOperationsHelper
 
         if (file?.isSharedViaLink == true) {
@@ -203,6 +198,9 @@ class SendShareDialog :
     }
 
     private fun shareFile(file: OCFile?) {
+        // NMC Customization
+        isPeopleShareClicked = true
+
         dismiss()
 
         if (activity is FileDisplayActivity) {
@@ -248,6 +246,11 @@ class SendShareDialog :
         private const val KEY_SHARING_PUBLIC_ASK_FOR_PASSWORD = "KEY_SHARING_PUBLIC_ASK_FOR_PASSWORD"
         private const val KEY_HIDE_NC_SHARING_OPTIONS = "KEY_HIDE_NC_SHARING_OPTIONS"
         private val TAG = SendShareDialog::class.java.simpleName
+
+        // TODO: 06/21/23 remove this condition after Comments section included
+        // flag to avoid crash during creating new link share for a file for which link share already exist
+        @JvmField
+        var isPeopleShareClicked = false
 
         @JvmStatic
         fun newInstance(file: OCFile?, hideNcSharingOptions: Boolean, capability: OCCapability): SendShareDialog =
