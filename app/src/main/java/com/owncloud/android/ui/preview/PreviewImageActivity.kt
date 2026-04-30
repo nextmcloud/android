@@ -76,8 +76,6 @@ class PreviewImageActivity :
     private val downloadStartReceiver = DownloadStartReceiver()
     private val downloadFinishReceiver = DownloadFinishReceiver()
 
-    private var fullScreenAnchorView: View? = null
-
     private var isDownloadWorkStarted = false
     private var screenState = PreviewImageActivityState.Idle
 
@@ -101,6 +99,7 @@ class PreviewImageActivity :
         }
 
         setContentView(R.layout.preview_image_activity)
+        setupToolbar()
 
         livePhotoFile = intent.getParcelableArgument(EXTRA_LIVE_PHOTO_FILE, OCFile::class.java)
 
@@ -112,10 +111,8 @@ class PreviewImageActivity :
             updateActionBarTitleAndHomeButton(chosenFile)
             viewThemeUtils.files.setWhiteBackButton(this, it)
             it.setDisplayHomeAsUpEnabled(true)
-            it.setBackgroundDrawable(R.color.black.toDrawable())
         }
 
-        fullScreenAnchorView = window.decorView
         // to keep our UI controls visibility in line with system bars visibility
         setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
@@ -125,7 +122,9 @@ class PreviewImageActivity :
         }
 
         observeWorkerState()
-        applyDisplayCutOutTopPadding()
+        // NMC-4604 fix: we don't need to call this function
+        // as we using toolbar_standard directly inside the xml and no padding is required
+        // applyDisplayCutOutTopPadding()
         handleBackPress()
     }
 
@@ -289,7 +288,8 @@ class PreviewImageActivity :
             if (file != null) {
                 // / Refresh the activity according to the Account and OCFile set
                 setFile(file) // reset after getting it fresh from storageManager
-                updateActionBarTitle(getFile()?.fileName)
+                // NMC Customization
+                updateActionBarTitleAndHomeButton(getFile())
                 // if (!stateWasRecovered) {
                 initViewPager(optionalUser.get())
 
@@ -457,13 +457,10 @@ class PreviewImageActivity :
         }
 
         if (currentFile != null) {
-            updateActionBarTitle(currentFile.fileName)
+            // NMC Customization
+            updateActionBarTitleAndHomeButton(currentFile)
             setDrawerIndicatorEnabled(false)
         }
-    }
-
-    private fun updateActionBarTitle(title: String?) {
-        supportActionBar?.title = title
     }
 
     /**
@@ -507,14 +504,7 @@ class PreviewImageActivity :
         get() = supportActionBar == null || supportActionBar?.isShowing == true
 
     fun toggleFullScreen() {
-        fullScreenAnchorView?.let {
-            val visible = (it.systemUiVisibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0
-            if (visible) {
-                hideSystemUI(it)
-            } else {
-                showSystemUI(it)
-            }
-        }
+        // do nothing for NMC
     }
 
     fun startImageEditor(file: OCFile) {
@@ -541,27 +531,6 @@ class PreviewImageActivity :
 
     override fun onBrowsedDownTo(folder: OCFile) = Unit
     override fun onTransferStateChanged(file: OCFile, downloading: Boolean, uploading: Boolean) = Unit
-
-    @Suppress("DEPRECATION")
-    private fun hideSystemUI(anchorView: View) {
-        anchorView.systemUiVisibility = (
-            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_IMMERSIVE
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            )
-    }
-
-    @Suppress("DEPRECATION")
-    private fun showSystemUI(anchorView: View) {
-        anchorView.systemUiVisibility = (
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            )
-    }
 
     companion object {
         val TAG: String = PreviewImageActivity::class.java.simpleName
