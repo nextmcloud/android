@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
 import com.owncloud.android.BuildConfig;
 import com.owncloud.android.R;
-import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.datamodel.ThumbnailsCacheManager;
 import com.owncloud.android.lib.common.utils.Log_OC;
@@ -37,8 +36,9 @@ import com.owncloud.android.ui.adapter.CommonOCFileListAdapterInterface;
 import com.owncloud.android.ui.adapter.GalleryAdapter;
 import com.owncloud.android.ui.asynctasks.GallerySearchTask;
 import com.owncloud.android.ui.events.ChangeMenuEvent;
+import com.owncloud.android.ui.activity.AlbumsPickerActivity;
 
-import javax.inject.Inject;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,6 +69,9 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
     private final static int maxColumnSizePortrait = 2;
     private int columnSize;
 
+    // NMC: required for Albums
+    private boolean isFromAlbum; // when opened from Albums to add items
+
     protected void setPhotoSearchQueryRunning(boolean value) {
         this.photoSearchQueryRunning = value;
     }
@@ -82,7 +85,12 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
         super.onCreate(savedInstanceState);
         searchFragment = true;
 
-        setHasOptionsMenu(true);
+        if (getArguments() != null) {
+            isFromAlbum = getArguments().getBoolean(AlbumsPickerActivity.Companion.getEXTRA_FROM_ALBUM(), false);
+        }
+
+        // NMC Customization: only show menu when not opened from media picker
+        setHasOptionsMenu(!isFromAlbum);
 
         if (galleryFragmentBottomSheetDialog == null) {
             galleryFragmentBottomSheetDialog = new GalleryFragmentBottomSheetDialog(this);
@@ -425,6 +433,11 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
             return;
         }
 
+        // NMC Customization: while picking media don't show subtitle
+        if (isFromAlbum) {
+            return;
+        }
+
         activity.runOnUiThread(() -> {
             if (!isAdded()) {
                 return;
@@ -450,5 +463,15 @@ public class GalleryFragment extends OCFileListFragment implements GalleryFragme
 
     public void markAsFavorite(String remotePath, boolean favorite) {
         mAdapter.markAsFavorite(remotePath, favorite);
+    }
+
+    public void addImagesToAlbum(Set<OCFile> checkedFiles) {
+        if (isFromAlbum) {
+            if (requireActivity() instanceof AlbumsPickerActivity albumsPickerActivity) {
+                albumsPickerActivity.addFilesToAlbum(checkedFiles);
+            }
+            exitSelectionMode();
+            requireActivity().finish();
+        }
     }
 }
