@@ -298,6 +298,8 @@ class GalleryFragment :
     override fun selectMediaFolder() {
         val intent = Intent(requireActivity(), FolderPickerActivity::class.java).apply {
             putExtra(FolderPickerActivity.EXTRA_ACTION, FolderPickerActivity.CHOOSE_LOCATION)
+            putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true)
+            putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true)
         }
         folderPickerLauncher.launch(intent)
     }
