@@ -35,6 +35,7 @@ import com.nextcloud.common.NextcloudClient
 import com.nextcloud.utils.BuildHelper.isFlavourGPlay
 import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.R
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.databinding.NotificationsLayoutBinding
 import com.owncloud.android.datamodel.ArbitraryDataProvider
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl
@@ -97,6 +98,9 @@ class NotificationsActivity :
         if (optionalUser?.isPresent == false) {
             showError()
         }
+
+        // NMC: track notification screen event
+        MoEngageSdkUtils.trackNotificationsScreenEvent(this)
     }
 
     private fun initUser() {

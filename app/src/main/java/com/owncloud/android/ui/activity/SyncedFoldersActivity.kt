@@ -40,6 +40,7 @@ import com.nextcloud.utils.extensions.isDialogFragmentReady
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.nmc.android.marketTracking.AdjustSdkUtils
 import com.nmc.android.marketTracking.TealiumSdkUtils
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.StoragePermissionWarningBannerBinding
@@ -715,6 +716,7 @@ class SyncedFoldersActivity :
     private fun trackAutoUploadEvent(enabled: Boolean) {
         AdjustSdkUtils.trackEvent(if (enabled) AdjustSdkUtils.EVENT_TOKEN_SETTINGS_AUTO_UPLOAD_ON else AdjustSdkUtils.EVENT_TOKEN_SETTINGS_AUTO_UPLOAD_OFF, preferences)
         TealiumSdkUtils.trackEvent(if (enabled) TealiumSdkUtils.EVENT_SETTINGS_AUTO_UPLOAD_ON else TealiumSdkUtils.EVENT_SETTINGS_AUTO_UPLOAD_OFF, preferences)
+        trackAutoUpload()
     }
 
     override fun showSubFolderWarningDialog() {
@@ -811,8 +813,17 @@ class SyncedFoldersActivity :
             syncedFolderProvider.deleteSyncedFolder(syncedFolder.id)
             withContext(Dispatchers.Main) {
                 adapter.removeItem(syncedFolder.section)
+                trackAutoUpload()
             }
         }
+    }
+
+    /**
+     * NMC: tracking auto upload is enabled or not
+     * Should be called whenever a Folder is saved or removed from auto upload
+     */
+    private fun trackAutoUpload() {
+        MoEngageSdkUtils.trackAutoUpload(this, syncedFolderProvider.countEnabledSyncedFolders())
     }
 
     /**
