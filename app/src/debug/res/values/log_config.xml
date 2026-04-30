@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2025 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<resources>
+    <!-- enable logs in debug builds -->
+    <bool name="logger_enabled">true</bool>
+</resources>
