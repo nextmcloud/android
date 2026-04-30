@@ -37,6 +37,7 @@ import com.nextcloud.utils.BatteryOptimizationHelper
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.extensions.isDialogFragmentReady
 import com.nextcloud.utils.extensions.setVisibleIf
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.StoragePermissionWarningBannerBinding
@@ -701,6 +702,7 @@ class SyncedFoldersActivity :
         if (syncedFolder.isEnabled) {
             showBatteryOptimizationDialogIfNeeded()
         }
+        trackAutoUpload()
     }
 
     override fun showSubFolderWarningDialog() {
@@ -794,8 +796,17 @@ class SyncedFoldersActivity :
             syncedFolderProvider.deleteSyncedFolder(syncedFolder.id)
             withContext(Dispatchers.Main) {
                 adapter.removeItem(syncedFolder.section)
+                trackAutoUpload()
             }
         }
+    }
+
+    /**
+     * NMC: tracking auto upload is enabled or not
+     * Should be called whenever a Folder is saved or removed from auto upload
+     */
+    private fun trackAutoUpload() {
+        MoEngageSdkUtils.trackAutoUpload(this, syncedFolderProvider.countEnabledSyncedFolders())
     }
 
     /**
