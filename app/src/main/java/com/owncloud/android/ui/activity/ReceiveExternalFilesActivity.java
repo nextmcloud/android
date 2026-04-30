@@ -480,7 +480,6 @@ public class ReceiveExternalFilesActivity extends FileActivity
 
             setFilename(binding.userInput, selectPos);
             binding.userInput.requestFocus();
-            viewThemeUtils.material.colorTextInputLayout(binding.userInputContainer);
 
             setupSpinner(adapter, selectPos, binding.userInput, binding.fileType);
             if (adapter.getCount() == SINGLE_SPINNER_ENTRY) {
@@ -803,15 +802,13 @@ public class ReceiveExternalFilesActivity extends FileActivity
         }
         setupFileNameInputField();
 
-        MaterialButton btnChooseFolder = binding.uploaderChooseFolder;
-        viewThemeUtils.material.colorMaterialButtonPrimaryFilled(btnChooseFolder);
-        btnChooseFolder.setOnClickListener(this);
+            MaterialButton btnChooseFolder = binding.uploaderChooseFolder;
+            btnChooseFolder.setOnClickListener(this);
 
         btnChooseFolder.setEnabled(mFile.canCreateFileAndFolder());
 
         viewThemeUtils.platform.themeStatusBar(this);
 
-        viewThemeUtils.material.colorMaterialButtonPrimaryOutlined(binding.uploaderCancel);
         binding.uploaderCancel.setOnClickListener(this);
 
         sortButton = binding.toolbarLayout.sortButton;
