@@ -31,6 +31,7 @@ import com.nextcloud.utils.extensions.isLastResultConflictError
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.nextcloud.utils.extensions.sortedByUploadOrder
 import com.nextcloud.utils.extensions.toFile
+import com.nmc.android.utils.ProgressBarThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.UploadListHeaderBinding
 import com.owncloud.android.databinding.UploadListItemBinding
@@ -360,7 +361,11 @@ class UploadListAdapter(
 
     private fun bindItemInProgress(holder: ItemViewHolder, item: OCUpload) {
         holder.binding.run {
-            viewThemeUtils.platform.themeHorizontalProgressBar(uploadProgressBar)
+            // NMC Customization
+            ProgressBarThemeUtils.themeHorizontalProgressBar(
+                uploadProgressBar,
+                holder.itemView.context.resources.getColor(R.color.primary, null)
+            )
             uploadProgressBar.progress = 0
             uploadProgressBar.visibility = View.VISIBLE
             uploadFileSize.visibility = View.GONE
