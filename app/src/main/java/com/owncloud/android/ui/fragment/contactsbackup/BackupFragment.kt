@@ -538,6 +538,7 @@ class BackupFragment :
 
             datePickerDialog = DatePickerDialog(
                 contactsPreferenceActivity,
+                R.style.FallbackDatePickerDialogTheme,
                 this,
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
