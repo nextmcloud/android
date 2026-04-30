@@ -14,6 +14,7 @@ annotationVersion = "1.9.1"
 annotationsVersion = "3.0.1u2"
 appCompatVersion = "1.7.1"
 bcpkixJdk18onVersion = "1.83"
+appUpdateKtxVersion = "2.1.0"
 cardviewVersion = "1.0.0"
 checker = "3.21.2"
 coilVersion = "2.7.0"
@@ -36,6 +37,7 @@ exifinterfaceVersion = "1.4.2"
 ezVcardVersion = "0.12.2"
 fbContribVersion = "7.7.4"
 findsecbugsPluginVersion = "1.14.0"
+firebaseConfigVersion = "23.0.0"
 firebaseMessagingVersion = "25.0.1"
 flexboxVersion = "3.0.0"
 fragmentKtxVersion = "1.8.9"
@@ -151,6 +153,8 @@ objenesis = { module = "org.objenesis:objenesis", version.ref = "objenesis" }
 play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBaseVersion" }
 review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "reviewKtxVersion" }
 slfj = { module = "org.slf4j:jcl-over-slf4j", version.ref = "slfj" }
+app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "appUpdateKtxVersion" }
+firebase-config = { module = "com.google.firebase:firebase-config", version.ref = "firebaseConfigVersion" }
 
 # Mockito
 mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoVersion" }
