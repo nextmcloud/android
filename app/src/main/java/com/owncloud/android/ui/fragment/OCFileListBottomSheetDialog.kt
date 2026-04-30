@@ -138,6 +138,22 @@ class OCFileListBottomSheetDialog(
                 binding.menuNewSpreadsheet.visibility = View.VISIBLE
                 binding.menuNewPresentation.visibility = View.VISIBLE
             }
+
+            if (capability.endToEndEncryption.isTrue) {
+                // NMC-4348 fix
+                // show encrypted folder option for root and e2ee folder
+                binding.menuEncryptedMkdir.visibility =
+                    if (file.isEncrypted || file.isRootDirectory)
+                        View.VISIBLE
+                    else
+                        View.GONE
+                // for e2ee folder don't show normal folder option
+                if (file.isEncrypted) {
+                    binding.menuMkdir.visibility = View.GONE
+                }
+            } else {
+                binding.menuEncryptedMkdir.visibility = View.GONE
+            }
         }
     }
 
@@ -241,7 +257,11 @@ class OCFileListBottomSheetDialog(
             }
 
             menuEncryptedMkdir.setOnClickListener {
-                actions.createFolder(encrypted = true)
+                // NMC-4348 fix
+                // for e2e folder call normal folder creation
+                // it will auto handle creating e2e sub folder
+                // for root path the value will be true and will create e2e folder
+                actions.createFolder(!file.isEncrypted)
                 dismiss()
             }
 
