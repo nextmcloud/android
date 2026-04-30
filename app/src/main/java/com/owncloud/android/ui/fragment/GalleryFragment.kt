@@ -36,6 +36,7 @@ import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.datamodel.ThumbnailsCacheManager
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.ui.EmptyRecyclerView
+import com.owncloud.android.ui.activity.AlbumsPickerActivity
 import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.activity.FolderPickerActivity
 import com.owncloud.android.ui.activity.ToolbarActivity
@@ -60,9 +61,17 @@ class GalleryFragment :
     override var columnsCount: Int = 0
         private set
 
+    // NMC: required for Albums
+    private var isFromAlbum = false // when opened from Albums to add items
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         searchFragment = true
+
+        // NMC Customization
+        arguments?.let {
+            isFromAlbum = it.getBoolean(AlbumsPickerActivity.EXTRA_FROM_ALBUM, false)
+        }
 
         setupBottomSheet()
         setupColumnCount()
@@ -71,7 +80,10 @@ class GalleryFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        addMenuProvider()
+        // NMC Customization: only show menu when not opened from media picker
+        if (!isFromAlbum) {
+            addMenuProvider()
+        }
     }
 
     private fun addMenuProvider() {
@@ -386,6 +398,11 @@ class GalleryFragment :
             return
         }
 
+        // NMC Customization: while picking media don't show subtitle
+        if (isFromAlbum) {
+            return
+        }
+
         toolbarActivity.runOnUiThread {
             if (!isAdded) {
                 return@runOnUiThread
@@ -413,6 +430,16 @@ class GalleryFragment :
 
     fun markAsFavorite(remotePath: String, favorite: Boolean) {
         adapter?.markAsFavorite(remotePath, favorite)
+    }
+
+    fun addImagesToAlbum(checkedFiles: Set<OCFile>) {
+        if (isFromAlbum) {
+            if (requireActivity() is AlbumsPickerActivity) {
+                (requireActivity() as AlbumsPickerActivity).addFilesToAlbum(checkedFiles);
+            }
+            exitSelectionMode();
+            requireActivity().finish();
+        }
     }
 
     companion object {
