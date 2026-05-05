@@ -44,6 +44,18 @@ dependencyResolutionManagement {
         maven("https://nexus.scanbot.io/nexus/content/repositories/snapshots/")
     }
 }
+
+// NMC: adding moengage catalog
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        create("moengage") {
+            from("com.moengage:android-dependency-catalog:4.2.0")
+        }
+    }
+}
 // includeBuild("../android-common") {
 //    dependencySubstitution {
 //        substitute(module("com.github.nextcloud.android-common:ui")).using(project(":ui"))
