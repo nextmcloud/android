@@ -83,7 +83,7 @@ class SharePermissionManagerTest {
     // region Helper Method Tests
     @Test
     fun testCanEditShouldReturnTrueIfAllPermissionsPresent() {
-        val share = createShare(OCShare.MAXIMUM_PERMISSIONS_FOR_FOLDER, isFolder = true)
+        val share = createShare(SharePermissionManager.CAN_EDIT_PERMISSIONS_FOR_FOLDER, isFolder = true)
         assertTrue(SharePermissionManager.canEdit(share))
     }
 
@@ -127,7 +127,7 @@ class SharePermissionManagerTest {
     @Test
     fun testGetMaximumPermissionForFolder() {
         assertEquals(
-            OCShare.MAXIMUM_PERMISSIONS_FOR_FOLDER,
+            SharePermissionManager.CAN_EDIT_PERMISSIONS_FOR_FOLDER,
             SharePermissionManager.getMaximumPermission(isFolder = true)
         )
     }
@@ -135,7 +135,7 @@ class SharePermissionManagerTest {
     @Test
     fun testGetMaximumPermissionForFile() {
         assertEquals(
-            OCShare.MAXIMUM_PERMISSIONS_FOR_FILE,
+            SharePermissionManager.CAN_EDIT_PERMISSIONS_FOR_FILE,
             SharePermissionManager.getMaximumPermission(isFolder = false)
         )
     }
@@ -144,7 +144,7 @@ class SharePermissionManagerTest {
     // region GetSelectedTypeTests
     @Test
     fun testGetSelectedTypeShouldReturnCanEditWhenFullPermissionsGiven() {
-        val share = createShare(OCShare.MAXIMUM_PERMISSIONS_FOR_FILE)
+        val share = createShare(SharePermissionManager.CAN_EDIT_PERMISSIONS_FOR_FILE)
         assertEquals(QuickPermissionType.CAN_EDIT, SharePermissionManager.getSelectedType(share, encrypted = false))
     }
 
