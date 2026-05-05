@@ -23,9 +23,11 @@ import com.nextcloud.client.device.DeviceInfo
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.documentscan.AppScanOptionalFeature
 import com.nextcloud.utils.BuildHelper.isFlavourGPlay
+import com.nextcloud.client.preferences.AppPreferencesImpl
 import com.nextcloud.utils.EditorUtils
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.owncloud.android.MainApp
+import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FileListActionsBottomSheetFragmentBinding
 import com.owncloud.android.datamodel.ArbitraryDataProvider
@@ -98,6 +100,14 @@ class OCFileListBottomSheetDialog(
                 binding.menuUploadFromApp.text = context.getString(R.string.upload_files)
             }
         }
+
+        // track screen view when fragment is visible
+        TealiumSdkUtils.trackView(
+            TealiumSdkUtils.SCREEN_VIEW_FAB_PLUS,
+            // need to create direct instance of AppPreferences as Injection doesn't work in Dialogs
+            // if we take AppPreferences as parameter in constructor it will affect the other NMC PRs test cases
+            AppPreferencesImpl.fromContext(fileActivity)
+        )
     }
 
     private fun checkCreateEncryptedFolderVisibility() {
