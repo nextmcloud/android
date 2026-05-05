@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2025 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<resources>
+    <string name="drawer_item_album">Alben</string>
+    <string name="create_album">Album erstellen</string>
+    <string name="create_album_dialog_title">Neues Album</string>
+    <string name="rename_album_dialog_title">Album umbenennen</string>
+    <string name="rename_dialog_button">Speichern</string>
+    <string name="create_album_dialog_message">Gib einen Namen für das Album ein</string>
+    <string name="album_name_empty">Der Albumname darf nicht leer sein</string>
+    <string name="hidden_album_name">Der Albumname darf nicht mit einem ungültigen Zeichen beginnen</string>
+    <string name="add_more">Mehr hinzufügen</string>
+    <string name="album_rename">Album umbenennen</string>
+    <string name="album_delete">Album löschen</string>
+    <string name="album_delete_failed_message">Einige Dateien konnten nicht gelöscht werden.</string>
+    <string name="album_already_exists">Das Album existiert bereits</string>
+    <string name="album_picker_toolbar_title">Album auswählen</string>
+    <string name="media_picker_toolbar_title">Mediendateien auswählen</string>
+    <string name="empty_albums_title">Erstelle Alben für deine Fotos</string>
+    <string name="empty_albums_message">Sie können all Ihre Fotos in beliebig vielen Alben organisieren. Bisher haben Sie noch kein Album erstellt.</string>
+    <string name="add_to_album">Zum Album hinzufügen</string>
+    <string name="album_file_added_message">Datei erfolgreich hinzugefügt</string>
+    <string name="empty_album_detailed_view_title">Es fehlen nur noch Ihre Fotos</string>
+    <string name="empty_album_detailed_view_message">Sie können so viele Fotos hinzufügen, wie Sie möchten. Ein Foto kann auch mehreren Alben zugeordnet werden.</string>
+    <string name="add_photos">Fotos hinzufügen</string>
+    <string name="album_items_text">%d Elemente — %s</string>
+    <string name="album_unsupported_file">Nicht unterstützte Medien</string>
+    <string name="album_upload_from_camera_roll">Dateien hochladen</string>
+    <string name="album_upload_from_account">Dateien auswählen</string>
+    <string name="album_rename_conflict">Dieser Name wird bereits verwendet.</string>
+    <string name="album_copy_file_conflict">Existiert bereits.</string>
+</resources>
