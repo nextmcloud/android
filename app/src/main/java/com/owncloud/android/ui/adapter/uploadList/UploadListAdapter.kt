@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.afollestad.sectionedrecyclerview.SectionedRecyclerViewAdapter
@@ -595,7 +596,9 @@ class UploadListAdapter(
     }
 
     private fun showItemConflictPopup(item: OCUpload, view: View) {
-        PopupMenu(activity, view).apply {
+        // NMC Customisation
+        val ctw = ContextThemeWrapper(activity, R.style.CustomPopupTheme)
+        PopupMenu(ctw, view).apply {
             inflate(R.menu.upload_list_item_file_conflict)
             setOnMenuItemClickListener { menuItem ->
                 if (menuItem.itemId == R.id.action_upload_list_resolve_conflict) {
