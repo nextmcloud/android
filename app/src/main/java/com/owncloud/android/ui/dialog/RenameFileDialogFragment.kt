@@ -25,6 +25,7 @@ import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.extensions.typedActivity
 import com.nextcloud.utils.fileNameValidator.FileNameTextWatcher
 import com.nextcloud.utils.fileNameValidator.FileNameValidator.checkFileName
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.EditBoxDialogBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -80,7 +81,6 @@ class RenameFileDialogFragment :
 
         val currentName = mTargetFile?.fileName
         binding.userInput.setText(currentName)
-        viewThemeUtils.material.colorTextInputLayout(binding.userInputContainer)
         val extensionStart = if (mTargetFile?.isFolder == true) -1 else currentName?.lastIndexOf('.')
         val selectionEnd = if ((extensionStart ?: -1) >= 0) extensionStart else currentName?.length
         if (selectionEnd != null) {
@@ -120,7 +120,8 @@ class RenameFileDialogFragment :
 
         val builder = buildMaterialAlertDialog(binding.root)
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.userInputContainer.context, builder)
+        // NMC Customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(binding.userInputContainer.context, builder)
 
         return builder.create()
     }
@@ -142,12 +143,6 @@ class RenameFileDialogFragment :
 
         if (alertDialog != null) {
             positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE) as MaterialButton
-            val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE) as MaterialButton
-
-            positiveButton?.let {
-                viewThemeUtils.material.colorMaterialButtonPrimaryTonal(it)
-            }
-            viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(negativeButton)
         }
     }
 
