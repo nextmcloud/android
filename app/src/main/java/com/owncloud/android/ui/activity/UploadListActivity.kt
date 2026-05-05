@@ -139,9 +139,8 @@ class UploadListActivity :
                 root.visibility = View.GONE
 
                 emptyListIcon.run {
-                    setImageResource(R.drawable.uploads)
-                    getDrawable().mutate()
-                    setAlpha(0.5f)
+                    // NMC Customization
+                    setImageResource(R.drawable.ic_list_empty_uploads)
                     setVisibility(View.VISIBLE)
                 }
 
