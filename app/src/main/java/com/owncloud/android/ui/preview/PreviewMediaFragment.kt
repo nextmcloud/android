@@ -31,6 +31,7 @@ import android.widget.FrameLayout
 import androidx.annotation.OptIn
 import androidx.annotation.StringRes
 import androidx.core.net.toUri
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
@@ -74,6 +75,7 @@ import com.owncloud.android.ui.dialog.ConfirmationDialogFragment
 import com.owncloud.android.ui.dialog.RemoveFilesDialogFragment
 import com.owncloud.android.ui.fragment.FileFragment
 import com.owncloud.android.utils.MimeTypeUtil
+import com.owncloud.android.utils.theme.ViewThemeUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -117,6 +119,9 @@ class PreviewMediaFragment :
 
     @Inject
     lateinit var backgroundJobManager: BackgroundJobManager
+
+    @Inject
+    lateinit var viewThemeUtils: ViewThemeUtils
 
     lateinit var binding: FragmentPreviewMediaBinding
     private var emptyListView: ViewGroup? = null
@@ -340,6 +345,16 @@ class PreviewMediaFragment :
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menu.removeItem(R.id.action_search)
                     menuInflater.inflate(R.menu.custom_menu_placeholder, menu)
+                    // NMC customization
+                    val item = menu.findItem(R.id.custom_menu_placeholder_item)
+                    item.icon?.let {
+                        item.setIcon(
+                            viewThemeUtils.platform.colorDrawable(
+                                it,
+                                ContextCompat.getColor(requireContext(), R.color.fontAppbar)
+                            )
+                        )
+                    }
                 }
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
