@@ -5,10 +5,11 @@
   ~ SPDX-FileCopyrightText: 2026 Alper Ozturk <alper.ozturk@nextcloud.com>
   ~ SPDX-License-Identifier: AGPL-3.0-or-later
   -->
+<!-- NMC-5867 fix for header font -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/title"
-    style="@style/TextAppearance.Material3.HeadlineSmall"
+    style="@style/TextAppearance.AppCompat.Body2"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:ellipsize="middle"
