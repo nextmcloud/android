@@ -57,10 +57,9 @@ class OverlayManager @Inject constructor(
 
         val isAutoUploadFolder =
             SyncedFolderObserver.isAutoUploadFolder(folder, accountManager.user)
-        val isDarkModeActive = preferences.isDarkModeEnabled()
 
         val overlayIconId = folder.getFileOverlayIconId(isAutoUploadFolder)
-        val icon = MimeTypeUtil.getFolderIcon(isDarkModeActive, overlayIconId, context, viewThemeUtils)
-        imageView.setImageDrawable(icon)
+        // NMC Customization: No overlay icon will be used. Directly using folder icons
+        imageView.setImageDrawable(ContextCompat.getDrawable(context, overlayIconId))
     }
 }
