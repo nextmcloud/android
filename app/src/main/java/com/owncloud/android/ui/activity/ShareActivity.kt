@@ -14,6 +14,7 @@
 package com.owncloud.android.ui.activity
 
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.account.User
@@ -139,14 +140,8 @@ class ShareActivity :
         if (file.isFolder) {
             val isAutoUploadFolder = SyncedFolderObserver.isAutoUploadFolder(file, user)
             val overlayIconId = file.getFileOverlayIconId(isAutoUploadFolder)
-            binding.shareFileIcon.setImageDrawable(
-                MimeTypeUtil.getFolderIcon(
-                    preferences.isDarkModeEnabled(),
-                    overlayIconId,
-                    this,
-                    viewThemeUtils
-                )
-            )
+            // NMC Customization: No overlay icon will be used. Directly using folder icons
+            binding.shareFileIcon.setImageDrawable(ContextCompat.getDrawable(this, overlayIconId))
         } else {
             DisplayUtils.setThumbnail(
                 file,
