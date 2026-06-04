@@ -37,6 +37,7 @@ import com.nextcloud.client.jobs.upload.FileUploadHelper;
 import com.nextcloud.client.jobs.upload.FileUploadWorker;
 import com.nextcloud.client.network.ConnectivityService;
 import com.nextcloud.utils.EditorUtils;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
@@ -363,6 +364,9 @@ public class FileOperationsHelper {
         collaboraWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_FILE, file);
         collaboraWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_SHOW_SIDEBAR, false);
         context.startActivity(collaboraWebViewIntent);
+
+        // NMC: track when office file opened event
+        MoEngageSdkUtils.trackOnlineOfficeUsedEvent(context, file);
     }
 
     public void openFileWithTextEditor(OCFile file, Context context) {
@@ -453,6 +457,9 @@ public class FileOperationsHelper {
             }
             service.putExtra(OperationsService.EXTRA_REMOTE_PATH, file.getRemotePath());
             mWaitingForOpId = fileActivity.getOperationsServiceBinder().queueNewOperation(service);
+
+            // NMC: track link share event
+            MoEngageSdkUtils.trackShareFileEvent(fileActivity, file);
 
         } else {
             Log_OC.e(TAG, "Trying to share a NULL OCFile");
@@ -874,6 +881,9 @@ public class FileOperationsHelper {
             startSyncFolderIntent(file, syncAll);
         } else {
             queueSyncFileIntent(file, postDialogEvent);
+
+            // NMC: track offline available event
+            MoEngageSdkUtils.trackOfflineAvailableEvent(fileActivity, file);
         }
     }
 
@@ -917,6 +927,11 @@ public class FileOperationsHelper {
 
         for (OCFile file : toToggle) {
             toggleFavoriteFile(file, shouldBeFavorite);
+
+            // NMC: capture whenever a file is added to favourite
+            if (shouldBeFavorite) {
+                MoEngageSdkUtils.trackAddFavoriteEvent(fileActivity, file);
+            }
         }
     }
 

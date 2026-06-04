@@ -41,6 +41,18 @@ dependencyResolutionManagement {
     }
 }
 
+// NMC: adding moengage catalog
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        create("moengage") {
+            from("com.moengage:android-dependency-catalog:4.2.0")
+        }
+    }
+}
+
 /*
 Needed for local android library
 
