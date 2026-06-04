@@ -99,6 +99,24 @@
                 app:iconTint="@color/bottom_sheet_icon_color" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/menu_scan_document"
+                style="@style/Widget.App.Button.BottomSheetItem"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_sheet_item_height"
+                android:contentDescription="@string/upload_scan_doc_upload"
+                android:gravity="start|center_vertical"
+                android:paddingStart="@dimen/standard_padding"
+                android:paddingEnd="@dimen/standard_padding"
+                android:text="@string/upload_scan_doc_upload"
+                android:textColor="@color/bottom_sheet_txt_color"
+                android:textSize="@dimen/bottom_sheet_text_size"
+                app:icon="@drawable/ic_scan_document"
+                app:iconGravity="start"
+                app:iconPadding="@dimen/standard_padding"
+                app:iconSize="@dimen/iconized_single_line_item_icon_size"
+                app:iconTint="@color/bottom_sheet_icon_color" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/menu_scan_doc_upload"
                 style="@style/Widget.App.Button.BottomSheetItem"
                 android:layout_width="match_parent"
