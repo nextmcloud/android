@@ -110,7 +110,8 @@ class UploadListAdapter(
         val title = activity.getString(group.titleRes)
         val headerText = activity.getString(R.string.uploads_view_group_header)
         holder.binding.uploadListTitle.text = String.format(headerText, title, group.items.size)
-        viewThemeUtils.platform.colorTextView(holder.binding.uploadListTitle)
+        // NMC Customization
+        holder.binding.uploadListTitle.setTextColor(activity.getResources().getColor(R.color.primary, null))
 
         val toggleExpand = {
             toggleSectionExpanded(section)

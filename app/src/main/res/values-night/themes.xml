@@ -27,5 +27,8 @@
         <item name="popupMenuStyle">@style/Nextcloud.Widget.PopupMenu</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
         <item name="actionModeStyle">@style/App.ActionMode</item>
+        <!-- styling autocomplete text view mainly for search view cursor color-->
+        <item name="autoCompleteTextViewStyle">@style/AutoCompleteCursorColorStyle</item>
+        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteCursorColorStyle</item>
     </style>
 </resources>
