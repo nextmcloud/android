@@ -16,17 +16,20 @@ package com.owncloud.android.ui.fragment;
 
 import android.Manifest;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.text.InputType;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,32 +37,26 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
-import com.nextcloud.android.common.ui.theme.utils.ColorRole;
+import com.google.android.material.appbar.AppBarLayout;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.database.entity.FileEntity;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
-import com.nextcloud.client.utils.IntentUtil;
+import com.nextcloud.utils.EditorUtils;
 import com.nextcloud.utils.extensions.BundleExtensionsKt;
-import com.nextcloud.utils.extensions.OCShareExtensionsKt;
-import com.nextcloud.utils.extensions.ViewExtensionsKt;
-import com.nextcloud.utils.mdm.MDMConfig;
+import com.nmc.android.utils.SearchViewThemeUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileDetailsSharingFragmentBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
-import com.owncloud.android.datamodel.SharesType;
-import com.owncloud.android.datamodel.e2e.v2.decrypted.DecryptedFolderMetadataFile;
 import com.owncloud.android.lib.common.OwnCloudAccount;
-import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.shares.OCShare;
 import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.lib.resources.status.NextcloudVersion;
 import com.owncloud.android.lib.resources.status.OCCapability;
-import com.owncloud.android.operations.RefreshFolderOperation;
 import com.owncloud.android.providers.UsersAndGroupsSearchConfig;
 import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.ui.activity.FileDisplayActivity;
@@ -70,14 +67,18 @@ import com.nextcloud.client.preferences.AppPreferences;
 import com.nmc.android.marketTracking.AdjustSdkUtils;
 import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.ui.dialog.SharePasswordDialogFragment;
+import com.owncloud.android.ui.events.ShareSearchViewFocusEvent;
 import com.owncloud.android.ui.fragment.share.RemoteShareRepository;
 import com.owncloud.android.ui.fragment.share.ShareRepository;
 import com.owncloud.android.ui.fragment.util.FileDetailSharingFragmentHelper;
+import com.owncloud.android.ui.fragment.util.SharePermissionManager;
 import com.owncloud.android.ui.helpers.FileOperationsHelper;
 import com.owncloud.android.utils.ClipboardUtil;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.PermissionUtil;
 import com.owncloud.android.utils.theme.ViewThemeUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,13 +115,16 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     private FileDetailsSharingFragmentBinding binding;
 
     private OnEditShareListener onEditShareListener;
-    
-    private ShareeListAdapter internalShareeListAdapter;
-    
-    private ShareeListAdapter externalShareeListAdapter;
+
+    private ShareeListAdapter linkShareeListAdapter;
+
+    private ShareeListAdapter emailShareeListAdapter;
+
+    private boolean isSearchViewFocused;
 
     @Inject UserAccountManager accountManager;
     @Inject ClientFactory clientFactory;
+    @Inject EditorUtils editorUtils;
     @Inject ViewThemeUtils viewThemeUtils;
     @Inject UsersAndGroupsSearchConfig searchConfig;
     @Inject AppPreferences appPreferences;
@@ -165,6 +169,7 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -184,32 +189,46 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         String userId = accountManager.getUserData(user.toPlatformAccount(),
                                                    com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_USER_ID);
 
-        // internal shares
-        internalShareeListAdapter = new ShareeListAdapter(fileActivity,
-                                                          new ArrayList<>(),
-                                                          this,
-                                                          userId,
-                                                          user,
-                                                          viewThemeUtils,
-                                                          file.isEncrypted(),
-                                                          SharesType.INTERNAL);
-        internalShareeListAdapter.setHasStableIds(true);
-        binding.sharesListInternal.setAdapter(internalShareeListAdapter);
-        binding.sharesListInternal.setLayoutManager(new LinearLayoutManager(requireContext()));
+        // link shares
+        linkShareeListAdapter = new ShareeListAdapter(fileActivity,
+                                                      new ArrayList<>(),
+                                                      this,
+                                                      userId,
+                                                      user,
+                                                      viewThemeUtils,
+                                                      file.isEncrypted());
+        linkShareeListAdapter.setHasStableIds(true);
 
-        // external shares
-        externalShareeListAdapter = new ShareeListAdapter(fileActivity,
-                                                          new ArrayList<>(),
-                                                          this,
-                                                          userId,
-                                                          user,
-                                                          viewThemeUtils,
-                                                          file.isEncrypted(),
-                                                          SharesType.EXTERNAL);
-        externalShareeListAdapter.setHasStableIds(true);
-        binding.sharesListExternal.setAdapter(externalShareeListAdapter);
-        binding.sharesListExternal.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.linkSharesList.setAdapter(linkShareeListAdapter);
+
+        binding.linkSharesList.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        // internal and external shares
+        emailShareeListAdapter = new ShareeListAdapter(fileActivity,
+                                                       new ArrayList<>(),
+                                                       this,
+                                                       userId,
+                                                       user,
+                                                       viewThemeUtils,
+                                                       file.isEncrypted());
+        emailShareeListAdapter.setHasStableIds(true);
+
+        binding.sharesList.setAdapter(emailShareeListAdapter);
+
+        binding.sharesList.setLayoutManager(new LinearLayoutManager(requireContext()));
+
         binding.pickContactEmailBtn.setOnClickListener(v -> checkContactPermission());
+
+        binding.shareCreateNewLink.setOnClickListener(v -> createPublicShareLink());
+
+        // remove focus from search view on click of root view
+        binding.shareContainer.setOnClickListener(v -> binding.searchView.clearFocus());
+
+        // enable-disable scrollview scrolling
+        binding.fileDetailsNestedScrollView.setOnTouchListener((view1, motionEvent) -> {
+            // true means disable the scrolling and false means enable the scrolling
+            return com.nmc.android.utils.DisplayUtils.isLandscapeOrientation() && isSearchViewFocused;
+        });
 
         // start loading process
         fetchSharees();
@@ -305,147 +324,136 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         searchConfig.reset();
     }
 
-    private void resetSearchView() {
-        toggleSearchViewEnable(binding.searchView, true);
-        binding.searchView.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-        binding.searchView.setQueryHint(null);
-        binding.searchView.setQuery("", false);
-        binding.pickContactEmailBtn.setVisibility(View.VISIBLE);
+    private void setupView() {
+        setShareWithYou();
     }
 
-    private void setupView() {
-        resetSearchView();
-        setShareWithYou();
-
-        OCFile parentFile = fileDataStorageManager.getFileById(file.getParentId());
-
+    private void setUpSearchView() {
         FileDetailSharingFragmentHelper.setupSearchView(
             (SearchManager) fileActivity.getSystemService(Context.SEARCH_SERVICE),
             binding.searchView,
             fileActivity.getComponentName());
-        viewThemeUtils.material.themeSearchCardView(binding.searchCardWrapper);
-        viewThemeUtils.files.themeContentSearchView(binding.searchView);
-        viewThemeUtils.platform.colorImageView(binding.searchViewIcon, ColorRole.ON_SURFACE_VARIANT);
-        viewThemeUtils.platform.colorImageView(binding.pickContactEmailBtn, ColorRole.ON_SURFACE_VARIANT);
 
-        viewThemeUtils.material.colorMaterialButtonPrimaryOutlined(binding.sendCopyBtn);
+        SearchViewThemeUtils.INSTANCE.themeSearchView(requireContext(), binding.searchView);
 
-        viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(binding.sharesListInternalShowAll);
-        viewThemeUtils.material.colorMaterialTextButton(binding.sharesListInternalShowAll);
-        binding.sharesListInternalShowAll.setOnClickListener(view -> {
-            internalShareeListAdapter.toggleShowAll();
-            int textRes = internalShareeListAdapter.isShowAll() ? R.string.show_less : R.string.show_all;
-            binding.sharesListInternalShowAll.setText(textRes);
+        binding.searchView.setQueryHint(getResources().getString(R.string.share_search));
+        binding.searchView.setVisibility(View.VISIBLE);
+        binding.pickContactEmailBtn.setVisibility(View.VISIBLE);
+
+        binding.searchView.setOnQueryTextFocusChangeListener((view, hasFocus) -> {
+            isSearchViewFocused = hasFocus;
+            scrollToSearchViewPosition(false);
         });
 
-        viewThemeUtils.material.colorMaterialButtonPrimaryOutlined(binding.createLink);
+    }
 
-        viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(binding.sharesListExternalShowAll);
-        viewThemeUtils.material.colorMaterialTextButton(binding.sharesListExternalShowAll);
-        binding.sharesListExternalShowAll.setOnClickListener(view -> {
-            externalShareeListAdapter.toggleShowAll();
-            int textRes = externalShareeListAdapter.isShowAll() ? R.string.show_less : R.string.show_all;
-            binding.sharesListExternalShowAll.setText(textRes);
-        });
-
-        if (file.canReshare() && !FileDetailSharingFragmentHelper.isPublicShareDisabled(capabilities)) {
-            if (file.isEncrypted() || (parentFile != null && parentFile.isEncrypted())) {
-               binding.internalShareHeadline.setText(getResources().getString(R.string.internal_share_headline_end_to_end_encrypted));
-               binding.internalShareDescription.setVisibility(View.VISIBLE);
-               binding.externalSharesHeadline.setText(getResources().getString(R.string.create_end_to_end_encrypted_share_title));
-
-               fetchE2EECounter(() -> {
-                   if (binding == null) {
+    /**
+     * @param isDeviceRotated true when user rotated the device and false when user is already in landscape mode
+     */
+    private void scrollToSearchViewPosition(boolean isDeviceRotated) {
+        if (com.nmc.android.utils.DisplayUtils.isLandscapeOrientation()) {
+            if (isSearchViewFocused) {
+                binding.fileDetailsNestedScrollView.post(() -> {
+                    //ignore the warning because there can be case that the scrollview can be null
+                    if (binding.fileDetailsNestedScrollView == null) {
                         return;
-                   }
+                    }
 
-                   if (file.getE2eCounter() == -1) {
-                       // V1 cannot share
-                       binding.searchContainer.setVisibility(View.GONE);
-                       binding.createLink.setVisibility(View.GONE);
-                   } else {
-                       binding.createLink.setText(R.string.add_new_secure_file_drop);
-                       binding.searchView.setQueryHint(getResources().getString(R.string.secure_share_search));
+                    //need to hide app bar to have more space in landscape mode while search view is focused
+                    hideAppBar();
 
-                       if (file.isSharedViaLink()) {
-                           binding.searchView.setQueryHint(getResources().getString(R.string.share_not_allowed_when_file_drop));
-                           binding.searchView.setInputType(InputType.TYPE_NULL);
-                           toggleSearchViewEnable(binding.searchView, false);
-                       }
-                   }
-               });
+                    //send the event to hide the share top view to have more space
+                    //need to use this here else white view will be visible for sometime
+                    EventBus.getDefault().post(new ShareSearchViewFocusEvent(isSearchViewFocused));
+
+                    if (isDeviceRotated) {
+                        // during the rotation we need to use getTop() method for proper alignment of search view
+                        // -25 just to avoid blank space at top
+                        binding.fileDetailsNestedScrollView.smoothScrollTo(0, binding.searchView.getTop() - 20);
+                    } else {
+                        // when user is already in landscape mode and search view gets focus
+                        // we need to user getBottom() method for proper alignment of search view
+                        // -100 just to avoid blank space at top
+                        binding.fileDetailsNestedScrollView.smoothScrollTo(0, binding.searchView.getBottom() - 100);
+                    }
+                });
             } else {
-                binding.createLink.setText(R.string.create_link);
-                binding.searchView.setQueryHint(getResources().getString(R.string.share_search_internal));
+                //send the event to show the share top view again
+                EventBus.getDefault().post(new ShareSearchViewFocusEvent(isSearchViewFocused));
             }
-
-            binding.createLink.setOnClickListener(v -> createPublicShareLink());
-            
         } else {
-            binding.searchView.setQueryHint(getResources().getString(R.string.resharing_is_not_allowed));
-            binding.createLink.setVisibility(View.GONE);
-            binding.externalSharesHeadline.setVisibility(View.GONE);
-            binding.searchView.setInputType(InputType.TYPE_NULL);
-            binding.pickContactEmailBtn.setVisibility(View.GONE);
-            toggleSearchViewEnable(binding.searchView, false);
-            binding.createLink.setOnClickListener(null);
+            //in portrait mode we need to see the layout everytime
+            //send the event to show the share top view
+            EventBus.getDefault().post(new ShareSearchViewFocusEvent(false));
         }
-
-        checkShareViaUser();
-
-        if (file.isFolder()) {
-            binding.sendCopyBtn.setVisibility(View.GONE);
-        }
-            binding.sendCopyBtn.setOnClickListener(v ->
-                                                       startActivity(Intent.createChooser(IntentUtil.createSendIntent(requireContext(), file), 
-                                                                                          requireContext().getString(R.string.activity_chooser_send_file_title)))
-                                                  );
     }
 
-    private void fetchE2EECounter(Runnable onComplete) {
-        final Context context = requireContext();
+    private void hideAppBar() {
+        if (requireActivity() instanceof FileDisplayActivity) {
+            AppBarLayout appBarLayout = requireActivity().findViewById(R.id.appbar);
 
-        new Thread(() -> {
-            try {
-                OwnCloudClient client = clientFactory.create(user);
-                Object metadata = RefreshFolderOperation.getDecryptedFolderMetadata(true, file, client, user, context);
-                if (metadata instanceof DecryptedFolderMetadataFile decryptedMetadata) {
-                    file.setE2eCounter(decryptedMetadata.getMetadata().getCounter());
-                    fileDataStorageManager.saveFile(file);
-                }
-            } catch (Exception e) {
-                Log_OC.e(TAG, "Error refreshing E2E counter: " + e.getMessage());
+            if (appBarLayout != null) {
+                appBarLayout.setExpanded(false, true);
             }
-
-            final var activity = getActivity();
-            if (activity != null) {
-                activity.runOnUiThread(onComplete);
-            }
-        }).start();
-    }
-
-    private void checkShareViaUser() {
-        if (!MDMConfig.INSTANCE.shareViaUser(requireContext())) {
-            binding.searchContainer.setVisibility(View.GONE);
         }
     }
 
-    private void toggleSearchViewEnable(View view, boolean enable) {
-        view.setEnabled(enable);
+    private void disableSearchView(View view) {
+        view.setEnabled(false);
+
         if (view instanceof ViewGroup viewGroup) {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                toggleSearchViewEnable(viewGroup.getChildAt(i), enable);
+                disableSearchView(viewGroup.getChildAt(i));
             }
         }
+    }
+
+    /**
+     * will be called from FileActivity when user is sharing from PreviewImageFragment
+     *
+     * @param shareeName
+     * @param shareType
+     */
+    public void initiateSharingProcess(String shareeName, ShareType shareType, boolean secureShare) {
+        requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.share_fragment_container,
+                                                                                 FileDetailsSharingProcessFragment.newInstance(file,
+                                                                                                                               shareeName,
+                                                                                                                               shareType,
+                                                                                                                               secureShare,
+                                                                                                                               SharePermissionManager.canEditFile(user, capabilities, file, editorUtils)),
+                                                                                 FileDetailsSharingProcessFragment.TAG)
+            .addToBackStack(null)
+            .commit();
+    }
+
+    /**
+     * open the new sharing screen process to modify the created share this will be called from PreviewImageFragment
+     *
+     * @param share
+     * @param screenTypePermission
+     * @param isReshareShown
+     */
+    public void editExistingShare(OCShare share, int screenTypePermission, boolean isReshareShown) {
+        requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.share_fragment_container,
+                                                                                 FileDetailsSharingProcessFragment.newInstance(share, screenTypePermission, isReshareShown,
+                                                                                                                               SharePermissionManager.canEditFile(user, capabilities, file, editorUtils)),
+                                                                                 FileDetailsSharingProcessFragment.TAG)
+            .addToBackStack(null)
+            .commit();
     }
 
     private void setShareWithYou() {
+        setUpSearchView();
         if (accountManager.userOwnsFile(file, user)) {
-            binding.sharedWithYouContainer.setVisibility(View.GONE);
+            binding.tvResharingInfo.setVisibility(View.GONE);
+            binding.tvResharingStatus.setVisibility(View.GONE);
         } else {
-            binding.sharedWithYouUsername.setText(
-                String.format(getString(R.string.shared_with_you_by), file.getOwnerDisplayName()));
-            DisplayUtils.setAvatar(user,
+            binding.tvResharingInfo.setText(
+                DisplayUtils.createTextWithSpan(
+                    String.format(getString(R.string.resharing_user_info), file.getOwnerDisplayName()),
+                    file.getOwnerDisplayName(),
+                    new StyleSpan(Typeface.BOLD)));
+          /*  DisplayUtils.setAvatar(user,
                                    file.getOwnerId(),
                                    this,
                                    getResources().getDimension(
@@ -453,16 +461,27 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
                                    getResources(),
                                    binding.sharedWithYouAvatar,
                                    getContext());
-            binding.sharedWithYouAvatar.setVisibility(View.VISIBLE);
+            binding.sharedWithYouAvatar.setVisibility(View.VISIBLE);*/
 
-            String note = file.getNote();
-
-            if (!TextUtils.isEmpty(note)) {
-                binding.sharedWithYouNote.setText(file.getNote());
-                binding.sharedWithYouNoteContainer.setVisibility(View.VISIBLE);
+            if (file.canReshare()) {
+                binding.tvResharingStatus.setText(getResources().getString(R.string.reshare_allowed));
             } else {
-                binding.sharedWithYouNoteContainer.setVisibility(View.GONE);
+                binding.orSectionLayout.setVisibility(View.GONE);
+                binding.linkShareSectionHeading.setVisibility(View.GONE);
+                binding.linkSharesList.setVisibility(View.GONE);
+                binding.shareCreateNewLink.setVisibility(View.GONE);
+
+                binding.sharedWithDivider.setVisibility(View.GONE);
+                binding.tvYourShares.setVisibility(View.GONE);
+                binding.sharesList.setVisibility(View.GONE);
+                binding.tvEmptyShares.setVisibility(View.GONE);
+
+                binding.tvResharingStatus.setText(getResources().getString(R.string.reshare_not_allowed));
+
+                disableSearchView(binding.searchContainer);
             }
+            binding.tvResharingStatus.setVisibility(View.VISIBLE);
+            binding.tvResharingInfo.setVisibility(View.VISIBLE);
         }
     }
 
@@ -522,6 +541,8 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
             } else {
                 ClipboardUtil.copyToClipboard(requireActivity(), share.getShareLink());
             }
+            // NMC: send link after copying it to clipboard
+            sendLink(share);
         }
     }
 
@@ -562,8 +583,8 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     }
 
     /**
-     * Updates the UI after the result of an update operation on the edited {@link OCFile}. Keeps the current {@link
-     * OCFile held by this fragment}.
+     * Updates the UI after the result of an update operation on the edited {@link OCFile}. Keeps the current
+     * {@link OCFile held by this fragment}.
      *
      * @param result {@link RemoteOperationResult} of an update on the edited {@link OCFile} sharing information.
      * @see #onUpdateShareInformation(RemoteOperationResult, OCFile)
@@ -643,49 +664,63 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
             file = newFile;
         }
 
-        if (internalShareeListAdapter == null) {
-            DisplayUtils.showSnackMessage(this, R.string.could_not_retrieve_shares);
+        if (emailShareeListAdapter == null) {
+            final var view = getView();
+            if (view != null) {
+                DisplayUtils.showSnackMessage(view, getString(R.string.could_not_retrieve_shares));
+            }
             return;
         }
+        emailShareeListAdapter.removeAll();
 
-        internalShareeListAdapter.removeAll();
+        /*//update flag in adapter
+        adapter.setTextFile(SharePermissionManager.canEditFile(user,
+                                                          capabilities, file, editorUtils));*/
 
         // to show share with users/groups info
         List<OCShare> shares = fileDataStorageManager.getSharesWithForAFile(file.getRemotePath(),
                                                                             user.getAccountName());
 
-        List<OCShare> internalShares = new ArrayList<>();
-        List<OCShare> externalShares = new ArrayList<>();
+        emailShareeListAdapter.addShares(shares);
 
-        for (OCShare share : shares) {
-            if (share.getShareType() != null) {
-                switch (share.getShareType()) {
-                    case PUBLIC_LINK:
-                    case FEDERATED_GROUP:
-                    case FEDERATED:
-                    case EMAIL:
-                        externalShares.add(share);
-                        break;
+        showHideEmailShareView(shares.isEmpty());
 
-                    default:
-                        internalShares.add(share);
-                        break;
-                }
-            }
+        if (FileDetailSharingFragmentHelper.isPublicShareDisabled(capabilities) || !file.canReshare()) {
+            return;
         }
-        
-        internalShareeListAdapter.addShares(internalShares);
-        ViewExtensionsKt.setVisibleIf(binding.sharesListInternalShowAll, internalShareeListAdapter.shares.size() > 3);
 
-        addExternalAndPublicShares(externalShares);
-        ViewExtensionsKt.setVisibleIf(binding.sharesListExternalShowAll, externalShareeListAdapter.shares.size() > 3);
+        if (linkShareeListAdapter == null) {
+            DisplayUtils.showSnackMessage(getView(), getString(R.string.could_not_retrieve_shares));
+            return;
+        }
+        linkShareeListAdapter.removeAll();
+
+        /*//update flag in adapter
+        linkAdapter.setTextFile(SharePermissionManager.canEditFile(user,
+                                                                   capabilities, file, editorUtils));*/
+
+        // Get public share
+        List<OCShare> publicShares = fileDataStorageManager.getSharesByPathAndType(file.getRemotePath(),
+                                                                                   ShareType.PUBLIC_LINK,
+                                                                                   "");
+
+        linkShareeListAdapter.addShares(publicShares);
+
+        showHideLinkShareView(publicShares == null || publicShares.isEmpty());
     }
 
-    private void addExternalAndPublicShares(List<OCShare> externalShares) {
-        final var publicShares = fileDataStorageManager.getSharesByPathAndType(file.getRemotePath(), ShareType.PUBLIC_LINK, "");
-        externalShareeListAdapter.removeAll();
-        final var shares = OCShareExtensionsKt.mergeDistinctByToken(externalShares, publicShares);
-        externalShareeListAdapter.addShares(shares);
+    private void showHideLinkShareView(boolean isEmptyList) {
+        binding.linkSharesList.setVisibility(isEmptyList ? View.GONE : View.VISIBLE);
+    }
+
+    private void showHideEmailShareView(boolean isEmptyList) {
+        binding.sharesList.setVisibility(isEmptyList ? View.GONE : View.VISIBLE);
+        // additional check to hide the empty shares if file cannot be shared
+        if (!file.canReshare()) {
+            binding.tvEmptyShares.setVisibility(View.GONE);
+            return;
+        }
+        binding.tvEmptyShares.setVisibility(isEmptyList ? View.VISIBLE : View.GONE);
     }
 
     private void checkContactPermission() {
@@ -752,10 +787,11 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
     @Override
     public void avatarGenerated(Drawable avatarDrawable, Object callContext) {
-        if (binding == null) {
+        // NMC: not required
+        /*if (binding == null) {
             return;
         }
-        binding.sharedWithYouAvatar.setImageDrawable(avatarDrawable);
+        binding.sharedWithYouAvatar.setImageDrawable(avatarDrawable);*/
     }
 
     @Override
@@ -772,6 +808,11 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     public void search(String query) {
         SearchView searchView = requireView().findViewById(R.id.searchView);
         searchView.setQuery(query, true);
+    }
+
+    @Override
+    public void openIn(OCShare share) {
+        fileOperationsHelper.sendShareFile(file, true);
     }
 
     @Override
@@ -794,16 +835,16 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
 
         FileEntity entity = fileDataStorageManager.getFileEntity(file);
 
-        if (binding.sharesListInternal.getAdapter() instanceof ShareeListAdapter adapter) {
-            adapter.remove(share);
-            if (entity != null && adapter.isAdapterEmpty()) {
-                entity.setSharedWithSharee(0);
-                fileDataStorageManager.updateFileEntity(entity);
-            }
-        } else if (binding.sharesListExternal.getAdapter() instanceof ShareeListAdapter adapter) {
+        if (binding.linkSharesList.getAdapter() instanceof ShareeListAdapter adapter) {
             adapter.remove(share);
             if (entity != null && adapter.isAdapterEmpty()) {
                 entity.setSharedViaLink(0);
+                fileDataStorageManager.updateFileEntity(entity);
+            }
+        } else if (binding.sharesList.getAdapter() instanceof ShareeListAdapter adapter) {
+            adapter.remove(share);
+            if (entity != null && adapter.isAdapterEmpty()) {
+                entity.setSharedWithSharee(0);
                 fileDataStorageManager.updateFileEntity(entity);
             }
         } else {
@@ -820,11 +861,6 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         }
     }
 
-    @Override
-    public void addAnotherLink(OCShare share) {
-        createPublicShareLink();
-    }
-
     private void modifyExistingShare(OCShare share, int screenTypePermission) {
         onEditShareListener.editExistingShare(share, screenTypePermission, !isReshareForbidden(share));
     }
@@ -832,11 +868,6 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
     @Override
     public void onQuickPermissionChanged(OCShare share, int permission) {
         fileOperationsHelper.setPermissionsToShare(share, permission);
-    }
-
-    @Override
-    public void openShareDetailWithCustomPermissions(OCShare share) {
-        modifyExistingShare(share, FileDetailsSharingProcessFragment.SCREEN_TYPE_PERMISSION_WITH_CUSTOM_PERMISSION);
     }
 
     //launcher for contact permission
@@ -875,5 +906,16 @@ public class FileDetailSharingFragment extends Fragment implements ShareeListAda
         void editExistingShare(OCShare share, int screenTypePermission, boolean isReshareShown);
 
         void onShareProcessClosed();
+
+        void onLinkShareDownloadLimitFetched(long downloadLimit, long downloadCount);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        //when user is in portrait mode and search view is focused and keyboard is open
+        //so when user rotate the device we have to fix the search view properly in landscape mode
+        scrollToSearchViewPosition(true);
     }
 }
