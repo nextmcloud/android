@@ -82,3 +82,7 @@ private fun transformToRows(list: List<OCFile>, columns: Int, defaultSize: Int):
         .chunked(columns)
         .map { chunk -> GalleryRow(chunk, defaultSize, defaultSize) }
 }
+
+// NMC method to filter only folders with/without e2ee folders
+fun List<OCFile>.filterByFolder(hideEncryptedFolder: Boolean = false): List<OCFile> =
+    filter { it.isFolder && (!hideEncryptedFolder || !it.isEncrypted) }
