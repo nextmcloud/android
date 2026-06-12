@@ -89,6 +89,7 @@ import com.nextcloud.utils.view.FastScrollUtils
 import com.nmc.android.scans.SaveScannedDocumentFragment
 import com.nmc.android.utils.KeyboardUtils
 import com.nmc.android.utils.SearchViewThemeUtils
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FilesBinding
@@ -377,7 +378,8 @@ class FileDisplayActivity :
                     ) { dialog: DialogInterface?, which: Int -> dialog?.dismiss() }
                     .setIcon(R.drawable.ic_settings)
 
-                viewThemeUtils.dialog.colorMaterialAlertDialogBackground(applicationContext, builder)
+                // NMC customization: customize dialog bg color
+                DialogThemeUtils.colorMaterialAlertDialogBackground(applicationContext, builder)
 
                 builder.create().show()
             } catch (e: BadTokenException) {
@@ -3109,7 +3111,8 @@ class FileDisplayActivity :
                 showLoadingDialog(getString(R.string.retrieving_file))
             }
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(applicationContext, builder)
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.colorMaterialAlertDialogBackground(applicationContext, builder)
 
         val dialog = builder.create()
         dismissLoadingDialog()
