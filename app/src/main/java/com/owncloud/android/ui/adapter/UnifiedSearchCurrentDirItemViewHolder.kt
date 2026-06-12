@@ -60,6 +60,7 @@ class UnifiedSearchCurrentDirItemViewHolder(
             appPreferences,
             viewThemeUtils,
             overlayManager,
+            false,
             false
         )
 
