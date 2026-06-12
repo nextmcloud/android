@@ -11,7 +11,6 @@ import android.content.Context
 import android.content.res.Resources
 import com.nextcloud.client.account.AnonymousUser
 import com.nextcloud.client.account.User
-import com.owncloud.android.datamodel.SharesType
 import com.owncloud.android.lib.resources.shares.OCShare
 import com.owncloud.android.lib.resources.shares.ShareType
 import com.owncloud.android.ui.activity.FileActivity
@@ -85,8 +84,7 @@ class ShareeListAdapterTest {
             user.accountName,
             user,
             viewThemeUtils,
-            false,
-            SharesType.INTERNAL
+            false
         )
         sut.sortShares()
 
