@@ -180,7 +180,20 @@ class NotificationListAdapter(
                 buildButton(transparent = true, label = fragment.getString(R.string.more), params = params) {
                     showOverflowMenu(it, overflowActions, holder, notification)
                 }
-            viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(moreButton)
+            // NMC Customization
+            moreButton.setBackgroundColor(
+                ResourcesCompat.getColor(
+                    fragment.resources,
+                    android.R.color.transparent,
+                    null
+                )
+            )
+            moreButton.setTextColor(
+                ResourcesCompat.getColor(
+                    fragment.resources,
+                    R.color.shared_with_me_color, null
+                )
+            )
             holder.binding.buttons.addView(moreButton)
         } else {
             for (action in actions) {
@@ -188,9 +201,34 @@ class NotificationListAdapter(
                     onActionClicked(holder, action, notification)
                 }
                 if (action.primary) {
-                    viewThemeUtils.material.colorMaterialButtonPrimaryFilled(button)
+                    // NMC Customization
+                    button.setBackgroundColor(
+                        ResourcesCompat.getColor(
+                            fragment.resources,
+                            R.color.shared_with_me_color, null
+                        )
+                    )
+                    button.setTextColor(
+                        ResourcesCompat.getColor(
+                            fragment.resources,
+                            R.color.white, null
+                        )
+                    )
                 } else {
-                    viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(button)
+                    // NMC Customization
+                    button.setBackgroundColor(
+                        ResourcesCompat.getColor(
+                            fragment.resources,
+                            android.R.color.transparent,
+                            null
+                        )
+                    )
+                    button.setTextColor(
+                        ResourcesCompat.getColor(
+                            fragment.resources,
+                            R.color.shared_with_me_color, null
+                        )
+                    )
                 }
                 holder.binding.buttons.addView(button)
             }
@@ -206,7 +244,19 @@ class NotificationListAdapter(
         val button = buildButton(transparent = false, label = action.label, params = params) {
             onActionClicked(holder, action, notification)
         }
-        viewThemeUtils.material.colorMaterialButtonPrimaryFilled(button)
+        // NMC Customization
+        button.setBackgroundColor(
+            ResourcesCompat.getColor(
+                fragment.resources,
+                R.color.shared_with_me_color, null
+            )
+        )
+        button.setTextColor(
+            ResourcesCompat.getColor(
+                fragment.resources,
+                R.color.white, null
+            )
+        )
         holder.binding.buttons.addView(button)
     }
 
