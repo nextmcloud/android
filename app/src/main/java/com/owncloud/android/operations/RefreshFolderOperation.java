@@ -543,7 +543,8 @@ public class RefreshFolderOperation extends RemoteOperation {
 
         if (E2EVersionHelper.INSTANCE.isV2Plus(capability)) {
             if (encryptedAncestor && object == null) {
-                throw new IllegalStateException("metadata is null!");
+                Log_OC.d(TAG,"metadata is null!");
+                return;
             }
         }
 
