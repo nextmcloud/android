@@ -165,7 +165,7 @@ class NotificationsFragment :
             emptyListIcon.visibility = View.VISIBLE
 
             emptyListViewHeadline.text = headline
-            emptyListIcon.setImageResource(R.drawable.ic_notification)
+            emptyListIcon.setImageResource(R.drawable.ic_list_empty_notification)
             emptyListViewText.apply {
                 text = message ?: ""
                 visibility = if (message.isNullOrEmpty()) View.GONE else View.VISIBLE
@@ -213,7 +213,7 @@ class NotificationsFragment :
 
     private fun setupContent(client: NextcloudClient) {
         binding?.run {
-            emptyList.emptyListIcon.setImageResource(R.drawable.ic_notification)
+            emptyList.emptyListIcon.setImageResource(R.drawable.ic_list_empty_notification)
             list.layoutManager = LinearLayoutManager(requireContext())
             fetchAndSetData(client)
         }
