@@ -211,6 +211,12 @@ class GalleryAdapter(
     }
 
     @SuppressLint("NotifyDataSetChanged")
+    fun showAlbumItems(albumItems: List<OCFile>) {
+        files = albumItems.toGalleryItems(columns, defaultThumbnailSize)
+        notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     fun clear() {
         files = emptyList()
         notifyDataSetChanged()
@@ -252,6 +258,10 @@ class GalleryAdapter(
         if (position >= 0) {
             notifyItemChanged(position)
         }
+    }
+
+    fun setCheckedItem(files: Set<OCFile>?) {
+        ocFileListDelegate.setCheckedItem(files)
     }
 
     /**

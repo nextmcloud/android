@@ -12,5 +12,5 @@ package com.owncloud.android.datamodel;
  * Type for virtual folders
  */
 public enum VirtualFolderType {
-    FAVORITE, GALLERY, NONE
+    FAVORITE, GALLERY, ALBUM, NONE
 }
