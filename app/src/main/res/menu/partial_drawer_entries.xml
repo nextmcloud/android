@@ -34,6 +34,11 @@
             android:orderInCategory="0"
             android:title="@string/drawer_item_favorites" />
         <item
+            android:id="@+id/nav_album"
+            android:icon="@drawable/nav_albums"
+            android:orderInCategory="0"
+            android:title="@string/drawer_item_album" />
+        <item
             android:id="@+id/nav_shared"
             android:orderInCategory="0"
             android:icon="@drawable/selector_share"
