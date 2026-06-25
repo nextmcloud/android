@@ -23,6 +23,7 @@ import com.owncloud.android.databinding.ShareActivityBinding
 import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.datamodel.SyncedFolderObserver
 import com.owncloud.android.datamodel.SyncedFolderProvider
+import com.owncloud.android.datamodel.ThumbnailsCacheManager.ThumbnailGenerationTask
 import com.owncloud.android.lib.common.operations.RemoteOperation
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.common.utils.Log_OC
@@ -144,13 +145,14 @@ class ShareActivity :
                 binding.shareFileIcon,
                 user,
                 storageManager,
-                mutableListOf(),
+                mutableListOf<ThumbnailGenerationTask>(),
                 false,
                 this,
                 null,
                 preferences,
                 viewThemeUtils,
-                overlayManager
+                overlayManager,
+                false
             )
         }
     }
