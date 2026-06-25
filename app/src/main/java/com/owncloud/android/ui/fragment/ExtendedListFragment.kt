@@ -57,6 +57,7 @@ import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.client.preferences.AppPreferencesImpl
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.nextcloud.utils.extensions.mainThread
+import com.nmc.android.utils.SearchViewThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ListFragmentBinding
@@ -165,7 +166,8 @@ open class ExtendedListFragment :
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         val item = menu.findItem(R.id.action_search)
         searchView = item.actionView as SearchView?
-        viewThemeUtils.androidx.themeToolbarSearchView(searchView!!)
+        // NMC customization
+        SearchViewThemeUtils.themeSearchView(requireActivity(), searchView!!)
         closeButton = searchView?.findViewById(androidx.appcompat.R.id.search_close_btn)
         searchView?.setOnQueryTextListener(this)
         searchView?.setOnCloseListener(this)
