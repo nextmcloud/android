@@ -613,7 +613,8 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         Collections.reverse(sharees);
 
         final var sharedAvatars = holder.getSharedAvatars();
-        sharedAvatars.setVisibility(View.VISIBLE);
+        // NMC: visibility gone as view not required
+        sharedAvatars.setVisibility(View.GONE);
         sharedAvatars.removeAllViews();
         sharedAvatars.setAvatars(user, sharees, viewThemeUtils);
         sharedAvatars.setOnClickListener(view -> ocFileListFragmentInterface.onShareIconClick(file));
