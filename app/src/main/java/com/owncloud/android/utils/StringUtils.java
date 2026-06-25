@@ -13,6 +13,8 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 
 import java.util.Locale;
+import android.graphics.Typeface;
+import android.text.style.StyleSpan;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,5 +85,20 @@ public final class StringUtils {
             return s.substring(prefix.length());
         }
         return s;
+    }
+
+    /**
+     * make the passed text bold
+     *
+     * @param fullText   actual text
+     * @param textToBold to be bold
+     * @return
+     */
+    public static Spannable makeTextBold(String fullText, String textToBold) {
+        Spannable spannable = new SpannableString(fullText);
+        int indexStart = fullText.indexOf(textToBold);
+        int indexEnd = indexStart + textToBold.length();
+        spannable.setSpan(new StyleSpan(Typeface.BOLD), indexStart, indexEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannable;
     }
 }
