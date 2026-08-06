@@ -88,8 +88,9 @@ class LogsEmailSender(private val context: Context, private val clock: Clock, pr
     }
 
     private fun export(file: File) {
+        // NMC-5896 fix
         FileExportUtils().exportFile(
-            "Nextcloud Android Files Logs",
+            "MagentaCloud Android Files Logs",
             "text/plain",
             context.contentResolver,
             null,
