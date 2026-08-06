@@ -604,7 +604,8 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return;
         }
 
-        sharedAvatars.setVisibility(View.VISIBLE);
+        // visibility gone as view not required for NMC
+        sharedAvatars.setVisibility(View.GONE);
         if (sharedAvatars.getChildCount() > 0) {
             sharedAvatars.removeAllViews();
         }
