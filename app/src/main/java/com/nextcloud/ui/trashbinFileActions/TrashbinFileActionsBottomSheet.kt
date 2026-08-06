@@ -134,6 +134,7 @@ class TrashbinFileActionsBottomSheet :
                 syncedFolderProvider.preferences,
                 viewThemeUtils,
                 overlayManager,
+                false,
                 false
             )
         }
