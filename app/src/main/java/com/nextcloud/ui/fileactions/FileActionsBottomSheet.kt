@@ -231,7 +231,7 @@ class FileActionsBottomSheet :
         }
 
         // add client integration
-        endpoints?.forEach {
+        /* endpoints?.forEach {
             val view = clientIntegration.inflateClientIntegrationActionView(
                 it,
                 layoutInflater,
@@ -240,7 +240,7 @@ class FileActionsBottomSheet :
                 viewThemeUtils
             )
             binding.fileActionsList.addView(view)
-        }
+        } */
     }
 
     private fun displayTitle(titleFile: OCFile?) {
