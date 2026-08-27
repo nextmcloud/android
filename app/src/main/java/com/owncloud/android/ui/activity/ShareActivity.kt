@@ -131,7 +131,6 @@ class ShareActivity :
         setupFileIcon(binding, file, user)
         with(binding) {
             shareFileName.text = getString(R.string.share_file, file.fileName)
-            viewThemeUtils.platform.colorViewBackground(shareHeaderDivider)
             shareFileSize.text = DisplayUtils.bytesToHumanReadable(file.fileLength)
         }
     }
