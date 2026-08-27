@@ -793,8 +793,8 @@ public class ReceiveExternalFilesActivity extends FileActivity
         List<OCFile> files = getStorageManager().getFolderContent(mFile, false);
 
         if (files.isEmpty()) {
-            setMessageForEmptyList(R.string.file_list_empty_headline, R.string.empty,
-                                   R.drawable.uploads);
+            setMessageForEmptyList(R.string.folder_list_empty_headline, R.string.empty,
+                                   R.drawable.ic_list_empty_uploads);
             mEmptyListContainer.setVisibility(View.VISIBLE);
             binding.list.setVisibility(View.GONE);
         } else {
@@ -852,7 +852,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
             if (mEmptyListContainer != null && mEmptyListMessage != null) {
                 mEmptyListHeadline.setText(headline);
                 mEmptyListMessage.setText(message);
-                mEmptyListIcon.setImageDrawable(viewThemeUtils.platform.tintPrimaryDrawable(this, icon));
+                mEmptyListIcon.setImageResource(icon);
                 mEmptyListIcon.setVisibility(View.VISIBLE);
                 mEmptyListMessage.setVisibility(View.VISIBLE);
             }
