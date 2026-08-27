@@ -161,6 +161,7 @@ class FileActionsBottomSheet :
                 syncedFolderProvider.preferences,
                 viewThemeUtils,
                 overlayManager,
+                false,
                 false
             )
         }

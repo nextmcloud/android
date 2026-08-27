@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2025 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<resources>
+    <dimen name="album_list_image_width">78dp</dimen>
+    <dimen name="album_list_image_height">56dp</dimen>
+    <dimen name="album_grid_image_height">140dp</dimen>
+    <dimen name="album_grid_image_corner_radius">8dp</dimen>
+    <dimen name="album_list_image_corner_radius">4dp</dimen>
+    <dimen name="album_grid_spacing">4dp</dimen>
+    <dimen name="album_recycler_view_grid_padding">8dp</dimen>
+</resources>
