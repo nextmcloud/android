@@ -101,6 +101,7 @@
         android:contentDescription="@string/overflow_menu"
         app:icon="@drawable/ic_dots_vertical"
         app:iconGravity="textStart"
-        app:iconTint="@color/secondary_text_color" />
+        app:iconTint="@color/secondary_text_color"
+        app:tint="@color/list_icon_color" />
 
 </LinearLayout>

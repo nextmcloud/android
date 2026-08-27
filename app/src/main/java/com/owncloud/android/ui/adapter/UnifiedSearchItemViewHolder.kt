@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.afollestad.sectionedrecyclerview.SectionedViewHolder
 import com.bumptech.glide.Glide
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.account.User
 import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.common.NextcloudClient
@@ -98,11 +97,8 @@ class UnifiedSearchItemViewHolder(
     }
 
     private fun bindFolderThumbnail(file: OCFile) {
-        binding.thumbnail.apply {
-            setImageDrawable(ContextCompat.getDrawable(context, R.drawable.folder))
-            viewThemeUtils.platform.colorImageView(this, ColorRole.PRIMARY)
-        }
-        overlayManager.setFolderOverlayIcon(file, binding.thumbnailOverlayIcon)
+        // NMC Customization: No overlay is required
+        overlayManager.setFolderThumbnail(file, binding.thumbnail, null)
     }
 
     private fun bindLocalFileThumbnail(file: OCFile) {
@@ -134,7 +130,6 @@ class UnifiedSearchItemViewHolder(
     private fun bindRemoteThumbnail(entry: SearchResultEntry, entryType: SearchResultEntryType) {
         binding.thumbnail.apply {
             setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_find_in_page))
-            viewThemeUtils.platform.colorImageView(this, ColorRole.SECONDARY)
         }
 
         if (entry.thumbnailUrl.isNotBlank()) {
