@@ -59,7 +59,9 @@ class UnifiedSearchCurrentDirItemViewHolder(
             binding.thumbnailShimmer,
             appPreferences,
             viewThemeUtils,
-            overlayManager
+            overlayManager,
+            false,
+            false
         )
 
         binding.more.setOnClickListener {
