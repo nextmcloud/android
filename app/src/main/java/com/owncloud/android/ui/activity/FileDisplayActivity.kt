@@ -87,6 +87,7 @@ import com.nextcloud.utils.extensions.observeWorker
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.nextcloud.utils.fileNameValidator.FileNameValidator.checkFolderPath
 import com.nextcloud.utils.view.FastScrollUtils
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.authentication.PassCodeManager
@@ -304,6 +305,15 @@ class FileDisplayActivity :
         startMetadataSyncForRoot()
         handleBackPress()
         setupDrawer(menuItemId)
+
+        // NMC: handle custom action callback for notifications
+        MoEngageSdkUtils.handleCustomActionCallback(object : MoEngageSdkUtils.OnHandleCustomActionCallback {
+            override fun handleAction(actionType: MoEngageSdkUtils.CustomActionType) {
+                if (actionType == MoEngageSdkUtils.CustomActionType.RATING) {
+                    inAppReviewHelper.performNativeReview(this@FileDisplayActivity)
+                }
+            }
+        })
     }
 
     /**
@@ -406,6 +416,9 @@ class FileDisplayActivity :
                 }
             }
         }
+
+        // NMC: Notify MoEngage about Config Changes for In-App Notifications
+        MoEngageSdkUtils.handleConfigChangesForInAppNotification()
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -499,9 +512,13 @@ class FileDisplayActivity :
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             // handle notification permission on API level >= 33
-            PermissionUtil.PERMISSIONS_POST_NOTIFICATIONS ->
+            PermissionUtil.PERMISSIONS_POST_NOTIFICATIONS -> {
                 // dialogue was dismissed -> prompt for storage permissions
                 requestStoragePermissionIfNeeded(this)
+
+                // NMC: Notify MoEngage about the post notification permission response
+                MoEngageSdkUtils.updatePostNotificationsPermission(this)
+            }
 
             // If request is cancelled, result arrays are empty.
             PermissionUtil.PERMISSIONS_EXTERNAL_STORAGE ->
@@ -2938,6 +2955,8 @@ class FileDisplayActivity :
 
     public override fun onStart() {
         super.onStart()
+        // NMC: show in-app notifications
+        MoEngageSdkUtils.displayInAppNotification(this)
 
         registerReceivers()
 
