@@ -8,10 +8,15 @@ package com.owncloud.android.authentication;
 
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.nextcloud.utils.extensions.IntentExtensionsKt;
+import com.nextcloud.android.common.ui.util.extensions.WindowExtensionsKt;
 
+import androidx.activity.EdgeToEdge;
+import androidx.activity.SystemBarStyle;
 import androidx.appcompat.app.AppCompatActivity;
 
 /*
@@ -46,6 +51,14 @@ public abstract class AccountAuthenticatorActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // NMC-3936 and NMC-3813 fix
+        boolean isApiLevel35OrHigher = (Build.VERSION.SDK_INT >= 35);
+
+        if (isApiLevel35OrHigher) {
+            enableEdgeToEdge();
+            WindowExtensionsKt.addSystemBarPaddings(getWindow());
+        }
+
         super.onCreate(savedInstanceState);
 
         mAccountAuthenticatorResponse =
@@ -56,6 +69,11 @@ public abstract class AccountAuthenticatorActivity extends AppCompatActivity {
         if (mAccountAuthenticatorResponse != null) {
             mAccountAuthenticatorResponse.onRequestContinued();
         }
+    }
+
+    private void enableEdgeToEdge() {
+        final var style = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT);
+        EdgeToEdge.enable(this, style, style);
     }
 
     /**
