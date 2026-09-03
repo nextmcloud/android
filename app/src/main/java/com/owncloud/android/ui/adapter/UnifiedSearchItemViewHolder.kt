@@ -94,11 +94,8 @@ class UnifiedSearchItemViewHolder(
     }
 
     private fun bindFolderThumbnail(file: OCFile) {
-        binding.thumbnail.apply {
-            setImageDrawable(ContextCompat.getDrawable(context, R.drawable.folder))
-            viewThemeUtils.platform.colorImageView(this, ColorRole.PRIMARY)
-        }
-        thumbnailGenerator.folderThumbnailGenerator.setFolderOverlayIcon(file, binding.thumbnailOverlayIcon)
+        // NMC Customization: No overlay is required
+        thumbnailGenerator.folderThumbnailGenerator.setFolderThumbnail(file, binding.thumbnail, null)
     }
 
     private fun bindLocalFileThumbnail(file: OCFile) {
@@ -121,7 +118,6 @@ class UnifiedSearchItemViewHolder(
     private fun bindRemoteThumbnail(entry: SearchResultEntry, entryType: SearchResultEntryType) {
         binding.thumbnail.apply {
             setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_find_in_page))
-            viewThemeUtils.platform.colorImageView(this, ColorRole.SECONDARY)
         }
 
         if (entry.thumbnailUrl.isNotBlank()) {
