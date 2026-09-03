@@ -22,22 +22,13 @@ on:
         type: choice
         description: Custom build from base branch
         options:
-          - stable-3.27
-          - stable-3.28
-          - stable-3.29
-          - stable-3.15
-          - stable-3.30
-          - stable-3.31
-          - stable-3.32
-          - stable-3.33
-          - stable-3.34
           - stable-3.35
           - stable-3.36
           - stable-33.1.0
           - stable-34.0.x
           - stable-34.1.x
-          # - stable-3.27.1
-        default: stable-34.1.x
+          - stable-3.35.x
+        default: stable-3.35.x
 
 jobs:
   backport-custom:
