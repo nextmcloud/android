@@ -77,7 +77,7 @@ class AlbumsAdapter(
             thumbnailGenerator.setThumbnail(
                 ocLocal,
                 gridViewHolder.thumbnail,
-                ThumbnailArguments(isGrid = gridView, hideVideoOverlay = true, null)
+                ThumbnailArguments(isGrid = gridView, hideVideoOverlay = true, null, isMediaGallery = true)
             )
         } else {
             gridViewHolder.thumbnail.setImageResource(R.drawable.file_image)

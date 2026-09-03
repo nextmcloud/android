@@ -129,7 +129,7 @@ class AlbumSharingBottomSheet(
         thumbnailGenerator.setThumbnail(
             file,
             target.thumbnail,
-            ThumbnailArguments(isGrid = false, hideVideoOverlay = true, target.thumbnailShimmer)
+            ThumbnailArguments(isGrid = false, hideVideoOverlay = true, target.thumbnailShimmer, isMediaGallery = true)
         )
     }
 
