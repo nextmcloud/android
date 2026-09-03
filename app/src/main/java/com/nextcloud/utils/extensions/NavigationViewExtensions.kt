@@ -27,7 +27,10 @@ fun highlightNavigationView(
     bottomNavigationView: BottomNavigationView?,
     menuItemId: Int
 ) {
-    drawerNavigationView?.setCheckedItem(menuItemId)
+    // NMC Customization: skip item check logic for logout
+    if (menuItemId != R.id.nav_logout) {
+        drawerNavigationView?.setCheckedItem(menuItemId)
+    }
 
     bottomNavigationView?.let { bottomNav ->
         val bottomNavItems = setOf(R.id.nav_assistant, R.id.nav_all_files, R.id.nav_favorites, R.id.nav_gallery)
