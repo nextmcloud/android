@@ -847,7 +847,7 @@
     <string name="remove_notification_failed">Benachrichtigungen konnten nicht entfernt werden</string>
     <string name="remove_push_notification">Entfernen</string>
     <string name="remove_success_msg">Gelöscht</string>
-    <string name="rename_dialog_button">Umbenennen</string>
+    <string name="rename_dialog_button">Speichern</string>
     <string name="rename_dialog_title">Geben Sie einen neuen Namen ein</string>
     <string name="rename_local_fail_msg">Die lokale Kopie konnte nicht umbenannt werden. Versuche es mit einem anderen Namen.</string>
     <string name="rename_server_fail_msg">Umbenennen nicht möglich. Der Name wird bereits verwendet.</string>

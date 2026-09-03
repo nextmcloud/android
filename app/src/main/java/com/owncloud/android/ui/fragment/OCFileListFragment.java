@@ -24,7 +24,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -890,6 +893,16 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 final MenuItem addAlbumItem = menu.findItem(R.id.add_to_album);
                 // show add to album button when picking files from media to add to album
                 addAlbumItem.setVisible(true);
+                if (addAlbumItem.getTitle() != null) {
+                    SpannableString coloredTitle = new SpannableString(addAlbumItem.getTitle());
+                    coloredTitle.setSpan(
+                        new ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.primary)),
+                        0,
+                        addAlbumItem.getTitle().length(),
+                        Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                                        );
+                    addAlbumItem.setTitle(coloredTitle);
+                }
             }
 
             final var adapter = getCommonAdapter();

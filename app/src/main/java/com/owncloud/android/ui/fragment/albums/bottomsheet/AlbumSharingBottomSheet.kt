@@ -72,7 +72,6 @@ class AlbumSharingBottomSheet(
             state = BottomSheetBehavior.STATE_EXPANDED
             skipCollapsed = true
         }
-        viewThemeUtils.platform.colorViewBackground(binding.bottomSheet, ColorRole.SURFACE)
         return binding.root
     }
 
@@ -129,7 +128,7 @@ class AlbumSharingBottomSheet(
         thumbnailGenerator.setThumbnail(
             file,
             target.thumbnail,
-            ThumbnailArguments(isGrid = false, hideVideoOverlay = true, target.thumbnailShimmer)
+            ThumbnailArguments(isGrid = false, hideVideoOverlay = false, target.thumbnailShimmer, isMediaGallery = true)
         )
     }
 
