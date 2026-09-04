@@ -86,6 +86,7 @@ val configProps = Properties().apply {
     if (file.exists()) load(FileInputStream(file))
 }
 
+val adjustAppToken = project.properties["ADJUST_APP_TOKEN"]
 val ncTestServerUsername = configProps["NC_TEST_SERVER_USERNAME"]
 val ncTestServerPassword = configProps["NC_TEST_SERVER_PASSWORD"]
 val ncTestServerBaseUrl = configProps["NC_TEST_SERVER_BASEURL"]
@@ -130,7 +131,8 @@ android {
         // NMC Customization
         buildConfigField("boolean", "CI", ciBuild.toString())
         buildConfigField("boolean", "RUNTIME_PERF_ANALYSIS", perfAnalysis.toString())
-
+        // NMC Customization: adjust token
+        buildConfigField("String", "ADJUST_APP_TOKEN", adjustAppToken.toString())
         // arguments to be passed to functional tests
         testInstrumentationRunner = if (shotTest) "com.karumi.shot.ShotTestRunner"
         else "com.nextcloud.client.TestRunner"
@@ -541,6 +543,14 @@ dependencies {
 
     // region Kotlin
     implementation(libs.kotlin.stdlib)
+    // endregion
+
+    // NMC region
+    // Adjust SDK --> https://github.com/adjust/android_sdk
+    implementation(libs.adjust.android)
+    implementation(libs.installreferrer)
+    // tealium sdk
+    implementation(libs.tealium.library)
     // endregion
 
     // region Stateless
