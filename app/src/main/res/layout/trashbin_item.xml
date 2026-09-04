@@ -6,6 +6,7 @@
   ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ListItemLayout"
     android:layout_width="match_parent"
@@ -108,7 +109,8 @@
                 android:focusable="false"
                 android:paddingEnd="@dimen/list_item_share_right_margin"
                 android:paddingStart="@dimen/standard_half_padding"
-                android:src="@drawable/ic_history"/>
+                android:src="@drawable/ic_history"
+                app:tint="@color/list_icon_color"/>
 
             <ImageView
                 android:id="@+id/customCheckbox"
@@ -134,7 +136,8 @@
                 android:focusable="true"
                 android:paddingEnd="@dimen/alternate_padding"
                 android:paddingStart="@dimen/standard_half_padding"
-                android:src="@drawable/ic_dots_vertical"/>
+                android:src="@drawable/ic_dots_vertical"
+                app:tint="@color/list_icon_color"/>
 
         </RelativeLayout>
 
