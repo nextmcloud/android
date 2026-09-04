@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2025 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<resources>
+    <string name="comments_tab_title">Kommentar</string>
+    <string name="delete_comment">Kommentar löschen</string>
+    <string name="edit_comment">Kommentar bearbeiten</string>
+    <string name="file_detail_comment_error">Fehler beim Laden der Kommentare</string>
+    <string name="comments_no_results_headline">Noch keine Kommentare.</string>
+    <string name="comments_no_results_message">Sie können geteilte Inhalte kommentieren. Ihre Nachrichten werden alle erreichen, mit denen die Datei oder der Ordner geteilt ist.</string>
+    <string name="empty_comment_message">Kommentarfeld darf nicht leer sein.</string>
+    <string name="error_comment_update">Aktualisierung fehlgeschlagen.</string>
+    <string name="delete_comment_dialog_message">Möchten Sie den Kommentar wirklich löschen?</string>
+    <string name="success_update_comment_file">Kommentar aktualisiert</string>
+    <string name="error_update_comment_file">Fehler beim Aktualisieren</string>
+    <string name="success_delete_comment_file">Kommentar gelöscht</string>
+    <string name="error_delete_comment_file">Fehler beim Löschen</string>
+    <string name="just_now">Gerade eben</string>
+    <plurals name="seconds_ago">
+        <item quantity="one">vor %d Sekunde</item>
+        <item quantity="other">vor %d Sekunden</item>
+    </plurals>
+    <plurals name="minutes_ago">
+        <item quantity="one">vor %d Minute</item>
+        <item quantity="other">vor %d Minuten</item>
+    </plurals>
+    <plurals name="hours_ago">
+        <item quantity="one">vor %d Stunde</item>
+        <item quantity="other">vor %d Stunden</item>
+    </plurals>
+    <plurals name="days_ago">
+        <item quantity="one">vor %d Tag</item>
+        <item quantity="other">vor %d Tagen</item>
+    </plurals>
+    <plurals name="weeks_ago">
+        <item quantity="one">vor %d Woche</item>
+        <item quantity="other">vor %d Wochen</item>
+    </plurals>
+    <plurals name="months_ago">
+        <item quantity="one">vor %d Monat</item>
+        <item quantity="other">vor %d Monaten</item>
+    </plurals>
+    <plurals name="years_ago">
+        <item quantity="one">vor %d Jahr</item>
+        <item quantity="other">vor %d Jahren</item>
+    </plurals>
+</resources>
