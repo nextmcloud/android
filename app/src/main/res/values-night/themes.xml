@@ -22,6 +22,11 @@
         <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
         <item name="popupMenuStyle">@style/Nextcloud.Widget.PopupMenu</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
+        <!-- ActionBar Menu Item Text Color Style -->
+        <item name="android:actionMenuTextColor">@color/primary</item>
+        <!-- styling action bar back button -->
+        <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
+        <item name="homeAsUpIndicator">@drawable/ic_arrow_back</item>
         <item name="actionModeStyle">@style/App.ActionMode</item>
     </style>
 </resources>
