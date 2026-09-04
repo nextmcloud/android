@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_update_downloaded">Das Update wurde bereits heruntergeladen.</string>
+    <string name="common_restart">Neustart</string>
+</resources>
