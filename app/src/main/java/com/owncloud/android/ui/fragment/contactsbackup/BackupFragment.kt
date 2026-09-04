@@ -53,6 +53,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.owncloud.android.utils.sort.AlphanumericComparator
+import com.nmc.android.utils.CheckableThemeUtils
 import java.util.Calendar
 import java.util.GregorianCalendar
 import javax.inject.Inject
@@ -240,21 +241,15 @@ class BackupFragment :
     }
 
     private fun applyUserColor() {
-        viewThemeUtils.androidx.run {
-            colorSwitchCompat(binding.contacts)
-            colorSwitchCompat(binding.calendar)
-            colorSwitchCompat(binding.dailyBackup)
-        }
+        //NMC Customisation
+        CheckableThemeUtils.tintSwitch(binding.contacts)
+        CheckableThemeUtils.tintSwitch(binding.calendar)
+        CheckableThemeUtils.tintSwitch(binding.dailyBackup)
 
-        viewThemeUtils.material.run {
-            colorMaterialButtonPrimaryFilled(binding.backupNow)
-            colorMaterialButtonPrimaryOutlined(binding.contactsDatepicker)
-        }
-
-        viewThemeUtils.platform.run {
-            colorTextView(binding.dataToBackUpTitle)
-            colorTextView(binding.backupSettingsTitle)
-        }
+        //NMC Customization
+        val primaryAccentColor = requireContext().resources.getColor(R.color.primary, null)
+        binding.dataToBackUpTitle.setTextColor(primaryAccentColor)
+        binding.backupSettingsTitle.setTextColor(primaryAccentColor)
     }
 
     private fun addMenuProvider() {
@@ -405,10 +400,11 @@ class BackupFragment :
             setTitle("")
             show()
 
-            viewThemeUtils.platform.colorTextButtons(
-                getButton(DatePickerDialog.BUTTON_NEGATIVE),
-                getButton(DatePickerDialog.BUTTON_POSITIVE)
-            )
+            // NMC Customisation
+            datePickerDialog?.getButton(DatePickerDialog.BUTTON_NEGATIVE)
+                ?.setTextColor(resources.getColor(R.color.text_color, null))
+            datePickerDialog?.getButton(DatePickerDialog.BUTTON_POSITIVE)
+                ?.setTextColor(resources.getColor(R.color.primary, null))
         }
     }
 
