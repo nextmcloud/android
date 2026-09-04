@@ -11,12 +11,16 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -25,16 +29,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.account.UserAccountManager
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.client.utils.Throttler
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.nextcloud.utils.extensions.isLandscape
-import com.nextcloud.utils.extensions.setVisibleIf
 import com.nextcloud.utils.thumbnail.ThumbnailGenerator
+import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.AlbumsFragmentBinding
 import com.owncloud.android.lib.common.utils.Log_OC
@@ -45,9 +49,9 @@ import com.owncloud.android.ui.activity.BaseActivity
 import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.adapter.albums.AlbumFragmentInterface
 import com.owncloud.android.ui.adapter.albums.AlbumsAdapter
+import com.owncloud.android.ui.decoration.MediaGridItemDecoration
 import com.owncloud.android.ui.dialog.CreateAlbumDialogFragment
 import com.owncloud.android.ui.fragment.FileFragment
-import com.owncloud.android.ui.fragment.albums.model.AlbumsEmptyState
 import com.owncloud.android.ui.fragment.helper.ColumnCount
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import kotlinx.coroutines.Dispatchers
@@ -126,17 +130,22 @@ class AlbumsFragment :
         setupContainingList()
         setupContent()
         createMenu()
-
-        viewThemeUtils.material.themeFAB(binding.addMediaFab)
-        binding.addMediaFab.setOnClickListener {
-            showCreateAlbumDialog()
-        }
+        setUpEmptyView()
     }
 
     private fun showAppBar() {
         if (requireActivity() is FileDisplayActivity) {
             val appBarLayout = requireActivity().findViewById<AppBarLayout>(R.id.appbar)
             appBarLayout?.setExpanded(true, false)
+        }
+    }
+
+    private fun setUpEmptyView() {
+        Glide.with(requireContext()).load(R.drawable.bg_image_albums)
+            .into(binding.albumEmptyView.albumsBgImage)
+
+        binding.albumEmptyView.createAlbum.setOnClickListener {
+            showCreateAlbumDialog()
         }
     }
 
@@ -158,6 +167,9 @@ class AlbumsFragment :
         if (isGridView) {
             val layoutManager = GridLayoutManager(requireContext(), maxColumnSize)
             binding.listRoot.layoutManager = layoutManager
+            binding.listRoot.addItemDecoration(MediaGridItemDecoration(resources.getDimensionPixelSize(R.dimen.album_grid_spacing)))
+            val padding = resources.getDimensionPixelSize(R.dimen.album_recycler_view_grid_padding)
+            binding.listRoot.setPadding(padding, padding, padding, padding)
         } else {
             val layoutManager = LinearLayoutManager(requireContext())
             binding.listRoot.layoutManager = layoutManager
@@ -166,7 +178,7 @@ class AlbumsFragment :
     }
 
     private fun setupContainingList() {
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingList)
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(requireContext(), binding.swipeContainingList)
         binding.swipeContainingList.setOnRefreshListener {
             fetchAndSetData()
         }
@@ -182,7 +194,7 @@ class AlbumsFragment :
     private fun fetchAndSetData() {
         binding.swipeContainingList.isRefreshing = true
         initializeAdapter()
-        setEmptyListMessage(null)
+        updateEmptyView(false)
         readAlbums()
     }
 
@@ -198,12 +210,12 @@ class AlbumsFragment :
                 withContext(Dispatchers.Main) {
                     if (result?.isSuccess == true && result.resultData != null) {
                         if (result.resultData.isEmpty()) {
-                            setEmptyListMessage(AlbumsEmptyState.NO_ALBUMS)
+                            updateEmptyView(true)
                         }
                         populateList(result.resultData)
                     } else {
                         Log_OC.d(TAG, "read album operation failed")
-                        setEmptyListMessage(AlbumsEmptyState.LOAD_FAILED)
+                        updateEmptyView(true)
                     }
 
                     hideRefreshLayoutLoader()
@@ -217,10 +229,31 @@ class AlbumsFragment :
         menuHost.addMenuProvider(
             object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menu.clear()
+                    menu.clear() // important: clears any existing activity menu
+                    menuInflater.inflate(R.menu.fragment_create_album, menu)
+
+                    val addItem = menu.findItem(R.id.action_create_new_album)
+                    val coloredTitle = SpannableString(addItem.title).apply {
+                        setSpan(
+                            ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.primary)),
+                            0,
+                            length,
+                            Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                        )
+                    }
+                    addItem.title = coloredTitle
                 }
 
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean = true
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        R.id.action_create_new_album -> {
+                            showCreateAlbumDialog()
+                            true
+                        }
+
+                        else -> false
+                    }
+                }
             },
             viewLifecycleOwner,
             Lifecycle.State.RESUMED
@@ -250,23 +283,9 @@ class AlbumsFragment :
         }
     }
 
-    private fun setEmptyListMessage(state: AlbumsEmptyState?) {
-        binding.emptyList.emptyListView.setVisibleIf(state != null)
-        binding.listRoot.setVisibleIf(state == null)
-
-        if (state == null) {
-            return
-        }
-
-        with(binding.emptyList) {
-            emptyListViewHeadline.setText(state.headline)
-            emptyListViewText.setText(state.message)
-            emptyListIcon.setImageDrawable(
-                viewThemeUtils.platform.tintDrawable(requireContext(), state.icon, ColorRole.PRIMARY)
-            )
-            emptyListViewText.visibility = View.VISIBLE
-            emptyListIcon.visibility = View.VISIBLE
-        }
+    private fun updateEmptyView(isEmpty: Boolean) {
+        binding.albumEmptyView.emptyViewLayout.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        binding.listRoot.visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
 
     override fun onResume() {
@@ -287,9 +306,14 @@ class AlbumsFragment :
             }
             showSortListGroup(false)
             setMainFabVisible(false)
+            showHideDefaultToolbarDivider(true)
 
             // clear the subtitle while navigating to any other screen from Media screen
             clearToolbarSubtitle()
+            // highlight album menu item
+            if (!isSelectionMode) {
+                highlightNavigationViewItem(R.id.nav_album)
+            }
         }
     }
 
@@ -313,6 +337,7 @@ class AlbumsFragment :
         super.onPause()
         adapter?.cancelAllPendingTasks()
         listState = binding.listRoot.layoutManager?.onSaveInstanceState()
+        getTypedActivity(FileDisplayActivity::class.java)?.showHideDefaultToolbarDivider(false)
     }
 
     private val isGridEnabled: Boolean
