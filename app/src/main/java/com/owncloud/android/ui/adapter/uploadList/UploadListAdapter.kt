@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.lifecycle.lifecycleScope
 import com.afollestad.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import com.afollestad.sectionedrecyclerview.SectionedViewHolder
@@ -174,7 +175,9 @@ class UploadListAdapter(
     }
 
     private fun showFailedPopupMenu(holder: HeaderViewHolder) {
-        PopupMenu(activity, holder.binding.uploadListAction).apply {
+        // NMC Customisation
+        val ctw = ContextThemeWrapper(activity, R.style.CustomPopupTheme)
+        PopupMenu(ctw, holder.binding.uploadListAction).apply {
             inflate(R.menu.upload_list_failed_options)
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
@@ -199,7 +202,9 @@ class UploadListAdapter(
     }
 
     private fun showCancelledPopupMenu(holder: HeaderViewHolder) {
-        PopupMenu(activity, holder.binding.uploadListAction).apply {
+        // NMC Customisation
+        val ctw = ContextThemeWrapper(activity, R.style.CustomPopupTheme)
+        PopupMenu(ctw, holder.binding.uploadListAction).apply {
             inflate(R.menu.upload_list_cancelled_options)
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
@@ -525,7 +530,9 @@ class UploadListAdapter(
     override fun onBindFooterViewHolder(holder: SectionedViewHolder?, section: Int) = Unit
 
     private fun showItemConflictPopup(item: OCUpload, view: View) {
-        PopupMenu(activity, view).apply {
+        // NMC Customisation
+        val ctw = ContextThemeWrapper(activity, R.style.CustomPopupTheme)
+        PopupMenu(ctw, view).apply {
             inflate(R.menu.upload_list_item_file_conflict)
             setOnMenuItemClickListener { menuItem ->
                 if (menuItem.itemId == R.id.action_upload_list_resolve_conflict) {
