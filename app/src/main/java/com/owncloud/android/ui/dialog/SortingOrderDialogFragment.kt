@@ -16,6 +16,7 @@ import android.view.View
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.SortingOrderFragmentBinding
 import com.owncloud.android.lib.common.utils.Log_OC
@@ -89,7 +90,8 @@ class SortingOrderDialogFragment :
         val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setView(binding?.root)
 
-        viewThemeUtils?.dialog?.colorMaterialAlertDialogBackground(requireContext(), builder)
+        //NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireContext(), builder)
 
         return builder.create()
     }
