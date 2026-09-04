@@ -24,6 +24,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.nmc.android.utils.FabThemeUtils
 import com.nextcloud.android.lib.richWorkspace.RichWorkspaceDirectEditingRemoteOperation
+import com.nmc.android.utils.SearchViewThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.ui.activity.FileActivity
 import com.owncloud.android.ui.activity.FileDisplayActivity
@@ -86,7 +87,8 @@ class PreviewTextStringFragment : PreviewTextFragment() {
                         searchView = (actionView as? SearchView)?.also { sv ->
                             sv.setOnQueryTextListener(this@PreviewTextStringFragment)
                             sv.maxWidth = Int.MAX_VALUE
-                            viewThemeUtils.androidx.themeToolbarSearchView(sv)
+                            // NMC customization
+                            SearchViewThemeUtils.themeSearchView(requireActivity(), sv)
                             if (searchOpen) {
                                 sv.isIconified = false
                                 sv.setQuery(searchQuery, true)
