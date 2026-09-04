@@ -24,6 +24,7 @@ import com.nextcloud.client.account.CurrentAccountProvider
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.network.ConnectivityService
 import com.nextcloud.utils.extensions.typedActivity
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.CreateAlbumDialogBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -95,7 +96,6 @@ class CreateAlbumDialogFragment :
         binding = CreateAlbumDialogBinding.inflate(inflater, null, false)
 
         binding.userInput.setText(albumName ?: "")
-        viewThemeUtils.material.colorTextInputLayout(binding.userInputContainer)
         albumName?.let {
             binding.userInput.setSelection(0, it.length)
         }
@@ -109,7 +109,8 @@ class CreateAlbumDialogFragment :
         })
 
         val builder = buildMaterialAlertDialog(binding.root)
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.userInputContainer.context, builder)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(binding.userInputContainer.context, builder)
         return builder.create()
     }
 
