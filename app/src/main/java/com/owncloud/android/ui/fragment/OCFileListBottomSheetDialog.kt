@@ -237,7 +237,11 @@ class OCFileListBottomSheetDialog(
             }
 
             menuEncryptedMkdir.setOnClickListener {
-                actions.createFolder(encrypted = true)
+                // NMC-4348 fix
+                // for e2e folder call normal folder creation
+                // it will auto handle creating e2e sub folder
+                // for root path the value will be true and will create e2e folder
+                actions.createFolder(!file.isEncrypted)
                 dismiss()
             }
 
