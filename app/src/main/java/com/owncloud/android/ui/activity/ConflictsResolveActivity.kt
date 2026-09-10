@@ -358,9 +358,15 @@ class ConflictsResolveActivity :
             getString(R.string.conflict_dialog_error)
         }
 
-        lifecycleScope.launch(Dispatchers.Main) {
-            DisplayUtils.showSnackMessage(this@ConflictsResolveActivity, message)
-            finish()
+        // NMC Customization
+        // if activity is launched from test case then don't finish the activity as it is required to show the dialog
+        // but during normal app run activity should finish during error so we have to pass it false or don't pass
+        // anything
+        if (!intent.getBooleanExtra(EXTRA_LAUNCHED_FROM_TEST, false)) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                DisplayUtils.showSnackMessage(this@ConflictsResolveActivity, message)
+                finish()
+            }
         }
     }
 
@@ -371,6 +377,11 @@ class ConflictsResolveActivity :
         const val EXTRA_LOCAL_BEHAVIOUR = "LOCAL_BEHAVIOUR"
         const val EXTRA_EXISTING_FILE = "EXISTING_FILE"
         private const val EXTRA_OFFLINE_OPERATION_PATH = "EXTRA_OFFLINE_OPERATION_PATH"
+
+        /**
+         * variable to tell activity that it has been launched from test class
+         */
+        const val EXTRA_LAUNCHED_FROM_TEST = "LAUNCHED_FROM_TEST"
         private val TAG = ConflictsResolveActivity::class.java.simpleName
 
         @JvmStatic
