@@ -72,7 +72,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/standard_half_margin"
             android:layout_weight="1"
+            app:icon="@drawable/ic_close"
+            app:iconGravity="textStart"
             android:text="@string/common_cancel"
+            app:iconTint="@color/text_color"
             style="@style/OutlinedButton"
             app:cornerRadius="@dimen/button_corner_radius" />
 
@@ -81,8 +84,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            app:icon="@drawable/ic_cut_paste"
+            app:iconGravity="textStart"
             android:text="@string/uploader_btn_upload_text"
-            android:theme="@style/Button.Primary"
+            style="@style/Button.Primary"
             app:cornerRadius="@dimen/button_corner_radius" />
 
 	</LinearLayout>
