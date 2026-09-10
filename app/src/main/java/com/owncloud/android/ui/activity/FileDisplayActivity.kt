@@ -91,6 +91,7 @@ import com.nextcloud.utils.fileNameValidator.FileNameValidator.checkFolderPath
 import com.nextcloud.utils.view.FastScrollUtils
 import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.nmc.android.marketTracking.TealiumSdkUtils
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.authentication.PassCodeManager
@@ -406,7 +407,8 @@ class FileDisplayActivity :
                     ) { dialog: DialogInterface?, which: Int -> dialog?.dismiss() }
                     .setIcon(R.drawable.ic_settings)
 
-                viewThemeUtils.dialog.colorMaterialAlertDialogBackground(applicationContext, builder)
+                // NMC customization: customize dialog bg color
+                DialogThemeUtils.colorMaterialAlertDialogBackground(applicationContext, builder)
 
                 builder.create().show()
             } catch (e: BadTokenException) {
@@ -3271,7 +3273,8 @@ class FileDisplayActivity :
                 showLoadingDialog(getString(R.string.retrieving_file))
             }
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(applicationContext, builder)
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.colorMaterialAlertDialogBackground(applicationContext, builder)
 
         val dialog = builder.create()
         dismissLoadingDialog()
