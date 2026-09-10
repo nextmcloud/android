@@ -15,12 +15,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.StoragePathDialogBinding
 import com.owncloud.android.ui.adapter.StoragePathAdapter
 import com.owncloud.android.ui.adapter.StoragePathAdapter.StoragePathAdapterListener
 import com.owncloud.android.ui.adapter.StoragePathItem
-import com.owncloud.android.ui.dialog.extensions.themeButtons
 import com.owncloud.android.utils.FileStorageUtils
 import com.owncloud.android.utils.FileStorageUtils.StandardDirectory
 import com.owncloud.android.utils.theme.ViewThemeUtils
@@ -37,11 +37,6 @@ class LocalStoragePathPickerDialogFragment :
     lateinit var viewThemeUtils: ViewThemeUtils
 
     private lateinit var binding: StoragePathDialogBinding
-
-    override fun onStart() {
-        super.onStart()
-        dialog?.themeButtons(viewThemeUtils)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         require(activity is StoragePathAdapterListener) {
@@ -64,7 +59,8 @@ class LocalStoragePathPickerDialogFragment :
             .setPositiveButton(R.string.common_cancel, this)
             .setTitle(R.string.storage_choose_location)
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(requireContext(), builder)
+        //NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireContext(), builder)
 
         return builder.create()
     }
