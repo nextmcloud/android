@@ -33,6 +33,7 @@ import com.owncloud.android.lib.resources.shares.ShareType
 import com.owncloud.android.operations.GetSharesForFileOperation
 import com.owncloud.android.ui.fragment.FileDetailSharingFragment
 import com.owncloud.android.ui.fragment.FileDetailsSharingProcessFragment
+import com.owncloud.android.ui.fragment.util.SharePermissionManager
 import com.owncloud.android.utils.DisplayUtils
 import com.owncloud.android.utils.MimeTypeUtil
 import com.nextcloud.utils.thumbnail.ThumbnailGenerator
@@ -78,8 +79,8 @@ class ShareActivity :
     private fun configureDialogWindow() {
         val displayMetrics = resources.displayMetrics
         window?.setLayout(
-            (displayMetrics.widthPixels * DIALOG_RATIO).toInt(),
-            (displayMetrics.heightPixels * DIALOG_RATIO).toInt()
+            (displayMetrics.widthPixels * DIALOG_WIDTH_RATIO).toInt(),
+            (displayMetrics.heightPixels * DIALOG_HEIGHT_RATIO).toInt()
         )
     }
 
@@ -92,9 +93,17 @@ class ShareActivity :
     override fun doShareWith(shareeName: String, shareType: ShareType) {
         val file = file ?: return
         supportFragmentManager.beginTransaction()
-            .replace(
+            .add(
                 R.id.share_fragment_container,
-                FileDetailsSharingProcessFragment.newInstance(file, shareeName, shareType, false),
+                FileDetailsSharingProcessFragment.newInstance(
+                    file, shareeName, shareType, false,
+                    SharePermissionManager.canEditFile(
+                        user.get(),
+                        storageManager.getCapability(user.get()),
+                        file,
+                        editorUtils
+                    )
+                ),
                 FileDetailsSharingProcessFragment.TAG
             )
             .commit()
@@ -176,6 +185,8 @@ class ShareActivity :
     companion object {
         private val TAG: String = ShareActivity::class.java.simpleName
         const val TAG_SHARE_FRAGMENT: String = "SHARE_FRAGMENT"
-        private const val DIALOG_RATIO = 1.0
+        // NMC-6222 & NMC-6223 dialog height fix
+        private const val DIALOG_HEIGHT_RATIO = 0.8
+        private const val DIALOG_WIDTH_RATIO = 1.0
     }
 }
