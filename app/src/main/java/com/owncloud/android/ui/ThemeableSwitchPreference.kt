@@ -8,9 +8,11 @@
 package com.owncloud.android.ui
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.preference.SwitchPreference
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
@@ -46,9 +48,68 @@ class ThemeableSwitchPreference : SwitchPreference {
     override fun onBindView(view: View) {
         super.onBindView(view)
         val checkable = view.findViewById<View>(R.id.switch_widget)
+
+        // NMC Customization
+        // region start
+        val states = arrayOf<IntArray?>(
+            intArrayOf(android.R.attr.state_enabled, android.R.attr.state_checked),  // enabled and checked
+            intArrayOf(android.R.attr.state_enabled, -android.R.attr.state_checked),  // enabled and unchecked
+            intArrayOf(-android.R.attr.state_enabled) // disabled
+        )
+
+        val thumbColorCheckedEnabled = ResourcesCompat.getColor(
+            checkable.context.resources,
+            R.color.switch_thumb_checked_enabled,
+            checkable.context.theme
+        )
+        val thumbColorUncheckedEnabled = ResourcesCompat.getColor(
+            checkable.context.resources,
+            R.color.switch_thumb_unchecked_enabled,
+            checkable.context.theme
+        )
+        val thumbColorDisabled =
+            ResourcesCompat.getColor(
+                checkable.context.resources,
+                R.color.switch_thumb_disabled,
+                checkable.context.theme
+            )
+
+        val thumbColors = intArrayOf(
+            thumbColorCheckedEnabled,
+            thumbColorUncheckedEnabled,
+            thumbColorDisabled
+        )
+
+        val thumbColorStateList = ColorStateList(states, thumbColors)
+
+        val trackColorCheckedEnabled = ResourcesCompat.getColor(
+            checkable.context.resources,
+            R.color.switch_track_checked_enabled,
+            checkable.context.theme
+        )
+        val trackColorUncheckedEnabled = ResourcesCompat.getColor(
+            checkable.context.resources,
+            R.color.switch_track_unchecked_enabled,
+            checkable.context.theme
+        )
+        val trackColorDisabled = ResourcesCompat.getColor(
+            checkable.context.resources,
+            R.color.switch_track_disabled,
+            checkable.context.theme
+        )
+
+        val trackColors = intArrayOf(
+            trackColorCheckedEnabled,
+            trackColorUncheckedEnabled,
+            trackColorDisabled
+        )
+        val trackColorStateList = ColorStateList(states, trackColors)
+        // region end
+
         if (checkable is MaterialSwitch) {
             checkable.setChecked(isChecked)
-            viewThemeUtils.material.colorMaterialSwitch(checkable)
+            checkable.thumbTintList = thumbColorStateList
+            checkable.trackTintList = trackColorStateList
         }
     }
 }
