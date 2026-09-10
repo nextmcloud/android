@@ -237,6 +237,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
         ADD_GRID_AND_SORT_WITH_SEARCH
     }
 
+    private boolean mShowOnlyFolder, mHideEncryptedFolder;
+
     protected MenuItemAddRemove menuItemAddRemoveValue = MenuItemAddRemove.ADD_GRID_AND_SORT_WITH_SEARCH;
 
     private final List<MenuItem> mOriginalMenuItems = new ArrayList<>();
@@ -768,7 +770,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
     @Override
     public void showTemplate(Creator creator, String headline) {
         ChooseTemplateDialogFragment.newInstance(mFile, creator, headline).show(requireActivity()
-                                                                                    .getSupportFragmentManager(), 
+                                                                                    .getSupportFragmentManager(),
                                                                                 DIALOG_CREATE_DOCUMENT);
     }
 
@@ -910,8 +912,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
             final int checkedCount = checkedFiles.size();
 
             if (mActiveActionMode != null) {
-                String title = getResources().getQuantityString(R.plurals.items_selected_count, 
-                                                                checkedCount, 
+                String title = getResources().getQuantityString(R.plurals.items_selected_count,
+                                                                checkedCount,
                                                                 checkedCount);
                 mActiveActionMode.setTitle(title);
             }
@@ -1134,8 +1136,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     private void folderOnItemClick(OCFile file, int position) {
         if (requireActivity() instanceof FolderPickerActivity fpa) {
-            String filenameErrorMessage = FileNameValidator.INSTANCE.checkFileName(file.getFileName(), 
-                                                                                   getCapabilities(), 
+            String filenameErrorMessage = FileNameValidator.INSTANCE.checkFileName(file.getFileName(),
+                                                                                   getCapabilities(),
                                                                                    requireContext());
             if (filenameErrorMessage != null) {
                 DisplayUtils.showSnackMessage(fpa, filenameErrorMessage);
@@ -1449,6 +1451,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
         action.putExtra(FolderPickerActivity.EXTRA_FOLDER, getCurrentFile());
         action.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION); // No animation since we stay in the same folder
         action.putExtra(FolderPickerActivity.EXTRA_ACTION, extraAction);
+        action.putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true);
         requireActivity().startActivityForResult(action, requestCode);
     }
 
@@ -1468,6 +1471,12 @@ public class OCFileListFragment extends ExtendedListFragment implements
      */
     public void listDirectory(boolean onlyOnDevice) {
         listDirectory(null, onlyOnDevice);
+    }
+
+    public void listDirectoryFolder(@Nullable OCFile directory, boolean onlyOnDevice, boolean showOnlyFolder, boolean hideEncryptedFolder) {
+        mShowOnlyFolder = showOnlyFolder;
+        mHideEncryptedFolder = hideEncryptedFolder;
+        listDirectory(directory, onlyOnDevice);
     }
 
     public void refreshDirectory() {
@@ -1542,7 +1551,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 directory,
                 storageManager,
                 onlyOnDevice,
-                mLimitToMimeType);
+                mLimitToMimeType,
+                mShowOnlyFolder,
+                mHideEncryptedFolder);
 
             OCFile previousDirectory = mFile;
             mFile = directory;
