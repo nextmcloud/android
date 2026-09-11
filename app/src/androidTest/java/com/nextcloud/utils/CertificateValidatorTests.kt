@@ -19,6 +19,7 @@ import java.io.InputStreamReader
 class CertificateValidatorTests {
 
     private var sut: CertificateValidator? = null
+    private val gson = Gson()
 
     @Before
     fun setup() {
@@ -32,14 +33,24 @@ class CertificateValidatorTests {
 
     @Test
     fun testValidateWhenGivenValidServerKeyAndCertificateShouldReturnTrue() {
+        val isCertificateValid = validateCertificate("credentials.json")
+        assert(isCertificateValid)
+    }
+
+    @Test
+    fun testValidateWhenGivenAnotherValidServerKeyAndCertificateShouldReturnTrue() {
+        val isCertificateValid = validateCertificate("invalid_certs.json")
+        assert(isCertificateValid)
+    }
+
+    private fun validateCertificate(filename: String): Boolean {
         val inputStream =
-            InstrumentationRegistry.getInstrumentation().context.assets.open("credentials.json")
+            InstrumentationRegistry.getInstrumentation().context.assets.open(filename)
 
         val credentials = InputStreamReader(inputStream).use { reader ->
-            Gson().fromJson(reader, Credentials::class.java)
+            gson.fromJson(reader, Credentials::class.java)
         }
 
-        val isCertificateValid = sut?.validate(credentials.publicKey, credentials.certificate) ?: false
-        assert(isCertificateValid)
+        return sut?.validate(credentials.publicKey, credentials.certificate) ?: false
     }
 }
