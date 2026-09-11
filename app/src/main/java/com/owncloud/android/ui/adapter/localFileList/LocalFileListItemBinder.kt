@@ -49,9 +49,8 @@ internal class LocalFileListItemBinder(
 
         if (isCheckedFile(file)) {
             holder.itemLayout.setBackgroundColor(ContextCompat.getColor(activity, R.color.selected_item_background))
-            holder.checkbox.setImageDrawable(
-                viewThemeUtils.platform.tintDrawable(activity, R.drawable.ic_checkbox_marked, ColorRole.PRIMARY)
-            )
+            // NMC Customization
+            holder.checkbox.setImageResource(R.drawable.ic_checkbox_marked)
         } else {
             holder.itemLayout.setBackgroundColor(ContextCompat.getColor(activity, R.color.bg_default))
             holder.checkbox.setImageResource(R.drawable.ic_checkbox_blank_outline)
