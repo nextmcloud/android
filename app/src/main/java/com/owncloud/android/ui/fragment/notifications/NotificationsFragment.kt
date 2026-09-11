@@ -34,6 +34,7 @@ import com.nextcloud.common.NextcloudClient
 import com.nextcloud.utils.BuildHelper
 import com.nextcloud.utils.GlideHelper
 import com.nextcloud.utils.extensions.getTypedActivity
+import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.NotificationsLayoutBinding
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl
@@ -197,8 +198,9 @@ class NotificationsFragment :
 
     private fun setupSwipeRefresh(client: NextcloudClient) {
         binding?.run {
-            viewThemeUtils.androidx.themeSwipeRefreshLayout(itemSwipeRefreshLayout)
-            viewThemeUtils.androidx.themeSwipeRefreshLayout(shimmerAndEmptySwipeRefreshLayout)
+            // NMC Customisation
+            SwipeRefreshThemeUtils.themeSwipeRefreshLayout(requireContext(), itemSwipeRefreshLayout)
+            SwipeRefreshThemeUtils.themeSwipeRefreshLayout(requireContext(), shimmerAndEmptySwipeRefreshLayout)
             itemSwipeRefreshLayout.setOnRefreshListener {
                 state = NotificationsUIState.Loading
                 itemSwipeRefreshLayout.isRefreshing = true
