@@ -6,55 +6,33 @@
  */
 package com.nmc.android.ui
 
-import android.content.Intent
-import android.view.View
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import com.owncloud.android.AbstractIT
 import com.owncloud.android.R
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class LauncherActivityIT : AbstractIT() {
 
-    private val instrumentation get() = InstrumentationRegistry.getInstrumentation()
+    @get:Rule
+    val activityRule = ActivityScenarioRule(LauncherActivity::class.java)
 
     @Test
-    fun testSplashScreenWithEmptyTitlesShouldHideTitles() {
-        val activity = launchLauncherActivity()
+    fun verifyUIElements() {
+        onView(withId(R.id.ivSplash)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.splashScreenBold)).check(matches(isCompletelyDisplayed()))
+        onView(withId(R.id.splashScreenNormal)).check(matches(isCompletelyDisplayed()))
 
-        assertEquals(View.VISIBLE, activity.findViewById<View>(R.id.ivSplash).visibility)
-        assertEquals(View.GONE, activity.findViewById<View>(R.id.splashScreenBold).visibility)
-        assertEquals(View.GONE, activity.findViewById<View>(R.id.splashScreenNormal).visibility)
-    }
-
-    @Test
-    fun testSplashScreenWithTitlesShouldShowTitles() {
-        val activity = launchLauncherActivity()
-
-        instrumentation.runOnMainSync { activity.setSplashTitles("Example", "Cloud") }
-
-        assertEquals(View.VISIBLE, activity.findViewById<View>(R.id.ivSplash).visibility)
-        assertEquals(View.VISIBLE, activity.findViewById<View>(R.id.splashScreenBold).visibility)
-        assertEquals(View.VISIBLE, activity.findViewById<View>(R.id.splashScreenNormal).visibility)
-    }
-
-    @Test
-    fun testSplashScreenWithEmptyTitlesShouldNotDelayNextScreen() {
-        val activity = launchLauncherActivity()
-
-        instrumentation.waitForIdleSync()
-
-        assertTrue(activity.isFinishing)
-    }
-
-    private fun launchLauncherActivity(): LauncherActivity {
-        val intent = Intent(targetContext, LauncherActivity::class.java)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-        return instrumentation.startActivitySync(intent) as LauncherActivity
+        onView(withId(R.id.splashScreenBold)).check(matches(withText("Magenta")))
+        onView(withId(R.id.splashScreenNormal)).check(matches(withText("CLOUD")))
+        shortSleep()
     }
 }
