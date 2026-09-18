@@ -35,7 +35,11 @@ class IndeterminateProgressDialog :
         val binding = LoadingDialogBinding.inflate(layoutInflater).apply {
             loadingText.setText(messageId)
             loadingBar.indeterminateDrawable?.let { drawable ->
-                viewThemeUtils.platform.tintDrawable(requireContext(), drawable)
+                // NMC Customization
+                viewThemeUtils.platform.colorDrawable(
+                    drawable,
+                    requireContext().resources.getColor(R.color.white, null)
+                )
             }
         }
 
