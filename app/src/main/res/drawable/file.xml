@@ -6,15 +6,29 @@
   ~ SPDX-License-Identifier: Apache-2.0
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:autoMirrored="true"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-
-    <path
-        android:fillColor="#FF969696"
-        android:fillType="nonZero"
-        android:pathData="M6,22C5.45,22 4.979,21.804 4.588,21.413C4.196,21.021 4,20.55 4,20L4,4C4,3.45 4.196,2.979 4.588,2.587C4.979,2.196 5.45,2 6,2L14,2L20,8L20,20C20,20.55 19.804,21.021 19.413,21.413C19.021,21.804 18.55,22 18,22L6,22Z" />
-
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+  <path
+      android:pathData="M58.29,17.14V61.71A2.3,2.3 0,0 1,56 64H8a2.3,2.3 0,0 1,-2.29 -2.29V2.29A2.3,2.3 0,0 1,8 0H41.14Z">
+    <aapt:attr name="android:fillColor">
+      <gradient
+          android:startX="32"
+          android:startY="64"
+          android:endX="32"
+          android:endY="0"
+          android:type="linear">
+        <item android:offset="0" android:color="#FFDDD6D3"/>
+        <item android:offset="0.39" android:color="#FFE9E4E2"/>
+        <item android:offset="1" android:color="#FFE9E4E2"/>
+      </gradient>
+    </aapt:attr>
+  </path>
+  <path
+      android:pathData="M58.29,17.14H43.43a2.29,2.29 0,0 1,-2.29 -2.28V0Z"
+      android:strokeAlpha="0.7"
+      android:fillColor="#b9ada7"
+      android:fillAlpha="0.7"/>
 </vector>
