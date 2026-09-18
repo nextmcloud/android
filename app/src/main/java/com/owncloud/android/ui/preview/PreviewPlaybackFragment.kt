@@ -156,7 +156,7 @@ class PreviewPlaybackFragment :
                         item.setIcon(
                             viewThemeUtils.platform.colorDrawable(
                                 it,
-                                ContextCompat.getColor(requireContext(), R.color.white)
+                                ContextCompat.getColor(requireContext(), R.color.fontAppbar)
                             )
                         )
                     }
