@@ -77,11 +77,17 @@ class AlbumsAdapter(
             thumbnailGenerator.setThumbnail(
                 ocLocal,
                 gridViewHolder.thumbnail,
-                ThumbnailArguments(isGrid = gridView, hideVideoOverlay = true, null)
+                ThumbnailArguments(
+                    isGrid = gridView,
+                    hideVideoOverlay = true,
+                    shimmer = gridViewHolder.shimmerThumbnail,
+                    isMediaGallery = true
+                )
             )
         } else {
-            gridViewHolder.thumbnail.setImageResource(R.drawable.file_image)
+            gridViewHolder.thumbnail.setImageResource(R.drawable.album_no_photo_placeholder)
             gridViewHolder.thumbnail.visibility = View.VISIBLE
+            gridViewHolder.shimmerThumbnail.visibility = View.GONE
         }
 
         holder.itemView.setOnClickListener { albumFragmentInterface.onItemClick(file) }
@@ -95,6 +101,7 @@ class AlbumsAdapter(
     fun setAlbumItems(albumItems: List<PhotoAlbumEntry>?) {
         albumList.clear()
         albumItems?.let {
+            // NMC-4843 fix
             // alphabetically sorting
             albumList.addAll(it.sortedBy { album -> album.albumName.lowercase() })
         }
