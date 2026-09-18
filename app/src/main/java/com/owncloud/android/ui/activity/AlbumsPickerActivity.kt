@@ -58,6 +58,7 @@ class AlbumsPickerActivity :
 
         initBinding()
         setupToolbar()
+        showHideDefaultToolbarDivider(true)
         setupAction()
         setupActionBar()
         initExtras()
@@ -100,14 +101,8 @@ class AlbumsPickerActivity :
             captionText = resources.getText(R.string.media_picker_toolbar_title).toString()
         }
 
-        folderPickerBinding.run {
-            folderPickerBtnCopy.visibility = View.GONE
-            folderPickerBtnMove.visibility = View.GONE
-            folderPickerBtnChoose.visibility = View.GONE
-            folderPickerBtnCancel.visibility = View.GONE
-            chooseButtonSpacer.visibility = View.GONE
-            moveOrCopyButtonSpacer.visibility = View.GONE
-        }
+        folderPickerBinding.bottomLayout.visibility = View.GONE
+        folderPickerBinding.divider.visibility = View.GONE
     }
 
     private fun createFragments() {

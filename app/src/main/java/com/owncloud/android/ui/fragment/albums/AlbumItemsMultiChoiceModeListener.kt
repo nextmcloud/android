@@ -146,6 +146,6 @@ internal class AlbumItemsMultiChoiceModeListener(
         val item = menu.findItem(R.id.custom_menu_placeholder_item)
         val icon = item.icon ?: return
 
-        item.icon = viewThemeUtils.platform.colorDrawable(icon, ContextCompat.getColor(activity, R.color.white))
+        item.icon = viewThemeUtils.platform.colorDrawable(icon, ContextCompat.getColor(activity, R.color.fontAppbar))
     }
 }

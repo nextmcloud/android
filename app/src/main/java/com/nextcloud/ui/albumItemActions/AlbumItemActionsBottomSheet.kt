@@ -49,9 +49,6 @@ class AlbumItemActionsBottomSheet :
         val bottomSheetDialog = dialog as BottomSheetDialog
         bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         bottomSheetDialog.behavior.skipCollapsed = true
-
-        viewThemeUtils.platform.colorViewBackground(binding.bottomSheet, ColorRole.SURFACE)
-
         return binding.root
     }
 
@@ -96,13 +93,10 @@ class AlbumItemActionsBottomSheet :
                 root.setOnClickListener {
                     dispatchActionClick(action.id)
                 }
-                text.setText(action.titleId)
-                val drawable =
-                    viewThemeUtils.platform.tintDrawable(
-                        requireContext(),
-                        AppCompatResources.getDrawable(requireContext(), action.iconId)!!
-                    )
-                icon.setImageDrawable(drawable)
+                text.setText(action.title)
+                if (action.icon != null) {
+                    icon.setImageResource(action.icon)
+                }
             }
         return itemBinding.root
     }
