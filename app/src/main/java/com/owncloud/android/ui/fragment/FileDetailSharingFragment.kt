@@ -12,45 +12,39 @@ import android.app.Activity
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.text.InputType
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.ImageView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
-import androidx.appcompat.widget.SearchView
 import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.button.MaterialButton
-import com.nextcloud.android.common.ui.network.auth.ServerCredentials
-import com.nextcloud.android.common.ui.share.initShareScreen
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
+import com.google.android.material.appbar.AppBarLayout
 import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.network.ClientFactory
-import com.nextcloud.client.utils.IntentUtil
+import com.nextcloud.utils.EditorUtils
 import com.nextcloud.utils.extensions.getParcelableArgument
-import com.nextcloud.utils.extensions.mergeDistinctByToken
-import com.nextcloud.utils.extensions.setVisibleIf
-import com.nextcloud.utils.extensions.supportsUnifiedShare
-import com.nextcloud.utils.extensions.toServerCredentials
 import com.nextcloud.utils.mdm.MDMConfig.shareViaUser
+import com.nmc.android.utils.DisplayUtils.isLandscapeOrientation
+import com.nmc.android.utils.SearchViewThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FileDetailsSharingFragmentBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
 import com.owncloud.android.datamodel.OCFile
-import com.owncloud.android.datamodel.SharesType
-import com.owncloud.android.datamodel.e2e.v2.decrypted.DecryptedFolderMetadataFile
 import com.owncloud.android.lib.common.accounts.AccountUtils
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.common.utils.Log_OC
@@ -58,17 +52,19 @@ import com.owncloud.android.lib.resources.shares.OCShare
 import com.owncloud.android.lib.resources.shares.ShareType
 import com.owncloud.android.lib.resources.status.NextcloudVersion
 import com.owncloud.android.lib.resources.status.OCCapability
-import com.owncloud.android.operations.RefreshFolderOperation
 import com.owncloud.android.providers.UsersAndGroupsSearchConfig
 import com.owncloud.android.ui.activity.FileActivity
+import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.adapter.ShareeListAdapter
 import com.owncloud.android.ui.adapter.ShareeListAdapterListener
 import com.owncloud.android.ui.asynctasks.RetrieveHoverCardAsyncTask
 import com.owncloud.android.ui.dialog.SharePasswordDialogFragment
 import com.owncloud.android.ui.dialog.SharePasswordDialogFragment.Companion.newInstance
+import com.owncloud.android.ui.events.ShareSearchViewFocusEvent
 import com.owncloud.android.ui.fragment.QuickSharingPermissionsBottomSheetDialog.QuickPermissionSharingBottomSheetActions
 import com.owncloud.android.ui.fragment.share.RemoteShareRepository
 import com.owncloud.android.ui.fragment.util.FileDetailSharingFragmentHelper
+import com.owncloud.android.ui.fragment.util.SharePermissionManager
 import com.owncloud.android.ui.helpers.FileOperationsHelper
 import com.owncloud.android.utils.ClipboardUtil.copyToClipboard
 import com.owncloud.android.utils.DisplayUtils
@@ -78,6 +74,7 @@ import com.owncloud.android.utils.theme.ViewThemeUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions", "LargeClass", "TooGenericExceptionCaught", "ReturnCount")
@@ -104,6 +101,8 @@ class FileDetailSharingFragment :
 
     private var externalShareeListAdapter: ShareeListAdapter? = null
 
+    private var isSearchViewFocused = false
+
     @Inject
     lateinit var accountManager: UserAccountManager
 
@@ -112,6 +111,9 @@ class FileDetailSharingFragment :
 
     @Inject
     lateinit var viewThemeUtils: ViewThemeUtils
+
+    @Inject
+    lateinit var editorUtils: EditorUtils
 
     @Inject
     lateinit var searchConfig: UsersAndGroupsSearchConfig
@@ -130,10 +132,32 @@ class FileDetailSharingFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         fileActivity ?: return
         fileDataStorageManager = fileActivity?.storageManager
         fileOperationsHelper = fileActivity?.fileOperationsHelper
-        initializeSharingMode()
+
+        startShimmerAnimation()
+
+        val userId = getUserId()
+
+        setupInternalShares(userId)
+        setupExternalShares(userId)
+
+        binding?.pickContactEmailBtn?.setOnClickListener { checkContactPermission() }
+
+        binding?.shareCreateNewLink?.setOnClickListener { _ -> createPublicShareLink() }
+
+        // remove focus from search view on click of root view
+        binding?.shareContainer?.setOnClickListener { _ -> binding?.searchView?.clearFocus() }
+
+        // enable-disable scrollview scrolling
+        binding?.fileDetailsNestedScrollView?.setOnTouchListener { _, _ ->
+            isLandscapeOrientation(requireContext()) && isSearchViewFocused
+        }
+
+        fetchSharees()
+        setupView()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -169,49 +193,6 @@ class FileDetailSharingFragment :
     // endregion
 
     // region private methods
-    private fun initializeSharingMode() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                user?.toServerCredentials()?.takeIf { it.supportsUnifiedShare() }
-            }?.let(::showUnifiedShare) ?: showLegacyShare()
-        }
-    }
-
-    private fun showLegacyShare() {
-        binding?.sharingModeProgress?.visibility = View.GONE
-
-        val userId = getUserId()
-        setupInternalShares(userId)
-        setupExternalShares(userId)
-
-        startShimmerAnimation()
-        setupLegacyShareUi()
-        fetchSharees()
-    }
-
-    private fun showUnifiedShare(credentials: ServerCredentials) {
-        val binding = binding ?: return
-        val user = user ?: return
-        val file = file ?: return
-        val sourceId = file.localId.toString()
-
-        binding.sharingModeProgress.visibility = View.GONE
-        binding.shareContainer.visibility = View.GONE
-        binding.unifiedShare.visibility = View.VISIBLE
-
-        val shimmerLayout = binding.shimmerLayout.root
-        shimmerLayout.clearAnimation()
-        shimmerLayout.visibility = View.GONE
-
-        binding.unifiedShare.initShareScreen(
-            viewModelStoreOwner = this,
-            sourceId = sourceId,
-            internalLink = createInternalLink(user, file, capabilities),
-            credentials = credentials,
-            colorScheme = viewThemeUtils.files.getColorScheme(requireContext())
-        )
-    }
-
     private fun initArguments(savedInstanceState: Bundle?) {
         val args = (savedInstanceState ?: arguments) ?: return
         file = args.getParcelableArgument(ARG_FILE, OCFile::class.java)
@@ -227,30 +208,29 @@ class FileDetailSharingFragment :
     }
 
     private fun setupInternalShares(userId: String) {
-        internalShareeListAdapter = createShareListAdapter(userId, SharesType.INTERNAL)
-        binding?.sharesListInternal?.run {
+        internalShareeListAdapter = createShareListAdapter(userId)
+        binding?.sharesList?.run {
             adapter = internalShareeListAdapter
             layoutManager = createShareListLayoutManager()
         }
     }
 
     private fun setupExternalShares(userId: String) {
-        externalShareeListAdapter = createShareListAdapter(userId, SharesType.EXTERNAL)
-        binding?.sharesListExternal?.run {
+        externalShareeListAdapter = createShareListAdapter(userId)
+        binding?.linkSharesList?.run {
             adapter = externalShareeListAdapter
             layoutManager = createShareListLayoutManager()
         }
     }
 
-    private fun createShareListAdapter(userId: String, type: SharesType): ShareeListAdapter = ShareeListAdapter(
+    private fun createShareListAdapter(userId: String): ShareeListAdapter = ShareeListAdapter(
         fileActivity!!,
         ArrayList(),
         this,
         userId,
         user,
         viewThemeUtils,
-        (file?.isEncrypted == true),
-        type
+        (file?.isEncrypted == true)
     ).apply {
         setHasStableIds(true)
     }
@@ -299,175 +279,113 @@ class FileDetailSharingFragment :
         }
     }
 
-    private fun resetSearchView() {
+    private fun setupView() {
         binding?.run {
-            toggleSearchViewEnable(searchView, true)
-            searchView.inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-            searchView.setQueryHint(null)
-            searchView.setQuery("", false)
-            pickContactEmailBtn.setVisibility(View.VISIBLE)
-        }
-    }
-
-    private fun setupLegacyShareUi() {
-        resetSearchView()
-        setShareWithYou()
-
-        binding?.run {
-            pickContactEmailBtn.setOnClickListener { checkContactPermission() }
-
             FileDetailSharingFragmentHelper.setupSearchView(
                 fileActivity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager?,
                 searchView,
                 fileActivity?.componentName
             )
 
-            applyLegacyShareTheme(this)
-            setupShowAllButtons(this)
+            themeView(this)
+            setupShareView(this)
 
-            if (file?.canReshare() == true && !FileDetailSharingFragmentHelper.isPublicShareDisabled(capabilities)) {
-                val parentFile = file?.parentId?.let { fileDataStorageManager?.getFileById(it) }
-                configureCreateLinkSection(this, parentFile)
-            } else {
-                disableResharingUi(this)
-            }
+            setShareWithYou()
 
             checkShareViaUser()
-
-            if (file?.isFolder == true) {
-                sendCopyBtn.visibility = View.GONE
-            }
-
-            sendCopyBtn.setOnClickListener {
-                startActivity(
-                    Intent.createChooser(
-                        IntentUtil.createSendIntent(requireContext(), file!!),
-                        requireContext().getString(R.string.activity_chooser_send_file_title)
-                    )
-                )
-            }
         }
     }
 
-    private fun applyLegacyShareTheme(binding: FileDetailsSharingFragmentBinding) {
+    private fun themeView(binding: FileDetailsSharingFragmentBinding) {
         binding.run {
-            viewThemeUtils.material.run {
-                themeSearchCardView(searchCardWrapper)
-                colorMaterialButtonPrimaryOutlined(sendCopyBtn)
-                colorMaterialButtonPrimaryBorderless(sharesListInternalShowAll)
-                colorMaterialTextButton(sharesListInternalShowAll)
-                colorMaterialButtonPrimaryOutlined(createLink)
-                colorMaterialButtonPrimaryBorderless(sharesListExternalShowAll)
-            }
-
-            viewThemeUtils.platform.run {
-                colorImageView(searchViewIcon, ColorRole.ON_SURFACE_VARIANT)
-                colorImageView(pickContactEmailBtn, ColorRole.ON_SURFACE_VARIANT)
-            }
-
-            viewThemeUtils.files.run {
-                themeContentSearchView(searchView)
-            }
+            SearchViewThemeUtils.themeSearchView(requireContext(), searchView)
         }
     }
 
-    private fun setupShowAllButtons(binding: FileDetailsSharingFragmentBinding) {
-        binding.run {
-            sharesListInternalShowAll.setOnClickListener {
-                expandOrCollapseAdapter(internalShareeListAdapter, sharesListInternalShowAll)
-            }
+    /**
+     * @param isDeviceRotated true when user rotated the device and false when user is already in landscape mode
+     */
+    private fun scrollToSearchViewPosition(isDeviceRotated: Boolean) {
+        if (isLandscapeOrientation(requireContext())) {
+            if (isSearchViewFocused) {
+                binding?.fileDetailsNestedScrollView?.post {
 
-            sharesListExternalShowAll.setOnClickListener {
-                expandOrCollapseAdapter(externalShareeListAdapter, sharesListExternalShowAll)
-            }
-            viewThemeUtils.material.colorMaterialTextButton(sharesListExternalShowAll)
-        }
-    }
-
-    private fun expandOrCollapseAdapter(adapter: ShareeListAdapter?, button: MaterialButton) {
-        adapter ?: return
-        adapter.toggleShowAll()
-        val actionTextId = adapter.getExpandOrCollapseActionTextId()
-        button.setText(actionTextId)
-    }
-
-    private fun configureEncryptedShareUi(binding: FileDetailsSharingFragmentBinding) {
-        binding.run {
-            internalShareHeadline.text = resources.getString(R.string.internal_share_headline_end_to_end_encrypted)
-            internalShareDescription.visibility = View.VISIBLE
-            externalSharesHeadline.text = resources.getString(R.string.create_end_to_end_encrypted_share_title)
-
-            lifecycleScope.launch {
-                val result = fetchE2EECounter()
-                if (!result) {
-                    return@launch
                 }
+                binding?.run {
+                    fileDetailsNestedScrollView.post {
 
-                withContext(Dispatchers.Main) {
-                    if (file?.e2eCounter == -1L) {
-                        disableE2EEShareForV1(binding)
-                        return@withContext
-                    }
+                        //need to hide app bar to have more space in landscape mode while search view is focused
+                        hideAppBar()
 
-                    createLink.setText(R.string.add_new_secure_file_drop)
-                    searchView.setQueryHint(resources.getString(R.string.secure_share_search))
+                        //send the event to hide the share top view to have more space
+                        //need to use this here else white view will be visible for sometime
+                        EventBus.getDefault().post(ShareSearchViewFocusEvent(isSearchViewFocused))
 
-                    if (file?.isSharedViaLink == true) {
-                        disableSearchViewForFileDrop(searchView)
+                        if (isDeviceRotated) {
+                            // during the rotation we need to use getTop() method for proper alignment of search view
+                            // -25 just to avoid blank space at top
+                            fileDetailsNestedScrollView.smoothScrollTo(0, searchView.top - 20)
+                        } else {
+                            // when user is already in landscape mode and search view gets focus
+                            // we need to user getBottom() method for proper alignment of search view
+                            // -100 just to avoid blank space at top
+                            fileDetailsNestedScrollView.smoothScrollTo(
+                                0,
+                                searchView.bottom - 100
+                            )
+                        }
                     }
                 }
-            }
-        }
-    }
-
-    private fun disableE2EEShareForV1(binding: FileDetailsSharingFragmentBinding) {
-        binding.searchContainer.visibility = View.GONE
-        binding.createLink.visibility = View.GONE
-    }
-
-    private fun disableSearchViewForFileDrop(searchView: SearchView) {
-        searchView.setQueryHint(resources.getString(R.string.share_not_allowed_when_file_drop))
-        searchView.inputType = InputType.TYPE_NULL
-        toggleSearchViewEnable(searchView, false)
-    }
-
-    private fun configureCreateLinkSection(binding: FileDetailsSharingFragmentBinding, parentFile: OCFile?) {
-        binding.run {
-            if (file?.isEncrypted == true || (parentFile != null && parentFile.isEncrypted)) {
-                configureEncryptedShareUi(this)
             } else {
-                createLink.setText(R.string.create_link)
-                searchView.setQueryHint(getResources().getString(R.string.share_search_internal))
+                //send the event to show the share top view again
+                EventBus.getDefault().post(ShareSearchViewFocusEvent(isSearchViewFocused))
             }
-
-            createLink.setOnClickListener { createPublicShareLink() }
+        } else {
+            //in portrait mode we need to see the layout everytime
+            //send the event to show the share top view
+            EventBus.getDefault().post(ShareSearchViewFocusEvent(false))
         }
     }
 
-    private fun disableResharingUi(binding: FileDetailsSharingFragmentBinding) {
+    private fun hideAppBar() {
+        if (requireActivity() is FileDisplayActivity) {
+            val appBarLayout = requireActivity().findViewById<AppBarLayout?>(R.id.appbar)
+
+            if (appBarLayout != null) {
+                appBarLayout.setExpanded(false, true)
+            }
+        }
+    }
+
+    private fun setupShareView(binding: FileDetailsSharingFragmentBinding) {
         binding.run {
-            searchView.setQueryHint(getResources().getString(R.string.resharing_is_not_allowed))
-            createLink.visibility = View.GONE
-            externalSharesHeadline.visibility = View.GONE
-            searchView.inputType = InputType.TYPE_NULL
-            pickContactEmailBtn.setVisibility(View.GONE)
-            toggleSearchViewEnable(searchView, false)
-            createLink.setOnClickListener(null)
+            searchView.setQueryHint(resources.getString(R.string.share_search))
+            searchView.visibility = View.VISIBLE
+            pickContactEmailBtn.visibility = View.VISIBLE
+
+            searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
+                isSearchViewFocused = hasFocus
+                scrollToSearchViewPosition(false)
+            }
         }
     }
 
-    private suspend fun fetchE2EECounter(): Boolean = withContext(Dispatchers.IO) {
-        return@withContext try {
-            val context = requireContext()
-            val client = clientFactory.create(user)
-            val metadata = RefreshFolderOperation.getDecryptedFolderMetadata(true, file, client, user, context)
-            if (metadata is DecryptedFolderMetadataFile) {
-                fileDataStorageManager?.updateE2EECounter(file, metadata)
-            }
-            true
-        } catch (e: Exception) {
-            Log_OC.e(TAG, "Error refreshing E2E counter: " + e.message)
-            false
+    private fun setupDisabledShareView(binding: FileDetailsSharingFragmentBinding) {
+        binding.run {
+            searchView.inputType = InputType.TYPE_NULL
+            pickContactEmailBtn.visibility = View.GONE
+            binding.orSectionLayout.visibility = View.GONE
+            binding.linkShareSectionHeading.visibility = View.GONE
+            binding.linkSharesList.visibility = View.GONE
+            binding.shareCreateNewLink.visibility = View.GONE
+
+            binding.sharedWithDivider.visibility = View.GONE
+            binding.tvYourShares.visibility = View.GONE
+            binding.sharesList.visibility = View.GONE
+            binding.tvEmptyShares.visibility = View.GONE
+
+            binding.tvResharingStatus.text = resources.getString(R.string.reshare_not_allowed)
+            toggleSearchViewEnable(searchView, false)
         }
     }
 
@@ -480,7 +398,7 @@ class FileDetailSharingFragment :
     }
 
     private fun toggleSearchViewEnable(view: View, enable: Boolean) {
-        view.setEnabled(enable)
+        view.isEnabled = enable
         if (view is ViewGroup) {
             for (i in 0..<view.size) {
                 toggleSearchViewEnable(view.getChildAt(i), enable)
@@ -491,45 +409,76 @@ class FileDetailSharingFragment :
     private fun setShareWithYou() {
         binding?.run {
             if (accountManager.userOwnsFile(file, user)) {
-                sharedWithYouContainer.visibility = View.GONE
+                tvResharingInfo.visibility = View.GONE
+                tvResharingStatus.visibility = View.GONE
                 return
             }
 
-            sharedWithYouUsername.text = String.format(getString(R.string.shared_with_you_by), file?.ownerDisplayName)
-            setupUserAvatar(sharedWithYouAvatar)
-            setupNote(this)
+            tvResharingInfo.text = DisplayUtils.createTextWithSpan(
+                String.format(getString(R.string.resharing_user_info), file?.ownerDisplayName),
+                file?.ownerDisplayName,
+                StyleSpan(Typeface.BOLD)
+            )
+
+            if (file?.canReshare() == true) {
+                tvResharingStatus.text = resources.getString(R.string.reshare_allowed)
+            } else {
+                setupDisabledShareView(this)
+            }
+
+            tvResharingStatus.visibility = View.VISIBLE
+            tvResharingInfo.visibility = View.VISIBLE
         }
     }
 
-    private fun setupUserAvatar(sharedWithYouAvatar: ImageView) {
+    /**
+     * will be called from FileActivity when user is sharing from PreviewImageFragment
+     *
+     * @param shareeName
+     * @param shareType
+     */
+    fun initiateSharingProcess(shareeName: String, shareType: ShareType, secureShare: Boolean) {
+        val file = file ?: return
         val user = user ?: return
-        val userId = file?.ownerId ?: return
-
-        DisplayUtils.setAvatar(
-            user,
-            userId,
-            this@FileDetailSharingFragment,
-            resources.getDimension(
-                R.dimen.file_list_item_avatar_icon_radius
+        val capabilities = capabilities ?: return
+        requireActivity().supportFragmentManager.beginTransaction().replace(
+            R.id.share_fragment_container,
+            FileDetailsSharingProcessFragment.newInstance(
+                file,
+                shareeName,
+                shareType,
+                secureShare,
+                SharePermissionManager.canEditFile(user, capabilities, file, editorUtils)
             ),
-            resources,
-            sharedWithYouAvatar,
-            context
+            FileDetailsSharingProcessFragment.TAG
         )
-
-        sharedWithYouAvatar.setVisibility(View.VISIBLE)
+            .addToBackStack(null)
+            .commit()
     }
 
-    private fun setupNote(binding: FileDetailsSharingFragmentBinding) {
-        val note = file?.getNote()
-
-        if (!note.isNullOrEmpty()) {
-            binding.sharedWithYouNote.text = file?.getNote()
-            binding.sharedWithYouNoteContainer.visibility = View.VISIBLE
-            return
-        }
-
-        binding.sharedWithYouNoteContainer.visibility = View.GONE
+    /**
+     * open the new sharing screen process to modify the created share this will be called from PreviewImageFragment
+     *
+     * @param share
+     * @param screenTypePermission
+     * @param isReshareShown
+     */
+    fun editExistingShare(share: OCShare, screenTypePermission: Int, isReshareShown: Boolean) {
+        val file = file ?: return
+        val user = user ?: return
+        val capabilities = capabilities ?: return
+        requireActivity().supportFragmentManager.beginTransaction().replace(
+            R.id.share_fragment_container,
+            FileDetailsSharingProcessFragment.newInstance(
+                share,
+                screenTypePermission,
+                isReshareShown,
+                SharePermissionManager.canEditFile(user, capabilities, file, editorUtils)
+            ),
+            FileDetailsSharingProcessFragment.TAG
+        )
+            .addToBackStack(null)
+            .commit()
     }
 
     @VisibleForTesting
@@ -557,21 +506,48 @@ class FileDetailSharingFragment :
         FileActivity.showShareLinkDialog(fileActivity, file, publicShare.shareLink)
     }
 
-    private fun refreshLegacyShareUiFromDb() {
+    private fun refreshUiFromDB() {
         refreshSharesFromDB()
-        setupLegacyShareUi()
+        setupView()
     }
 
     private fun unShareWith(share: OCShare) {
         fileOperationsHelper?.unShareShare(file, share.id)
     }
 
-    private fun addExternalAndPublicShares(externalShares: List<OCShare>) {
+    private fun addExternalAndPublicShares() {
+        if (FileDetailSharingFragmentHelper.isPublicShareDisabled(capabilities)
+            || file?.canReshare() == false
+        ) {
+            return
+        }
+
+        externalShareeListAdapter?.removeAll() ?: run {
+            DisplayUtils.showSnackMessage(this@FileDetailSharingFragment, R.string.could_not_retrieve_shares)
+            return
+        }
+
         val publicShares =
             fileDataStorageManager?.getSharesByPathAndType(file?.remotePath, ShareType.PUBLIC_LINK, "") ?: emptyList()
-        externalShareeListAdapter?.removeAll()
-        val shares = externalShares.mergeDistinctByToken(publicShares)
-        externalShareeListAdapter?.addShares(shares)
+        externalShareeListAdapter?.addShares(publicShares)
+
+        showHideLinkShareView(publicShares.isEmpty())
+    }
+
+    private fun showHideLinkShareView(isEmptyList: Boolean) {
+        binding?.linkSharesList?.visibility = if (isEmptyList) View.GONE else View.VISIBLE
+    }
+
+    private fun showHideEmailShareView(isEmptyList: Boolean) {
+        binding?.run {
+            sharesList.visibility = if (isEmptyList) View.GONE else View.VISIBLE
+            // additional check to hide the empty shares if file cannot be shared
+            if (file?.canReshare() == false) {
+                tvEmptyShares.visibility = View.GONE
+                return
+            }
+            tvEmptyShares.visibility = if (isEmptyList) View.VISIBLE else View.GONE
+        }
     }
 
     private fun checkContactPermission() {
@@ -658,16 +634,15 @@ class FileDetailSharingFragment :
         ShareType.EMAIL
     )
 
-    private suspend fun loadAndPartitionShares(): Pair<List<OCShare>, List<OCShare>> = withContext(Dispatchers.IO) {
+    private suspend fun loadShares(): List<OCShare> = withContext(Dispatchers.IO) {
         val shares = fileDataStorageManager
             ?.getSharesWithForAFile(file?.remotePath, user?.accountName)
             ?: emptyList()
 
-        val (external, internal) = shares
+        val linkShares = shares
             .filter { it.shareType != null }
-            .partition { it.shareType in externalShareTypes }
 
-        return@withContext internal to external
+        return@withContext linkShares
     }
     // endregion
 
@@ -676,8 +651,8 @@ class FileDetailSharingFragment :
         fileOperationsHelper?.setPermissionsToShare(share, permission)
     }
 
-    override fun openShareDetailWithCustomPermissions(share: OCShare) {
-        modifyExistingShare(share, FileDetailsSharingProcessFragment.SCREEN_TYPE_PERMISSION_WITH_CUSTOM_PERMISSION)
+    override fun openIn(share: OCShare?) {
+        fileOperationsHelper?.sendShareFile(file, true)
     }
 
     override fun advancedPermissions(share: OCShare) {
@@ -697,15 +672,15 @@ class FileDetailSharingFragment :
 
         val entity = fileDataStorageManager?.getFileEntity(file)
 
-        if (binding?.sharesListInternal?.adapter is ShareeListAdapter) {
-            val adapter = binding?.sharesListInternal?.adapter as ShareeListAdapter
+        if (binding?.sharesList?.adapter is ShareeListAdapter) {
+            val adapter = binding?.sharesList?.adapter as ShareeListAdapter
             adapter.remove(share)
             if (entity != null && adapter.isAdapterEmpty()) {
                 entity.sharedWithSharee = 0
                 fileDataStorageManager?.updateFileEntity(entity)
             }
-        } else if (binding?.sharesListExternal?.adapter is ShareeListAdapter) {
-            val adapter = binding?.sharesListExternal?.adapter as ShareeListAdapter
+        } else if (binding?.linkSharesList?.adapter is ShareeListAdapter) {
+            val adapter = binding?.linkSharesList?.adapter as ShareeListAdapter
             adapter.remove(share)
             if (entity != null && adapter.isAdapterEmpty()) {
                 entity.sharedViaLink = 0
@@ -722,10 +697,6 @@ class FileDetailSharingFragment :
         } else {
             showSendLinkTo(share)
         }
-    }
-
-    override fun addAnotherLink(share: OCShare?) {
-        createPublicShareLink()
     }
 
     override fun copyInternalLink() {
@@ -772,6 +743,9 @@ class FileDetailSharingFragment :
         }
 
         copyToClipboard(requireActivity(), share.shareLink)
+
+        // NMC: send link after copying it to clipboard
+        sendLink(share)
     }
 
     @VisibleForTesting
@@ -829,7 +803,8 @@ class FileDetailSharingFragment :
     }
 
     override fun avatarGenerated(avatarDrawable: Drawable?, callContext: Any?) {
-        binding?.sharedWithYouAvatar?.setImageDrawable(avatarDrawable)
+        // NMC: not required
+        // binding?.sharedWithYouAvatar?.setImageDrawable(avatarDrawable)
     }
 
     override fun shouldCallGeneratedCallback(tag: String?, callContext: Any?): Boolean = false
@@ -851,9 +826,9 @@ class FileDetailSharingFragment :
         }
 
         if (result.isSuccess) {
-            refreshLegacyShareUiFromDb()
+            refreshUiFromDB()
         } else {
-            setupLegacyShareUi()
+            setupView()
         }
     }
 
@@ -875,21 +850,19 @@ class FileDetailSharingFragment :
 
         file = file?.fileId?.let { fileDataStorageManager?.getFileById(it) } ?: file
 
-        internalShareeListAdapter?.removeAll() ?: run {
-            DisplayUtils.showSnackMessage(this, R.string.could_not_retrieve_shares)
-            return
-        }
-
         lifecycleScope.launch {
-            val (internalShares, externalShares) = loadAndPartitionShares()
+            val internalShares = loadShares()
 
             withContext(Dispatchers.Main) {
+                // NMC-6600 fix
+                // remove shares inside Main dispatcher
+                internalShareeListAdapter?.removeAll() ?: run {
+                    DisplayUtils.showSnackMessage(this@FileDetailSharingFragment, R.string.could_not_retrieve_shares)
+                    return@withContext
+                }
                 internalShareeListAdapter?.addShares(internalShares)
-                binding.sharesListInternalShowAll.setVisibleIf(internalShares.size > MIN_SHOW_ALL_VISIBLE_ITEM_COUNT)
-
-                addExternalAndPublicShares(externalShares)
-                val externalCount = externalShareeListAdapter?.shares?.size ?: 0
-                binding.sharesListExternalShowAll.setVisibleIf(externalCount > MIN_SHOW_ALL_VISIBLE_ITEM_COUNT)
+                showHideEmailShareView(internalShares.isEmpty())
+                addExternalAndPublicShares()
             }
         }
     }
@@ -927,17 +900,25 @@ class FileDetailSharingFragment :
     }
     // endregion
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // when user is in portrait mode and search view is focused and keyboard is open
+        // so when user rotate the device we have to fix the search view properly in landscape mode
+        scrollToSearchViewPosition(true)
+    }
+
     interface OnEditShareListener {
         fun editExistingShare(share: OCShare?, screenTypePermission: Int, isReshareShown: Boolean)
 
         fun onShareProcessClosed()
+
+        fun onLinkShareDownloadLimitFetched(downloadLimit: Long, downloadCount: Long)
     }
 
     companion object {
         private const val TAG = "FileDetailSharingFragment"
         private const val ARG_FILE = "FILE"
         private const val ARG_USER = "USER"
-        private const val MIN_SHOW_ALL_VISIBLE_ITEM_COUNT = 3
         private const val INTERNAL_LINK_PATH_PRETTY = "/f/"
         private const val INTERNAL_LINK_PATH_DEFAULT = "/index.php/f/"
 
