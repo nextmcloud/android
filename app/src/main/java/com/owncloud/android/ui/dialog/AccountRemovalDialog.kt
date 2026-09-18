@@ -17,6 +17,9 @@ import com.nextcloud.client.account.User
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.jobs.BackgroundJobManager
 import com.nextcloud.client.player.media3.PlaybackModel
+import com.nextcloud.client.preferences.AppPreferences
+import com.nmc.android.marketTracking.AdjustSdkUtils
+import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
@@ -35,6 +38,9 @@ class AccountRemovalDialog : DialogFragment(), Injectable {
     @Inject
     lateinit var playbackModel: PlaybackModel
 
+    @Inject
+    lateinit var appPreferences: AppPreferences
+
     private var user: User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +56,9 @@ class AccountRemovalDialog : DialogFragment(), Injectable {
             .setPositiveButton(R.string.common_ok) { _: DialogInterface?, _: Int ->
                 user?.let { user ->
                     stopMediaPlayerAndHidePip()
+                    // track adjust and tealium events on logout confirmed
+                    AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_SETTINGS_LOGOUT, appPreferences)
+                    TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_SETTINGS_LOGOUT, appPreferences)
                     backgroundJobManager.startAccountRemovalJob(user.accountName, false)
                 }
             }
