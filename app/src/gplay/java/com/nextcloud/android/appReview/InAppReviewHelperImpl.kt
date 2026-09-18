@@ -70,6 +70,10 @@ class InAppReviewHelperImpl(val appPreferences: AppPreferences) : InAppReviewHel
         }
     }
 
+    override fun performNativeReview(activity: AppCompatActivity) {
+        doAppReview(activity)
+    }
+
     private fun doAppReview(activity: AppCompatActivity) {
         val manager = ReviewManagerFactory.create(activity)
         val request: Task<ReviewInfo> = manager.requestReviewFlow()

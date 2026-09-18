@@ -36,6 +36,7 @@ import com.nextcloud.utils.GlideHelper
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.R
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.databinding.NotificationsLayoutBinding
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl
 import com.owncloud.android.lib.common.utils.Log_OC
@@ -89,6 +90,8 @@ class NotificationsFragment :
     // region Lifecycle
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificationsLayoutBinding.inflate(inflater, container, false)
+        // NMC: track notification screen event
+        MoEngageSdkUtils.trackNotificationsScreenEvent(requireContext())
         return binding!!.root
     }
 

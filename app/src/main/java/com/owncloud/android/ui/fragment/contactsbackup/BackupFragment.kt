@@ -33,6 +33,7 @@ import com.nextcloud.client.jobs.BackgroundJobManager
 import com.nextcloud.utils.extensions.getSerializableArgument
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.nextcloud.utils.extensions.setVisibleIf
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.BackupFragmentBinding
 import com.owncloud.android.datamodel.ArbitraryDataProvider
@@ -149,7 +150,10 @@ class BackupFragment :
             user,
             ContactsPreferenceActivity.PREFERENCE_CONTACTS_AUTOMATIC_BACKUP
         )
-        binding.contacts.isChecked = isBackupEnabled(BackupType.Contacts) && checkContactBackupPermission()
+        val isContactBackUpEnabled = isBackupEnabled(BackupType.Contacts)
+        // NMC: track contact backup
+        MoEngageSdkUtils.trackContactBackup(requireContext(), isContactBackUpEnabled)
+        binding.contacts.isChecked = isContactBackUpEnabled && checkContactBackupPermission()
         binding.calendar.isChecked =
             isBackupEnabled(BackupType.Calendar) && checkCalendarBackupPermission(requireContext())
         binding.calendar.visibility = if (showCalendarBackup) View.VISIBLE else View.GONE
