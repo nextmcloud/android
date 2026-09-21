@@ -119,6 +119,9 @@ class LogsEmailSender(private val context: Context, private val clock: Clock, pr
             .setContentTitle(message)
             .setAutoCancel(true)
 
+        // NMC Customization
+        notificationBuilder.color = context.resources.getColor(R.color.primary, null)
+
         val actionIntent = Intent(DownloadManager.ACTION_VIEW_DOWNLOADS).apply {
             flags = FLAG_ACTIVITY_NEW_TASK
         }
