@@ -383,14 +383,13 @@
             android:name=".ui.activity.SettingsActivity"
             android:enableOnBackInvokedCallback="false"
             android:exported="false"
-            android:theme="@style/PreferenceTheme" />
+            android:theme="@style/Theme.ownCloud" />
         <activity
             android:name=".ui.preview.PreviewImageActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
             android:supportsPictureInPicture="true"
-            android:launchMode="singleTask"
-            android:theme="@style/Theme.ownCloud.Overlay" />
+            android:launchMode="singleTask" />
         <activity
             android:name="com.nextcloud.client.player.ui.PlayerActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
