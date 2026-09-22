@@ -36,6 +36,9 @@
     <color name="grey_600">#666666</color>
     <color name="grey_800_transparent">#CC000000</color>
 
+    <!-- Notification Colors -->
+    <color name="notification_icon_color">#191919</color>
+
     <!-- level colors for info notifications/visualisations -->
     <color name="infolevel_warning">#e9322d</color>
 
