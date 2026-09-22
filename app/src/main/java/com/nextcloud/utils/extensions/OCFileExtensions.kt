@@ -91,3 +91,7 @@ fun OCFile.toEncryptionEvent(encrypt: Boolean): EncryptionEvent = EncryptionEven
     remotePath,
     encrypt
 )
+
+// NMC method to filter only folders with/without e2ee folders
+fun List<OCFile>.filterByFolder(hideEncryptedFolder: Boolean = false): List<OCFile> =
+    filter { it.isFolder && (!hideEncryptedFolder || !it.isEncrypted) }
