@@ -612,6 +612,9 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return;
         }
 
+        // visibility gone as view not required for NMC
+        sharedAvatars.setVisibility(View.GONE);
+
         final long fileId = file.getFileId();
         sharedAvatars.setBoundFileId(fileId);
         sharedAvatars.setOnClickListener(view -> ocFileListFragmentInterface.onShareIconClick(file));
