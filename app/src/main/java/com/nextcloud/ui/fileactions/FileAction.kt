@@ -69,7 +69,7 @@ enum class FileAction(
     RETRY(R.id.action_retry, R.string.retry, R.drawable.ic_retry),
 
     // Add to Album operation for image and video files
-    ADD_TO_ALBUM(R.id.action_add_to_album, R.string.add_to_album, R.drawable.ic_album);
+    ADD_TO_ALBUM(R.id.action_add_to_album, R.string.add_to_album, R.drawable.nav_albums);
 
     constructor(id: Int, title: Int) : this(id, title, null)
 
