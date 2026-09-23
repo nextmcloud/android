@@ -553,7 +553,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 Log_OC.w(TAG, "currentDir is null cannot open bottom sheet dialog");
                 return;
             }
-            
+
             final OCFileListBottomSheetDialog dialog = new OCFileListBottomSheetDialog(fileActivity,
                                                                                        this,
                                                                                        deviceInfo,
@@ -706,7 +706,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Override
     public void onShareIconClick(OCFile file) {
-        mContainerActivity.showDetails(file, 1);
+        // NMC: use 0 as activeTab
+        mContainerActivity.showDetails(file, 0);
     }
 
     @Override
@@ -716,7 +717,8 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Override
     public void showActivityDetailView(OCFile file) {
-        mContainerActivity.showDetails(file, 0);
+        // NMC: use 1 as activeTab
+        mContainerActivity.showDetails(file, 1);
     }
 
     @Override
@@ -1626,7 +1628,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
         invalidateActionMode();
     }
-    
+
     private void updateSortButton() {
         if (mSortButton != null) {
             FileSortOrder sortOrder;

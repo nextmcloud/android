@@ -17,6 +17,7 @@ import com.nextcloud.common.NextcloudClient
 import com.owncloud.android.databinding.VersionListItemBinding
 import com.owncloud.android.lib.resources.activities.model.Activity
 import com.owncloud.android.lib.resources.files.model.FileVersion
+import com.owncloud.android.operations.comments.Comments
 import com.owncloud.android.ui.interfaces.ActivityListInterface
 import com.owncloud.android.ui.interfaces.VersionListInterface
 import com.owncloud.android.utils.DisplayUtils
@@ -28,8 +29,9 @@ class ActivityAndVersionListAdapter(
     currentAccountProvider: CurrentAccountProvider,
     activityListInterface: ActivityListInterface,
     private val versionListInterface: VersionListInterface.View,
-    viewThemeUtils: ViewThemeUtils
-) : ActivityListAdapter(context, currentAccountProvider, activityListInterface, true, viewThemeUtils) {
+    viewThemeUtils: ViewThemeUtils,
+    userId: String
+) : ActivityListAdapter(context, currentAccountProvider, activityListInterface, true, viewThemeUtils, userId) {
 
     @SuppressLint("NotifyDataSetChanged")
     fun setActivityAndVersionItems(items: MutableList<Any?>, newClient: NextcloudClient?, clear: Boolean) {
@@ -58,6 +60,7 @@ class ActivityAndVersionListAdapter(
     private fun Any?.timestamp(): Long? = when (this) {
         is Activity -> datetime.time
         is FileVersion -> modifiedTimestamp
+        is Comments -> creationDateTime?.time
         else -> null
     }
 
@@ -82,6 +85,7 @@ class ActivityAndVersionListAdapter(
     override fun getItemViewType(position: Int) = when (values[position]) {
         is Activity -> ACTIVITY_TYPE
         is FileVersion -> VERSION_TYPE
+        is Comments -> COMMENT_TYPE
         else -> HEADER_TYPE
     }
 

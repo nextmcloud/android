@@ -52,6 +52,7 @@ import com.owncloud.android.lib.resources.shares.OCShare;
 import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.lib.resources.users.GetUserInfoRemoteOperation;
 import com.owncloud.android.operations.CheckCurrentCredentialsOperation;
+import com.owncloud.android.operations.CommentFileOperation;
 import com.owncloud.android.operations.CopyFileOperation;
 import com.owncloud.android.operations.CreateFolderOperation;
 import com.owncloud.android.operations.CreateShareViaLinkOperation;
@@ -69,6 +70,7 @@ import com.owncloud.android.operations.UpdateShareInfoOperation;
 import com.owncloud.android.operations.UpdateSharePermissionsOperation;
 import com.owncloud.android.operations.UpdateShareViaLinkOperation;
 import com.owncloud.android.operations.albums.CopyFileToAlbumOperation;
+import com.owncloud.android.operations.comments.GetCommentsRemoteOperation;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -112,6 +114,7 @@ public class OperationsService extends Service {
     public static final String EXTRA_FILES_DOWNLOAD_LIMIT = "FILES_DOWNLOAD_LIMIT";
     public static final String EXTRA_SHARE_ATTRIBUTES = "SHARE_ATTRIBUTES";
     public static final String EXTRA_CREATE_ALBUM_SHARE = "CREATE_ALBUM_SHARE";
+    public static final String EXTRA_FILE_ID = "FILE_ID";
 
     public static final String ACTION_CREATE_SHARE_VIA_LINK = "CREATE_SHARE_VIA_LINK";
     public static final String ACTION_CREATE_SECURE_FILE_DROP = "CREATE_SECURE_FILE_DROP";
@@ -139,6 +142,7 @@ public class OperationsService extends Service {
     public static final String ACTION_RENAME_ALBUM = "RENAME_ALBUM";
     public static final String ACTION_REMOVE_ALBUM = "REMOVE_ALBUM";
     public static final String ACTION_PUBLIC_SHARE_LINK_ALBUM = "PUBLIC_SHARE_LINK_ALBUM";
+    public static final String ACTION_GET_COMMENTS = "GET_COMMENTS";
 
     private ServiceHandler mOperationsHandler;
     private OperationsServiceBinder mOperationsBinder;
@@ -824,6 +828,15 @@ public class OperationsService extends Service {
                         String albmName = operationIntent.getStringExtra(EXTRA_ALBUM_NAME);
                         boolean isCreateShare = operationIntent.getBooleanExtra(EXTRA_CREATE_ALBUM_SHARE, false);
                         operation = new PublicShareLinkAlbumRemoteOperation(albmName, isCreateShare);
+                        break;
+
+                    case ACTION_GET_COMMENTS:
+                        long fileId = operationIntent.getLongExtra(EXTRA_FILE_ID, 0L);
+                        if (fileId > 0) {
+                            operation = new GetCommentsRemoteOperation(fileId, 0, 0);
+                        } else {
+                            Log_OC.d(TAG, "Get Comments: empty or null fileId.");
+                        }
                         break;
 
                     default:
