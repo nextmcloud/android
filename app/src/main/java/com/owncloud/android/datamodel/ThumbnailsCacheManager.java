@@ -42,6 +42,7 @@ import com.nextcloud.utils.extensions.FileExtensionsKt;
 import com.nextcloud.utils.extensions.OCFileExtensionsKt;
 import com.nextcloud.utils.extensions.OwnCloudClientExtensionsKt;
 import com.nextcloud.utils.thumbnail.VideoOverlayGenerator;
+import com.nmc.android.ui.utils.Log_NMC;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.lib.common.OwnCloudAccount;
@@ -144,7 +145,7 @@ public final class ThumbnailsCacheManager {
                         }
 
                         String cachePath = cacheDir.getPath() + File.separator + CACHE_FOLDER;
-                        Log_OC.d(TAG, "thumbnail cache dir: " + cachePath);
+                        Log_NMC.d(TAG, "thumbnail cache dir: " + cachePath);
                         File diskCacheDir = new File(cachePath);
 
                         // migrate from external cache to internal cache
@@ -161,7 +162,7 @@ public final class ThumbnailsCacheManager {
                         mThumbnailCache = new DiskLruImageCache(diskCacheDir, DISK_CACHE_SIZE, mCompressFormat,
                                                                 mCompressQuality);
                     } catch (Exception e) {
-                        Log_OC.d(TAG, "Disk cache init failed", e);
+                        Log_NMC.d(TAG, "Disk cache init failed", e);
                         mThumbnailCache = null;
                     }
                 }
@@ -605,13 +606,13 @@ public final class ThumbnailsCacheManager {
             if (!updateEnforced) {
                 thumbnail = getBitmapFromDiskCache(imageKey);
                 if (thumbnail != null) {
-                    Log_OC.d(TAG, "Thumbnail found in disk cache for file: " + file.getFileName());
+                    Log_NMC.d(TAG, "Thumbnail found in disk cache for file: " + file.getFileName());
                     return thumbnail;
                 } else {
-                    Log_OC.d(TAG, "Thumbnail not found in cache for file: " + file.getFileName());
+                    Log_NMC.d(TAG, "Thumbnail not found in cache for file: " + file.getFileName());
                 }
             } else {
-                Log_OC.d(TAG, "Thumbnail update enforced for file: " + file.getFileName());
+                Log_NMC.d(TAG, "Thumbnail update enforced for file: " + file.getFileName());
                 thumbnail = null;
             }
 
@@ -621,7 +622,7 @@ public final class ThumbnailsCacheManager {
 
             // Generate thumbnail from local file if available
             if (file instanceof OCFile ocFile && ocFile.isDown()) {
-                Log_OC.d(TAG, "Generating thumbnail from local file: " + ocFile.getFileName());
+                Log_NMC.d(TAG, "Generating thumbnail from local file: " + ocFile.getFileName());
 
                 Bitmap bitmap;
                 if (MimeTypeUtil.isVideo(ocFile)) {
@@ -653,9 +654,9 @@ public final class ThumbnailsCacheManager {
 
                 if (resizedImage != null) {
                     thumbnail = ThumbnailUtils.extractThumbnail(resizedImage, pxW, pxH);
-                    Log_OC.d(TAG, "Thumbnail generated from resized image cache for file: " + file.getFileName());
+                    Log_NMC.d(TAG, "Thumbnail generated from resized image cache for file: " + file.getFileName());
                 } else {
-                    Log_OC.d(TAG, "No resized image cache available for file: " + file.getFileName());
+                    Log_NMC.d(TAG, "No resized image cache available for file: " + file.getFileName());
                 }
             }
 
@@ -667,7 +668,7 @@ public final class ThumbnailsCacheManager {
 
             // Download thumbnail from server if still null
             if (thumbnail == null && mClient != null && serverHasPreview) {
-                Log_OC.d(TAG, "Attempting to download thumbnail from server for file: " + file.getFileName());
+                Log_NMC.d(TAG, "Attempting to download thumbnail from server for file: " + file.getFileName());
                 GetMethod getMethod = null;
 
                 try {
@@ -681,7 +682,7 @@ public final class ThumbnailsCacheManager {
                             + file.getLocalId() + "&x=" + pxW + "&y=" + pxH;
                     }
 
-                    Log_OC.d(TAG, "Downloading thumbnail URI: " + uri);
+                    Log_NMC.d(TAG, "Downloading thumbnail URI: " + uri);
 
                     getMethod = new GetMethod(uri);
                     getMethod.setRequestHeader("Cookie", "nc_sameSiteCookielax=true;nc_sameSiteCookiestrict=true");
@@ -694,9 +695,9 @@ public final class ThumbnailsCacheManager {
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             if (bitmap != null) {
                                 thumbnail = ThumbnailUtils.extractThumbnail(bitmap, pxW, pxH);
-                                Log_OC.d(TAG, "Thumbnail downloaded and extracted for file: " + file.getFileName());
+                                Log_NMC.d(TAG, "Thumbnail downloaded and extracted for file: " + file.getFileName());
                             } else {
-                                Log_OC.w(TAG, "Downloaded thumbnail bitmap is null for file: " + file.getFileName());
+                                Log_NMC.w(TAG, "Downloaded thumbnail bitmap is null for file: " + file.getFileName());
                             }
                         }
                     } else {
@@ -706,7 +707,7 @@ public final class ThumbnailsCacheManager {
 
                     if (thumbnail != null && PNG_MIMETYPE.equalsIgnoreCase(file.getMimeType())) {
                         thumbnail = handlePNG(thumbnail, pxW, pxH);
-                        Log_OC.d(TAG, "Handled PNG thumbnail for downloaded file: " + file.getFileName());
+                        Log_NMC.d(TAG, "Handled PNG thumbnail for downloaded file: " + file.getFileName());
                     }
                 } catch (Exception e) {
                     Log_OC.e(TAG, "Exception downloading thumbnail for file: " + file.getFileName(), e);
@@ -719,10 +720,10 @@ public final class ThumbnailsCacheManager {
 
             // Add to disk cache if obtained
             if (thumbnail != null) {
-                Log_OC.d(TAG, "Adding final thumbnail to cache for file: " + file.getFileName());
+                Log_NMC.d(TAG, "Adding final thumbnail to cache for file: " + file.getFileName());
                 addBitmapToCache(imageKey, thumbnail);
             } else {
-                Log_OC.w(TAG, "Failed to obtain thumbnail for file: " + file.getFileName());
+                Log_NMC.w(TAG, "Failed to obtain thumbnail for file: " + file.getFileName());
             }
 
             return thumbnail;
@@ -912,7 +913,7 @@ public final class ThumbnailsCacheManager {
                 retriever.setDataSource(file.getAbsolutePath());
                 return retriever.getFrameAtTime(-1);
             } catch (Throwable t) {
-                Log_OC.w(TAG, "Failed to create bitmap from video " + file.getAbsolutePath());
+                Log_NMC.w(TAG, "Failed to create bitmap from video " + file.getAbsolutePath());
                 return null;
             } finally {
                 try {
@@ -1010,7 +1011,7 @@ public final class ThumbnailsCacheManager {
 
                     int px = mResources.getInteger(R.integer.file_avatar_px);
                     String uri = mClient.getBaseUri() + "/index.php/avatar/" + Uri.encode(mUserId) + "/" + px;
-                    Log_OC.d("Avatar", "URI: " + uri);
+                    Log_NMC.d("Avatar", "URI: " + uri);
                     get = new GetMethod(uri);
 
                     // only use eTag if available and corresponding avatar is still there
@@ -1232,7 +1233,7 @@ public final class ThumbnailsCacheManager {
             String uri = client.getBaseUri() + "/index.php/apps/files/api/v1/thumbnail/" +
                 pxW + "/" + pxH + Uri.encode(file.getRemotePath(), "/");
 
-            Log_OC.d(TAG, "generate thumbnail: " + file.getFileName() + " URI: " + uri);
+            Log_NMC.d(TAG, "generate thumbnail: " + file.getFileName() + " URI: " + uri);
             getMethod = new GetMethod(uri);
             getMethod.setRequestHeader("Cookie", "nc_sameSiteCookielax=true;nc_sameSiteCookiestrict=true");
 
@@ -1255,7 +1256,7 @@ public final class ThumbnailsCacheManager {
                     thumbnail = handlePNG(thumbnail, pxW, pxH);
                 }
 
-                Log_OC.d(TAG, "add thumbnail to cache: " + file.getFileName());
+                Log_NMC.d(TAG, "add thumbnail to cache: " + file.getFileName());
                 addBitmapToCache(imageKey, thumbnail);
             }
         } catch (Exception e) {
@@ -1282,7 +1283,7 @@ public final class ThumbnailsCacheManager {
     }
 
     private static Bitmap downloadPreview(OCFile file, String uri) {
-        Log_OC.d(TAG, "generating resized image: " + file.getFileName() + " URI: " + uri);
+        Log_NMC.d(TAG, "generating resized image: " + file.getFileName() + " URI: " + uri);
 
         GetMethod getMethod = null;
 

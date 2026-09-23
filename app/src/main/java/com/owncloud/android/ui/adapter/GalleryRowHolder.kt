@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import com.afollestad.sectionedrecyclerview.SectionedViewHolder
 import com.elyeproj.loaderviewlibrary.LoaderImageView
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.utils.extensions.makeRounded
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.owncloud.android.R
@@ -26,7 +25,8 @@ import com.owncloud.android.datamodel.GalleryRow
 import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.utils.theme.ViewThemeUtils
 
-private const val CHECKED_SCALE = 0.8f
+// NMC Customization: no need to scaling
+private const val CHECKED_SCALE = 1.0f
 private const val PLACEHOLDER_ICON_INSET_RATIO = 0.32f
 private const val UNCHECKED_SCALE = 1.0f
 
@@ -49,9 +49,8 @@ class GalleryRowHolder(
     private val checkBoxMargin by lazy { context.resources.getDimension(R.dimen.standard_quarter_padding) }
 
     private val checkedDrawable by lazy {
-        ContextCompat.getDrawable(context, R.drawable.ic_checkbox_marked)?.also {
-            viewThemeUtils.platform.tintDrawable(context, it, ColorRole.PRIMARY)
-        }
+        // NMC Customization: no need to tint the color
+        ContextCompat.getDrawable(context, R.drawable.ic_checkbox_marked)
     }
 
     private val uncheckedDrawable by lazy {
@@ -100,8 +99,9 @@ class GalleryRowHolder(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                gravity = Gravity.TOP or Gravity.START
-                marginStart = checkBoxMargin.toInt()
+                // NMC Customization: align checkbox on top right
+                gravity = Gravity.TOP or Gravity.END
+                marginEnd = checkBoxMargin.toInt()
                 topMargin = checkBoxMargin.toInt()
             }
         }
@@ -158,7 +158,9 @@ class GalleryRowHolder(
 
         imageView.scaleX = scale
         imageView.scaleY = scale
-        imageView.makeRounded(context, if (isChecked) iconRadius else 0f)
+        // NMC Customization: no need for rounding
+        // we want a normal view without any corners
+        imageView.makeRounded(context, 0f)
     }
 
     private fun applyCheckBox(imageView: ImageView, isChecked: Boolean) {
