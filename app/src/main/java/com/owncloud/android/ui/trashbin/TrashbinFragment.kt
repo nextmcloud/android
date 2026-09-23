@@ -43,6 +43,7 @@ import com.nextcloud.client.utils.Throttler
 import com.nextcloud.ui.trashbinFileActions.TrashbinFileActionsBottomSheet
 import com.nextcloud.utils.SnackbarUtil
 import com.nextcloud.utils.extensions.getTypedActivity
+import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FragmentTrashbinBinding
 import com.owncloud.android.datamodel.SyncedFolderProvider
@@ -162,7 +163,8 @@ class TrashbinFragment :
         recyclerView.setHasFooter(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingList)
+        // NMC Customisation
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(requireContext(), binding.swipeContainingList)
         binding.swipeContainingList.setOnRefreshListener { loadFolder() }
 
         val sortOrder = preferences.getSortOrderByType(
