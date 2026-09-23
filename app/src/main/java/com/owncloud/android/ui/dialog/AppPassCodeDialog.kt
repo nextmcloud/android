@@ -19,10 +19,10 @@ import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.nextcloud.utils.mdm.MDMConfig
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.DialogAppPasscodeBinding
 import com.owncloud.android.ui.activity.SettingsActivity
-import com.owncloud.android.ui.dialog.extensions.themeButtons
 import com.owncloud.android.ui.model.ExtendedSettingsActivityDialog
 import com.owncloud.android.utils.DeviceCredentialUtils
 import com.owncloud.android.utils.theme.ViewThemeUtils
@@ -44,7 +44,6 @@ class AppPassCodeDialog :
 
     override fun onStart() {
         super.onStart()
-        dialog?.themeButtons(viewThemeUtils)
         checkPositiveButtonActiveness()
         val dismissable = arguments?.getBoolean(ARG_DISMISSABLE, true) ?: true
         isCancelable = dismissable
@@ -65,7 +64,6 @@ class AppPassCodeDialog :
         binding.lockDeviceCredentials.setVisibleIf(deviceCredentialsEnabled && deviceCredentialsAvailable)
         binding.lockNone.setVisibleIf(!enforceProtection)
 
-        setupTheme()
         setCurrentSelection()
         setupListener()
 
@@ -84,18 +82,10 @@ class AppPassCodeDialog :
 
         builder.setCancelable(dismissable)
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(requireContext(), builder)
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireContext(), builder)
 
         return builder.create()
-    }
-
-    private fun setupTheme() {
-        viewThemeUtils.platform.apply {
-            colorTextView(binding.dialogTitle)
-            themeRadioButton(binding.lockPasscode)
-            themeRadioButton(binding.lockDeviceCredentials)
-            themeRadioButton(binding.lockNone)
-        }
     }
 
     private fun setCurrentSelection() {
