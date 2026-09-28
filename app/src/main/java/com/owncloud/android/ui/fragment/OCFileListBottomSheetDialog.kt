@@ -49,6 +49,7 @@ import com.owncloud.android.utils.theme.ViewThemeUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.nmc.android.utils.ScanBotSdkUtils
 
 @Suppress("LongParameterList")
 class OCFileListBottomSheetDialog(
@@ -118,6 +119,13 @@ class OCFileListBottomSheetDialog(
 
         if (!deviceInfo.hasCamera(context)) {
             binding.menuDirectCameraUpload.visibility = View.GONE
+            binding.menuScanDocument.visibility = View.GONE
+        }
+
+        // check if scanbot sdk license is valid or not
+        // hide the view if license is not valid
+        if (!ScanBotSdkUtils.isScanBotLicenseValid(fileActivity)) {
+            binding.menuScanDocument.visibility = View.GONE
         }
 
         createRichWorkspace()
@@ -424,6 +432,11 @@ class OCFileListBottomSheetDialog(
             menuBack.setOnClickListener {
                 // Invert animation
                 bottomSheetViewSwitcher.showPrevious()
+            }
+
+            menuScanDocument.setOnClickListener{
+                actions.scanDocument()
+                dismiss()
             }
         }
     }
