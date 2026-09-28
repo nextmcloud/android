@@ -91,7 +91,6 @@ public abstract class EditorWebView extends ExternalSiteWebView {
                                                             Snackbar.LENGTH_INDEFINITE);
                     if (snackbar != null) {
                         snackbar.setAction(R.string.common_cancel, v -> closeView());
-                        viewThemeUtils.material.themeSnackbar(snackbar);
                         setLoadingSnackbar(snackbar);
                         snackbar.show();
                     }
