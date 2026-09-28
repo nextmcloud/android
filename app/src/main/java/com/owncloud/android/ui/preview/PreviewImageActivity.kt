@@ -12,6 +12,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
@@ -57,6 +58,7 @@ import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.operations.RemoveFileOperation
 import com.owncloud.android.operations.SynchronizeFileOperation
+import com.owncloud.android.operations.albums.CopyFileToAlbumOperation
 import com.owncloud.android.ui.activity.FileActivity
 import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.activity.OnFilesRemovedListener
@@ -65,6 +67,7 @@ import com.owncloud.android.ui.fragment.FileFragment
 import com.owncloud.android.ui.fragment.GalleryFragment
 import com.owncloud.android.ui.fragment.GalleryFragmentBottomSheetDialog.MediaState
 import com.owncloud.android.ui.preview.model.PreviewImageActivityState
+import com.owncloud.android.utils.ErrorMessageAdapter
 import com.owncloud.android.utils.MimeTypeUtil
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings
 import kotlinx.coroutines.Job
@@ -400,12 +403,30 @@ class PreviewImageActivity :
             }
         } else if (operation is SynchronizeFileOperation) {
             onSynchronizeFileOperationFinish(result)
+        } else if(operation is  CopyFileToAlbumOperation){
+            onCopyAlbumFileOperationFinish(operation, result)
         }
     }
 
     private fun onSynchronizeFileOperationFinish(result: RemoteOperationResult<*>) {
         if (result.isSuccess) {
             supportInvalidateOptionsMenu()
+        }
+    }
+
+    private fun onCopyAlbumFileOperationFinish(operation: CopyFileToAlbumOperation, result: RemoteOperationResult<*>) {
+        if (result.isSuccess) {
+            SnackbarUtil.show(this, resources.getString(R.string.album_file_added_message))
+            Log_OC.e(TAG, "Files copied successfully")
+        } else {
+            try {
+                SnackbarUtil.show(
+                    this,
+                    ErrorMessageAdapter.getErrorCauseMessage(result, operation, resources)
+                )
+            } catch (e: Resources.NotFoundException) {
+                Log_OC.e(TAG, "Error while trying to show fail message ", e)
+            }
         }
     }
 
