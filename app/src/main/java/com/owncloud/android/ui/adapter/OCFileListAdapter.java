@@ -616,6 +616,9 @@ public class OCFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         sharedAvatars.setOnClickListener(view -> ocFileListFragmentInterface.onShareIconClick(file));
 
         sharedAvatars.setAvatars(user, avatarShareesProvider.get(file, userId), viewThemeUtils);
+
+        // visibility gone as view not required for NMC
+        sharedAvatars.setVisibility(View.GONE);
     }
 
     private void bindListItemViewHolder(ListItemViewHolder holder, OCFile file) {
