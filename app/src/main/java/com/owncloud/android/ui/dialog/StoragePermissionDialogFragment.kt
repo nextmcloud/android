@@ -16,8 +16,8 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.preferences.AppPreferences
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
-import com.owncloud.android.ui.dialog.extensions.themeButtons
 import com.owncloud.android.utils.PermissionUtil
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import javax.inject.Inject
@@ -46,7 +46,6 @@ class StoragePermissionDialogFragment :
     override fun onStart() {
         super.onStart()
         dialog?.setCanceledOnTouchOutside(false)
-        dialog?.themeButtons(viewThemeUtils)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -71,7 +70,8 @@ class StoragePermissionDialogFragment :
                 dismiss()
             }
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(requireContext(), dialogBuilder)
+        //NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireContext(), dialogBuilder)
 
         return dialogBuilder.create()
     }
