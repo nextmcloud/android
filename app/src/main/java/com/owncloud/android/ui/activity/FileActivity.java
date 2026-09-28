@@ -254,7 +254,9 @@ public abstract class FileActivity extends DrawerActivity
                 refreshList();
             }
         } else {
-            if (this instanceof PlayerActivity) {
+            if (this instanceof PlayerActivity
+                // NMC-4150 fix
+                || this instanceof PreviewImageActivity) {
                 hideInfoBox();
             } else {
                 showInfoBox(R.string.offline_mode);
