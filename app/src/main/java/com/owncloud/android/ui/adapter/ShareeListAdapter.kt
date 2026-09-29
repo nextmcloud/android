@@ -27,7 +27,6 @@ import com.owncloud.android.databinding.FileDetailsShareLinkShareItemBinding
 import com.owncloud.android.databinding.FileDetailsSharePublicLinkAddNewItemBinding
 import com.owncloud.android.databinding.FileDetailsShareSecureFileDropAddNewItemBinding
 import com.owncloud.android.databinding.FileDetailsShareShareItemBinding
-import com.owncloud.android.datamodel.SharesType
 import com.owncloud.android.lib.resources.shares.OCShare
 import com.owncloud.android.lib.resources.shares.ShareType
 import com.owncloud.android.ui.activity.FileActivity
@@ -46,12 +45,13 @@ class ShareeListAdapter(
     private val user: User?,
     private val viewThemeUtils: ViewThemeUtils,
     private val encrypted: Boolean,
-    private val sharesType: SharesType?,
     private val avatarGenerator: AvatarGenerator
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder?>(),
     AvatarGenerationListener {
     private val avatarRadiusDimension: Float = fileActivity.getResources().getDimension(R.dimen.user_icon_radius)
-    var isShowAll: Boolean = false
+    // NMC-4219 fix
+    // NMC: show all shares
+    var isShowAll: Boolean = true
         private set
 
     init {
@@ -181,11 +181,6 @@ class ShareeListAdapter(
                 }
             }.thenByDescending { it.sharedDate }
         )
-
-        // add internal share link at end
-        if (!encrypted && sharesType == SharesType.INTERNAL) {
-            shares.add(OCShare().apply { shareType = ShareType.INTERNAL })
-        }
     }
 
     fun getExpandOrCollapseActionTextId(): Int = (if (isShowAll) R.string.show_less else R.string.show_all)
