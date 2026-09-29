@@ -9,6 +9,6 @@
 
     <item android:color="@color/disabled_text" android:state_enabled="false" />
 
-    <item android:color="@color/color_accent" />
+    <item android:color="@color/primary" />
 
 </selector>
