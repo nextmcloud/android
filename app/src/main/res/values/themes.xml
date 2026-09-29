@@ -11,6 +11,8 @@
     <style name="BaseTheme.ownCloud.Toolbar" parent="Theme.Material3.Light">
         <item name="alertDialogTheme">@style/ownCloud.AlertDialog</item>
         <item name="android:alertDialogTheme">@style/Theme.ownCloud.Dialog</item>
+        <!-- Material dialog theming for NMC -->
+        <item name="materialAlertDialogTheme">@style/ownCloud.AlertDialog</item>
         <item name="android:colorBackground">@color/bg_default</item>
         <item name="android:windowBackground">@color/bg_default</item>
         <item name="colorAccent">@color/color_accent</item>
