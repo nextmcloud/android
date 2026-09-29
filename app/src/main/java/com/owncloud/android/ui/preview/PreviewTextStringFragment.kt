@@ -22,6 +22,7 @@ import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.nmc.android.utils.FabThemeUtils
 import com.nextcloud.android.lib.richWorkspace.RichWorkspaceDirectEditingRemoteOperation
 import com.nmc.android.utils.SearchViewThemeUtils
 import com.owncloud.android.R
@@ -59,7 +60,8 @@ class PreviewTextStringFragment : PreviewTextFragment() {
             isEnabled = true
             setOnClickListener { edit() }
             setImageResource(R.drawable.ic_edit)
-            viewThemeUtils.material.themeFAB(this)
+            // NMC customization
+            FabThemeUtils.colorFloatingActionButton(requireContext(), this)
         }
 
         addMenuProvider()
