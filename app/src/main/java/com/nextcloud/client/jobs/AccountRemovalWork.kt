@@ -22,6 +22,7 @@ import com.nextcloud.client.account.UserAccountManager
 import com.nextcloud.client.core.Clock
 import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.common.NextcloudClient
+import com.nmc.android.utils.FileUtils
 import com.owncloud.android.MainApp
 import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.R
@@ -112,6 +113,9 @@ class AccountRemovalWork(
         if (preferences.currentAccountName.equals(user.accountName)) {
             preferences.currentAccountName = ""
         }
+
+        //delete the files during logout work from Directory pictures
+        FileUtils.deleteFilesFromPicturesDirectory(applicationContext)
 
         // remove all files
         storageManager.removeLocalFiles(user, storageManager)
