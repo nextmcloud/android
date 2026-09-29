@@ -12,7 +12,6 @@ import android.content.res.Resources
 import com.nextcloud.client.account.AnonymousUser
 import com.nextcloud.client.account.User
 import com.nextcloud.utils.avatar.AvatarGenerator
-import com.owncloud.android.datamodel.SharesType
 import com.owncloud.android.lib.resources.shares.OCShare
 import com.owncloud.android.lib.resources.shares.ShareType
 import com.owncloud.android.ui.activity.FileActivity
@@ -87,7 +86,6 @@ class ShareeListAdapterTest {
             user,
             viewThemeUtils,
             false,
-            SharesType.INTERNAL,
             Mockito.mock(AvatarGenerator::class.java)
         )
         sut.sortShares()
