@@ -35,6 +35,11 @@
             android:orderInCategory="0"
             android:title="@string/drawer_item_favorites" />
         <item
+            android:id="@+id/nav_album"
+            android:icon="@drawable/nav_albums"
+            android:orderInCategory="0"
+            android:title="@string/drawer_item_album" />
+        <item
             android:id="@+id/nav_shared"
             android:orderInCategory="0"
             android:icon="@drawable/selector_share"
@@ -63,11 +68,6 @@
             android:icon="@drawable/selector_media"
             android:orderInCategory="1"
             android:title="@string/drawer_item_gallery" />
-        <item
-            android:id="@+id/nav_album"
-            android:icon="@drawable/ic_album"
-            android:orderInCategory="1"
-            android:title="@string/drawer_item_album" />
         <item
             android:id="@+id/nav_uploads"
             android:icon="@drawable/uploads"
