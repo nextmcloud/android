@@ -17,6 +17,9 @@ import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.TypedValue;
@@ -69,6 +72,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -229,10 +234,15 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
         behaviours.add(getString(R.string.uploader_upload_files_behaviour_only_upload));
         behaviours.add(getString(R.string.uploader_upload_files_behaviour_upload_and_delete_from_source));
 
-        ArrayAdapter<String> behaviourAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
+        // custom spinner item layout for NMC
+        ArrayAdapter<String> behaviourAdapter = new ArrayAdapter<>(this, R.layout.simple_spinner_item,
                                                                    behaviours);
         behaviourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.uploadFilesSpinnerBehaviour.setAdapter(behaviourAdapter);
+        // NMC Customization for dropdown icon tinting
+        Drawable background = DrawableCompat.wrap(binding.uploadFilesSpinnerBehaviour.getBackground()).mutate();
+        DrawableCompat.setTintList(background, ContextCompat.getColorStateList(this, R.color.spinner_color_state));
+        binding.uploadFilesSpinnerBehaviour.setBackground(background);
         binding.uploadFilesSpinnerBehaviour.setSelection(localBehaviour);
         // NMC Customization
         binding.uploadFilesSpinnerBehaviour.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -266,6 +276,7 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
 
         showToolbarSpinner();
         mToolbarSpinner.setAdapter(mDirectories);
+        mToolbarSpinner.getBackground().setColorFilter(Color.TRANSPARENT, PorterDuff.Mode.SRC_IN);
         mToolbarSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
