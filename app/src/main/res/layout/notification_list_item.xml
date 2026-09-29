@@ -25,6 +25,7 @@
         android:contentDescription="@string/notification_icon"
         android:src="@drawable/ic_notification"
         app:layout_constraintStart_toStartOf="parent"
+        android:tint="@color/notification_icon_color"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
@@ -35,6 +36,7 @@
         android:contentDescription="@string/dismiss_notification_description"
         app:icon="@drawable/ic_close"
         app:iconPadding="@dimen/minimum_size_for_touchable_area_icon_padding"
+        app:iconTint="@color/notification_icon_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -73,6 +75,7 @@
         android:layout_marginStart="@dimen/notification_icon_layout_right_end_margin"
         android:ellipsize="end"
         android:textAppearance="?attr/textAppearanceBodySmall"
+        android:paddingBottom="@dimen/standard_quarter_padding"
         android:textColor="@color/secondary_text_color"
         app:layout_constraintEnd_toStartOf="@id/dismiss"
         app:layout_constraintStart_toEndOf="@id/icon"
@@ -84,7 +87,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/notification_icon_layout_right_end_margin"
-        android:layout_marginTop="@dimen/standard_quarter_margin"
+        android:layout_marginTop="@dimen/alternate_half_margin"
         android:gravity="start"
         android:orientation="horizontal"
         app:layout_constraintEnd_toStartOf="@id/dismiss"
