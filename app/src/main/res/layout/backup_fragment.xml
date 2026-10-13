@@ -8,6 +8,7 @@
 -->
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/contacts_linear_layout"
     android:layout_width="match_parent"
@@ -112,6 +113,7 @@
                 android:minHeight="@dimen/minimum_size_for_touchable_area"
                 android:text="@string/restore_backup"
                 android:visibility="invisible"
+                app:cornerRadius="@dimen/button_corner_radius"
                 tools:visibility="visible" />
 
             <com.google.android.material.button.MaterialButton
@@ -121,7 +123,8 @@
                 android:layout_marginStart="@dimen/standard_half_margin"
                 android:minHeight="@dimen/minimum_size_for_touchable_area"
                 android:text="@string/contacts_backup_button"
-                android:theme="@style/Widget.Material3.Button.IconButton.Filled" />
+                style="@style/Button.Primary"
+                app:cornerRadius="@dimen/button_corner_radius"/>
 
         </LinearLayout>
 
