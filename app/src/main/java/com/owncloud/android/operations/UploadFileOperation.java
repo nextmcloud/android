@@ -28,6 +28,7 @@ import com.nextcloud.utils.autoRename.AutoRename;
 import com.nextcloud.utils.e2ee.E2ECounterHelper;
 import com.nextcloud.utils.e2ee.E2EVersionHelper;
 import com.nextcloud.utils.extensions.RemoteOperationResultExtensionsKt;
+import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl;
 import com.owncloud.android.datamodel.FileDataStorageManager;
@@ -1750,6 +1751,9 @@ public class UploadFileOperation extends SyncOperation {
         if (result.isSuccess()) {
             updateOCFile(file, (RemoteFile) result.getData().get(0));
             file.setLastSyncDateForProperties(syncDate);
+            // NMC: track upload file event
+            // mOriginalStoragePath will help in deciding if Uploading file is from Scan or not
+            MoEngageSdkUtils.trackUploadFileEvent(mContext, file, mOriginalStoragePath);
         } else {
             Log_OC.e(TAG, "Error reading properties of file after successful upload; this is gonna hurt...");
         }
