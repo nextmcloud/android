@@ -11,6 +11,8 @@ import com.nextcloud.client.database.dao.FileDao
 import com.nextcloud.client.database.entity.model.ShareeKey
 import com.nextcloud.client.database.entity.toOCCapability
 import com.nextcloud.model.HTTPStatusCodes
+import com.nmc.android.marketTracking.MoEngageSdkUtils
+import com.owncloud.android.MainApp
 import com.owncloud.android.datamodel.FileDataStorageManager
 import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.lib.common.OwnCloudClient
@@ -344,7 +346,12 @@ fun FileDataStorageManager.createDirectoryTree(remotePath: String, createdRemote
             existingFolder
         } else {
             val metadata = if (index == folderPaths.lastIndex) createdRemoteFolder else null
-            saveFolder(path, parent, metadata)
+            val newDir = saveFolder(path, parent, metadata)
+
+            // NMC: track create folder event
+            MoEngageSdkUtils.trackCreateFolderEvent(MainApp.getAppContext(), newDir)
+
+            newDir
         }
     }
 }
