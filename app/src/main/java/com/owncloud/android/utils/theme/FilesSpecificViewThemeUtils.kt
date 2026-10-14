@@ -105,7 +105,8 @@ class FilesSpecificViewThemeUtils @Inject constructor(
                 .setThumbDrawable(getThumbDrawable(context))
                 .setPopupStyle {
                     PopupStyles.MD2.accept(it)
-                    it.background = FastScrollPopupBackground(context, scheme.primary)
+                    //NMC customisation
+                    it.background = FastScrollPopupBackground(context, context.resources.getColor(R.color.primary, null))
                 }
         }
 
@@ -120,6 +121,14 @@ class FilesSpecificViewThemeUtils @Inject constructor(
     private fun getHomeAsUpDrawable(context: Context, isMenu: Boolean): Drawable {
         val icon = if (isMenu) R.drawable.ic_menu else R.drawable.ic_arrow_back
         return getDrawable(context, icon)
+    private fun getThumbDrawable(context: Context): Drawable {
+        val thumbDrawable =
+            ResourcesCompat.getDrawable(
+                context.resources,
+                me.zhanghai.android.fastscroll.R.drawable.afs_md2_thumb,
+                null
+            )
+        return androidViewThemeUtils.colorDrawable(thumbDrawable!!, context.resources.getColor(R.color.primary, null))
     }
 
     private fun getDrawable(context: Context, @DrawableRes id: Int): Drawable =
