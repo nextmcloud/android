@@ -572,6 +572,9 @@ class FileDisplayActivity :
                             fragment.directCameraUpload()
                         }
                     })
+                } else if (!shouldShowRequestPermissionRationale(permissions[0])) {
+                    // user CHECKED "never ask again"
+                    SnackbarUtil.show(this, R.string.camera_permission_rationale)
                 }
 
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
