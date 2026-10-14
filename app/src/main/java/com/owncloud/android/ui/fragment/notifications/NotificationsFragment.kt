@@ -37,6 +37,7 @@ import com.nextcloud.utils.SnackbarUtil
 import com.nextcloud.utils.avatar.AvatarGenerator
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.owncloud.android.R
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.databinding.NotificationsLayoutBinding
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl
 import com.owncloud.android.lib.common.utils.Log_OC
@@ -92,6 +93,8 @@ class NotificationsFragment :
     // region Lifecycle
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificationsLayoutBinding.inflate(inflater, container, false)
+        // NMC: track notification screen event
+        MoEngageSdkUtils.trackNotificationsScreenEvent(requireContext())
         return binding!!.root
     }
 
