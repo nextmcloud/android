@@ -28,7 +28,8 @@ import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.ui.adapter.filelist.item.OCFileListDelegate
 import com.owncloud.android.utils.theme.ViewThemeUtils
 
-private const val CHECKED_SCALE = 0.8f
+// NMC Customization: no need to scaling
+private const val CHECKED_SCALE = 1.0f
 private const val PLACEHOLDER_ICON_INSET_RATIO = 0.32f
 private const val UNCHECKED_SCALE = 1.0f
 private const val SELECTION_ANIMATION_DURATION_MS = 150L
@@ -51,15 +52,14 @@ class GalleryRowHolder(
     private val checkBoxMargin by lazy { context.resources.getDimensionPixelSize(R.dimen.standard_half_margin) }
 
     private val selectedOutline by lazy {
-        val resources = context.resources
-        val radiusDp = resources.getDimension(R.dimen.activity_icon_radius) / resources.displayMetrics.density
-        createRoundedOutline(context, radiusDp)
+        // NMC Customization: no need for rounding
+        // we want a normal view without any corners
+        createRoundedOutline(context, 0f)
     }
 
     private val checkedDrawable by lazy {
-        ContextCompat.getDrawable(context, R.drawable.ic_checkbox_marked)?.also {
-            viewThemeUtils.platform.tintDrawable(context, it, ColorRole.PRIMARY)
-        }
+        // NMC Customization: no need to tint the color
+        ContextCompat.getDrawable(context, R.drawable.ic_checkbox_marked)
     }
 
     private val checkedBackground by lazy {
@@ -118,8 +118,9 @@ class GalleryRowHolder(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                gravity = Gravity.TOP or Gravity.START
-                marginStart = checkBoxMargin
+                // NMC Customization: align checkbox on top right
+                gravity = Gravity.TOP or Gravity.END
+                marginEnd = checkBoxMargin
                 topMargin = checkBoxMargin
             }
         }
