@@ -1,0 +1,21 @@
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2024 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <path
+        android:fillColor="#262626"
+        android:fillType="evenOdd"
+        android:pathData="M7.4,19.95C7.15,19.6 7.2,19.15 7.5,18.9L16.3,12L7.55,5.1C7.2,4.85 7.15,4.35 7.45,4.05C7.7,3.75 8.2,3.65 8.5,3.95L18.7,12L8.45,20.1C8.15,20.35 7.65,20.3 7.4,19.95Z"
+        android:strokeWidth="1"
+        android:strokeColor="#00000000" />
+
+</vector>
