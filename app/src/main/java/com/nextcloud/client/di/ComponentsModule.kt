@@ -40,6 +40,8 @@ import com.nextcloud.ui.trashbinFileActions.TrashbinFileActionsBottomSheet
 import com.nmc.android.ui.LauncherActivity
 import com.nmc.android.ui.LoginPrivacySettingsActivity
 import com.nmc.android.ui.PrivacySettingsActivity
+import com.nmc.android.scans.SaveScannedDocumentFragment
+import com.nmc.android.scans.ScanActivity
 import com.owncloud.android.MainApp
 import com.nmc.android.ui.conflict.ConflictsResolveConsentDialog
 import com.owncloud.android.authentication.AuthenticatorActivity
@@ -466,6 +468,12 @@ internal interface ComponentsModule {
 
     @ContributesAndroidInjector
     fun fileUploadHelper(): FileUploadHelper
+
+    @ContributesAndroidInjector
+    fun scanActivity(): ScanActivity
+
+    @ContributesAndroidInjector
+    fun saveScannedDocumentFragment(): SaveScannedDocumentFragment
 
     @ContributesAndroidInjector
     fun sslUntrustedCertDialog(): SslUntrustedCertDialog
