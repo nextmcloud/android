@@ -11,7 +11,7 @@
 package com.owncloud.android.ui.fragment
 
 import android.content.Context
-import android.content.res.ColorStateList
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -19,12 +19,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
-import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.toColorInt
-import androidx.core.os.BundleCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
@@ -32,7 +28,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.chip.Chip
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.nextcloud.android.common.ui.theme.utils.ColorRole
@@ -48,13 +43,12 @@ import com.nextcloud.ui.fileactions.FileAction
 import com.nextcloud.ui.fileactions.FileActionHandler
 import com.nextcloud.ui.fileactions.FileActionHost
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet
-import com.nextcloud.ui.tags.TagManagementBottomSheet
+import com.nextcloud.utils.EditorUtils
 import com.nextcloud.utils.HumanReadableFormatter
 import com.nextcloud.utils.MenuUtils
 import com.nextcloud.utils.SnackbarUtil
 import com.nextcloud.utils.extensions.collectWhenStarted
 import com.nextcloud.utils.extensions.getParcelableArgument
-import com.nextcloud.utils.mdm.MDMConfig
 import com.nextcloud.utils.text.DisplayTextFormatter
 import com.nextcloud.utils.thumbnail.FolderThumbnailGenerator
 import com.nmc.android.utils.ProgressBarThemeUtils
@@ -63,22 +57,24 @@ import com.owncloud.android.R
 import com.owncloud.android.databinding.FileDetailsFragmentBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
 import com.owncloud.android.datamodel.OCFile
+import com.owncloud.android.datamodel.SyncedFolderProvider
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.lib.resources.files.ToggleFavoriteRemoteOperation
 import com.owncloud.android.lib.resources.shares.OCShare
 import com.owncloud.android.lib.resources.shares.ShareType
-import com.owncloud.android.lib.resources.tags.Tag
 import com.owncloud.android.ui.activity.DrawerActivity
 import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.activity.ToolbarActivity
 import com.owncloud.android.ui.adapter.FileDetailTabAdapter
 import com.owncloud.android.ui.adapter.progressListener.DownloadProgressListener
+import com.owncloud.android.ui.dialog.RemoveFilesDialogFragment
+import com.owncloud.android.ui.dialog.RenameFileDialogFragment
+import com.owncloud.android.ui.dialog.SendShareDialog
 import com.owncloud.android.ui.events.FavoriteEvent
+import com.owncloud.android.ui.events.ShareSearchViewFocusEvent
 import com.owncloud.android.ui.fragment.filedetail.FileDetailFragmentViewModel
+import com.owncloud.android.ui.fragment.util.SharePermissionManager
 import com.owncloud.android.ui.helpers.FileOperationsHelper
-import com.owncloud.android.utils.EncryptionUtils
-import com.owncloud.android.utils.MimeTypeUtil
-import com.owncloud.android.utils.theme.CapabilityUtils
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -110,6 +106,12 @@ class FileDetailFragment :
     lateinit var fileActionHandler: FileActionHandler
 
     @Inject
+    lateinit var editorUtils: EditorUtils
+
+    @Inject
+    lateinit var syncedFolderProvider: SyncedFolderProvider
+
+    @Inject
     lateinit var folderThumbnailGenerator: FolderThumbnailGenerator
 
     @Inject
@@ -134,10 +136,9 @@ class FileDetailFragment :
         get() = containerActivity?.fileOperationsHelper
 
     val fileDetailSharingFragment: FileDetailSharingFragment?
-        get() = tabAdapter?.fileDetailSharingFragment
+        get() = requireActivity().supportFragmentManager.findFragmentByTag(FTAG_SHARING) as FileDetailSharingFragment?
 
-    val fileDetailActivitiesFragment: FileDetailActivitiesFragment?
-        get() = tabAdapter?.fileDetailActivitiesFragment
+    val fileDetailActivitiesFragment: FileDetailActivitiesFragment? = null
 
     val isEmpty: Boolean
         get() = file == null || user == null
@@ -168,8 +169,6 @@ class FileDetailFragment :
             binding.emptyList.emptyListView.visibility = View.GONE
         }
 
-        val context = context ?: return null
-        refreshTagChips(context)
         return binding.root
     }
 
@@ -184,13 +183,16 @@ class FileDetailFragment :
         }
 
         collectDownloadProgress()
-        listenForTagUpdates()
         addMenuProvider()
     }
 
-    override fun onDestroy() {
-        (activity as? DrawerActivity)?.showBottomNavigationBar(true)
-        super.onDestroy()
+    private fun replaceSharingFragment() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(
+                R.id.sharing_frame_container,
+                FileDetailSharingFragment.newInstance(file, user),
+                FTAG_SHARING
+            ).commit()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -265,13 +267,6 @@ class FileDetailFragment :
         viewLifecycleOwner.collectWhenStarted(viewModel.downloadProgress) { onDownloadProgress(it) }
     }
 
-    private fun listenForTagUpdates() {
-        childFragmentManager.setFragmentResultListener(
-            TagManagementBottomSheet.REQUEST_KEY,
-            viewLifecycleOwner
-        ) { _, result -> onTagsUpdated(result) }
-    }
-
     private fun addMenuProvider() {
         requireActivity().addMenuProvider(
             object : MenuProvider {
@@ -306,7 +301,10 @@ class FileDetailFragment :
             showFileDetails(containerStorageManager, transferring)
         }
 
-        setupViewPager()
+        // TODO: 06/21/23 remove this condition after Comments section included (NMC)
+        if (SendShareDialog.isPeopleShareClicked) {
+            replaceSharingFragment();
+        }
         view?.invalidate()
     }
 
@@ -324,21 +322,6 @@ class FileDetailFragment :
         setFavoriteIconStatus(file.isFavorite)
         updateTransferProgress(binding, file, user, transferring)
         requireActivity().findViewById<FloatingActionButton>(R.id.fab_main)?.hide()
-        binding.syncBlock.isVisible = file.isFolder
-        updateFolderSyncButton(binding, file, containerStorageManager)
-    }
-
-    private fun updateFolderSyncButton(
-        binding: FileDetailsFragmentBinding,
-        file: OCFile,
-        containerStorageManager: FileDataStorageManager
-    ) {
-        if (file.isInternalFolderSync) {
-            binding.folderSyncButton.isChecked = true
-        } else if (containerStorageManager.isPartOfInternalTwoWaySync(file)) {
-            binding.folderSyncButton.isChecked = true
-            binding.folderSyncButton.isEnabled = false
-        }
     }
 
     private fun setFileModificationTimestamp(file: OCFile, showDetailedTimestamp: Boolean) {
@@ -494,11 +477,20 @@ class FileDetailFragment :
     private fun setFavoriteIconStatus(isFavorite: Boolean) {
         val binding = binding ?: return
         val (iconRes, descriptionRes) = if (isFavorite) {
-            R.drawable.ic_star to R.string.unset_favorite
+            R.drawable.favorite to R.string.unset_favorite
         } else {
             R.drawable.ic_star_outline to R.string.favorite
         }
         binding.favorite.setImageDrawable(ResourcesCompat.getDrawable(resources, iconRes, null))
+        // NMC Customization
+        if (!isFavorite) {
+            binding.favorite.getDrawable().mutate().setColorFilter(
+                requireContext()
+                    .resources
+                    .getColor(R.color.list_item_lastmod_and_filesize_text, null),
+                PorterDuff.Mode.SRC_IN
+            )
+        }
         binding.favorite.contentDescription = getString(descriptionRes)
     }
 
@@ -524,96 +516,7 @@ class FileDetailFragment :
     }
     // endregion
 
-    // region Tags
-    private fun onTagsUpdated(result: Bundle) {
-        val updatedTags = BundleCompat.getParcelableArrayList(
-            result,
-            TagManagementBottomSheet.RESULT_KEY_TAGS,
-            Tag::class.java
-        )
-        val file = file
-        if (updatedTags == null || file == null) return
-
-        file.tags = updatedTags
-        storageManager.saveFile(file)
-        context?.let(::refreshTagChips)
-    }
-
-    private fun refreshTagChips(context: Context) {
-        val binding = binding ?: return
-        binding.tagsGroup.removeAllViews()
-        binding.tagsGroup.visibility = View.VISIBLE
-
-        val file = file ?: return
-        file.tags.forEach { binding.tagsGroup.addView(createTagChip(context, it)) }
-        binding.tagsGroup.addView(createManageTagsChip(context))
-    }
-
-    private fun createTagChip(context: Context, tag: Tag): Chip = createDetailChip(context).apply {
-        text = tag.name
-        isClickable = false
-        viewThemeUtils.material.themeChipSuggestion(this)
-        tag.color?.toColorInt()?.let { color ->
-            chipStrokeColor = ColorStateList.valueOf(color)
-            setTextColor(color)
-        }
-    }
-
-    private fun createManageTagsChip(context: Context): Chip = createDetailChip(context).apply {
-        setChipIconResource(R.drawable.ic_edit)
-        setText(R.string.manage_tags)
-        viewThemeUtils.material.themeChipSuggestion(this)
-        chipIconTint = textColors
-        setOnClickListener { showTagManagement() }
-    }
-
-    private fun createDetailChip(context: Context): Chip {
-        val backgroundColor = ColorStateList.valueOf(resources.getColor(R.color.bg_default, context.theme))
-        return Chip(context).apply {
-            chipBackgroundColor = backgroundColor
-            shapeAppearanceModel = shapeAppearanceModel.toBuilder().setAllCornerSizes(CHIP_CORNER_SIZE).build()
-            setEnsureMinTouchTargetSize(false)
-        }
-    }
-
-    private fun showTagManagement() {
-        val file = file ?: return
-        TagManagementBottomSheet.newInstance(file.localId, file.tags)
-            .show(childFragmentManager, FTAG_TAG_MANAGEMENT)
-    }
-    // endregion
-
     // region Tabs
-    private fun setupViewPager() {
-        val binding = binding
-        val file = file
-        val user = user
-        if (binding == null || file == null || user == null) return
-
-        val showSharingTab = showSharingTab(file, user)
-        val showDetailsTab = showDetailsTab(file)
-        setupTabs(binding.tabLayout, showSharingTab, showDetailsTab)
-
-        binding.pager.adapter = FileDetailTabAdapter(requireActivity(), file, user, showSharingTab, showDetailsTab)
-        binding.tabLayout.post { this.binding?.tabLayout?.getTabAt(activeTab)?.select() }
-    }
-
-    private fun setupTabs(tabLayout: TabLayout, showSharingTab: Boolean, showDetailsTab: Boolean) {
-        tabLayout.removeAllTabs()
-        tabLayout.addIconTab(R.string.drawer_item_activities, R.drawable.selector_tab_activities)
-        if (showSharingTab) {
-            tabLayout.addIconTab(R.string.share_dialog_title, R.drawable.selector_tab_share)
-        }
-        if (showDetailsTab) {
-            tabLayout.addIconTab(R.string.filedetails_details, R.drawable.info_24)
-        }
-        viewThemeUtils.material.themeTabLayout(tabLayout)
-    }
-
-    private fun TabLayout.addIconTab(@StringRes text: Int, @DrawableRes icon: Int) {
-        addTab(newTab().setText(text).setIcon(icon))
-    }
-
     private fun createPageChangeCallback() = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
             if (activeTab == ACTIVITIES_TAB_POSITION) {
@@ -640,21 +543,6 @@ class FileDetailFragment :
 
         override fun onTabReselected(tab: TabLayout.Tab) = Unit
     }
-
-    private fun showSharingTab(file: OCFile, user: User): Boolean {
-        val context = requireContext()
-        if (!MDMConfig.shareViaLink(context) && !MDMConfig.shareViaUser(context)) return false
-        return !file.isEncrypted || canShareEncryptedFile(file, user)
-    }
-
-    private fun canShareEncryptedFile(file: OCFile, user: User): Boolean {
-        val parent = parentFolder ?: storageManager.getFileById(file.parentId).also { parentFolder = it }
-        // sharing not allowed for encrypted subfolders
-        return EncryptionUtils.supportsSecureFiledrop(file, user) && parent?.isEncrypted == false
-    }
-
-    private fun showDetailsTab(file: OCFile): Boolean =
-        CapabilityUtils.getCapability(context).governance.isTrue || MimeTypeUtil.isMedia(file.mimeType)
 
     private fun fitTabContentToViewport() {
         val binding = binding ?: return
@@ -688,29 +576,45 @@ class FileDetailFragment :
             return
         }
 
-        showSharingProcess(FileDetailsSharingProcessFragment.newInstance(file, shareeName, shareType, secureShare))
+        val user = user ?: return
+        showSharingProcess(
+            FileDetailsSharingProcessFragment.newInstance(
+                file, shareeName, shareType, secureShare,
+                SharePermissionManager.canEditFile(user, storageManager.getCapability(user), file, editorUtils)
+            )
+        )
     }
 
     fun editExistingShare(share: OCShare, screenTypePermission: Int, isReshareShown: Boolean) {
-        showSharingProcess(FileDetailsSharingProcessFragment.newInstance(share, screenTypePermission, isReshareShown))
+        val user = user ?: return
+        showSharingProcess(
+            FileDetailsSharingProcessFragment.newInstance(
+                share, screenTypePermission, isReshareShown,
+                SharePermissionManager.canEditFile(user, storageManager.getCapability(user), file, editorUtils)
+            )
+        )
     }
 
     private fun showSharingProcess(fragment: FileDetailsSharingProcessFragment) {
         requireActivity().supportFragmentManager.commit {
-            add(R.id.sharing_frame_container, fragment, FileDetailsSharingProcessFragment.TAG)
+            replace(R.id.sharing_frame_container, fragment, FileDetailsSharingProcessFragment.TAG)
+            addToBackStack(null)
         }
-        showHideFragmentView(true)
-    }
-
-    fun showHideFragmentView(isFragmentReplaced: Boolean) {
-        val binding = binding ?: return
-        binding.tabLayout.isVisible = !isFragmentReplaced
-        binding.pager.isVisible = !isFragmentReplaced
-        binding.sharingFrameContainer.isVisible = isFragmentReplaced
     }
 
     fun goBackToOCFileListFragment() {
         requireActivity().onBackPressedDispatcher.onBackPressed()
+    }
+
+    /**
+     * hide the view for landscape mode to have more space for the user to type in search view
+     * {@link FileDetailSharingFragment#scrollToSearchViewPosition(boolean)}
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: ShareSearchViewFocusEvent) {
+        binding.shareDetailFileContainer.setVisibility(if (event.hasFocus) View.GONE else View.VISIBLE)
     }
     // endregion
 
@@ -719,7 +623,7 @@ class FileDetailFragment :
         private const val FTAG_FILE_ACTIONS = "actions"
         private const val FTAG_TAG_MANAGEMENT = "tag_management"
         const val FTAG_RENAME_FILE = "RENAME_FILE_FRAGMENT"
-
+        private const val FTAG_SHARING = "SHARING_DETAILS_FRAGMENT"
         private const val ARG_FILE = "FILE"
         private const val ARG_PARENT_FOLDER = "PARENT_FOLDER"
         private const val ARG_USER = "USER"
