@@ -79,7 +79,11 @@ import com.nextcloud.utils.extensions.OCFileListFragmentExtensionsKt;
 import com.nextcloud.utils.extensions.ViewExtensionsKt;
 import com.nextcloud.utils.fileNameValidator.FileNameValidator;
 import com.nextcloud.utils.thumbnail.ThumbnailGenerator;
+import com.nmc.android.marketTracking.TrackingScanInterface;
 import com.nextcloud.utils.view.FastScrollUtils;
+import com.nmc.android.marketTracking.AdjustSdkUtils;
+import com.nmc.android.marketTracking.TrackingScanInterfaceImpl;
+import com.nmc.android.marketTracking.TealiumSdkUtils;
 import com.owncloud.android.MainApp;
 import com.nmc.android.marketTracking.MoEngageSdkUtils;
 import com.owncloud.android.R;
@@ -245,6 +249,13 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
     @Inject DeviceInfo deviceInfo;
 
+    /**
+     * Things to note about both the branches. 1. nmc/1867-scanbot branch: --> interface won't be initialised -->
+     * calling of interface method will be done here 2. nmc/1925-market_tracking --> interface will be initialised -->
+     * calling of interface method won't be done here
+     */
+    private TrackingScanInterface trackingScanInterface;
+
     protected enum MenuItemAddRemove {
         DO_NOTHING,
         REMOVE_SORT,
@@ -272,6 +283,9 @@ public class OCFileListFragment extends ExtendedListFragment implements
         folderEncryption = new FolderEncryption(this);
         clickHandler = new EncryptedFolderClickHandler(this);
         e2eeDialogPresenter = new E2EEDialogPresenter(this);
+
+        //NMC customization will be initialised in nmc/1925-market_tracking
+        trackingScanInterface = new TrackingScanInterfaceImpl();
     }
 
     @Override
@@ -629,6 +643,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
             Intent.createChooser(action, getString(R.string.upload_chooser_title)),
             FileDisplayActivity.REQUEST_CODE__SELECT_CONTENT_FROM_APPS
                                             );
+
+        //track event photo/video/any upload button click
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FAB_BOTTOM_PHOTO_VIDEO_UPLOAD, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FAB_BOTTOM_PHOTO_VIDEO_UPLOAD, preferences);
     }
 
     @Override
@@ -646,6 +664,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
         }
 
         showDirectCameraUploadAlertDialog(fileDisplayActivity);
+
+        // NMC: track event for camera upload button click
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FAB_BOTTOM_CAMERA_UPLOAD, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FAB_BOTTOM_CAMERA_UPLOAD, preferences);
     }
 
     private void showDirectCameraUploadAlertDialog(FileDisplayActivity fileDisplayActivity) {
@@ -715,6 +737,10 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
         boolean isWithinEncryptedFolder = file.isEncrypted();
         UploadFilesActivity.startUploadActivityForResult(fileActivity, user.get(), FileDisplayActivity.REQUEST_CODE__SELECT_FILES_FROM_FILE_SYSTEM, isWithinEncryptedFolder);
+
+        // track event for uploading files button click
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FAB_BOTTOM_FILE_UPLOAD, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FAB_BOTTOM_FILE_UPLOAD, preferences);
     }
 
     @Override
@@ -735,6 +761,14 @@ public class OCFileListFragment extends ExtendedListFragment implements
     @Override
     public void onShareIconClick(OCFile file) {
         mContainerActivity.showDetails(file, 1);
+
+        //track event on click of Share button
+        trackSharingClickEvent();
+    }
+
+    private void trackSharingClickEvent() {
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_FILE_BROWSER_SHARING, preferences);
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_FILE_BROWSER_SHARING, preferences);
     }
 
     @Override
@@ -1384,6 +1418,73 @@ public class OCFileListFragment extends ExtendedListFragment implements
 
         if (onListActionChosen(itemId, checkedFiles)) {
             return true;
+        if (checkedFiles.size() == SINGLE_SELECTION) {
+            /// action only possible on a single file
+            OCFile singleFile = checkedFiles.iterator().next();
+
+            if (itemId == R.id.action_send_share_file) {
+                mContainerActivity.showDetails(singleFile, 1);
+                //track event on click of Share button
+                trackSharingClickEvent();
+                return true;
+            } else if (itemId == R.id.action_open_file_with) {
+                mContainerActivity.getFileOperationsHelper().openFile(singleFile);
+                return true;
+            } else if (itemId == R.id.action_open_in_web_editor) {
+                TextEditorWebView.Companion.startTextEditor(singleFile, getContext());
+                return true;
+            } else if (itemId == R.id.action_stream_media) {
+                mContainerActivity.getFileOperationsHelper().streamMediaFile(singleFile);
+                return true;
+            } else if (itemId == R.id.action_edit) {
+                // should not be necessary, as menu item is filtered, but better play safe
+                if (editorUtils.isEditorAvailable(accountManager.getUser(), singleFile.getMimeType())) {
+                    TextEditorWebView.Companion.startTextEditor(singleFile,getContext());
+                } else if (EditImageActivity.Companion.canBePreviewed(singleFile)) {
+                    ((FileDisplayActivity) mContainerActivity).startImageEditor(singleFile);
+                } else {
+                    mContainerActivity.getFileOperationsHelper().openFileAsRichDocument(singleFile, getContext());
+                }
+
+                return true;
+            } else if (itemId == R.id.action_rename_file) {
+                RenameFileDialogFragment dialog = RenameFileDialogFragment.newInstance(singleFile, mFile);
+                dialog.show(requireFragmentManager(), FileDetailFragment.FTAG_RENAME_FILE);
+                return true;
+            } else if (itemId == R.id.action_see_details) {
+                if (mActiveActionMode != null) {
+                    mActiveActionMode.finish();
+                }
+
+                mContainerActivity.showDetails(singleFile);
+                mContainerActivity.showSortListGroup(false);
+
+                //track event on click of Share button
+                trackSharingClickEvent();
+                return true;
+            } else if (itemId == R.id.action_set_as_wallpaper) {
+                mContainerActivity.getFileOperationsHelper().setPictureAs(singleFile, getView());
+                return true;
+            } else if (itemId == R.id.action_encrypted) {
+                mContainerActivity.getFileOperationsHelper().toggleEncryption(singleFile, true);
+                return true;
+            } else if (itemId == R.id.action_unset_encrypted) {
+                mContainerActivity.getFileOperationsHelper().toggleEncryption(singleFile, false);
+                return true;
+            } else if (itemId == R.id.action_lock_file) {
+                mContainerActivity.getFileOperationsHelper().toggleFileLock(singleFile, true);
+            } else if (itemId == R.id.action_unlock_file) {
+                mContainerActivity.getFileOperationsHelper().toggleFileLock(singleFile, false);
+            } else if (itemId == R.id.action_pin_to_homescreen) {
+                shortcutUtil.addShortcutToHomescreen(singleFile, viewThemeUtils, accountManager.getUser(), syncedFolderProvider);
+                return true;
+            } else if (itemId == R.id.action_retry) {
+                backgroundJobManager.startOfflineOperations();
+                return true;
+            } else if (itemId == R.id.action_sync_all_files) {
+                syncFolderIncludingAllNestedFiles(singleFile);
+                return true;
+            }
         }
 
         final var host = new FileActionHost(mContainerActivity,
