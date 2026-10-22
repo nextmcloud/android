@@ -225,7 +225,8 @@ class MediaFoldersDetectionWork(
             .setSilent(true)
             .setContentIntent(pendingIntent)
 
-        viewThemeUtils.androidx.themeNotificationCompatBuilder(context, notificationBuilder)
+        // NMC Customization
+        notificationBuilder.color = context.resources.getColor(R.color.primary, null)
 
         val disableDetection = Intent(context, NotificationReceiver::class.java).apply {
             putExtra(NOTIFICATION_ID, notificationId)
