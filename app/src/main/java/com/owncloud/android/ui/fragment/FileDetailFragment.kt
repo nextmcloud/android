@@ -57,6 +57,7 @@ import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.mdm.MDMConfig
 import com.nextcloud.utils.text.DisplayTextFormatter
 import com.nextcloud.utils.thumbnail.FolderThumbnailGenerator
+import com.nmc.android.utils.ProgressBarThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FileDetailsFragmentBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -247,8 +248,8 @@ class FileDetailFragment :
 
     private fun setupFileDetailViews() {
         val binding = binding ?: return
-        viewThemeUtils.material.colorProgressBar(binding.progressBar, ColorRole.PRIMARY)
-        viewThemeUtils.platform.themeCheckbox(binding.folderSyncButton)
+        // NMC Customization
+        ProgressBarThemeUtils.themeHorizontalProgressBar(binding.progressBar, resources.getColor(R.color.primary, null))
         progressListener = DownloadProgressListener(binding.progressBar)
         binding.run {
             listOf(cancelBtn, favorite, overflowMenu, lastModificationTimestamp, folderSyncButton)
