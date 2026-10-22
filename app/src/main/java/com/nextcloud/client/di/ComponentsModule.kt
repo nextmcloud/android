@@ -38,6 +38,8 @@ import com.nextcloud.ui.fileactions.FileActionsBottomSheet
 import com.nextcloud.ui.tags.TagManagementBottomSheet
 import com.nextcloud.ui.trashbinFileActions.TrashbinFileActionsBottomSheet
 import com.nmc.android.ui.LauncherActivity
+import com.nmc.android.scans.SaveScannedDocumentFragment
+import com.nmc.android.scans.ScanActivity
 import com.owncloud.android.MainApp
 import com.owncloud.android.authentication.AuthenticatorActivity
 import com.owncloud.android.authentication.DeepLinkLoginActivity
@@ -460,6 +462,12 @@ internal interface ComponentsModule {
 
     @ContributesAndroidInjector
     fun fileUploadHelper(): FileUploadHelper
+
+    @ContributesAndroidInjector
+    fun scanActivity(): ScanActivity
+
+    @ContributesAndroidInjector
+    fun saveScannedDocumentFragment(): SaveScannedDocumentFragment
 
     @ContributesAndroidInjector
     fun sslUntrustedCertDialog(): SslUntrustedCertDialog
