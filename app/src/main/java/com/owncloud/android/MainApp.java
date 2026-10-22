@@ -83,6 +83,7 @@ import com.owncloud.android.lib.resources.status.OCCapability;
 import com.owncloud.android.lib.resources.status.OwnCloudVersion;
 import com.owncloud.android.ui.navigation.NavigatorActivity;
 import com.owncloud.android.ui.navigation.NavigatorScreen;
+import com.nmc.android.remoteconfig.RemoteConfigInit;
 import com.owncloud.android.ui.notifications.NotificationUtils;
 import com.owncloud.android.utils.FilesSyncHelper;
 import com.owncloud.android.utils.PermissionUtil;
@@ -363,6 +364,9 @@ public class MainApp extends Application implements HasAndroidInjector, NetworkC
 
             backgroundJobManager.startPeriodicallyOfflineOperation();
         }
+
+        // NMC Customization
+        new RemoteConfigInit(this);
 
         registerGlobalPassCodeProtection();
         if (!MDMConfig.INSTANCE.sendFilesSupport(this)) {
