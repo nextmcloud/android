@@ -47,10 +47,10 @@
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation"
-            app:labelVisibilityMode="labeled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            android:visibility="gone"
             app:menu="@menu/bottom_navigation_menu"
             app:layout_behavior="com.nextcloud.ui.behavior.OnScrollBehavior" />
 
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_marginEnd="@dimen/standard_margin"
-            android:layout_marginBottom="@dimen/floating_action_button_bottom_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
             android:contentDescription="@string/fab_label"
             app:srcCompat="@drawable/ic_plus"
             app:layout_behavior="com.nextcloud.ui.behavior.OnScrollBehavior"
