@@ -96,8 +96,8 @@ class ClientIntegration(
 
                     withContext(Dispatchers.Main) {
                         tintableDrawable?.let {
-                            val tinted = viewThemeUtils.platform.tintDrawable(context, it)
-                            icon.setImageDrawable(tinted)
+                            // NMC-6005: no tinting required
+                            icon.setImageDrawable(it)
                         }
                     }
                 }
