@@ -62,6 +62,8 @@ class LogsActivity : ToolbarActivity() {
 
         setupToolbar()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        // NMC Customization: show divider
+        showHideDefaultToolbarDivider(true)
 
         supportActionBar?.let {
             viewThemeUtils.files.themeActionBar(this, it, R.string.logs_title)
