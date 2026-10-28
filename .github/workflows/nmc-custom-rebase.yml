@@ -1,0 +1,19 @@
+name: MCLOUD rebase custom branches
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_type:
+        type: choice
+        description: Select which branches to rebase
+        options:
+          - master
+          - stable-35.0.x
+        default: master
+
+jobs:
+  rebase-pr-branches:
+    uses: nextmcloud/.github/.github/workflows/nmc-custom-rebase.yml@master
+    with:
+      branch_type: ${{ inputs.branch_type }}
+    secrets: inherit
