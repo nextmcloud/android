@@ -16,11 +16,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -99,10 +95,6 @@ class PreviewImageActivity :
     private val downloadStartReceiver = DownloadStartReceiver()
     private val downloadFinishReceiver = DownloadFinishReceiver()
 
-    private val windowInsetsController: WindowInsetsControllerCompat by lazy {
-        WindowCompat.getInsetsController(window, window.decorView)
-    }
-
     private var isDownloadWorkStarted = false
     private var screenState = PreviewImageActivityState.Idle
 
@@ -130,6 +122,7 @@ class PreviewImageActivity :
         }
 
         setContentView(R.layout.preview_image_activity)
+        setupToolbar()
 
         setupDrawer(menuItemId)
 
@@ -139,7 +132,6 @@ class PreviewImageActivity :
             updateActionBarTitleAndHomeButton(chosenFile)
             viewThemeUtils.files.setWhiteBackButton(this, it)
             it.setDisplayHomeAsUpEnabled(true)
-            it.setBackgroundDrawable(R.color.black.toDrawable())
         }
 
         setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
@@ -149,7 +141,9 @@ class PreviewImageActivity :
             screenState = PreviewImageActivityState.WaitingForBinder
         }
 
-        applyDisplayCutOutTopPadding()
+        // NMC-4604 fix: we don't need to call this function
+        // as we using toolbar_standard directly inside the xml and no padding is required
+        // applyDisplayCutOutTopPadding()
 
         handleBackPress()
 
@@ -361,7 +355,8 @@ class PreviewImageActivity :
             return
         }
 
-        updateActionBarTitle(file.fileName)
+        // NMC Customization
+        updateActionBarTitleAndHomeButton(getFile())
 
         if (pagerNeedsRebuild) {
             savedPosition = null
@@ -569,13 +564,10 @@ class PreviewImageActivity :
         }
 
         if (currentFile != null) {
-            updateActionBarTitle(currentFile.fileName)
+            // NMC Customization
+            updateActionBarTitleAndHomeButton(currentFile)
             setDrawerIndicatorEnabled(false)
         }
-    }
-
-    private fun updateActionBarTitle(title: String?) {
-        supportActionBar?.title = title
     }
 
     /**
@@ -619,16 +611,7 @@ class PreviewImageActivity :
         get() = supportActionBar == null || supportActionBar?.isShowing == true
 
     fun toggleFullScreen() {
-        val rootInsets = ViewCompat.getRootWindowInsets(window.decorView) ?: return
-
-        // the content is laid out edge to edge so that showing and hiding the bars does not move it
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        if (rootInsets.isVisible(WindowInsetsCompat.Type.systemBars())) {
-            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-        } else {
-            windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
-        }
+        // do nothing for NMC
     }
 
     fun startImageEditor(file: OCFile) {
