@@ -17,5 +17,23 @@
         <exclude
             domain="file"
             path="." />
+        <!-- NMC: MoEngage backup rules -->
+        <exclude
+            domain="database"
+            path="MOEInteractions" />
+        <exclude
+            domain="sharedpref"
+            path="pref_moe.xml" />
+        <!-- NMC: end -->
     </cloud-backup>
+    <device-transfer>
+        <!-- NMC: MoEngage backup rules -->
+        <exclude
+            domain="database"
+            path="MOEInteractions" />
+        <exclude
+            domain="sharedpref"
+            path="pref_moe.xml" />
+        <!-- NMC: end -->
+    </device-transfer>
 </data-extraction-rules>
