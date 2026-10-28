@@ -103,6 +103,9 @@
     <color name="player_video_control_view_background_color">#21000000</color>
     <color name="player_video_scrim_color">#B3000000</color>
     <color name="player_progressbar_background_color">#979797</color>
+    <color name="player_progressbar_thumb_stroke_color">#33000000</color>
+    <color name="player_progressbar_thumb_halo_color">#40FFFFFF</color>
+    <color name="player_progressbar_buffered_color">#CFCFCF</color>
 
     <!--  NMC Colors  -->
     <color name="icon_color">#191919</color>
