@@ -66,11 +66,12 @@ class SortingOrderDialogFragment :
             view.tag = sortOrder
             view.let {
                 it.setOnClickListener(OnSortOrderClickListener())
-                viewThemeUtils?.material?.colorMaterialButtonPrimaryBorderless(it)
+                // NMC Customization
+                it.setTextColor(resources.getColor(R.color.standard_grey, null))
+                it.setIconTintResource(R.color.standard_grey)
             }
         }
 
-        viewThemeUtils?.material?.colorMaterialButtonPrimaryTonal(binding.cancel)
         binding.cancel.setOnClickListener { dismiss() }
     }
 
