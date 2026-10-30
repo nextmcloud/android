@@ -97,6 +97,7 @@ import com.owncloud.android.ui.dialog.ChooseRichDocumentsTemplateDialogFragment
 import com.owncloud.android.ui.dialog.ChooseTemplateDialogFragment
 import com.owncloud.android.ui.dialog.ConfirmationDialogFragment
 import com.owncloud.android.ui.dialog.CreateFolderDialogFragment
+import com.owncloud.android.ui.dialog.SendShareDialog
 import com.owncloud.android.ui.dialog.SyncFileNotEnoughSpaceDialogFragment
 import com.owncloud.android.ui.events.ChangeMenuEvent
 import com.owncloud.android.ui.events.CommentsEvent
@@ -694,6 +695,8 @@ open class OCFileListFragment :
 
     //region List item interaction
     override fun onShareIconClick(file: OCFile) {
+        // NMC Customization
+        SendShareDialog.isPeopleShareClicked = true
         containerActivity?.showDetails(file, SHARING_TAB)
     }
 
@@ -944,8 +947,11 @@ open class OCFileListFragment :
 
     private fun handleListAction(@IdRes itemId: Int, checkedFiles: Set<OCFile>): Boolean {
         when {
-            itemId == R.id.action_send_share_file && checkedFiles.size == SINGLE_SELECTION ->
+            itemId == R.id.action_send_share_file && checkedFiles.size == SINGLE_SELECTION -> {
+                // NMC Customization
+                SendShareDialog.isPeopleShareClicked = true
                 containerActivity?.showDetails(checkedFiles.first(), SHARING_TAB)
+            }
 
             itemId == R.id.action_see_details && checkedFiles.size == SINGLE_SELECTION ->
                 showDetailsAndHideSortGroup(checkedFiles.first())
@@ -970,6 +976,8 @@ open class OCFileListFragment :
     }
 
     private fun showDetailsAndHideSortGroup(file: OCFile) {
+        // NMC Customization
+        SendShareDialog.isPeopleShareClicked = true
         activeActionMode?.finish()
         containerActivity?.run {
             showDetails(file)
