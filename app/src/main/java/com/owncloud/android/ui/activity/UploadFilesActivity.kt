@@ -18,6 +18,7 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Environment
 import android.util.TypedValue
@@ -29,6 +30,8 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.MenuProvider
 import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.account.User
@@ -270,6 +273,8 @@ class UploadFilesActivity :
     private fun setupToolbarSpinner() {
         mToolbarSpinner.visibility = View.VISIBLE
         mToolbarSpinner.adapter = directories
+        mToolbarSpinner.background.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(Color.TRANSPARENT, BlendModeCompat.SRC_IN)
         mToolbarSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 repeat(position) { onBackPressedDispatcher.onBackPressed() }

@@ -174,7 +174,8 @@ internal class OCFileListMultiChoiceModeListener(private val fragment: OCFileLis
 
     private fun tintPlaceholderIcon(placeholderItem: MenuItem) {
         val icon = placeholderItem.icon ?: return
-        val white = ContextCompat.getColor(fragment.requireContext(), R.color.white)
+        // NMC customization
+        val white = ContextCompat.getColor(fragment.requireContext(), R.color.fontAppbar)
         placeholderItem.icon = fragment.viewThemeUtils.platform.colorDrawable(icon, white)
     }
 
