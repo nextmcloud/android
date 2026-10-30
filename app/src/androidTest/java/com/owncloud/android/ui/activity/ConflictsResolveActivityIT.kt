@@ -20,12 +20,12 @@ import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.nextcloud.client.account.UserAccountManagerImpl
 import com.nextcloud.utils.extensions.getDecryptedPath
+import com.nmc.android.ui.conflict.ConflictsResolveConsentDialog
 import com.owncloud.android.AbstractIT
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.FileDataStorageManager
 import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.db.OCUpload
-import com.owncloud.android.ui.dialog.conflict.ConflictsResolveDialog
 import com.owncloud.android.ui.dialog.conflict.ConflictsResolveDialog.Decision
 import com.owncloud.android.ui.dialog.conflict.ConflictsResolveDialog.OnConflictDecisionMadeListener
 import com.owncloud.android.ui.dialog.conflict.ConflictResolveDialogFactory
@@ -67,7 +67,7 @@ class ConflictsResolveActivityIT : AbstractIT() {
         }
 
         launchActivity<ConflictsResolveActivity>(intent).use { scenario ->
-            var dialog: ConflictsResolveDialog? = null
+            var dialog: ConflictsResolveConsentDialog? = null
             scenario.onActivity { sut ->
                 dialog = ConflictResolveDialogFactory.forNormal(
                     storageManager.getDecryptedPath(existingFile),
