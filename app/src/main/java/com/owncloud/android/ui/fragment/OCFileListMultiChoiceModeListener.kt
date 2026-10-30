@@ -8,6 +8,9 @@ package com.owncloud.android.ui.fragment
 
 import android.app.Activity
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
@@ -97,7 +100,19 @@ internal class OCFileListMultiChoiceModeListener(private val fragment: OCFileLis
 
         if (fragment is GalleryFragment && activity is AlbumsPickerActivity) {
             placeholderItem.isVisible = false
-            menu.findItem(R.id.add_to_album).isVisible = true
+            val addAlbumItem = menu.findItem(R.id.add_to_album)
+            addAlbumItem.isVisible = true
+            // NMC Customization
+            addAlbumItem.title?.let {
+                val coloredTitle = SpannableString(it)
+                coloredTitle.setSpan(
+                    ForegroundColorSpan(ContextCompat.getColor(fragment.requireContext(), R.color.primary)),
+                    0,
+                    it.length,
+                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                )
+                addAlbumItem.title = coloredTitle
+            }
         }
 
         fragment.commonAdapter?.setMultiSelect(true)
