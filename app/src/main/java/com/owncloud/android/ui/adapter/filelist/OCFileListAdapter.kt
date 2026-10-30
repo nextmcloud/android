@@ -280,7 +280,9 @@ class OCFileListAdapter(
         directory: OCFile,
         storageManager: FileDataStorageManager,
         onlyOnDevice: Boolean,
-        mLimitToMimeType: String
+        mLimitToMimeType: String,
+        showOnlyFolder: Boolean,
+        hideEncryptedFolder: Boolean
     ) {
         this.onlyOnDevice = onlyOnDevice
 
@@ -298,6 +300,8 @@ class OCFileListAdapter(
             adapterDataProvider,
             onlyOnDevice,
             mLimitToMimeType,
+            showOnlyFolder,
+            hideEncryptedFolder,
             preferences,
             accountUserId
         ) { newList, _ ->
