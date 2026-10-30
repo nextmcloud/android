@@ -111,6 +111,7 @@ import com.owncloud.android.ui.interfaces.OCFileListFragmentInterface
 import com.owncloud.android.utils.FileSortOrder
 import com.owncloud.android.utils.FileStorageUtils
 import com.owncloud.android.utils.PermissionUtil
+import com.nmc.android.utils.FabThemeUtils
 import com.owncloud.android.utils.theme.ThemeUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -276,7 +277,8 @@ open class OCFileListFragment :
         }
 
         fabMain = requireActivity().findViewById<FloatingActionButton?>(R.id.fab_main)?.also {
-            viewThemeUtils.material.themeFAB(it)
+            //NMC customization
+            FabThemeUtils.colorFloatingActionButton(requireContext(), it)
         }
 
         return view
@@ -449,7 +451,8 @@ open class OCFileListFragment :
             return
         }
 
-        viewThemeUtils.material.themeFAB(fab)
+        // NMC customization
+        FabThemeUtils.colorFloatingActionButton(requireContext(), fab)
         fab.setOnClickListener { showCreateBottomSheet(fileActivity) }
     }
 
@@ -492,7 +495,8 @@ open class OCFileListFragment :
         activity.runOnUiThread {
             if (visible) {
                 fab.show()
-                viewThemeUtils.material.themeFAB(fab)
+                // NMC customization
+                FabThemeUtils.colorFloatingActionButton(requireContext(), fab)
             } else {
                 fab.hide()
             }
@@ -505,7 +509,8 @@ open class OCFileListFragment :
         val activity = activity ?: return
         activity.runOnUiThread {
             fab.isEnabled = enabled
-            viewThemeUtils.material.themeFAB(fab)
+            // NMC customization
+            FabThemeUtils.colorFloatingActionButton(requireContext(), fab)
         }
     }
 
