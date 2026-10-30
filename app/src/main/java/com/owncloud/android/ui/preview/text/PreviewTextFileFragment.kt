@@ -26,6 +26,7 @@ import com.nextcloud.ui.fileactions.FileActionHandler
 import com.nextcloud.ui.fileactions.FileActionHost
 import com.nextcloud.ui.fileactions.FileActionsBottomSheet
 import com.nextcloud.utils.extensions.getParcelableArgument
+import com.nmc.android.utils.SearchViewThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.lib.common.utils.Log_OC
@@ -168,7 +169,8 @@ class PreviewTextFileFragment : PreviewTextFragment() {
 
         val searchView = searchView ?: return
         searchView.maxWidth = Int.MAX_VALUE
-        viewThemeUtils.androidx.themeToolbarSearchView(searchView)
+        // NMC customization
+        SearchViewThemeUtils.themeSearchView(requireActivity(), searchView)
 
         if (searchOpen) {
             searchView.isIconified = false

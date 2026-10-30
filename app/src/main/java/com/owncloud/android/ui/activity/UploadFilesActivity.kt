@@ -40,6 +40,7 @@ import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.jobs.upload.FileUploadHelper
 import com.nextcloud.client.jobs.upload.FileUploadWorker
 import com.nextcloud.utils.extensions.hasEnabledParent
+import com.nmc.android.utils.SearchViewThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.UploadFilesLayoutBinding
 import com.owncloud.android.datamodel.SyncedFolderProvider
@@ -130,13 +131,16 @@ class UploadFilesActivity :
 
             searchView = (menu.findItem(R.id.action_search).actionView as SearchView).also {
                 viewThemeUtils.androidx.themeToolbarSearchView(it)
+                // NMC customization
+                SearchViewThemeUtils.themeSearchView(this@UploadFilesActivity, it)
                 it.setOnSearchClickListener { mToolbarSpinner.visibility = View.GONE }
             }
 
             menu.findItem(R.id.action_choose_storage_path)?.let { item ->
                 item.isVisible = checkStoragePermission(this@UploadFilesActivity)
                 item.icon?.let {
-                    viewThemeUtils.platform.tintDrawable(this@UploadFilesActivity, it, ColorRole.ON_SURFACE)
+                    // NMC customization
+                    viewThemeUtils.platform.colorDrawable(it, resources.getColor(R.color.fontAppbar, null))
                 }
             }
         }
