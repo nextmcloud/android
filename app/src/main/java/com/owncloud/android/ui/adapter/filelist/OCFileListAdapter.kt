@@ -141,6 +141,7 @@ class OCFileListAdapter(
         showMetadata = true,
         showShareAvatar = true,
         viewThemeUtils,
+        false,
         syncedFolderProvider
     )
 
@@ -571,6 +572,7 @@ class OCFileListAdapter(
 
     fun setGridView(bool: Boolean) {
         gridView = bool
+        ocFileListDelegate.setGridView(bool)
     }
 
     fun setShowMetadata(bool: Boolean) {
