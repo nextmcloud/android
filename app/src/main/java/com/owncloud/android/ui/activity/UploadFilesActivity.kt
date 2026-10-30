@@ -20,6 +20,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -53,6 +54,7 @@ import com.owncloud.android.ui.fragment.localfilelist.LocalFileListListener
 import com.owncloud.android.utils.FileSortOrder
 import com.owncloud.android.utils.PermissionUtil.checkStoragePermission
 import java.io.File
+import java.util.Locale
 import javax.inject.Inject
 
 class UploadFilesActivity :
@@ -180,6 +182,7 @@ class UploadFilesActivity :
         fileListFragment = supportFragmentManager.findFragmentByTag(LOCAL_FILES_LIST_TAG) as LocalFileListFragment
 
         setupButtons()
+        updateButtonTextSize()
         uploadBehaviour = UploadBehaviourSelector(this, binding, preferences).apply {
             setup(themeUtils.getDefaultDisplayNameForRootFolder(this@UploadFilesActivity))
         }
@@ -191,6 +194,28 @@ class UploadFilesActivity :
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         Log_OC.d(TAG, "onCreate() end")
+    }
+
+    private fun updateButtonTextSize(){
+        // reduce the button text size so that the text doesn't go to next line
+        // this should only happen for GERMAN language
+        // and device should not be tablet and should be in portrait mode
+        if (!com.nmc.android.utils.DisplayUtils.isTablet(this)
+            && !com.nmc.android.utils.DisplayUtils.isLandscapeOrientation(this)
+        ) {
+            if (Locale.getDefault().language.equals(Locale.GERMAN.language)
+                || Locale.getDefault().language.equals(Locale.GERMANY.language)
+            ) {
+                binding.uploadFilesBtnUpload.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    resources.getDimension(R.dimen.txt_size_13sp)
+                )
+                binding.uploadFilesBtnCancel.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    resources.getDimension(R.dimen.txt_size_13sp)
+                )
+            }
+        }
     }
 
     private fun restoreState(savedInstanceState: Bundle?) {
