@@ -76,6 +76,7 @@ import com.nextcloud.utils.extensions.lastFragment
 import com.nextcloud.utils.extensions.navigateToAllFiles
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.nextcloud.utils.view.FastScrollUtils
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.authentication.PassCodeManager
@@ -287,6 +288,15 @@ class FileDisplayActivity :
         observeWorkers()
         registerBackPressCallback()
         setupDrawer(menuItemId)
+
+        // NMC: handle custom action callback for notifications
+        MoEngageSdkUtils.handleCustomActionCallback(object : MoEngageSdkUtils.OnHandleCustomActionCallback {
+            override fun handleAction(actionType: MoEngageSdkUtils.CustomActionType) {
+                if (actionType == MoEngageSdkUtils.CustomActionType.RATING) {
+                    inAppReviewHelper.performNativeReview(this@FileDisplayActivity)
+                }
+            }
+        })
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -315,6 +325,8 @@ class FileDisplayActivity :
     public override fun onStart() {
         super.onStart()
 
+        // NMC: show in-app notifications
+        MoEngageSdkUtils.displayInAppNotification(this)
         registerReceivers()
 
         if (SettingsActivity.isBackPressed) {
@@ -407,6 +419,9 @@ class FileDisplayActivity :
         dialog.dismiss()
         supportFragmentManager.beginTransaction().remove(fragment).commitNowAllowingStateLoss()
         requestStoragePermissionIfNeeded(this)
+
+        // NMC: Notify MoEngage about Config Changes for In-App Notifications
+        MoEngageSdkUtils.handleConfigChangesForInAppNotification()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -657,7 +672,12 @@ class FileDisplayActivity :
     // region Permissions
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            PermissionUtil.PERMISSIONS_POST_NOTIFICATIONS -> requestStoragePermissionIfNeeded(this)
+            PermissionUtil.PERMISSIONS_POST_NOTIFICATIONS -> {
+                requestStoragePermissionIfNeeded(this)
+
+                // NMC: Notify MoEngage about the post notification permission response
+                MoEngageSdkUtils.updatePostNotificationsPermission(this)
+            }
 
             PermissionUtil.PERMISSIONS_EXTERNAL_STORAGE -> if (grantResults.isPermissionGranted()) {
                 EventBus.getDefault().post(TokenPushEvent())
