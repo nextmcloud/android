@@ -5,10 +5,26 @@
   ~ SPDX-FileCopyrightText: 2024 Alper Ozturk <alper.ozturk@nextcloud.com>
   ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
 -->
-<androidx.appcompat.widget.Toolbar
+<!-- NMC Customization: added divider below toolbar -->
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/toolbar_back_button"
+    android:id="@+id/toolbar_layout"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    app:popupTheme="@style/Theme.AppCompat.DayNight.NoActionBar" />
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_back_button"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/bg_default"
+        android:theme="@style/Theme.ToolbarTheme"
+        app:popupTheme="@style/Theme.AppCompat.DayNight.NoActionBar" />
+
+    <View
+        android:id="@+id/default_toolbar_divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/toolbar_divider_color"/>
+</LinearLayout>
