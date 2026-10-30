@@ -72,6 +72,12 @@ configurations.configureEach {
     }
 }
 
+// NMC: semantic versioning for version code
+val versionMajor = 10
+val versionMinor = 0
+val versionPatch = 2
+val versionBuild = 90
+
 val ndkEnv = buildMap {
     file("${project.rootDir}/ndk.env").readLines().forEach {
         val (key, value) = it.split("=")
@@ -109,10 +115,6 @@ android {
         minSdk = 28
         compileSdk = 37
         targetSdk = 36
-        // mayor.minor.hotfix.increment (for increment: 01-50=Alpha / 51-89=RC / 90-99=stable)
-        // xx   .xxx  .xx    .xx
-        versionCode = 350010050
-        versionName = "35.1.0 Alpha 51"
 
         buildConfigField("boolean", "CI", ciBuild.toString())
         buildConfigField("boolean", "RUNTIME_PERF_ANALYSIS", perfAnalysis.toString())
@@ -120,6 +122,10 @@ android {
         // arguments to be passed to functional tests
         testInstrumentationRunner = if (shotTest) "com.karumi.shot.ShotTestRunner"
         else "com.nextcloud.client.TestRunner"
+
+        versionCode = versionMajor * 10000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
+        // NMC: using short version name
+        versionName = "${versionMajor}.${versionMinor}.${versionPatch}"
 
         // adapt structure from Eclipse to Gradle/Android Studio expectations;
         // see http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Configuring-the-Structure
