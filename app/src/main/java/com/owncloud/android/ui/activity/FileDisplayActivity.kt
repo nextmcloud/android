@@ -76,6 +76,7 @@ import com.nextcloud.utils.extensions.lastFragment
 import com.nextcloud.utils.extensions.navigateToAllFiles
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.nextcloud.utils.view.FastScrollUtils
+import com.nmc.android.utils.SearchViewThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.authentication.PassCodeManager
@@ -1267,7 +1268,8 @@ class FileDisplayActivity :
         !isAlbumItemsFragment
 
     private fun setupSearchView(view: SearchView) {
-        viewThemeUtils.androidx.themeToolbarSearchView(view)
+        //NMC customization
+        SearchViewThemeUtils.themeSearchView(this, view)
 
         if (searchQuery.isNotEmpty()) {
             view.post { restoreSearchQuery() }
