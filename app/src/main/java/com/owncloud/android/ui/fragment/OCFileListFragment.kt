@@ -1553,6 +1553,16 @@ open class OCFileListFragment :
         }
     }
 
+    // NMC Customization
+    // for NMC we are using defaultToolbar instead searchToolbar for which we needed customization
+    private fun isRoot(): Boolean {
+        val activity = activity
+        if (activity is FileDisplayActivity) {
+            return activity.isRoot(activity.file)
+        }
+        return false
+    }
+
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onSearchEvent(event: SearchEvent) {
         startSearch(event)

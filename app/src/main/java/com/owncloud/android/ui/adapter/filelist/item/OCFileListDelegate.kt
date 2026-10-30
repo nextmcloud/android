@@ -63,11 +63,12 @@ class OCFileListDelegate(
     private val user: User,
     private val storageManager: FileDataStorageManager,
     private val hideItemOptions: Boolean,
-    private val gridView: Boolean,
+    private var gridView: Boolean,
     private val transferServiceGetter: ComponentsGetter,
     private val showMetadata: Boolean,
     private var showShareAvatar: Boolean,
     private var viewThemeUtils: ViewThemeUtils,
+    private val isMediaGallery: Boolean,
     private val syncFolderProvider: SyncedFolderProvider? = null
 ) {
     private val checkedFiles: MutableSet<OCFile> = HashSet()
@@ -228,7 +229,10 @@ class OCFileListDelegate(
         thumbnailGenerator.setThumbnail(
             file,
             viewHolder.thumbnail,
-            ThumbnailArguments(isGrid = gridView, hideVideoOverlay = false, viewHolder.shimmerThumbnail)
+            ThumbnailArguments(
+                isGrid = gridView, hideVideoOverlay = false, viewHolder.shimmerThumbnail,
+                isMediaGallery = isMediaGallery
+            )
         )
 
         // item layout + click listeners
@@ -249,22 +253,15 @@ class OCFileListDelegate(
 
         // shares
         val shouldHideShare = (
-            (
+            gridView || // NMC: don't show share icon in grid mode
                 hideItemOptions ||
-                    (
-                        !file.isFolder &&
-                            file.isEncrypted
-                        ) ||
-                    (
-                        file.isEncrypted &&
-                            !EncryptionUtils.supportsSecureFiledrop(file, user)
-                        ) ||
-                    (searchType == SearchType.FAVORITE_SEARCH) ||
-                    (
-                        file.isFolder &&
-                            (currentDirectory?.isEncrypted ?: false)
-                        )
-                )
+                !file.isFolder &&
+                file.isEncrypted ||
+                file.isEncrypted &&
+                !EncryptionUtils.supportsSecureFiledrop(file, user) ||
+                searchType == SearchType.FAVORITE_SEARCH ||
+                file.isFolder &&
+                currentDirectory?.isEncrypted ?: false
             ) // sharing an encrypted subfolder is not possible
         if (shouldHideShare) {
             viewHolder.shared.visibility = View.GONE
@@ -317,15 +314,8 @@ class OCFileListDelegate(
     private fun setItemLayoutBackgroundColor(file: OCFile, gridViewHolder: ListViewHolder) {
         val cornerRadius = context.resources.getDimension(R.dimen.selected_grid_container_radius)
 
-        val isDarkModeActive = (syncFolderProvider?.preferences?.isDarkModeEnabled == true)
-        val selectedItemBackgroundColorId: Int = if (isDarkModeActive) {
-            R.color.action_mode_background
-        } else {
-            R.color.selected_item_background
-        }
-
         val itemLayoutBackgroundColorId: Int = if (file.fileId == highlightedItem?.fileId || isCheckedFile(file)) {
-            selectedItemBackgroundColorId
+            R.color.selected_item_background
         } else {
             R.color.bg_default
         }
@@ -338,9 +328,8 @@ class OCFileListDelegate(
 
     private fun setCheckBoxImage(file: OCFile, gridViewHolder: ListViewHolder) {
         if (isCheckedFile(file)) {
-            gridViewHolder.checkbox.setImageDrawable(
-                viewThemeUtils.platform.tintDrawable(context, R.drawable.ic_checkbox_marked, ColorRole.PRIMARY)
-            )
+            // NMC Customization
+            gridViewHolder.checkbox.setImageResource(R.drawable.ic_checkbox_marked)
         } else {
             gridViewHolder.checkbox.setImageResource(R.drawable.ic_checkbox_blank_outline)
         }
@@ -449,6 +438,10 @@ class OCFileListDelegate(
         }
 
         Log_OC.d(TAG, "background jobs cancelled")
+    }
+
+    fun setGridView(bool: Boolean){
+        gridView = bool
     }
 
     companion object {
