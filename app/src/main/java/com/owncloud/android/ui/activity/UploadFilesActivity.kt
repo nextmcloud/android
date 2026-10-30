@@ -473,7 +473,14 @@ class UploadFilesActivity :
     private fun ArrayAdapter<String>.addDirectoryHierarchy(directory: File?) {
         generateSequence(directory) { it.parentFile }
             .takeWhile { it.parentFile != null }
-            .forEach { add(it.name) }
+            .forEach {
+                // NMC Customization
+                if (it.name == "0") {
+                    add(resources.getString(R.string.storage_internal_storage))
+                } else {
+                    add(it.name);
+                }
+            }
         add(File.separator)
     }
 
