@@ -76,6 +76,7 @@ import com.nextcloud.utils.extensions.lastFragment
 import com.nextcloud.utils.extensions.navigateToAllFiles
 import com.nextcloud.utils.extensions.setVisibleIf
 import com.nextcloud.utils.view.FastScrollUtils
+import com.nmc.android.utils.KeyboardUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.authentication.PassCodeManager
@@ -1405,6 +1406,8 @@ class FileDisplayActivity :
     private fun popBackStackAndResetUi() {
         binding.fabMain.setImageResource(R.drawable.ic_plus)
         resetScrolling(true)
+        // NMC: hide the keyboard on back press if showing
+        KeyboardUtils.hideKeyboardFrom(this, binding.root)
         showSortListGroup(false)
         showBottomNavigationBar(true)
         supportFragmentManager.popBackStack()
