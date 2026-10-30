@@ -35,6 +35,7 @@ import com.nextcloud.ui.component.UploadWarningCard
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.nextcloud.utils.thumbnail.ThumbnailGenerator
+import com.nmc.android.utils.SwipeRefreshThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FragmentUploadListBinding
 import com.owncloud.android.datamodel.SyncedFolderProvider
@@ -242,7 +243,8 @@ class UploadListFragment :
             adapter = uploadListAdapter
         }
 
-        viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingList)
+        // NMC Customisation
+        SwipeRefreshThemeUtils.themeSwipeRefreshLayout(activity, binding.swipeContainingList)
         binding.swipeContainingList.setOnRefreshListener { refresh() }
     }
 
