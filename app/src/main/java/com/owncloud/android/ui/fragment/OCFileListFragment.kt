@@ -75,6 +75,7 @@ import com.nextcloud.utils.thumbnail.ThumbnailGenerator
 import com.nextcloud.utils.view.FastScrollUtils
 import com.nmc.android.marketTracking.TrackingScanInterface
 import com.nmc.android.utils.DialogThemeUtils
+import com.nmc.android.scans.ScanActivity
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.ArbitraryDataProvider
@@ -705,6 +706,18 @@ open class OCFileListFragment :
             FileDisplayActivity.REQUEST_CODE__SELECT_FILES_FROM_FILE_SYSTEM,
             folder.isEncrypted
         )
+    }
+
+    override fun scanDocument() {
+        // remote file to store the scans in the selected path
+        val remoteFile = (activity as? FileActivity)?.currentDir ?: OCFile(OCFile.ROOT_PATH)
+
+        //remote path used so that user can directly save at the selected sub folder location
+        ScanActivity.openScanActivity(requireActivity(), remoteFile, FileDisplayActivity.REQUEST_CODE__SCAN_DOCUMENT)
+
+        //track event on Scan Document button click
+        //implementation and logic will be available in nmc/1925-market_tracking
+        trackingScanInterface?.sendScanEvent(preferences)
     }
 
     override fun createRichWorkspace() {

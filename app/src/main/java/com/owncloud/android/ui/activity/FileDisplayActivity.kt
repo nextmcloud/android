@@ -81,6 +81,7 @@ import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.nmc.android.utils.DialogThemeUtils
 import com.nmc.android.utils.SearchViewThemeUtils
 import com.nmc.android.utils.KeyboardUtils
+import com.nmc.android.scans.SaveScannedDocumentFragment
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.authentication.PassCodeManager
@@ -1465,6 +1466,26 @@ class FileDisplayActivity :
             requestCode == REQUEST_CODE__MOVE_OR_COPY_FILES && resultCode == RESULT_OK ->
                 listOfFilesFragment?.exitSelectionMode()
 
+            requestCode == REQUEST_CODE__SCAN_DOCUMENT && resultCode == RESULT_OK -> {
+                var remoteFilePath =
+                    data?.getParcelableExtra<OCFile>(SaveScannedDocumentFragment.EXTRA_SCAN_DOC_REMOTE_PATH)
+                if (remoteFilePath == null) {
+                    remoteFilePath = getCurrentDir()
+                }
+
+                Log_OC.d(this, "Scan Document save remote path: " + remoteFilePath?.remotePath)
+
+                // NMC-2418 fix
+                if (remoteFilePath?.remotePath.equals(getCurrentDir()?.remotePath)) {
+                    Log_OC.d(this, "Both current and scan paths are same. Skipping redirection.")
+                    return
+                }
+
+                remoteFilePath?.let {
+                    listOfFilesFragment?.onItemClicked(it)
+                }
+            }
+
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
     }
@@ -2670,6 +2691,9 @@ class FileDisplayActivity :
         val REQUEST_CODE__UPLOAD_FROM_VIDEO_CAMERA = REQUEST_CODE__LAST_SHARED + 6
 
         val REQUEST_CODE__SELECT_CONTENT_FROM_APPS_AUTO_RENAME = REQUEST_CODE__LAST_SHARED + 7
+
+        @JvmField
+        val REQUEST_CODE__SCAN_DOCUMENT: Int = REQUEST_CODE__LAST_SHARED + 9
 
         private val selectContentFromAppsRequestCodes = setOf(
             REQUEST_CODE__SELECT_CONTENT_FROM_APPS,
