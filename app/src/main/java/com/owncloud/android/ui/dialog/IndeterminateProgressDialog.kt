@@ -14,6 +14,7 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.LoadingDialogBinding
 import com.owncloud.android.utils.theme.ViewThemeUtils
@@ -35,7 +36,11 @@ class IndeterminateProgressDialog :
         val binding = LoadingDialogBinding.inflate(layoutInflater).apply {
             loadingText.setText(messageId)
             loadingBar.indeterminateDrawable?.let { drawable ->
-                viewThemeUtils.platform.tintDrawable(requireContext(), drawable)
+                // NMC Customization
+                viewThemeUtils.platform.colorDrawable(
+                    drawable,
+                    requireContext().resources.getColor(R.color.white, null)
+                )
             }
         }
 
@@ -43,7 +48,8 @@ class IndeterminateProgressDialog :
             .setView(binding.root)
             .setCancelable(cancelable)
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(requireContext(), builder)
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireContext(), builder)
 
         return builder.create()
     }
