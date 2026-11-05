@@ -85,6 +85,7 @@ val ndkEnv = buildMap {
     }
 }
 
+val adjustAppToken = project.properties["ADJUST_APP_TOKEN"]
 val ncTestServerUsername = providers.gradleProperty("NC_TEST_SERVER_USERNAME").get()
 val ncTestServerPassword = providers.gradleProperty("NC_TEST_SERVER_PASSWORD").get()
 val ncTestServerBaseUrl = providers.gradleProperty("NC_TEST_SERVER_BASEURL").get()
@@ -120,7 +121,8 @@ android {
         // NMC Customization
         buildConfigField("boolean", "CI", ciBuild.toString())
         buildConfigField("boolean", "RUNTIME_PERF_ANALYSIS", perfAnalysis.toString())
-
+        // NMC Customization: adjust token
+        buildConfigField("String", "ADJUST_APP_TOKEN", adjustAppToken.toString())
         // arguments to be passed to functional tests
         testInstrumentationRunner = if (shotTest) "com.karumi.shot.ShotTestRunner"
         else "com.nextcloud.client.TestRunner"
@@ -534,6 +536,14 @@ dependencies {
     // region Kotlin
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.core)
+    // endregion
+
+    // NMC region
+    // Adjust SDK --> https://github.com/adjust/android_sdk
+    implementation(libs.adjust.android)
+    implementation(libs.installreferrer)
+    // tealium sdk
+    implementation(libs.tealium.library)
     // endregion
 
     // region Google Play dependencies, upon each update first test: new registration, receive push
