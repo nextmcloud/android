@@ -92,7 +92,9 @@ class OCFileListAdapterHelperTest {
             onlyOnDevice = false,
             limitToMimeType = mime,
             preferences = preferences,
-            userId = userId
+            userId = userId,
+            showOnlyFolder = false,
+            hideEncryptedFolder = false
         )
     }
 

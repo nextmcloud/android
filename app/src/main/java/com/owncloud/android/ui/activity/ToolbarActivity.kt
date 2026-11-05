@@ -271,6 +271,16 @@ abstract class ToolbarActivity :
     }
     // endregion
 
+    // NMC region
+    fun showHideToolbar(isShow: Boolean) {
+        defaultToolbar.visibility = if (isShow) View.VISIBLE else View.GONE
+    }
+
+    fun showHideDefaultToolbarDivider(isShow: Boolean) {
+        mDefaultToolbarDivider.visibility = if (isShow) View.VISIBLE else View.GONE
+    }
+    // NMC endregion
+
     // region Preview image
     fun setPreviewImageVisibility(isVisible: Boolean) {
         previewImageContainer?.isVisible = isVisible
