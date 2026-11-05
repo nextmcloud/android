@@ -15,6 +15,7 @@ import com.owncloud.android.ui.activity.drawer.DrawerActivity
 import com.owncloud.android.ui.activity.drawer.externallinks.DrawerExternalLinksMenu
 import com.owncloud.android.ui.events.ChangeMenuEvent
 import com.owncloud.android.ui.navigation.NavigatorScreen
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings
 import org.greenrobot.eventbus.EventBus
 
@@ -39,6 +40,12 @@ class DrawerMenuItemClickHandler(
             R.id.nav_recent_files -> navigator.openRecentFiles()
             R.id.nav_assistant -> navigator.openAssistant()
             R.id.nav_groupfolders -> navigator.openGroupfolders()
+            R.id.nav_notifications -> {
+                navigator.pushFragment(NavigatorScreen.Notifications)
+                // NMC: track notification screen event
+                MoEngageSdkUtils.trackNotificationsScreenEvent(activity)
+            }
+
             else -> onOtherNavigationItemClicked(menuItem)
         }
 
