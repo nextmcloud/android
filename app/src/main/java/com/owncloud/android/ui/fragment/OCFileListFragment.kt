@@ -70,6 +70,8 @@ import com.nextcloud.utils.extensions.slideHideBottomBehavior
 import com.nextcloud.utils.fileNameValidator.FileNameValidator
 import com.nextcloud.utils.thumbnail.ThumbnailGenerator
 import com.nextcloud.utils.view.FastScrollUtils
+import com.nmc.android.marketTracking.TrackingScanInterface
+import com.nmc.android.scans.ScanActivity
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.ArbitraryDataProvider
@@ -172,6 +174,13 @@ open class OCFileListFragment :
     @Inject
     lateinit var deviceInfo: DeviceInfo
 
+    /**
+     * Things to note about both the branches. 1. nmc/1867-scanbot branch: --> interface won't be initialised -->
+     * calling of interface method will be done here 2. nmc/1925-market_tracking --> interface will be initialised -->
+     * calling of interface method won't be done here
+     */
+    private var trackingScanInterface: TrackingScanInterface? = null
+
     lateinit var e2eeDialogPresenter: E2EEDialogPresenter
         private set
 
@@ -232,6 +241,9 @@ open class OCFileListFragment :
         REMOVE_GRID_AND_SORT,
         ADD_GRID_AND_SORT_WITH_SEARCH
     }
+
+    private var mShowOnlyFolder = false
+    private var mHideEncryptedFolder: Boolean = false
 
     fun requireContainerActivity(): ContainerActivity =
         checkNotNull(containerActivity) { "Fragment $this is not attached to a ContainerActivity" }
@@ -631,6 +643,18 @@ open class OCFileListFragment :
             FileDisplayActivity.REQUEST_CODE__SELECT_FILES_FROM_FILE_SYSTEM,
             folder.isEncrypted
         )
+    }
+
+    override fun scanDocument() {
+        // remote file to store the scans in the selected path
+        val remoteFile = (activity as? FileActivity)?.currentDir ?: OCFile(OCFile.ROOT_PATH)
+
+        //remote path used so that user can directly save at the selected sub folder location
+        ScanActivity.openScanActivity(requireActivity(), remoteFile, FileDisplayActivity.REQUEST_CODE__SCAN_DOCUMENT)
+
+        //track event on Scan Document button click
+        //implementation and logic will be available in nmc/1925-market_tracking
+        trackingScanInterface?.sendScanEvent(preferences)
     }
 
     override fun createRichWorkspace() {
@@ -1129,7 +1153,11 @@ open class OCFileListFragment :
 
         Log_OC.i(TAG, "Listing directory ${directoryToList.decryptedRemotePath}, onlyOnDevice=$onlyOnDevice")
         val previousDirectory = currentFile
-        adapter.swapDirectory(accountManager.user, directoryToList, storageManager, onlyOnDevice, mimeType) {
+        adapter.swapDirectory(
+            accountManager.user, directoryToList, storageManager, onlyOnDevice, mimeType,
+            mShowOnlyFolder,
+            mHideEncryptedFolder
+        ) {
             if (view == null) return@swapDirectory
             fileListLayoutManager?.setLayoutViewMode()
             scrollToHighlightedFileOrTop(adapter, highlightedFile, previousDirectory, directoryToList)
@@ -1168,6 +1196,17 @@ open class OCFileListFragment :
 
         Log_OC.d(TAG, "${candidate.remotePath} is not a folder, listing its parent instead")
         return storageManager.getFileById(candidate.parentId)
+    }
+
+    fun listDirectoryFolder(
+        directory: OCFile?,
+        onlyOnDevice: Boolean,
+        showOnlyFolder: Boolean,
+        hideEncryptedFolder: Boolean
+    ) {
+        mShowOnlyFolder = showOnlyFolder
+        mHideEncryptedFolder = hideEncryptedFolder
+        listDirectory(directory, onlyOnDevice)
     }
 
     fun refreshDirectory() {
