@@ -15,9 +15,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.content.ContextCompat
 import com.canhub.cropper.CropImageView
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.jobs.upload.FileUploadHelper
@@ -32,8 +30,10 @@ import com.owncloud.android.files.services.NameCollisionPolicy
 import com.owncloud.android.lib.common.operations.OnRemoteOperationListener
 import com.owncloud.android.operations.UploadFileOperation
 import com.owncloud.android.ui.activity.FileActivity
+import com.owncloud.android.ui.navigation.model.ActionBarStyle
 import com.owncloud.android.utils.MimeType
 import java.io.File
+import androidx.core.graphics.drawable.toDrawable
 
 class EditImageActivity :
     FileActivity(),
@@ -71,18 +71,23 @@ class EditImageActivity :
         file = intent.extras?.getParcelableArgument(EXTRA_FILE, OCFile::class.java)
             ?: throw IllegalArgumentException("Missing file argument")
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.apply {
-            title = file.fileName
-            setDisplayHomeAsUpEnabled(true)
-        }
-
-        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
-        windowInsetsController.hide(WindowInsetsCompat.Type.statusBars())
-
-        window.navigationBarColor = getColor(R.color.black)
+        // NMC Customization
+        showActionBar(ActionBarStyle.Plain)
+        setupActionBar()
 
         setupCropper()
+    }
+
+    //NMC Customization
+    private fun setupActionBar() {
+        supportActionBar?.let {
+            viewThemeUtils.platform.themeStatusBar(this)
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setDisplayShowTitleEnabled(true)
+            //custom color for back arrow for NMC
+            viewThemeUtils.files.themeActionBar(this, it, file.fileName)
+            it.setBackgroundDrawable(resources.getColor(R.color.bg_default, null).toDrawable())
+        }
     }
 
     override fun onCropImageComplete(view: CropImageView, result: CropImageView.CropResult) {
@@ -122,12 +127,18 @@ class EditImageActivity :
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         // add save button to action bar
         menuInflater.inflate(R.menu.custom_menu_placeholder, menu)
-        val saveIcon = AppCompatResources.getDrawable(this, R.drawable.ic_check)?.also {
-            DrawableCompat.setTint(it, resources.getColor(R.color.white, theme))
-        }
+        // NMC: No need to apply NC tint here as we will be doing it later in code
+        val saveIcon = AppCompatResources.getDrawable(this, R.drawable.ic_tick)
         menu?.findItem(R.id.custom_menu_placeholder_item)?.apply {
             icon = saveIcon
             contentDescription = getString(R.string.common_save)
+            // NMC customization
+            icon = icon?.let {
+                viewThemeUtils.platform.colorDrawable(
+                    it,
+                    ContextCompat.getColor(this@EditImageActivity, R.color.fontAppbar)
+                )
+            }
         }
         return true
     }
