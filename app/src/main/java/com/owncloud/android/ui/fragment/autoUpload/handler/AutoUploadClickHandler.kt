@@ -12,10 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.nextcloud.client.account.User
 import com.nextcloud.client.jobs.BackgroundJobManager
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.nextcloud.client.jobs.upload.FileUploadHelper
 import com.owncloud.android.datamodel.MediaFolderType
 import com.owncloud.android.datamodel.SyncedFolder
 import com.owncloud.android.datamodel.SyncedFolderDisplayItem
+import com.owncloud.android.datamodel.SyncedFolderProvider
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.ui.adapter.SyncedFolderAdapter
 import com.owncloud.android.ui.dialog.SyncedFolderPreferencesDialogFragment
@@ -33,6 +35,7 @@ class AutoUploadClickHandler(
     private val itemFactory: AutoUploadDisplayItemFactory,
     private val persistence: AutoUploadPersistence,
     private val dialogs: AutoUploadDialogs,
+    private val syncedFolderProvider: SyncedFolderProvider,
     private val backgroundJobManager: BackgroundJobManager,
     private val getAdapter: () -> SyncedFolderAdapter,
     private val onItemVisibilityChanged: () -> Unit
@@ -104,6 +107,8 @@ class AutoUploadClickHandler(
             updateExistingFolder(syncedFolder)
         }
 
+        trackAutoUpload()
+
         if (isSaved && syncedFolder.isEnabled) {
             dialogs.showBatteryOptimizationDialogIfNeeded()
         }
@@ -118,8 +123,17 @@ class AutoUploadClickHandler(
             persistence.deleteAutoUploadFolder(syncedFolder.id)
             withContext(Dispatchers.Main) {
                 getAdapter().removeItem(syncedFolder.section)
+                trackAutoUpload()
             }
         }
+    }
+
+    /**
+     * NMC: tracking auto upload is enabled or not
+     * Should be called whenever a Folder is saved or removed from auto upload
+     */
+    private fun trackAutoUpload() {
+        MoEngageSdkUtils.trackAutoUpload(fragment.requireContext(), syncedFolderProvider.countEnabledSyncedFolders())
     }
 
     private fun isNewCustomFolder(syncedFolder: SyncedFolderParcelable): Boolean =
