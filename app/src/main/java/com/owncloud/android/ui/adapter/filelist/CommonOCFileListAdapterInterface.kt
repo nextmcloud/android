@@ -22,6 +22,8 @@ interface CommonOCFileListAdapterInterface {
         storageManager: FileDataStorageManager,
         onlyOnDevice: Boolean,
         mLimitToMimeType: String,
+        showOnlyFolder: Boolean,
+        hideEncryptedFolder: Boolean,
         onSwapped: () -> Unit = {}
     )
 
