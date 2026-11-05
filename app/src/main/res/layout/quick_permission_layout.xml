@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2024 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/permission_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:showIn="@layout/file_details_share_link_share_item">
+
+    <ImageView
+        android:id="@+id/permission_type_icon"
+        android:layout_width="@dimen/list_item_icons_size"
+        android:layout_height="@dimen/list_item_icons_size"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/permission_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/permission_name"
+        app:tint="@color/share_blue_color"
+        tools:src="@drawable/ic_sharing_edit"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/permission_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_quarter_padding"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:textColor="@color/share_blue_color"
+        android:textSize="@dimen/txt_size_15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/permission_type_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Everyone can only view" />
+
+    <ImageView
+        android:id="@+id/calendar_permission_icon"
+        android:layout_width="@dimen/list_item_icons_size"
+        android:layout_height="@dimen/list_item_icons_size"
+        android:layout_marginStart="@dimen/standard_quarter_padding"
+        android:src="@drawable/ic_calendar"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/permission_name"
+        app:layout_constraintStart_toEndOf="@+id/permission_name"
+        app:layout_constraintTop_toTopOf="@+id/permission_name"
+        app:tint="@color/share_blue_color"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/password_permission_icon"
+        android:layout_width="@dimen/list_item_icons_size"
+        android:layout_height="@dimen/list_item_icons_size"
+        android:layout_marginStart="@dimen/standard_quarter_margin"
+        android:src="@drawable/ic_lock"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/permission_name"
+        app:layout_constraintStart_toEndOf="@+id/calendar_permission_icon"
+        app:layout_constraintTop_toTopOf="@+id/permission_name"
+        app:tint="@color/share_blue_color"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/arrow_icon"
+        android:layout_width="@dimen/list_item_icons_size"
+        android:layout_height="@dimen/list_item_icons_size"
+        android:src="@drawable/ic_sharing_quick_permission_arrow"
+        app:layout_constraintBottom_toBottomOf="@+id/permission_name"
+        app:layout_constraintStart_toEndOf="@+id/password_permission_icon"
+        app:layout_constraintTop_toTopOf="@+id/permission_name"
+        app:tint="@color/share_blue_color" />
+</androidx.constraintlayout.widget.ConstraintLayout>
