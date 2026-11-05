@@ -15,6 +15,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.widget.TextViewCompat
 import com.nextcloud.utils.view.LocaleDirection
+import com.owncloud.android.R
 import com.owncloud.android.utils.FileStorageUtils
 import com.google.android.material.R as MaterialR
 
@@ -52,6 +53,8 @@ class FilenameView @JvmOverloads constructor(context: Context, attrs: AttributeS
         }
 
         extension.text = ext
+        // NMC Customization
+        extension.setTextColor(context.getColor(R.color.bottom_sheet_txt_color))
         if (extension.parent == null) {
             addView(
                 extension,
