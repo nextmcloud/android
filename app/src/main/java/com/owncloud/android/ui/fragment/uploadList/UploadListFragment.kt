@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +36,7 @@ import com.nextcloud.ui.component.UploadWarningCard
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.nextcloud.utils.thumbnail.ThumbnailGenerator
+import com.nmc.android.utils.DisplayUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FragmentUploadListBinding
 import com.owncloud.android.datamodel.SyncedFolderProvider
@@ -46,6 +48,7 @@ import com.owncloud.android.ui.adapter.uploadList.UploadListAdapter
 import com.owncloud.android.ui.adapter.uploadList.helper.UploadListAdapterHelper
 import com.owncloud.android.ui.adapter.uploadList.helper.UploadListItemOnClick
 import com.owncloud.android.ui.decoration.MediaGridItemDecoration
+import com.owncloud.android.ui.decoration.SimpleListItemDividerDecoration
 import com.owncloud.android.ui.navigation.NavigatorActivity
 import com.owncloud.android.utils.FilesSyncHelper
 import com.owncloud.android.utils.theme.ViewThemeUtils
@@ -85,6 +88,8 @@ class UploadListFragment :
     private lateinit var uploadListAdapter: UploadListAdapter
     private lateinit var conflictHandler: UploadListConflictHandler
     private lateinit var credentialsHandler: UploadListCredentialsHandler
+
+    private var simpleListItemDividerDecoration : SimpleListItemDividerDecoration? = null
 
     private val navigatorActivity: NavigatorActivity?
         get() = getTypedActivity(NavigatorActivity::class.java)
@@ -235,15 +240,38 @@ class UploadListFragment :
         val layoutManager = GridLayoutManager(activity, SPAN_COUNT)
         uploadListAdapter.setLayoutManager(layoutManager)
 
+        // NMC decorator
+        simpleListItemDividerDecoration = SimpleListItemDividerDecoration(activity, R.drawable.item_divider, true)
+
         val spacing = resources.getDimensionPixelSize(R.dimen.media_grid_spacing)
         binding.list.run {
             addItemDecoration(MediaGridItemDecoration(spacing))
             setLayoutManager(layoutManager)
+            addListItemDecorator()
             adapter = uploadListAdapter
         }
 
         viewThemeUtils.androidx.themeSwipeRefreshLayout(binding.swipeContainingList)
         binding.swipeContainingList.setOnRefreshListener { refresh() }
+    }
+
+    private fun addListItemDecorator() {
+        if (DisplayUtils.isShowDividerForList(requireContext())) {
+            //check and remove divider item decorator if exist then add item decorator
+            removeListDividerDecorator()
+            simpleListItemDividerDecoration?.let { binding?.list?.addItemDecoration(it) }
+        }
+    }
+
+    /**
+     * method to remove the divider item decorator
+     */
+    private fun removeListDividerDecorator() {
+        binding?.list?.itemDecorationCount?.let {
+            if (it > 0) {
+                simpleListItemDividerDecoration?.let { decor -> binding?.list?.removeItemDecoration(decor) }
+            }
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -287,6 +315,21 @@ class UploadListFragment :
         )
     }
     // endregion
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        //this should only run when device is not tablet because we are adding dividers in tablet for both the
+        // orientations
+        if (!DisplayUtils.isTablet(requireContext())) {
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                //add the divider item decorator when orientation is landscape
+                addListItemDecorator()
+            } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                //remove the divider item decorator when orientation is portrait
+                removeListDividerDecorator()
+            }
+        }
+    }
 
     companion object {
         private const val SPAN_COUNT = 1
