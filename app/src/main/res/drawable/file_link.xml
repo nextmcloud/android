@@ -5,12 +5,34 @@
   ~ SPDX-License-Identifier: Apache-2.0
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:tint="#969696"
-    android:viewportWidth="960"
-    android:viewportHeight="960">
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
     <path
-        android:fillColor="@android:color/white"
-        android:pathData="M440,680L280,680Q197,680 138.5,621.5Q80,563 80,480Q80,397 138.5,338.5Q197,280 280,280L440,280L440,360L280,360Q230,360 195,395Q160,430 160,480Q160,530 195,565Q230,600 280,600L440,600L440,680ZM320,520L320,440L640,440L640,520L320,520ZM520,680L520,600L680,600Q730,600 765,565Q800,530 800,480Q800,430 765,395Q730,360 680,360L520,360L520,280L680,280Q763,280 821.5,338.5Q880,397 880,480Q880,563 821.5,621.5Q763,680 680,680L520,680Z" />
+        android:pathData="M58.29,17.14V61.71A2.3,2.3 0,0 1,56 64H8a2.3,2.3 0,0 1,-2.29 -2.29V2.29A2.3,2.3 0,0 1,8 0H41.14Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="32"
+                android:startY="64"
+                android:endX="32"
+                android:endY="0"
+                android:type="linear">
+                <item android:offset="0" android:color="#FFDDD6D3"/>
+                <item android:offset="0.39" android:color="#FFE9E4E2"/>
+                <item android:offset="1" android:color="#FFE9E4E2"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:pathData="M58.29,17.14H43.43a2.29,2.29 0,0 1,-2.29 -2.28V0Z"
+        android:strokeAlpha="0.7"
+        android:fillColor="#b9ada7"
+        android:fillAlpha="0.7"/>
+    <path
+        android:pathData="M32,21.71A14.86,14.86 0,1 0,46.86 36.57,14.83 14.83,0 0,0 32,21.71ZM32.57,29L32.57,24a11.48,11.48 0,0 1,2.86 0.46A23.69,23.69 0,0 1,38.29 29ZM38.74,30.14a16.21,16.21 0,0 1,1 5.72h-7.2L32.54,30.17ZM31.43,29L25.71,29a16.12,16.12 0,0 1,2.86 -4.57A11.48,11.48 0,0 1,31.43 24v5ZM31.43,30.14v5.72h-7.2a23.84,23.84 0,0 1,1 -5.72ZM23.09,36L19.43,36a12.25,12.25 0,0 1,1.71 -5.71h3A21.87,21.87 0,0 0,23.09 36ZM19.43,37.14h3.66a16.43,16.43 0,0 0,1 5.72h-3A12.32,12.32 0,0 1,19.43 37.14ZM24.23,37.14h7.2v5.72L25.26,42.86A23.84,23.84 0,0 1,24.23 37.14ZM31.43,44v5a11.48,11.48 0,0 1,-2.86 -0.46A18.55,18.55 0,0 1,25.83 44ZM32.57,44h5.72a18.59,18.59 0,0 1,-2.75 4.57,12.28 12.28,0 0,1 -2.85,0.46L32.69,44ZM32.57,42.86L32.57,37.14h7.2a19.45,19.45 0,0 1,-1 5.72ZM40.91,37.14h3.66a12.32,12.32 0,0 1,-1.71 5.72h-3A16.43,16.43 0,0 0,40.91 37.14ZM40.91,36a23.75,23.75 0,0 0,-1 -5.71h3A12.25,12.25 0,0 1,44.57 36ZM42.06,29L39.43,29a19.76,19.76 0,0 0,-2.06 -3.77A11.87,11.87 0,0 1,42.06 29ZM26.63,25.26A29.8,29.8 0,0 0,24.57 29L21.94,29A13.65,13.65 0,0 1,26.63 25.26ZM21.94,44h2.63a25.4,25.4 0,0 0,2.06 3.89A12.23,12.23 0,0 1,21.94 44ZM37.49,47.89a25.35,25.35 0,0 0,2 -3.89h2.63A14.18,14.18 0,0 1,37.49 47.89Z"
+        android:strokeAlpha="0.8"
+        android:fillColor="#529ad6"
+        android:fillAlpha="0.8"/>
 </vector>
