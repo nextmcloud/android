@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.account.User
 import com.nextcloud.utils.extensions.isDialogFragmentReady
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.ui.dialog.ConfirmationDialogFragment
@@ -27,7 +28,8 @@ class FileDisplayDialogs(private val activity: AppCompatActivity, private val vi
                 .setPositiveButton(R.string.dialog_close) { dialog, _ -> dialog?.dismiss() }
                 .setIcon(R.drawable.ic_settings)
 
-            viewThemeUtils.dialog.colorMaterialAlertDialogBackground(activity.applicationContext, builder)
+            // NMC customization: customize dialog bg color
+            DialogThemeUtils.colorMaterialAlertDialogBackground(activity.applicationContext, builder)
 
             builder.create().show()
         } catch (e: BadTokenException) {
@@ -54,7 +56,8 @@ class FileDisplayDialogs(private val activity: AppCompatActivity, private val vi
             .setTitle(R.string.common_choose_account)
             .setItems(accountNames) { _, which -> onUserChosen(users[which]) }
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(activity.applicationContext, builder)
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.colorMaterialAlertDialogBackground(activity.applicationContext, builder)
 
         builder.create().show()
     }
