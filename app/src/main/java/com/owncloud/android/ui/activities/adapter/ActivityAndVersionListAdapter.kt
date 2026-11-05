@@ -19,6 +19,7 @@ import com.owncloud.android.databinding.VersionListItemBinding
 import com.owncloud.android.lib.resources.activities.model.Activity
 import com.nextcloud.utils.avatar.AvatarGenerator
 import com.owncloud.android.lib.resources.files.model.FileVersion
+import com.owncloud.android.operations.comments.Comments
 import com.owncloud.android.ui.interfaces.ActivityListInterface
 import com.owncloud.android.ui.interfaces.VersionListInterface
 import com.owncloud.android.utils.theme.ViewThemeUtils
@@ -30,7 +31,8 @@ class ActivityAndVersionListAdapter(
     activityListInterface: ActivityListInterface,
     private val versionListInterface: VersionListInterface.View,
     viewThemeUtils: ViewThemeUtils,
-    avatarGenerator: AvatarGenerator
+    avatarGenerator: AvatarGenerator,
+    userId: String
 ) : ActivityListAdapter(context, currentAccountProvider, activityListInterface, true, viewThemeUtils, avatarGenerator) {
 
     @SuppressLint("NotifyDataSetChanged")
@@ -60,6 +62,7 @@ class ActivityAndVersionListAdapter(
     private fun Any?.timestamp(): Long? = when (this) {
         is Activity -> datetime.time
         is FileVersion -> modifiedTimestamp
+        is Comments -> creationDateTime?.time
         else -> null
     }
 
@@ -84,6 +87,7 @@ class ActivityAndVersionListAdapter(
     override fun getItemViewType(position: Int) = when (values[position]) {
         is Activity -> ACTIVITY_TYPE
         is FileVersion -> VERSION_TYPE
+        is Comments -> COMMENT_TYPE
         else -> HEADER_TYPE
     }
 
