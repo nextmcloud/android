@@ -39,6 +39,7 @@ import com.nextcloud.ui.tags.TagManagementBottomSheet
 import com.nextcloud.ui.trashbinFileActions.TrashbinFileActionsBottomSheet
 import com.nmc.android.ui.LauncherActivity
 import com.owncloud.android.MainApp
+import com.nmc.android.ui.conflict.ConflictsResolveConsentDialog
 import com.owncloud.android.authentication.AuthenticatorActivity
 import com.owncloud.android.authentication.DeepLinkLoginActivity
 import com.owncloud.android.files.BootupBroadcastReceiver
@@ -375,6 +376,9 @@ internal interface ComponentsModule {
 
     @ContributesAndroidInjector
     fun conflictsResolveDialog(): ConflictsResolveDialog
+
+    @ContributesAndroidInjector
+    fun conflictsResolveConsentDialog(): ConflictsResolveConsentDialog
 
     @ContributesAndroidInjector
     fun createFolderDialogFragment(): CreateFolderDialogFragment
