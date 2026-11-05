@@ -7,6 +7,7 @@
 package com.owncloud.android.ui.activity
 
 import android.animation.AnimatorInflater
+import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -27,6 +28,8 @@ import com.google.android.material.textview.MaterialTextView
 import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.systembars.SystemBarBackgroundCallbacks
+import com.nmc.android.appupdate.InAppUpdateHelper
+import com.nmc.android.appupdate.InAppUpdateHelperImpl
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.FileDataStorageManager
 import com.owncloud.android.datamodel.OCFile
@@ -49,7 +52,7 @@ abstract class ToolbarActivity :
 
     @Inject
     lateinit var viewThemeUtils: ViewThemeUtils
-
+    private var inAppUpdateHelper: InAppUpdateHelper? = null
     protected lateinit var menuButton: MaterialButton
     protected lateinit var searchText: MaterialTextView
     protected lateinit var switchAccountButton: MaterialButton
@@ -105,6 +108,11 @@ abstract class ToolbarActivity :
             ActionBarStyle.Search -> homeSearchToolbar to defaultToolbar
         }
         return displayed.isVisible && hidden.isGone
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        inAppUpdateHelper = InAppUpdateHelperImpl(this)
     }
 
     private fun configureActionBar(style: ActionBarStyle) {
@@ -289,6 +297,19 @@ abstract class ToolbarActivity :
         sortListButtonGroup?.isVisible = show
     }
     // endregion
+
+    override fun onResume() {
+        super.onResume()
+        // Checks that the update is not stalled during 'onResume()'.
+        // However, you should execute this check at all entry points into the app.
+        inAppUpdateHelper?.onResume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        inAppUpdateHelper?.onDestroy()
+        inAppUpdateHelper = null
+    }
 
     companion object {
         private const val TAG = "ToolbarActivity"
