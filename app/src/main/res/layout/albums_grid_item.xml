@@ -4,76 +4,89 @@
   ~ SPDX-FileCopyrightText: 2026 TSI-mc <surinder.kumar@t-systems.com>
   ~ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ListItemLayout"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/album_container_height"
-    android:layout_marginStart="@dimen/grid_container_margin"
-    android:layout_marginEnd="@dimen/grid_container_margin"
-    android:layout_marginTop="@dimen/grid_container_margin"
-    android:layout_margin="@dimen/grid_container_margin"
-    android:backgroundTint="@color/bg_default"
-    style="@style/Widget.Material3.CardView.Outlined">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/file_image"
+        <com.elyeproj.loaderviewlibrary.LoaderImageView
+            android:id="@+id/thumbnail_shimmer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/album_grid_image_height"
             android:contentDescription="@null"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/bottomContainer"
-            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/Filename"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.72"
-            app:shapeAppearanceOverlay="@style/ImageBottomRoundedShape"/>
-
-        <LinearLayout
-            android:id="@+id/bottomContainer"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:orientation="vertical"
-            android:padding="12dp"
-            android:background="@color/bg_default"
-            app:layout_constraintTop_toBottomOf="@id/thumbnail"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/Filename"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawablePadding="@dimen/standard_half_padding"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:drawableTint="@color/text_color"
-                tools:drawableEndCompat="@drawable/ic_share"
-                tools:text="Album" />
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/album_thumb_card"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="@dimen/album_grid_image_corner_radius"
+            app:layout_constraintBottom_toTopOf="@+id/Filename"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="@android:color/transparent"
+            app:strokeWidth="0dp">
 
-            <TextView
-                android:id="@+id/file_info"
+            <ImageView
+                android:id="@+id/thumbnail"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="12sp"
-                android:maxLines="1"
-                tools:text="4 photos"
-                android:ellipsize="end"/>
+                android:layout_height="@dimen/album_grid_image_height"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/file_image"
+                app:layout_constraintBottom_toTopOf="@+id/Filename"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
+        </com.google.android.material.card.MaterialCardView>
 
-        </LinearLayout>
+        <TextView
+            android:id="@+id/Filename"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/grid_bottom_view_height"
+            android:layout_marginTop="@dimen/standard_quarter_margin"
+            android:drawablePadding="@dimen/standard_half_padding"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:text="@string/placeholder_filename"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/grid_item_text_size"
+            app:drawableTint="@color/text_color"
+            app:layout_constraintStart_toStartOf="@+id/album_thumb_card"
+            app:layout_constraintTop_toBottomOf="@+id/album_thumb_card"
+            tools:drawableEndCompat="@drawable/ic_share"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/file_info"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/grid_bottom_view_height"
+            android:layout_marginBottom="@dimen/alternate_margin"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:textColor="@color/list_item_lastmod_and_filesize_text"
+            android:textSize="@dimen/two_line_secondary_text_size"
+            app:layout_constraintEnd_toEndOf="@+id/album_thumb_card"
+            app:layout_constraintStart_toStartOf="@+id/album_thumb_card"
+            app:layout_constraintTop_toBottomOf="@+id/Filename"
+            tools:text="37 Items - Dec 2024"
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</com.google.android.material.card.MaterialCardView>
+</LinearLayout>
