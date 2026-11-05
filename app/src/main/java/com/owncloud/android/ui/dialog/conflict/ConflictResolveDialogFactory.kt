@@ -16,6 +16,7 @@ import com.nextcloud.utils.HumanReadableFormatter
 import com.nextcloud.utils.text.DisplayTextFormatter
 import com.nextcloud.model.OfflineOperationType
 import com.nextcloud.utils.extensions.toFile
+import com.nmc.android.ui.conflict.ConflictsResolveConsentDialog
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.OCFile
 import com.owncloud.android.ui.dialog.conflict.model.ConflictDialogData
@@ -30,7 +31,7 @@ object ConflictResolveDialogFactory {
         leftFile: OfflineOperationEntity,
         rightFile: OCFile,
         user: User?
-    ): ConflictsResolveDialog {
+    ): ConflictsResolveConsentDialog {
         val offlineCreatedLocalFile =
             if (leftFile.type is OfflineOperationType.CreateFile) {
                 (leftFile.type as OfflineOperationType.CreateFile).localPath.toFile()
@@ -67,9 +68,9 @@ object ConflictResolveDialogFactory {
         )
 
         return createDialog(ConflictDialogType.Offline(data)) {
-            putSerializable(ConflictsResolveDialog.ARG_LEFT_FILE, offlineCreatedLocalFile)
-            putParcelable(ConflictsResolveDialog.ARG_RIGHT_FILE, rightFile)
-            putParcelable(ConflictsResolveDialog.ARG_USER, user)
+            putSerializable(ConflictsResolveConsentDialog.ARG_LEFT_FILE, offlineCreatedLocalFile)
+            putParcelable(ConflictsResolveConsentDialog.ARG_RIGHT_FILE, rightFile)
+            putParcelable(ConflictsResolveConsentDialog.ARG_USER, user)
         }
     }
 
@@ -79,7 +80,7 @@ object ConflictResolveDialogFactory {
         leftFile: OCFile,
         rightFile: OCFile,
         user: User?
-    ): ConflictsResolveDialog {
+    ): ConflictsResolveConsentDialog {
         val localFile = File(leftFile.storagePath)
         val data = ConflictDialogData(
             headline = context.getString(R.string.choose_which_file),
@@ -93,9 +94,9 @@ object ConflictResolveDialogFactory {
         )
 
         return createDialog(ConflictDialogType.Normal(title, data)) {
-            putSerializable(ConflictsResolveDialog.ARG_LEFT_FILE, localFile)
-            putParcelable(ConflictsResolveDialog.ARG_RIGHT_FILE, rightFile)
-            putParcelable(ConflictsResolveDialog.ARG_USER, user)
+            putSerializable(ConflictsResolveConsentDialog.ARG_LEFT_FILE, localFile)
+            putParcelable(ConflictsResolveConsentDialog.ARG_RIGHT_FILE, rightFile)
+            putParcelable(ConflictsResolveConsentDialog.ARG_USER, user)
         }
     }
 
@@ -109,10 +110,10 @@ object ConflictResolveDialogFactory {
             fileSize = HumanReadableFormatter.formatBytes(fileLength)
         )
 
-    private fun createDialog(type: ConflictDialogType, putFiles: Bundle.() -> Unit): ConflictsResolveDialog =
-        ConflictsResolveDialog().apply {
+    private fun createDialog(type: ConflictDialogType, putFiles: Bundle.() -> Unit): ConflictsResolveConsentDialog =
+        ConflictsResolveConsentDialog().apply {
             arguments = Bundle().apply {
-                putParcelable(ConflictsResolveDialog.ARG_CONFLICT_DATA, type)
+                putParcelable(ConflictsResolveConsentDialog.ARG_CONFLICT_DATA, type)
                 putFiles()
             }
         }
