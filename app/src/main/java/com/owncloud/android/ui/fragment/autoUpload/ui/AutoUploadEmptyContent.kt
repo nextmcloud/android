@@ -29,7 +29,6 @@ class AutoUploadEmptyContent(
 
     init {
         emptyList.emptyListIcon.setImageResource(R.drawable.nav_synced_folders)
-        viewThemeUtils.material.colorMaterialButtonPrimaryFilled(emptyList.emptyListViewAction)
         emptyList.emptyListViewAction.setOnClickListener { showHiddenItems() }
     }
 
