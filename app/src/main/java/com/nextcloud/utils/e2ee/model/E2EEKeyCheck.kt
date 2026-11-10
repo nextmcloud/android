@@ -17,43 +17,8 @@ enum class E2EEKeyCheck {
     MISSING_EVERYWHERE,
     ONLY_ON_DEVICE,
     SAME_AS_SERVER,
-    DIFFERS_FROM_SERVER;
-
-    fun getDialog(action: E2EEAction): E2EEDialog? = when (this) {
-        ONLY_ON_DEVICE -> {
-            when (action) {
-                E2EEAction.OPEN -> {
-                    E2EEDialog.KeysUnusableWhenOpeningFolder
-                }
-
-                E2EEAction.ENCRYPT -> {
-                    E2EEDialog.KeysRevokedOrChangedWhenEncrypting
-                }
-
-                else -> {
-                    E2EEDialog.KeysOnlyExistsOnDeviceWhenCreatingFolder
-                }
-            }
-        }
-
-        DIFFERS_FROM_SERVER -> {
-            when (action) {
-                E2EEAction.OPEN -> {
-                    E2EEDialog.KeysUnusableWhenOpeningFolder
-                }
-
-                E2EEAction.ENCRYPT -> {
-                    E2EEDialog.KeysRevokedOrChangedWhenEncrypting
-                }
-
-                else -> {
-                    E2EEDialog.KeysLocallyOutdated
-                }
-            }
-        }
-
-        else -> null
-    }
+    DIFFERS_FROM_SERVER,
+    UNTRUSTED_CERTIFICATE;
 
     fun getMessageId(action: E2EEAction): Int? = when (this) {
         NO_NETWORK -> when (action) {

@@ -559,9 +559,9 @@ class EncryptionUtilsV2 {
             } else {
                 // new metadata
                 val arbitraryDataProvider: ArbitraryDataProvider = ArbitraryDataProviderImpl(context)
-                val publicKey: String = arbitraryDataProvider.getValue(user.accountName, EncryptionUtils.PUBLIC_KEY)
+                val certificate: String = arbitraryDataProvider.getValue(user.accountName, EncryptionUtils.CERTIFICATE)
                 createDecryptedFolderMetadataFile(storageManager.getE2EEVersion(user)).apply {
-                    users = mutableListOf(DecryptedUser(client.userId, publicKey, null))
+                    users = mutableListOf(DecryptedUser(client.userId, certificate, null))
                 }
             }
 
@@ -627,16 +627,16 @@ class EncryptionUtilsV2 {
                     user,
                     folder.localId
                 )
-                val publicKey: String = arbitraryDataProvider.getValue(
+                val certificate: String = arbitraryDataProvider.getValue(
                     user.accountName,
-                    EncryptionUtils.PUBLIC_KEY
+                    EncryptionUtils.CERTIFICATE
                 )
 
                 // migrate to v2
                 migrateV1ToV2andUpload(
                     decryptedV1,
                     client.userIdPlain,
-                    publicKey,
+                    certificate,
                     folder,
                     storageManager,
                     client,
@@ -801,7 +801,7 @@ class EncryptionUtilsV2 {
     ) {
         val arbitraryDataProvider: ArbitraryDataProvider = ArbitraryDataProviderImpl(context)
         val privateKeyString: String = arbitraryDataProvider.getValue(user.accountName, EncryptionUtils.PRIVATE_KEY)
-        val publicKeyString: String = arbitraryDataProvider.getValue(user.accountName, EncryptionUtils.PUBLIC_KEY)
+        val certificateString: String = arbitraryDataProvider.getValue(user.accountName, EncryptionUtils.CERTIFICATE)
 
         val encryptedFolderMetadata = encryptFolderMetadataFile(
             metadata,
@@ -815,7 +815,7 @@ class EncryptionUtilsV2 {
             arbitraryDataProvider
         )
         val serializedFolderMetadata = EncryptionUtils.serializeJSON(encryptedFolderMetadata, true)
-        val cert = EncryptionUtils.convertCertFromString(publicKeyString)
+        val cert = EncryptionUtils.convertCertFromString(certificateString)
         val privateKey = EncryptionUtils.PEMtoPrivateKey(privateKeyString)
 
         val signature = getMessageSignature(cert, privateKey, encryptedFolderMetadata)

@@ -44,7 +44,7 @@ class FolderEncryption(private val fragment: OCFileListFragment) {
 
             val user = fragment.accountManager.user
             val provider = fragment.arbitraryDataProvider
-            val publicKey = provider.getValue(user, EncryptionUtils.PUBLIC_KEY)
+            val certificate = provider.getValue(user, EncryptionUtils.CERTIFICATE)
             val privateKey = provider.getValue(user, EncryptionUtils.PRIVATE_KEY)
             val client = fragment.clientFactory.create(user)
 
@@ -58,7 +58,7 @@ class FolderEncryption(private val fragment: OCFileListFragment) {
                     folder,
                     client,
                     user,
-                    publicKey,
+                    certificate,
                     privateKey,
                     storageManager
                 )
@@ -88,7 +88,7 @@ class FolderEncryption(private val fragment: OCFileListFragment) {
         folder: OCFile,
         client: OwnCloudClient,
         user: User,
-        publicKey: String,
+        certificate: String,
         privateKey: String,
         storageManager: FileDataStorageManager
     ): Boolean {
@@ -96,7 +96,7 @@ class FolderEncryption(private val fragment: OCFileListFragment) {
             .uploadEncryptedFolderMetadata(
                 folder,
                 client,
-                publicKey,
+                certificate,
                 privateKey,
                 storageManager,
                 fragment.arbitraryDataProvider

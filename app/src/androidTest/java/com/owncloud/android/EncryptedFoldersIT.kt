@@ -11,7 +11,6 @@ import com.nextcloud.client.account.UserAccountManager
 import com.nextcloud.client.account.UserAccountManagerImpl
 import com.nextcloud.client.database.entity.FileEntity
 import com.nextcloud.client.network.NetworkModule
-import com.nextcloud.test.SinceServer
 import com.nextcloud.utils.e2ee.E2EEActionResolver
 import com.nextcloud.utils.e2ee.E2EEKeyInspector
 import com.owncloud.android.datamodel.OCFile
@@ -34,7 +33,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-@SinceServer(majorVersion = 30)
 open class EncryptedFoldersIT : AbstractOnServerIT() {
     companion object {
         val FOLDER = "/encryptedFolder/"
@@ -185,12 +183,12 @@ open class EncryptedFoldersIT : AbstractOnServerIT() {
     }
 
     private fun uploadFolderMetadata(ocFile: OCFile) {
-        val publicKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PUBLIC_KEY)
+        val certificate = arbitraryDataProvider.getValue(user, EncryptionUtils.CERTIFICATE)
         val privateKey = arbitraryDataProvider.getValue(user, EncryptionUtils.PRIVATE_KEY)
         val uploadedMetadata = encryptionKeyGenerator.uploadEncryptedFolderMetadata(
             ocFile,
             client,
-            publicKey,
+            certificate,
             privateKey,
             storageManager,
             arbitraryDataProvider

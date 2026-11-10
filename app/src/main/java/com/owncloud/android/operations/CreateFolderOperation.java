@@ -131,7 +131,7 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
     private RemoteOperationResult encryptedCreateV1(OCFile parent, OwnCloudClient client) {
         ArbitraryDataProvider arbitraryDataProvider = new ArbitraryDataProviderImpl(context);
         String privateKey = arbitraryDataProvider.getValue(user.getAccountName(), EncryptionUtils.PRIVATE_KEY);
-        String publicKey = arbitraryDataProvider.getValue(user.getAccountName(), EncryptionUtils.PUBLIC_KEY);
+        String certificate = arbitraryDataProvider.getValue(user.getAccountName(), EncryptionUtils.CERTIFICATE);
 
         String token = null;
         Boolean metadataExists;
@@ -150,7 +150,7 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
             Pair<Boolean, DecryptedFolderMetadataFileV1> metadataPair = EncryptionUtils.retrieveMetadataV1(parent,
                                                                                                            client,
                                                                                                            privateKey,
-                                                                                                           publicKey,
+                                                                                                           certificate,
                                                                                                            arbitraryDataProvider,
                                                                                                            user,
                                                                                                            e2eeVersion);
@@ -176,12 +176,12 @@ public class CreateFolderOperation extends SyncOperation implements OnRemoteOper
                 // update metadata
                 metadata.getFiles().put(encryptedFileName, createDecryptedFile(filename));
 
-                EncryptedFolderMetadataFileV1 encryptedFolderMetadata = EncryptionUtils.encryptFolderMetadata(metadata,
-                                                                                                              publicKey,
-                                                                                                              parent.getLocalId(),
-                                                                                                              user,
-                                                                                                              arbitraryDataProvider
-                                                                                                             );
+                EncryptedFolderMetadataFileV1 encryptedFolderMetadata = EncryptionUtils.encryptFolderMetadata(
+                    metadata,
+                    certificate,
+                    parent.getLocalId(),
+                    user,
+                    arbitraryDataProvider);
                 String serializedFolderMetadata = EncryptionUtils.serializeJSON(encryptedFolderMetadata);
 
                 final var e2eeVersionAsObject = getStorageManager().getE2EEVersionObject(user);

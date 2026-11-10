@@ -31,7 +31,7 @@ import com.owncloud.android.lib.resources.files.FileUtils;
 import com.owncloud.android.lib.resources.shares.CreateShareRemoteOperation;
 import com.owncloud.android.lib.resources.shares.OCShare;
 import com.owncloud.android.lib.resources.shares.ShareType;
-import com.owncloud.android.lib.resources.users.GetPublicKeyRemoteOperation;
+import com.owncloud.android.lib.resources.users.GetCertificateRemoteOperation;
 import com.owncloud.android.operations.common.SyncOperation;
 import com.owncloud.android.utils.EncryptionUtils;
 import com.owncloud.android.utils.EncryptionUtilsV2;
@@ -126,14 +126,15 @@ public class CreateShareWithShareeOperation extends SyncOperation {
         // E2E: lock folder
         if (isEncrypted) {
             try {
-                String publicKey = EncryptionUtils.getPublicKey(user, shareeName, arbitraryDataProvider);
+                String shareeCertificate =
+                    EncryptionUtils.getShareeCertificate(user, shareeName, arbitraryDataProvider);
 
-                if (publicKey.isEmpty()) {
+                if (shareeCertificate.isEmpty()) {
                     NextcloudClient nextcloudClient = new ClientFactoryImpl(context).createNextcloudClient(user);
-                    RemoteOperationResult<String> result = new GetPublicKeyRemoteOperation(shareeName).execute(nextcloudClient);
+                    RemoteOperationResult<String> result = new GetCertificateRemoteOperation(shareeName).execute(nextcloudClient);
                     if (result.isSuccess()) {
                         // store it
-                        EncryptionUtils.savePublicKey(
+                        EncryptionUtils.saveShareeCertificate(
                             user,
                             result.getResultData(),
                             shareeName,
@@ -187,7 +188,7 @@ public class CreateShareWithShareeOperation extends SyncOperation {
 
             boolean metadataExists;
             if (metadata == null) {
-                String cert = EncryptionUtils.retrievePublicKeyForUser(user, context);
+                String cert = EncryptionUtils.retrieveCertificateForUser(user, context);
                 String e2eeVersion = getStorageManager().getE2EEVersion(user);
                 metadata = new EncryptionUtilsV2().createDecryptedFolderMetadataFile(e2eeVersion);
                 metadata.getUsers().add(new DecryptedUser(client.getUserId(), cert, null));
@@ -200,12 +201,12 @@ public class CreateShareWithShareeOperation extends SyncOperation {
             EncryptionUtilsV2 encryptionUtilsV2 = new EncryptionUtilsV2();
 
             // add sharee to metadata
-            String publicKey = EncryptionUtils.getPublicKey(user, shareeName, arbitraryDataProvider);
+            String shareeCertificate = EncryptionUtils.getShareeCertificate(user, shareeName, arbitraryDataProvider);
 
             String decryptedMetadataKey = DecryptedUserExtensionsKt.findMetadataKeyByUserId(metadata.getUsers(), shareeName);
             DecryptedFolderMetadataFile newMetadata = encryptionUtilsV2.addShareeToMetadata(metadata,
                                                                                             shareeName,
-                                                                                            publicKey,
+                                                                                            shareeCertificate,
                                                                                             decryptedMetadataKey);
 
             // upload metadata
