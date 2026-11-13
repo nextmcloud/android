@@ -406,13 +406,17 @@ class OCFileListFragmentStaticServerIT : AbstractIT() {
 
             testFolder.richWorkspace = " "
             activity.storageManager.saveFile(testFolder)
-            adapter.swapDirectory(user, testFolder, activity.storageManager, false, "")
+            adapter.swapDirectory(user, testFolder, activity.storageManager, false, "",
+                showOnlyFolder = false,
+                hideEncryptedFolder = false)
 
             Assert.assertFalse(adapter.shouldShowHeader())
 
             testFolder.richWorkspace = null
             activity.storageManager.saveFile(testFolder)
-            adapter.swapDirectory(user, testFolder, activity.storageManager, false, "")
+            adapter.swapDirectory(user, testFolder, activity.storageManager, false, "",
+                showOnlyFolder = false,
+                hideEncryptedFolder = false)
             Assert.assertFalse(adapter.shouldShowHeader())
 
             EspressoIdlingResource.increment()
