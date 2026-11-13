@@ -219,7 +219,8 @@ abstract class DrawerActivity :
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     open fun onAccountRemovedEvent(event: AccountRemovedEvent) {
-        restart()
+        // NMC customization
+        finishAffinity()
     }
     // endregion
 
