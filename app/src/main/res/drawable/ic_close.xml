@@ -7,10 +7,12 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:tint="#757575"
-    android:viewportWidth="960"
-    android:viewportHeight="960">
+    android:viewportWidth="24"
+    android:viewportHeight="24">
     <path
-        android:fillColor="@android:color/white"
-        android:pathData="M256,760L200,704L424,480L200,256L256,200L480,424L704,200L760,256L536,480L760,704L704,760L480,536L256,760Z" />
+        android:pathData="M13.05,12L17.8,7.25C18.1,6.95 18.1,6.5 17.8,6.2C17.5,5.9 17.05,5.9 16.75,6.2L12,10.95L7.25,6.2C6.95,5.9 6.5,5.9 6.2,6.2C5.9,6.5 5.9,6.95 6.2,7.25L10.95,12L6.2,16.75C5.9,17.05 5.9,17.5 6.2,17.8C6.5,18.1 6.95,18.1 7.25,17.8L12,13.05L16.75,17.8C17.05,18.1 17.5,18.1 17.8,17.8C18.1,17.5 18.1,17.05 17.8,16.75L13.05,12Z"
+        android:strokeWidth="1"
+        android:fillColor="#262626"
+        android:fillType="evenOdd"
+        android:strokeColor="#00000000"/>
 </vector>
