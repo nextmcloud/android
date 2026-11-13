@@ -671,7 +671,8 @@ open class OCFileListFragment :
 
     //region List item interaction
     override fun onShareIconClick(file: OCFile) {
-        containerActivity?.showDetails(file, SHARING_TAB)
+        // NMC: use 0 as activeTab
+        containerActivity?.showDetails(file, ACTIVITY_TAB)
     }
 
     override fun showShareDetailView(file: OCFile) {
@@ -679,7 +680,8 @@ open class OCFileListFragment :
     }
 
     override fun showActivityDetailView(file: OCFile) {
-        containerActivity?.showDetails(file, ACTIVITY_TAB)
+        // NMC: use 1 as activeTab
+        containerActivity?.showDetails(file, SHARING_TAB)
     }
 
     override fun onOverflowIconClicked(file: OCFile, view: View?) {
