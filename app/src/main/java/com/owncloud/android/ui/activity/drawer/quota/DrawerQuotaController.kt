@@ -10,13 +10,13 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.IdRes
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.utils.GlideHelper
-import com.nextcloud.utils.HumanReadableFormatter
+import com.nextcloud.utils.HumanReadableFormatter.formatBytes
 import com.nextcloud.utils.mdm.MDMConfig
 import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.R
@@ -26,7 +26,12 @@ import com.owncloud.android.lib.common.Quota
 import com.owncloud.android.lib.resources.users.GetUserInfoRemoteOperation
 import com.owncloud.android.ui.activity.drawer.DrawerActivity
 import com.owncloud.android.ui.activity.drawer.externallinks.ExternalLinkOpener
+import com.owncloud.android.utils.StringUtils
 import kotlinx.coroutines.launch
+import java.lang.String
+import kotlin.Boolean
+import kotlin.Int
+import kotlin.let
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -37,7 +42,7 @@ class DrawerQuotaController(private val activity: DrawerActivity, private val ex
     private var quotaProgressBar: LinearProgressIndicator? = null
     private var quotaTextPercentage: TextView? = null
     private var quotaTextLink: TextView? = null
-
+    private var mQuotaTextUsage: AppCompatTextView? = null
     private val Quota.isDisplayable: Boolean
         get() = quota > 0 ||
             quota == GetUserInfoRemoteOperation.SPACE_UNLIMITED ||
@@ -47,13 +52,13 @@ class DrawerQuotaController(private val activity: DrawerActivity, private val ex
         quotaView = findQuotaViewById(navigationView, R.id.drawer_quota)
         quotaProgressBar = findQuotaViewById(navigationView, R.id.drawer_quota_ProgressBar)
         quotaTextPercentage = findQuotaViewById(navigationView, R.id.drawer_quota_percentage)
+        mQuotaTextUsage = findQuotaViewById(navigationView, R.id.drawer_quota_usage)
         quotaTextLink = findQuotaViewById(navigationView, R.id.drawer_quota_link)
 
         quotaProgressBar?.let {
-            activity.viewThemeUtils.material.colorProgressBar(it, ColorRole.PRIMARY)
+            activity.viewThemeUtils.material.colorProgressBar(it, activity.resources.getColor(R.color.primary, null))
             it.trackStopIndicatorSize = 0
         }
-        quotaView?.let { activity.viewThemeUtils.platform.colorViewBackground(it) }
     }
 
     fun fetchAndDisplay() {
@@ -87,24 +92,27 @@ class DrawerQuotaController(private val activity: DrawerActivity, private val ex
     }
 
     private fun <T : View> findQuotaViewById(navigationView: NavigationView, @IdRes id: Int): T? =
-        navigationView.getHeaderView(0)?.findViewById(id) ?: activity.findViewById(id)
+        navigationView.findViewById(id) ?: activity.findViewById(id)
 
     private fun showQuotaInformation(quota: Quota) {
-        quotaTextPercentage?.text = if (quota.quota == GetUserInfoRemoteOperation.SPACE_UNLIMITED) {
-            activity.getString(R.string.drawer_quota_unlimited, HumanReadableFormatter.formatBytes(quota.used))
-        } else {
-            activity.getString(
-                R.string.drawer_quota,
-                HumanReadableFormatter.formatBytes(quota.used),
-                HumanReadableFormatter.formatBytes(quota.total)
-            )
-        }
+        // NMC: custom text and formatting
+        val usageText = String.format(
+            activity.getString(R.string.drawer_quota_usage),
+            formatBytes(quota.used),
+            formatBytes(quota.total)
+        )
+
+        mQuotaTextUsage?.text = StringUtils.makeTextBold(usageText, formatBytes(quota.used))
 
         val relative = ceil(quota.relative).toInt()
+        quotaTextPercentage?.text = String.format(activity.getString(R.string.drawer_quota_percentage), relative)
         quotaProgressBar?.let { progressBar ->
             progressBar.progress = relative
             if (relative < RELATIVE_THRESHOLD_WARNING) {
-                activity.viewThemeUtils.material.colorProgressBar(progressBar, ColorRole.PRIMARY)
+                activity.viewThemeUtils.material.colorProgressBar(
+                    progressBar,
+                    activity.resources.getColor(R.color.primary, null)
+                )
             } else {
                 activity.viewThemeUtils.material.colorProgressBar(
                     progressBar,

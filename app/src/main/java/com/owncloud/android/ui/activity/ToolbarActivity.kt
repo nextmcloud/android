@@ -30,6 +30,8 @@ import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.systembars.SystemBarBackgroundCallbacks
 import com.nmc.android.appupdate.InAppUpdateHelper
 import com.nmc.android.appupdate.InAppUpdateHelperImpl
+import com.nmc.android.utils.DrawableThemeUtils
+import com.nmc.android.utils.ToolbarThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.FileDataStorageManager
 import com.owncloud.android.datamodel.OCFile
@@ -39,6 +41,7 @@ import com.owncloud.android.ui.activity.drawer.DrawerActivity
 import com.owncloud.android.ui.fragment.OCFileListFragment
 import com.owncloud.android.ui.fragment.SearchType
 import com.owncloud.android.ui.navigation.model.ActionBarStyle
+import com.owncloud.android.utils.StringUtils
 import com.owncloud.android.utils.theme.ThemeUtils
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import javax.inject.Inject
@@ -63,7 +66,7 @@ abstract class ToolbarActivity :
     private lateinit var defaultToolbar: RelativeLayout
     private lateinit var homeSearchToolbar: LinearLayout
     private lateinit var homeSearchContainer: MaterialCardView
-
+    private lateinit var mDefaultToolbarDivider: View
     private var appBar: AppBarLayout? = null
     var previewImageView: ImageView? = null
         private set
@@ -142,13 +145,16 @@ abstract class ToolbarActivity :
         searchText = findViewById(R.id.search_text)
         switchAccountButton = findViewById(R.id.switch_account_button)
         notificationButton = findViewById(R.id.notification_button)
+        mDefaultToolbarDivider = findViewById(R.id.default_toolbar_divider)
         toolbarSpinner = findViewById(R.id.toolbar_spinner)
     }
 
     private fun themeToolbarViews() {
         viewThemeUtils.run {
-            material.themeToolbar(toolbar)
-            material.colorToolbarOverflowIcon(toolbar)
+            // custom color for overflow icon required for NMC
+            toolbar.overflowIcon?.let { icon ->
+                DrawableThemeUtils.tintDrawable(icon, resources.getColor(R.color.fontAppbar, null))
+            }
             platform.themeStatusBar(this@ToolbarActivity)
             material.colorMaterialTextButton(switchAccountButton)
             material.themeSearchCardView(homeSearchContainer)
@@ -202,7 +208,10 @@ abstract class ToolbarActivity :
 
     fun setActionBarTitle(title: String?) {
         val actionBar = supportActionBar ?: return
-        title?.let { actionBar.title = it }
+        title?.let {
+            // custom styling for action bar title required for NMC
+            ToolbarThemeUtils.setColoredTitle(this, actionBar, it)
+        }
         actionBar.setDisplayShowTitleEnabled(title != null)
     }
 
@@ -211,8 +220,8 @@ abstract class ToolbarActivity :
 
     fun updateToolbarSubtitle(subtitle: String) {
         val actionBar = supportActionBar ?: return
-        actionBar.subtitle = subtitle
-        viewThemeUtils.androidx.themeActionBarSubtitle(this, actionBar)
+        // required for NMC
+        actionBar.subtitle = StringUtils.getColorSpan(subtitle, resources.getColor(R.color.fontAppbar, null))
     }
 
     fun clearToolbarSubtitle() {
@@ -237,27 +246,11 @@ abstract class ToolbarActivity :
     private fun switchActionBar(style: ActionBarStyle) {
         val appBar = appBar ?: return
 
-        viewThemeUtils.material.themeToolbar(toolbar)
-
-        when (style) {
-            ActionBarStyle.Search -> {
-                viewThemeUtils.platform.resetStatusBar(this)
-                setAppBarStateListAnimator(appBar, R.animator.appbar_elevation_off)
-                defaultToolbar.isVisible = false
-                homeSearchToolbar.isVisible = true
-                viewThemeUtils.material.themeSearchCardView(homeSearchContainer)
-                viewThemeUtils.material.themeSearchBarText(searchText)
-            }
-
-            ActionBarStyle.Plain -> {
-                setAppBarStateListAnimator(appBar, R.animator.appbar_elevation_on)
-                viewThemeUtils.platform.themeStatusBar(this)
-                defaultToolbar.isVisible = true
-                homeSearchToolbar.isVisible = false
-            }
-        }
-
-        SystemBarBackgroundCallbacks.apply(this, viewThemeUtils)
+        appBar.stateListAnimator = AnimatorInflater.loadStateListAnimator(appBar.context,
+            R.animator.appbar_elevation_on)
+        viewThemeUtils.platform.themeStatusBar(this)
+        defaultToolbar.visibility = View.VISIBLE
+        homeSearchToolbar.visibility = View.GONE
     }
 
     private fun setAppBarStateListAnimator(appBar: AppBarLayout, @AnimatorRes animatorId: Int) {

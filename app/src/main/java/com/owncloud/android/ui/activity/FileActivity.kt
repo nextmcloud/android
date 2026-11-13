@@ -179,7 +179,9 @@ abstract class FileActivity :
                 }
             }
 
-            this is AudioPlayerActivity -> hideInfoBox()
+            this is AudioPlayerActivity
+                // NMC-4150 fix
+                || this is PreviewMediaActivity -> hideInfoBox()
 
             else -> showInfoBox(R.string.offline_mode)
         }
