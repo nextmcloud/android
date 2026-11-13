@@ -43,6 +43,7 @@ import com.nextcloud.client.systembars.SystemBarBackgroundCallbacks
 import com.nextcloud.ui.composeActivity.ComposeProcessTextAlias
 import com.nextcloud.utils.extensions.registerBroadcastReceiver
 import com.nextcloud.utils.extensions.showToast
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.nextcloud.utils.mdm.MDMConfig
 import com.owncloud.android.authentication.GlobalPassCodeProtectionCallbacks
 import com.owncloud.android.authentication.PassCodeManager
@@ -189,6 +190,9 @@ open class MainApp :
         insertConscrypt()
         registerActivityLifecycleCallbacks(ActivityInjector())
         registerActivityLifecycleCallbacks(SystemBarBackgroundCallbacks(viewThemeUtilsProvider))
+        // NMC: init MoEngage SDK
+        initMoEngage()
+        // NMC: end
         inAppReviewHelper.resetAndIncrementAppRestartCounter()
         startMigrations()
         SecurityUtils()
@@ -233,6 +237,15 @@ open class MainApp :
 
         backgroundJobManager.scheduleOfflineSync()
         receiversHelper.registerReceivers()
+    }
+
+    private fun initMoEngage(){
+        MoEngageSdkUtils.initMoEngageSDK(this)
+        MoEngageSdkUtils.trackAppInstallOrUpdate(this, preferences.getLastSeenVersionCode())
+        MoEngageSdkUtils.captureUserAttrsForOldAppVersion(
+            this, preferences.getLastSeenVersionCode(),
+            accountManager.user
+        )
     }
 
     fun disableDocumentsStorageProvider() {
