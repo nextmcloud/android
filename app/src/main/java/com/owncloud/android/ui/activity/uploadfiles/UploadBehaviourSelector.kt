@@ -10,6 +10,8 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import com.nextcloud.client.preferences.AppPreferences
 import com.owncloud.android.R
 import com.owncloud.android.databinding.UploadFilesLayoutBinding
@@ -44,9 +46,19 @@ class UploadBehaviourSelector(
             activity.getString(R.string.uploader_upload_files_behaviour_upload_and_delete_from_source)
         )
 
-        spinner.adapter = ArrayAdapter(activity, android.R.layout.simple_spinner_item, behaviours).apply {
+        // custom spinner item layout for NMC
+        spinner.adapter = ArrayAdapter(activity, R.layout.simple_spinner_item, behaviours).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
+
+        // NMC Customization for dropdown icon tinting
+        val background = DrawableCompat.wrap(spinner.background).mutate()
+        DrawableCompat.setTintList(
+            background,
+            ContextCompat.getColorStateList(activity, R.color.spinner_color_state)
+        )
+        spinner.background = background
+
         spinner.setSelection(preferences.uploaderBehaviour)
 
         // NMC Customization
