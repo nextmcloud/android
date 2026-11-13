@@ -40,6 +40,8 @@ import com.nextcloud.ui.trashbinFileActions.TrashbinFileActionsBottomSheet
 import com.nmc.android.ui.LauncherActivity
 import com.nmc.android.scans.SaveScannedDocumentFragment
 import com.nmc.android.scans.ScanActivity
+import com.nmc.android.ui.LoginPrivacySettingsActivity
+import com.nmc.android.ui.PrivacySettingsActivity
 import com.owncloud.android.MainApp
 import com.owncloud.android.authentication.AuthenticatorActivity
 import com.owncloud.android.authentication.DeepLinkLoginActivity
@@ -479,6 +481,12 @@ internal interface ComponentsModule {
 
     @ContributesAndroidInjector
     fun documentScanActivity(): DocumentScanActivity
+
+    @ContributesAndroidInjector
+    fun privacySettingsActivity(): PrivacySettingsActivity
+
+    @ContributesAndroidInjector
+    fun loginPrivacySettingsActivity(): LoginPrivacySettingsActivity
 
     @ContributesAndroidInjector
     fun groupfolderListFragment(): GroupfolderListFragment
