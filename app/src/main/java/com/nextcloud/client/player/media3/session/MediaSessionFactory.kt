@@ -65,7 +65,8 @@ class MediaSessionFactory @Inject constructor(
         .setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory))
         .setAudioAttributes(AudioAttributes.DEFAULT, true)
         .setHandleAudioBecomingNoisy(true)
-        .setSeekForwardIncrementMs(SEEK_FORWARD_INCREMENT_IN_MILLISECONDS)
+        // NMC-3192 Fix
+        .setSeekForwardIncrementMs(2 * SEEK_FORWARD_INCREMENT_IN_MILLISECONDS)
         .build()
 
     private fun ExoPlayer.updatePauseAtEndOfMediaItems() {
