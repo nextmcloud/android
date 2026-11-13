@@ -44,6 +44,7 @@ import com.nextcloud.ui.composeActivity.ComposeProcessTextAlias
 import com.nextcloud.utils.extensions.registerBroadcastReceiver
 import com.nextcloud.utils.extensions.showToast
 import com.nextcloud.utils.mdm.MDMConfig
+import com.nmc.android.utils.ScanBotSdkUtils
 import com.owncloud.android.authentication.GlobalPassCodeProtectionCallbacks
 import com.owncloud.android.authentication.PassCodeManager
 import com.owncloud.android.datamodel.ArbitraryDataProvider
@@ -66,6 +67,8 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings
+import io.scanbot.sap.SdkFeature
+import io.scanbot.sdk.ScanbotSDKInitializer
 import org.conscrypt.Conscrypt
 import java.security.NoSuchAlgorithmException
 import java.security.Security
@@ -215,6 +218,8 @@ open class MainApp :
         }
 
         connectivityService.addListener(this)
+
+        initialiseScanBotSDK()
     }
 
     private fun initSyncOperations() {
@@ -404,6 +409,26 @@ open class MainApp :
         super.onTerminate()
         connectivityService.removeListener(this)
         AppPreferencesImpl.shutdown()
+    }
+
+     /**
+     * method to initialise the ScanBot SDK
+     */
+    private fun initialiseScanBotSDK() {
+         ScanbotSDKInitializer()
+             .withLogging(BuildConfig.DEBUG, BuildConfig.DEBUG)
+             .license(this, ScanBotSdkUtils.LICENSE_KEY)
+             .licenceErrorHandler { status, sdkFeature, statusMessage ->
+                 // Handle license errors here:
+                 Log_OC.d(TAG, "License status: " + status.name)
+                 if (sdkFeature != SdkFeature.NoSdkFeature) {
+                     Log_OC.d(TAG, "Missing SDK feature in license: " + sdkFeature.name)
+                 }
+             }
+             // enable sdkFilesDir if custom file directory has to be set
+             //.sdkFilesDirectory(this,getExternalFilesDir(null))
+             .prepareOCRLanguagesBlobs(true)
+             .initialize(this)
     }
 
     companion object {
