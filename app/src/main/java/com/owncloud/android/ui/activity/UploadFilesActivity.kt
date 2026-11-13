@@ -493,7 +493,13 @@ class UploadFilesActivity :
         if (volume == null) {
             generateSequence(directory) { it.parentFile }
                 .takeWhile { it.parentFile != null }
-                .forEach { add(it.name) }
+                .forEach { // NMC Customization
+                    if (it.name == "0") {
+                        add(resources.getString(R.string.storage_internal_storage))
+                    } else {
+                        add(it.name)
+                    }
+                }
             add(File.separator)
             return
         }
@@ -503,7 +509,13 @@ class UploadFilesActivity :
             .takeWhile { dir ->
                 dir.parentFile?.let { androidStorageManager.getStorageVolume(it) } == volume
             }
-            .forEach { add(it.name) }
+            .forEach { // NMC Customization
+                if (it.name == "0") {
+                    add(resources.getString(R.string.storage_internal_storage))
+                } else {
+                    add(it.name)
+                }
+            }
 
         add(volume.getDescription(this@UploadFilesActivity))
     }
