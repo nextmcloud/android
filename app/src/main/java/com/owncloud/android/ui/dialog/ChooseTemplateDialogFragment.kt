@@ -37,6 +37,7 @@ import com.nextcloud.utils.ResultParser.data
 import com.nextcloud.utils.SnackbarUtil
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.fileNameValidator.FileNameValidator
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.ChooseTemplateBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -101,14 +102,8 @@ class ChooseTemplateDialogFragment :
         super.onStart()
         val alertDialog = dialog as AlertDialog
 
-        val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE) as? MaterialButton
-        negativeButton?.let {
-            viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(negativeButton)
-        }
-
         val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE) as? MaterialButton
         positiveButton?.let {
-            viewThemeUtils.material.colorMaterialButtonPrimaryTonal(positiveButton)
             positiveButton.setOnClickListener(this)
             positiveButton.isEnabled = false
             positiveButton.isClickable = false
@@ -141,10 +136,6 @@ class ChooseTemplateDialogFragment :
         val inflater = requireActivity().layoutInflater
         _binding = ChooseTemplateBinding.inflate(inflater, null, false)
 
-        viewThemeUtils.material.colorTextInputLayout(
-            binding.filenameContainer
-        )
-
         binding.filename.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) = Unit
@@ -174,7 +165,8 @@ class ChooseTemplateDialogFragment :
             .setNegativeButton(R.string.common_cancel, null)
             .setTitle(title)
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(binding.list.context, builder)
+        //NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(binding.list.context, builder)
 
         return builder.create()
     }
