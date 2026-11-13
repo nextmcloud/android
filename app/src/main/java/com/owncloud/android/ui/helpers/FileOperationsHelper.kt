@@ -510,7 +510,8 @@ class FileOperationsHelper(
         hideFileDownload: Boolean,
         password: String?,
         expirationTimeInMillis: Long,
-        label: String?
+        label: String?,
+        downloadLimit: String?
     ) {
         share ?: return
 
@@ -522,6 +523,7 @@ class FileOperationsHelper(
         Log_OC.i(TAG, "Hide File Download: $hideFileDownload")
         Log_OC.i(TAG, "Label: $label")
         Log_OC.i(TAG, "Attributes: $attributes")
+        Log_OC.i(TAG, "Download Limit: $downloadLimit")
 
         val intent = shareUpdateIntent(OperationsService.ACTION_UPDATE_SHARE_INFO, share).apply {
             putExtra(OperationsService.EXTRA_SHARE_REMOTE_ID, share.remoteId)
@@ -531,8 +533,27 @@ class FileOperationsHelper(
             putExtra(OperationsService.EXTRA_SHARE_EXPIRATION_DATE_IN_MILLIS, expirationTimeInMillis)
             putExtra(OperationsService.EXTRA_SHARE_PUBLIC_LABEL, label.orEmpty())
             putExtra(OperationsService.EXTRA_SHARE_ATTRIBUTES, attributes)
+            // download limit for link share type
+            putExtra(
+                OperationsService.EXTRA_SHARE_DOWNLOAD_LIMIT,
+                if (downloadLimit.isNullOrEmpty()) 0 else downloadLimit.toLong()
+            )
         }
         queueShareIntent(intent)
+    }
+
+    /**
+     * method to fetch the download limit for the particular share Note: Download limit is only for Link share type
+     *
+     * @param shareToken of the OCShare
+     */
+    fun getShareDownloadLimit(shareToken: String?) {
+        val updateShareIntent = operationIntent(OperationsService.ACTION_GET_SHARE_DOWNLOAD_LIMIT).apply {
+            putExtra(OperationsService.EXTRA_ACCOUNT, fileActivity.account)
+            putExtra(OperationsService.EXTRA_SHARE_TOKEN, shareToken)
+        }
+
+        queueShareIntent(updateShareIntent)
     }
 
     private fun shareUpdateIntent(action: String, share: OCShare): Intent = operationIntent(action).apply {

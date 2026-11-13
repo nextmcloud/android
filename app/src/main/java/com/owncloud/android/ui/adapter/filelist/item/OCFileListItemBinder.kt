@@ -119,6 +119,9 @@ internal class OCFileListItemBinder(
         sharedAvatars.boundFileId = file.fileId
         sharedAvatars.setOnClickListener { fragmentInterface.onShareIconClick(file) }
         sharedAvatars.setAvatars(user, avatarShareesProvider.get(file, userId), viewThemeUtils, avatarGenerator)
+
+        // visibility gone as view not required for NMC
+        sharedAvatars.visibility = View.GONE
     }
 
     private fun bindTags(holder: ListItemViewHolder, tags: List<Tag>) {
