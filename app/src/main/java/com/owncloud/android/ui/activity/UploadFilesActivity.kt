@@ -18,6 +18,7 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Environment
 import android.os.storage.StorageManager
@@ -29,6 +30,8 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.MenuProvider
 import com.nextcloud.android.common.ui.theme.utils.ColorRole
 import com.nextcloud.client.account.User
@@ -253,6 +256,8 @@ class UploadFilesActivity :
     private fun setupToolbarSpinner() {
         toolbarSpinner.visibility = View.VISIBLE
         toolbarSpinner.adapter = directories
+        toolbarSpinner.background.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(Color.TRANSPARENT, BlendModeCompat.SRC_IN)
         toolbarSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 // Dirs are ordered deepest first, so 0 is current, 1 is parent ... until "/" .
