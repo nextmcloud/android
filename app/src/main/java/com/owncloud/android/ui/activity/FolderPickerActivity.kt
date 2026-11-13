@@ -18,6 +18,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Parcelable
+import android.util.TypedValue
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
@@ -57,6 +58,7 @@ import com.owncloud.android.utils.PathUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.Locale
 import javax.inject.Inject
 
 open class FolderPickerActivity :
@@ -478,6 +480,32 @@ open class FolderPickerActivity :
                 processOperation(
                     OperationsService.ACTION_MOVE_FILE
                 )
+            }
+            adjustButtonTexts()
+        }
+    }
+
+    // NMC-4239 fix
+    // adjust button german texts in portrait mode
+    private fun adjustButtonTexts(){
+        if (!com.nmc.android.utils.DisplayUtils.isTablet(this)
+            && !com.nmc.android.utils.DisplayUtils.isLandscapeOrientation(this)
+        ) {
+            if (Locale.getDefault().language.equals(Locale.GERMAN.language)
+                || Locale.getDefault().language.equals(Locale.GERMANY.language)
+            ) {
+                folderPickerBinding.folderPickerBtnCopy.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    getResources().getDimension(R.dimen.txt_size_11sp)
+                )
+                folderPickerBinding.folderPickerBtnMove.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    getResources().getDimension(R.dimen.txt_size_11sp)
+                )
+                folderPickerBinding.folderPickerBtnCancel.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    getResources().getDimension(R.dimen.txt_size_11sp)
+                );
             }
         }
     }
