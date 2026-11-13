@@ -18,7 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.di.Injectable
-import com.owncloud.android.ui.dialog.extensions.themeButtons
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.utils.theme.ViewThemeUtils
 import javax.inject.Inject
 
@@ -31,11 +31,6 @@ open class ConfirmationDialogFragment :
     var viewThemeUtils: ViewThemeUtils? = null
 
     private var mListener: ConfirmationDialogFragmentListener? = null
-
-    override fun onStart() {
-        super.onStart()
-        dialog?.themeButtons(viewThemeUtils)
-    }
 
     fun setOnConfirmationListener(listener: ConfirmationDialogFragmentListener?) {
         mListener = listener
@@ -97,7 +92,8 @@ open class ConfirmationDialogFragment :
             }
         }
 
-        viewThemeUtils?.dialog?.colorMaterialAlertDialogBackground(requireActivity(), builder)
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireActivity(), builder)
 
         return builder.create()
     }

@@ -72,6 +72,7 @@ import com.nextcloud.utils.thumbnail.ThumbnailGenerator
 import com.nextcloud.utils.view.FastScrollUtils
 import com.nmc.android.marketTracking.TrackingScanInterface
 import com.nmc.android.scans.ScanActivity
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.ArbitraryDataProvider
@@ -604,7 +605,8 @@ open class OCFileListFragment :
                 )
             }
 
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(fileDisplayActivity, builder)
+        // NMC customization: customize dialog bg color
+        DialogThemeUtils.colorMaterialAlertDialogBackground(fileDisplayActivity, builder)
         builder.show()
     }
 

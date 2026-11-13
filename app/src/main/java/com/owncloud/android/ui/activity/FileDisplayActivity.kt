@@ -80,6 +80,7 @@ import com.nmc.android.scans.SaveScannedDocumentFragment
 import com.nmc.android.utils.SearchViewThemeUtils
 import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.nmc.android.utils.KeyboardUtils
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.authentication.PassCodeManager
