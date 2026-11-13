@@ -31,7 +31,6 @@ object ShareLinkHelper {
         Snackbar
             .make(activity.findViewById(android.R.id.content), R.string.clipboard_text_copied, Snackbar.LENGTH_LONG)
             .setAction(R.string.share) { showShareLinkDialog(activity, file, link) }
-            .also { activity.viewThemeUtils.material.themeSnackbar(it) }
             .show()
     }
 
