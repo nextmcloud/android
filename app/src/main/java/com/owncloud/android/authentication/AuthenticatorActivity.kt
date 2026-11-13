@@ -59,6 +59,7 @@ import com.nextcloud.utils.mdm.MDMConfig
 import com.nmc.android.marketTracking.AdjustSdkUtils
 import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.nextcloud.utils.text.LinkFormatter
+import com.nmc.android.ui.LoginPrivacySettingsActivity
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.authentication.account.AuthenticatorAccountStore
@@ -99,7 +100,6 @@ import com.owncloud.android.operations.GetServerInfoOperation.ServerInfo
 import com.owncloud.android.providers.documentstorage.DocumentsStorageProvider
 import com.owncloud.android.services.OperationsService
 import com.owncloud.android.services.OperationsService.OperationsServiceBinder
-import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.activity.SettingsActivity
 import com.owncloud.android.ui.dialog.SslUntrustedCertDialog
 import com.owncloud.android.ui.dialog.SslUntrustedCertDialog.OnSslUntrustedCertListener
@@ -901,8 +901,8 @@ open class AuthenticatorActivity :
             return Intent(this, SettingsActivity::class.java)
         }
 
-        return Intent(this, FileDisplayActivity::class.java).apply {
-            action = FileDisplayActivity.RESTART
+        // login privacy settings to accept/reject by the user after login
+        return Intent(this, LoginPrivacySettingsActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
     }
