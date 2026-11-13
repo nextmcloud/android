@@ -36,6 +36,8 @@ import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.client.network.ClientFactory
+import com.nextcloud.client.preferences.AppPreferences
+import com.nextcloud.client.utils.IntentUtil
 import com.nextcloud.utils.SnackbarUtil
 import com.nextcloud.utils.avatar.AvatarGenerationListener
 import com.nextcloud.utils.avatar.AvatarGenerator
@@ -45,6 +47,8 @@ import com.nextcloud.utils.mdm.MDMConfig.shareViaUser
 import com.nextcloud.utils.text.SpanFormatter
 import com.nmc.android.utils.DisplayUtils.isLandscapeOrientation
 import com.nmc.android.utils.SearchViewThemeUtils
+import com.nmc.android.marketTracking.AdjustSdkUtils
+import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FileDetailsSharingFragmentBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -121,6 +125,9 @@ class FileDetailSharingFragment :
 
     @Inject
     lateinit var avatarGenerator: AvatarGenerator
+
+    @Inject
+    lateinit var appPreferences: AppPreferences
 
     // region lifecycle methods
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -730,6 +737,10 @@ class FileDetailSharingFragment :
 
         // create without password
         fileOperationsHelper?.shareFileViaPublicShare(file, null)
+
+        // track event on creating share link
+        AdjustSdkUtils.trackEvent(AdjustSdkUtils.EVENT_TOKEN_CREATE_SHARING_LINK, appPreferences)
+        TealiumSdkUtils.trackEvent(TealiumSdkUtils.EVENT_CREATE_SHARING_LINK, appPreferences)
     }
 
     override fun createSecureFileDrop() {
