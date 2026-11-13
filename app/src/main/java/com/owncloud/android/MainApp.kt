@@ -62,6 +62,8 @@ import com.owncloud.android.utils.FilesSyncHelper
 import com.owncloud.android.utils.ReceiversHelper
 import com.owncloud.android.utils.SecurityUtils
 import com.owncloud.android.utils.theme.ViewThemeUtils
+import com.nmc.android.marketTracking.AdjustSdkUtils
+import com.nmc.android.marketTracking.TealiumSdkUtils
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -187,6 +189,10 @@ open class MainApp :
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleEventObserver)
         insertConscrypt()
+        // NMC Customization
+        // Adjust SDK has to be initialized before registerActivityLifecycleCallbacks method
+        // https://github.com/adjust/android_sdk#api-level-14-and-higher
+        initMarketTrackingSdks()
         registerActivityLifecycleCallbacks(ActivityInjector())
         registerActivityLifecycleCallbacks(SystemBarBackgroundCallbacks(viewThemeUtilsProvider))
         inAppReviewHelper.resetAndIncrementAppRestartCounter()
@@ -368,6 +374,12 @@ open class MainApp :
         } catch (_: Exception) {
             Log_OC.d(DEBUG_TAG, "Failed to disable uri exposure")
         }
+    }
+
+    // NMC Customization
+    private fun initMarketTrackingSdks() {
+        TealiumSdkUtils.initialiseTealiumSDK(this)
+        AdjustSdkUtils.initialiseAdjustSDK(this)
     }
 
     private fun cancelDownloadJobsIfRequested() {
