@@ -149,7 +149,6 @@ class ShareOperationResultHandler(private val activity: FileActivity) {
     }
 
     private fun Snackbar.showThemed() {
-        activity.viewThemeUtils.material.themeSnackbar(this)
         show()
     }
 }
