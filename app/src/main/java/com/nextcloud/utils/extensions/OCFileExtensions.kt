@@ -231,3 +231,7 @@ fun OCFile.toFolderMetadataUpdate(accountName: String): FolderMetadataUpdate {
 }
 
 private fun Boolean.toInt(): Int = if (this) 1 else 0
+
+// NMC method to filter only folders with/without e2ee folders
+fun List<OCFile>.filterByFolder(hideEncryptedFolder: Boolean = false): List<OCFile> =
+    filter { it.isFolder && (!hideEncryptedFolder || !it.isEncrypted) }
