@@ -13,6 +13,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.fragment.app.Fragment
 import com.nextcloud.client.account.User
 import com.nextcloud.client.jobs.BackgroundJobManager
 import com.nextcloud.client.jobs.upload.FileUploadHelper
@@ -53,7 +54,9 @@ import com.owncloud.android.ui.dialog.SslUntrustedCertDialog.OnSslUntrustedCertL
 import com.owncloud.android.ui.events.DialogEvent
 import com.owncloud.android.ui.events.DialogEventType
 import com.owncloud.android.ui.fragment.FileDetailFragment
+import com.owncloud.android.ui.fragment.FileDetailSharingFragment
 import com.owncloud.android.ui.fragment.FileDetailSharingFragment.OnEditShareListener
+import com.owncloud.android.ui.fragment.FileDetailsSharingProcessFragment
 import com.owncloud.android.ui.fragment.OCFileListFragment
 import com.owncloud.android.ui.fragment.albums.AlbumItemsFragment
 import com.owncloud.android.ui.fragment.albums.AlbumsFragment
@@ -358,15 +361,52 @@ abstract class FileActivity :
     }
 
     protected open fun doShareWith(shareeName: String, shareType: ShareType) {
-        fileDetailFragment?.initiateSharingProcess(shareeName, shareType, usersAndGroupsSearchConfig.searchOnlyUsers)
+        var fragment = fileDetailFragment as Fragment?
+        if (fragment != null) {
+            (fragment as FileDetailFragment).initiateSharingProcess(
+                shareeName,
+                shareType,
+                usersAndGroupsSearchConfig.searchOnlyUsers
+            )
+        } else {
+            // if user sharing from Preview Image Fragment
+            fragment = supportFragmentManager.findFragmentByTag(ShareActivity.TAG_SHARE_FRAGMENT)
+            if (fragment != null) {
+                (fragment as FileDetailSharingFragment).initiateSharingProcess(
+                    shareeName,
+                    shareType,
+                    usersAndGroupsSearchConfig.searchOnlyUsers
+                )
+            }
+        }
     }
 
     override fun editExistingShare(share: OCShare, screenTypePermission: Int, isReshareShown: Boolean) {
-        fileDetailFragment?.editExistingShare(share, screenTypePermission, isReshareShown)
+        var fragment = fileDetailFragment as Fragment?
+        if (fragment != null) {
+            (fragment as FileDetailFragment).editExistingShare(share, screenTypePermission, isReshareShown)
+        } else {
+            // if user editing from Preview Image Fragment
+            fragment = supportFragmentManager.findFragmentByTag(ShareActivity.TAG_SHARE_FRAGMENT)
+            if (fragment != null) {
+                (fragment as FileDetailSharingFragment).editExistingShare(share, screenTypePermission, isReshareShown)
+            }
+        }
+    }
+
+    override fun onLinkShareDownloadLimitFetched(downloadLimit: Long, downloadCount: Long) {
+        val fileDetailsSharingProcessFragment =
+            supportFragmentManager.findFragmentByTag(FileDetailsSharingProcessFragment.TAG)
+        if (fileDetailsSharingProcessFragment != null) {
+            (fileDetailsSharingProcessFragment as FileDetailsSharingProcessFragment).onLinkShareDownloadLimitFetched(
+                downloadLimit,
+                downloadCount
+            )
+        }
     }
 
     override fun onShareProcessClosed() {
-        fileDetailFragment?.showHideFragmentView(false)
+        // NMC: do nothing
     }
 
     companion object {
