@@ -1017,6 +1017,7 @@ open class OCFileListFragment :
             putExtra(FolderPickerActivity.EXTRA_FOLDER, currentFile)
             addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             putExtra(FolderPickerActivity.EXTRA_ACTION, FolderPickerActivity.MOVE_OR_COPY)
+            putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true)
         }
         activity.startActivityForResult(action, FileDisplayActivity.REQUEST_CODE__MOVE_OR_COPY_FILES)
     }

@@ -35,6 +35,9 @@ class AutoUploadPickers(
     fun pickRemoteFolder() {
         val intent = Intent(fragment.requireContext(), FolderPickerActivity::class.java).apply {
             putExtra(FolderPickerActivity.EXTRA_ACTION, FolderPickerActivity.CHOOSE_LOCATION)
+            // NMC Customization
+            putExtra(FolderPickerActivity.EXTRA_SHOW_ONLY_FOLDER, true)
+            putExtra(FolderPickerActivity.EXTRA_HIDE_ENCRYPTED_FOLDER, true)
         }
         remoteFolderLauncher.launch(intent)
     }
