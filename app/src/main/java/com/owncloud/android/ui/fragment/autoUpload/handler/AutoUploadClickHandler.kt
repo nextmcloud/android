@@ -14,6 +14,9 @@ import com.nextcloud.client.account.User
 import com.nextcloud.client.jobs.BackgroundJobManager
 import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.nextcloud.client.jobs.upload.FileUploadHelper
+import com.nextcloud.client.preferences.AppPreferences
+import com.nmc.android.marketTracking.AdjustSdkUtils
+import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.owncloud.android.datamodel.MediaFolderType
 import com.owncloud.android.datamodel.SyncedFolder
 import com.owncloud.android.datamodel.SyncedFolderDisplayItem
@@ -37,6 +40,7 @@ class AutoUploadClickHandler(
     private val dialogs: AutoUploadDialogs,
     private val syncedFolderProvider: SyncedFolderProvider,
     private val backgroundJobManager: BackgroundJobManager,
+    private val preferences: AppPreferences,
     private val getAdapter: () -> SyncedFolderAdapter,
     private val onItemVisibilityChanged: () -> Unit
 ) : SyncedFolderAdapter.ClickListener {
@@ -72,6 +76,9 @@ class AutoUploadClickHandler(
         fragment.lifecycleScope.launch(Dispatchers.IO) {
             fileUploadHelper.removeEntityFromUploadEntities(item.id)
         }
+
+        // NMC: track event when user enable/disable auto upload on/off
+        trackAutoUploadEvent(item.isEnabled)
     }
 
     override fun onSyncFolderSettingsClick(section: Int, syncedFolderDisplayItem: SyncedFolderDisplayItem?) {
@@ -112,6 +119,22 @@ class AutoUploadClickHandler(
         if (isSaved && syncedFolder.isEnabled) {
             dialogs.showBatteryOptimizationDialogIfNeeded()
         }
+
+        // NMC: track event when user enable/disable auto upload on/off
+        trackAutoUploadEvent(syncedFolder.isEnabled)
+    }
+
+    private fun trackAutoUploadEvent(enabled: Boolean) {
+        AdjustSdkUtils.trackEvent(
+            if (enabled) AdjustSdkUtils.EVENT_TOKEN_SETTINGS_AUTO_UPLOAD_ON
+            else AdjustSdkUtils.EVENT_TOKEN_SETTINGS_AUTO_UPLOAD_OFF,
+            preferences
+        )
+        TealiumSdkUtils.trackEvent(
+            if (enabled) TealiumSdkUtils.EVENT_SETTINGS_AUTO_UPLOAD_ON
+            else TealiumSdkUtils.EVENT_SETTINGS_AUTO_UPLOAD_OFF,
+            preferences
+        )
     }
 
     fun onDeleteAutoUploadFolderPreference(syncedFolder: SyncedFolderParcelable?) {

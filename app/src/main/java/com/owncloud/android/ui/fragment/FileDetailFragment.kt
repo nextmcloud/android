@@ -50,6 +50,7 @@ import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.text.DisplayTextFormatter
 import com.nextcloud.utils.thumbnail.FolderThumbnailGenerator
 import com.nmc.android.utils.ProgressBarThemeUtils
+import com.nmc.android.marketTracking.TealiumSdkUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FileDetailsFragmentBinding
 import com.owncloud.android.datamodel.FileDataStorageManager
@@ -191,6 +192,8 @@ class FileDetailFragment :
         super.onStart()
         listenForTransferProgress()
         EventBus.getDefault().register(this)
+        // NMC: track screen view when fragment is visible
+        TealiumSdkUtils.trackView(TealiumSdkUtils.SCREEN_VIEW_SHARING, preferences)
     }
 
     override fun onResume() {
