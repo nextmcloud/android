@@ -225,6 +225,8 @@ class AutoUploadFragment :
             this.layoutManager = layoutManager
             adapter = this@AutoUploadFragment.adapter
         }
+        // NMC customization
+        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_list_empty_synced_folders)
     }
 
     private fun addMenuProvider(activity: NavigatorActivity) {
