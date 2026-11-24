@@ -43,6 +43,7 @@ import com.nmc.android.scans.ScanActivity
 import com.nmc.android.ui.LoginPrivacySettingsActivity
 import com.nmc.android.ui.PrivacySettingsActivity
 import com.owncloud.android.MainApp
+import com.nmc.android.ui.conflict.ConflictsResolveConsentDialog
 import com.owncloud.android.authentication.AuthenticatorActivity
 import com.owncloud.android.authentication.DeepLinkLoginActivity
 import com.owncloud.android.files.BootupBroadcastReceiver
@@ -379,6 +380,9 @@ internal interface ComponentsModule {
 
     @ContributesAndroidInjector
     fun conflictsResolveDialog(): ConflictsResolveDialog
+
+    @ContributesAndroidInjector
+    fun conflictsResolveConsentDialog(): ConflictsResolveConsentDialog
 
     @ContributesAndroidInjector
     fun createFolderDialogFragment(): CreateFolderDialogFragment
