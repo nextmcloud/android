@@ -115,6 +115,7 @@ import com.owncloud.android.ui.navigation.model.ActionBarStyle
 import com.owncloud.android.utils.FileSortOrder
 import com.owncloud.android.utils.FileStorageUtils
 import com.owncloud.android.utils.PermissionUtil
+import com.nmc.android.utils.FabThemeUtils
 import com.owncloud.android.utils.theme.ThemeUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -293,7 +294,8 @@ open class OCFileListFragment :
         }
 
         fabMain = requireActivity().findViewById<FloatingActionButton?>(R.id.fab_main)?.also {
-            viewThemeUtils.material.themeFAB(it)
+            //NMC customization
+            FabThemeUtils.colorFloatingActionButton(requireContext(), it)
         }
 
         return view
@@ -465,7 +467,8 @@ open class OCFileListFragment :
             return
         }
 
-        viewThemeUtils.material.themeFAB(fab)
+        // NMC customization
+        FabThemeUtils.colorFloatingActionButton(requireContext(), fab)
         fab.setOnClickListener { showCreateBottomSheet(fileActivity) }
     }
 
@@ -503,7 +506,11 @@ open class OCFileListFragment :
 
     fun setFabState(state: FabState) {
         val fab = fabMain ?: return
-        activity?.runOnUiThread { state.applyTo(fab, viewThemeUtils) }
+        activity?.runOnUiThread {
+            state.applyTo(fab, viewThemeUtils)
+            // NMC customization
+            FabThemeUtils.colorFloatingActionButton(requireContext(), fab)
+        }
     }
 
     private fun setBottomNavigationVisible(visible: Boolean) {
