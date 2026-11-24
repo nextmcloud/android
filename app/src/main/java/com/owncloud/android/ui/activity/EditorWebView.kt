@@ -19,6 +19,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebChromeClient.FileChooserParams
 import android.webkit.WebView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
@@ -224,7 +225,12 @@ abstract class EditorWebView : ExternalSiteWebView() {
     private fun getFolderIcon(file: OCFile, user: User): Drawable {
         val isAutoUploadFolder = SyncedFolderObserver.isAutoUploadFolder(file, user)
         val overlayIconId = file.getFileOverlayIconId(isAutoUploadFolder)
-        return MimeTypeUtil.getFolderIcon(preferences.isDarkModeEnabled, overlayIconId, this, viewThemeUtils)
+        // NMC Customization: No overlay icon will be used. Directly using folder icons
+        return ContextCompat.getDrawable(this, overlayIconId)
+            ?: MimeTypeUtil.getDefaultFolderIcon(
+                this,
+                viewThemeUtils
+            )
     }
 
     private fun showCachedThumbnail(file: OCFile) {
