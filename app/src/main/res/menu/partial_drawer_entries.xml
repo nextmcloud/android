@@ -100,11 +100,6 @@
             android:title="@string/drawer_item_activities"
             android:visible="false" />
         <item
-            android:id="@+id/nav_album"
-            android:icon="@drawable/ic_album"
-            android:orderInCategory="1"
-            android:title="@string/drawer_item_album" />
-        <item
             android:id="@+id/nav_uploads"
             android:icon="@drawable/uploads"
             android:orderInCategory="1"
