@@ -59,7 +59,7 @@ abstract class ToolbarActivity :
     private lateinit var defaultToolbar: RelativeLayout
     private lateinit var homeSearchToolbar: LinearLayout
     private lateinit var homeSearchContainer: MaterialCardView
-
+    private lateinit var mDefaultToolbarDivider: View
     private var appBar: AppBarLayout? = null
     var previewImageView: ImageView? = null
         private set
@@ -133,6 +133,7 @@ abstract class ToolbarActivity :
         searchText = findViewById(R.id.search_text)
         switchAccountButton = findViewById(R.id.switch_account_button)
         notificationButton = findViewById(R.id.notification_button)
+        mDefaultToolbarDivider = findViewById(R.id.default_toolbar_divider)
         toolbarSpinner = findViewById(R.id.toolbar_spinner)
     }
 
@@ -268,6 +269,16 @@ abstract class ToolbarActivity :
         infoBox?.isVisible = false
     }
     // endregion
+
+    // NMC region
+    fun showHideToolbar(isShow: Boolean) {
+        defaultToolbar.visibility = if (isShow) View.VISIBLE else View.GONE
+    }
+
+    fun showHideDefaultToolbarDivider(isShow: Boolean) {
+        mDefaultToolbarDivider.visibility = if (isShow) View.VISIBLE else View.GONE
+    }
+    // NMC endregion
 
     // region Preview image
     fun setPreviewImageVisibility(isVisible: Boolean) {

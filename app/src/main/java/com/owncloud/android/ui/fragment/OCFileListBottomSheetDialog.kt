@@ -34,6 +34,7 @@ import com.nextcloud.utils.EditorUtils
 import com.nextcloud.utils.extensions.isNetworkAndServerAvailableSuspended
 import com.nextcloud.utils.extensions.isTemplateAvailable
 import com.nextcloud.utils.extensions.setVisibleIf
+import com.nmc.android.utils.ScanBotSdkUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.R
 import com.owncloud.android.databinding.FileListActionsBottomSheetFragmentBinding
@@ -117,6 +118,13 @@ class OCFileListBottomSheetDialog(
 
         if (!deviceInfo.hasCamera(context)) {
             binding.menuDirectCameraUpload.visibility = View.GONE
+            binding.menuScanDocument.visibility = View.GONE
+        }
+
+        // check if scanbot sdk license is valid or not
+        // hide the view if license is not valid
+        if (!ScanBotSdkUtils.isScanBotLicenseValid(fileActivity)) {
+            binding.menuScanDocument.visibility = View.GONE
         }
 
         createRichWorkspace()
@@ -423,6 +431,11 @@ class OCFileListBottomSheetDialog(
             menuBack.setOnClickListener {
                 // Invert animation
                 bottomSheetViewSwitcher.showPrevious()
+            }
+
+            menuScanDocument.setOnClickListener{
+                actions.scanDocument()
+                dismiss()
             }
         }
     }
