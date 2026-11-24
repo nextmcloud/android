@@ -25,7 +25,6 @@ internal class OCFileListFooterBinder(
     // region Public methods
     fun bind(holder: OCFileListFooterViewHolder, files: List<OCFile>) {
         holder.footerText.text = fileCountSummary(files)
-        viewThemeUtils.platform.colorCircularProgressBar(holder.loadingProgressBar, ColorRole.ON_SURFACE_VARIANT)
         holder.loadingProgressBar.setVisibleIf(fragmentInterface.isLoading)
     }
     // endregion

@@ -91,7 +91,7 @@ class OCFileListAdapter(
     transferServiceGetter: ComponentsGetter,
     ocFileListFragmentInterface: OCFileListFragmentInterface,
     private val hideItemOptions: Boolean,
-    gridView: Boolean,
+    private var gridView: Boolean,
     viewThemeUtils: ViewThemeUtils,
     private val thumbnailGenerator: ThumbnailGenerator,
     avatarGenerator: AvatarGenerator
@@ -141,6 +141,7 @@ class OCFileListAdapter(
         showMetadata = true,
         showShareAvatar = true,
         viewThemeUtils,
+        false,
         syncedFolderProvider
     )
 
@@ -577,6 +578,7 @@ class OCFileListAdapter(
     }
 
     fun setGridView(bool: Boolean) {
+        gridView = bool
         ocFileListDelegate.gridView = bool
     }
 
