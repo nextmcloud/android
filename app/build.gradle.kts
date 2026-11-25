@@ -111,7 +111,6 @@ android {
     }
 
     androidResources {
-        generateLocaleConfig = true
         additionalParameters += listOf("--preferred-density", "xxxhdpi")
     }
 
@@ -205,6 +204,11 @@ android {
             versionName = "1"
         }
     }
+
+    // NMC customization to only include German and English translations and exclude the others
+    // By doing this no need to delete the other strings which aren't required for NMC
+    // Refer: https://developer.android.com/guide/topics/resources/providing-resources#AlternativeResources
+    resConfigs("en", "de_DE", "de")
 
     testOptions {
         unitTests.isReturnDefaultValues = true
