@@ -18,6 +18,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.core.Clock
 import com.nextcloud.client.di.Injectable
 import com.nextcloud.utils.extensions.getParcelableArgument
+import com.nmc.android.utils.DialogThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.DialogAutoUploadPreferenceBinding
 import com.owncloud.android.datamodel.AutoUploadFolder
@@ -62,8 +63,8 @@ class AutoUploadPreferenceDialogFragment :
         setupNavigationListeners(binding)
 
         val builder = MaterialAlertDialogBuilder(requireContext()).setView(binding.root)
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(requireContext(), builder)
-
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireContext(), builder)
         return builder.create()
     }
 
@@ -168,7 +169,9 @@ class AutoUploadPreferenceDialogFragment :
                 dialog.dismiss()
             }
             .setOnCancelListener { openOptionDialog = null }
-        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(requireActivity(), builder)
+
+        // NMC customization
+        DialogThemeUtils.colorMaterialAlertDialogBackground(requireActivity(), builder)
 
         optionDialog = builder.create().apply { show() }
     }
