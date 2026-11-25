@@ -76,6 +76,12 @@ configurations.configureEach {
     }
 }
 
+// NMC: semantic versioning for version code
+val versionMajor = 10
+val versionMinor = 2
+val versionPatch = 0
+val versionBuild = 90
+
 val ndkEnv = rootDir.resolve("ndk.env").readLines().associate { line ->
     val (key, value) = line.split("=")
     key to value
@@ -116,10 +122,6 @@ android {
         targetSdk {
             version = release(36)
         }
-        // mayor.minor.hotfix.increment (for increment: 01-50=Alpha / 51-89=RC / 90-99=stable)
-        // xx   .xxx  .xx    .xx
-        versionCode = 350020000
-        versionName = "35.2.0 Alpha 51"
 
         // NMC Customization
         buildConfigField("boolean", "CI", ciBuild.toString())
@@ -138,6 +140,10 @@ android {
             "TEST_SERVER_PASSWORD" to ncTestServerPassword,
             "disableAnalytics" to "true"
         )
+
+        versionCode = versionMajor * 10000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
+        // NMC: using short version name
+        versionName = "${versionMajor}.${versionMinor}.${versionPatch}"
     }
 
     buildTypes {
