@@ -22,6 +22,7 @@ import com.nextcloud.client.core.Clock
 import com.nextcloud.client.device.PowerManagementService
 import com.nextcloud.client.jobs.BackgroundJobManager
 import com.nextcloud.client.network.ConnectivityService
+import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.ui.component.powerSettings.PowerSettingsBanners
 import com.nextcloud.utils.extensions.getTypedActivity
 import com.nextcloud.utils.extensions.setVisibleIf
@@ -65,6 +66,8 @@ class AutoUploadFragment :
     @Inject lateinit var clock: Clock
 
     @Inject lateinit var syncedFolderProvider: AutoUploadFolderProvider
+
+    @Inject lateinit var preferences: AppPreferences
 
     @Inject lateinit var userAccountManager: UserAccountManager
 
@@ -194,6 +197,7 @@ class AutoUploadFragment :
             persistence,
             dialogs,
             getAdapter = { adapter },
+            preferences = preferences,
             onItemVisibilityChanged = { emptyContent?.checkAndShowEmptyListContent() }
         )
         powerSettingsBanners = PowerSettingsBanners(
