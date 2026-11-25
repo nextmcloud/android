@@ -216,7 +216,7 @@ android {
     }
 
     packaging.resources {
-        excludes += setOf("META-INF/LICENSE*", "META-INF/versions/9/OSGI-INF/MANIFEST*")
+        excludes += setOf("META-INF/LICENSE*", "META-INF/versions/9/OSGI-INF/MANIFEST*", "META-INF/DEPENDENCIES")
         pickFirsts += "MANIFEST.MF" // workaround for duplicated manifest on some dependencies
     }
 
@@ -467,11 +467,12 @@ dependencies {
     implementation(libs.emoji.google)
     // endregion
 
+    // NextCloud scan is not required in NMC
     // region AppScan, document scanner not available on FDroid (generic) due to OpenCV binaries
     // To enable the feature for another variant, add its "<variant>Implementation" here.
-    appScanConfigurations.forEach { configuration ->
-        add(configuration, project(":appscan"))
-    }
+    // appScanConfigurations.forEach { configuration ->
+    //   add(configuration, project(":appscan"))
+    // }
     // endregion
 
     // region SpotBugs
@@ -580,6 +581,15 @@ dependencies {
 
     // region Image loading
     implementation(libs.coil)
+    // endregion
+
+    // region scanbot sdk
+    // scanbot sdk: https://github.com/doo/scanbot-sdk-example-android
+    implementation(libs.scanbot.sdk)
+    // apache pdf-box for encrypting pdf files
+    implementation("org.apache.pdfbox:pdfbox:2.0.1") {
+        exclude(group = "commons-logging")
+    }
     // endregion
 
     // kotlinx.serialization
