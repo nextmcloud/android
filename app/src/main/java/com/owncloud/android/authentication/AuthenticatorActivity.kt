@@ -60,6 +60,7 @@ import com.nextcloud.client.onboarding.OnboardingService
 import com.nextcloud.client.preferences.AppPreferences
 import com.nextcloud.repository.ClientRepository
 import com.nextcloud.utils.SnackbarUtil
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.nextcloud.utils.extensions.getParcelableArgument
 import com.nextcloud.utils.mdm.MDMConfig
 import com.nextcloud.utils.text.LinkFormatter
@@ -942,6 +943,9 @@ open class AuthenticatorActivity :
             val accountName = requireNotNull(account).name
             accountManager.setCurrentOwnCloudAccount(accountName)
             fetchCapabilitiesAndFinish(accountName)
+
+            // NMC: MoEngage user login event tracking
+            trackUserLoginEvent(result.getResultData())
             return
         }
 
@@ -950,6 +954,12 @@ open class AuthenticatorActivity :
         binding.hostUrlInput.setText(serverInfo.mBaseUrl)
         binding.serverStatusText.visibility = View.GONE
         showAuthStatus()
+    }
+
+    private fun trackUserLoginEvent(userInfo: UserInfo?) {
+        userInfo?.let {
+            MoEngageSdkUtils.trackUserLogin(this, it)
+        }
     }
 
     private fun onCredentialsServerError(result: RemoteOperationResult<UserInfo?>) {
