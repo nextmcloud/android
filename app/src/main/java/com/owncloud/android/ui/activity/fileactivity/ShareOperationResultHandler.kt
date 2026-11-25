@@ -22,6 +22,8 @@ import com.owncloud.android.operations.UpdateNoteForShareOperation
 import com.owncloud.android.operations.UpdateShareInfoOperation
 import com.owncloud.android.operations.UpdateSharePermissionsOperation
 import com.owncloud.android.operations.UpdateShareViaLinkOperation
+import com.owncloud.android.operations.share_download_limit.DownloadLimitResponse
+import com.owncloud.android.operations.share_download_limit.GetShareDownloadLimitOperation
 import com.owncloud.android.ui.activity.FileActivity
 import com.owncloud.android.ui.activity.FileDisplayActivity
 import com.owncloud.android.ui.activity.ShareActivity
@@ -62,6 +64,8 @@ class ShareOperationResultHandler(private val activity: FileActivity) {
             is UnshareOperation -> onUpdateShareInformation(result, R.string.unsharing_failed)
 
             is UpdateNoteForShareOperation -> onUpdateNoteForShareOperationFinish(result)
+
+            is GetShareDownloadLimitOperation -> onShareDownloadLimitFetched(result)
         }
     }
 
@@ -105,7 +109,6 @@ class ShareOperationResultHandler(private val activity: FileActivity) {
 
     private fun onShareViaLinkCreated(result: RemoteOperationResult<*>) {
         val sharingFragment = sharingFragment
-        val fileListFragment = fragmentManager.findFragmentByTag(FileDisplayActivity.TAG_LIST_OF_FILES)
         activity.updateFileFromDB()
 
         val publicLinkShare = result.data
@@ -118,6 +121,8 @@ class ShareOperationResultHandler(private val activity: FileActivity) {
         }
         sharingFragment?.onUpdateShareInformation(result, sharedFile)
 
+        // this has to be here to avoid the crash when creating link from inside of FileDetailSharingFragment
+        val fileListFragment = fragmentManager.findFragmentByTag(FileDisplayActivity.TAG_LIST_OF_FILES)
         if (fileListFragment !is OCFileListFragment || sharedFile == null) return
 
         if (fileListFragment.adapterFiles.contains(sharedFile)) {
@@ -146,6 +151,23 @@ class ShareOperationResultHandler(private val activity: FileActivity) {
         if (sharingFragment == null || !sharingFragment.isAdded) return
 
         sharingFragment.requestPasswordForShareViaLink(true, capability.filesSharingPublicAskForOptionalPassword.isTrue)
+    }
+
+    /**
+     * method will be called when download limit is fetched
+     *
+     * @param result
+     */
+    private fun onShareDownloadLimitFetched(result: RemoteOperationResult<*>) {
+        val sharingFragment = sharingFragment
+
+        if (result.isSuccess && sharingFragment != null && result.getResultData() != null
+            && result.getResultData() is DownloadLimitResponse) {
+            activity.onLinkShareDownloadLimitFetched(
+                (result.getResultData() as DownloadLimitResponse).limit,
+                (result.getResultData() as DownloadLimitResponse).count
+            )
+        }
     }
 
     private fun Snackbar.showThemed() {

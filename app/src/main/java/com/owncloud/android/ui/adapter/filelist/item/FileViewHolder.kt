@@ -8,6 +8,7 @@ package com.owncloud.android.ui.adapter.filelist.item
 
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import com.elyeproj.loaderviewlibrary.LoaderImageView
 import com.nextcloud.ui.component.filename.FilenameView
 
@@ -19,6 +20,7 @@ interface FileViewHolder {
     val favorite: ImageView
     val localFileIndicator: ImageView
     val shared: ImageView
+    val sharedMessage: TextView?
     val unreadComments: ImageView
     val filename: FilenameView
 }

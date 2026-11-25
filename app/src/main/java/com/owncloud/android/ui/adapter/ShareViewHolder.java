@@ -22,9 +22,9 @@ import com.nextcloud.client.account.User;
 import com.nextcloud.utils.avatar.AvatarGenerationListener;
 import com.nextcloud.utils.avatar.AvatarGenerator;
 import com.nextcloud.utils.extensions.ImageViewExtensionsKt;
+import com.nmc.android.utils.TextViewUtils;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileDetailsShareShareItemBinding;
-import com.owncloud.android.datamodel.quickPermission.QuickPermissionType;
 import com.owncloud.android.lib.resources.shares.OCShare;
 import com.owncloud.android.ui.TextDrawable;
 import com.owncloud.android.ui.fragment.util.SharePermissionManager;
@@ -79,22 +79,22 @@ class ShareViewHolder extends RecyclerView.ViewHolder {
             switch (share.getShareType()) {
                 case GROUP:
                     name = context.getString(R.string.share_group_clarification, name);
-                    viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
+                    // viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
                     break;
                 case ROOM:
                     name = context.getString(R.string.share_room_clarification, name);
-                    viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
+                    // viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
                     break;
                 case CIRCLE:
-                    viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
+                    // viewThemeUtils.files.createAvatar(share.getShareType(), binding.icon, context);
                     break;
                 case FEDERATED, FEDERATED_GROUP:
                     name = context.getString(R.string.share_remote_clarification, name);
-                    setImage(binding.icon, share.getSharedWithDisplayName());
+                    // setImage(binding.icon, share.getSharedWithDisplayName());
                     break;
                 case USER:
                     binding.icon.setTag(share.getShareWith());
-                    float avatarRadius = context.getResources().getDimension(R.dimen.list_item_avatar_icon_radius);
+                    /* float avatarRadius = context.getResources().getDimension(R.dimen.list_item_avatar_icon_radius);
 
                     if (share.getShareWith() != null) {
                         avatarGenerator.setUserAvatar(share.getShareWith(),
@@ -103,11 +103,11 @@ class ShareViewHolder extends RecyclerView.ViewHolder {
                                                       binding.icon,
                                                       share.getSharedWithDisplayName(),
                                                       user);
-                    }
-
-                    binding.icon.setOnClickListener(v -> listener.showProfileBottomSheet(user, share.getShareWith()));
+                    } */
+                    // Not required for NMC as per NMC-3097
+                    // binding.icon.setOnClickListener(v -> listener.showProfileBottomSheet(user, share.getShareWith()));
                 default:
-                    setImage(binding.icon, name);
+                    // setImage(binding.icon, name);
                     break;
             }
         }
@@ -118,8 +118,9 @@ class ShareViewHolder extends RecyclerView.ViewHolder {
             share.getUserId() != null && share.getUserId().equalsIgnoreCase(userId)) {
             binding.overflowMenu.setVisibility(View.VISIBLE);
 
-            QuickPermissionType quickPermissionType = SharePermissionManager.INSTANCE.getSelectedType(share, encrypted);
-            setPermissionName(quickPermissionType.getText(context));
+            setPermissionName(SharePermissionManager.getPermissionName(context, share));
+            showHideCalendarIcon(share.getExpirationDate());
+            showHidePasswordIcon(share.isPasswordProtected());
 
             // bind listener to edit privileges
             binding.overflowMenu.setOnClickListener(v -> listener.showSharingMenuActionSheet(share));
@@ -131,12 +132,40 @@ class ShareViewHolder extends RecyclerView.ViewHolder {
 
     private void setPermissionName(String permissionName) {
         if (!TextUtils.isEmpty(permissionName)) {
-            binding.permissionName.setText(permissionName);
-            binding.permissionName.setVisibility(View.VISIBLE);
-            viewThemeUtils.androidx.colorPrimaryTextViewElement(binding.permissionName);
+            binding.quickPermissionLayout.permissionName.setText(permissionName);
+            TextViewUtils.isTextEllipsized(binding.quickPermissionLayout.permissionName, isEllipsized -> {
+                if(isEllipsized) {
+                    binding.quickPermissionLayout.permissionName.setText(SharePermissionManager.getShortPermissionName(context, permissionName));
+                }
+            });
+            setPermissionTypeIcon(permissionName);
+            binding.quickPermissionLayout.permissionLayout.setVisibility(View.VISIBLE);
         } else {
-            binding.permissionName.setVisibility(View.GONE);
+            binding.quickPermissionLayout.permissionLayout.setVisibility(View.GONE);
         }
+    }
+
+    private void setPermissionTypeIcon(String permissionName) {
+        if (permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_quick_permission_can_edit))) {
+            binding.quickPermissionLayout.permissionTypeIcon.setImageResource(R.drawable.ic_sharing_edit);
+            binding.quickPermissionLayout.permissionTypeIcon.setVisibility(View.VISIBLE);
+        } else if (permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_quick_permission_can_view))) {
+            binding.quickPermissionLayout.permissionTypeIcon.setImageResource(R.drawable.ic_sharing_read_only);
+            binding.quickPermissionLayout.permissionTypeIcon.setVisibility(View.VISIBLE);
+        } else if (permissionName.equalsIgnoreCase(context.getResources().getString(R.string.share_quick_permission_can_upload))) {
+            binding.quickPermissionLayout.permissionTypeIcon.setImageResource(R.drawable.ic_sharing_file_drop);
+            binding.quickPermissionLayout.permissionTypeIcon.setVisibility(View.VISIBLE);
+        } else {
+            binding.quickPermissionLayout.permissionTypeIcon.setVisibility(View.GONE);
+        }
+    }
+
+    private void showHideCalendarIcon(long expirationDate) {
+        binding.quickPermissionLayout.calendarPermissionIcon.setVisibility(expirationDate > 0 ? View.VISIBLE : View.GONE);
+    }
+
+    private void showHidePasswordIcon(boolean isPasswordProtected) {
+        binding.quickPermissionLayout.passwordPermissionIcon.setVisibility(isPasswordProtected ? View.VISIBLE : View.GONE);
     }
 
     private void setImage(ImageView avatar, String name) {
