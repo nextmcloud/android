@@ -45,6 +45,7 @@ import com.nextcloud.utils.extensions.registerBroadcastReceiver
 import com.nextcloud.utils.extensions.showToast
 import com.nextcloud.utils.mdm.MDMConfig
 import com.owncloud.android.authentication.GlobalPassCodeProtectionCallbacks
+import com.nmc.android.remoteconfig.RemoteConfigInit
 import com.owncloud.android.authentication.PassCodeManager
 import com.owncloud.android.datamodel.ArbitraryDataProvider
 import com.owncloud.android.datamodel.ReceiverFlag
@@ -208,6 +209,8 @@ open class MainApp :
         initContactsBackup(arbitraryDataProvider, accountManager, backgroundJobManager)
         AppNotificationChannels.create(getAppContext())
         scheduleBackgroundJobs()
+        // NMC Customization
+        RemoteConfigInit(this)
         registerActivityLifecycleCallbacks(GlobalPassCodeProtectionCallbacks(onboarding, passCodeManager))
 
         if (!MDMConfig.sendFilesSupport(this)) {
