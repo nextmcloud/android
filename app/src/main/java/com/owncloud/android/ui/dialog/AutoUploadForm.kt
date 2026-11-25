@@ -16,6 +16,7 @@ import androidx.lifecycle.Lifecycle
 import com.nextcloud.client.core.Clock
 import com.nextcloud.client.preferences.SubFolderRule
 import com.nextcloud.utils.text.SpanFormatter
+import com.nmc.android.utils.CheckableThemeUtils
 import com.owncloud.android.R
 import com.owncloud.android.databinding.DialogAutoUploadPreferenceBinding
 import com.owncloud.android.datamodel.MediaFolderType
@@ -123,8 +124,9 @@ class AutoUploadForm(
     }
 
     private fun applyUserColor(viewThemeUtils: ViewThemeUtils) {
-        viewThemeUtils.androidx.colorSwitchCompat(binding.syncEnabled)
-        viewThemeUtils.platform.themeCheckbox(
+        // NMC Customization
+        CheckableThemeUtils.tintSwitch(binding.syncEnabled)
+        CheckableThemeUtils.tintCheckbox(
             binding.settingInstantUploadOnWifiCheckbox,
             binding.settingInstantUploadOnChargingCheckbox,
             binding.settingInstantUploadExistingCheckbox,
