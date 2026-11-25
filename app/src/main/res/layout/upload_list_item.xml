@@ -9,6 +9,7 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/upload_list_item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -124,6 +125,7 @@
         android:background="@android:color/transparent"
         android:contentDescription="@string/upload_item_action_button"
         android:paddingStart="@dimen/standard_double_padding"
-        android:paddingEnd="@dimen/zero" />
+        android:paddingEnd="@dimen/zero"
+        app:tint="@color/list_icon_color"/>
 
 </LinearLayout>
