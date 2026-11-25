@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- webview_login_url prod -->
+    <string name="webview_login_url" translatable="false" >https://magentacloud.de/index.php/login/flow</string>
+</resources>

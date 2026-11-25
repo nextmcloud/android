@@ -16,6 +16,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.StrictMode
+import android.webkit.WebView
 import androidx.annotation.StringRes
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -222,7 +223,7 @@ open class MainApp :
         // NMC Customization
         RemoteConfigInit(this)
         registerActivityLifecycleCallbacks(GlobalPassCodeProtectionCallbacks(onboarding, passCodeManager))
-
+        configureWebViewForMultiProcess()
         if (!MDMConfig.sendFilesSupport(this)) {
             disableDocumentsStorageProvider()
         }
@@ -263,6 +264,16 @@ open class MainApp :
             PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
             PackageManager.DONT_KILL_APP
         )
+    }
+
+    // NMC-3964 fix
+    // crash was happening for Xiaomi Android 15 devices
+    private fun configureWebViewForMultiProcess() {
+        val processName = getProcessName()
+        if (processName != null && processName != packageName) {
+            // this ensures each process uses a unique directory, preventing conflicts.
+            WebView.setDataDirectorySuffix(processName)
+        }
     }
 
     private fun onAppForeground() {
