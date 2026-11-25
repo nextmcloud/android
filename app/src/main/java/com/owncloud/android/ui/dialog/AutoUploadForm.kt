@@ -131,9 +131,6 @@ class AutoUploadForm(
             binding.settingInstantUploadPathUseSubfoldersCheckbox,
             binding.settingInstantUploadExcludeHiddenCheckbox
         )
-        viewThemeUtils.material.colorMaterialButtonPrimaryTonal(binding.btnPositive)
-        viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(binding.btnNegative)
-        viewThemeUtils.material.colorMaterialButtonPrimaryBorderless(binding.btnNeutral)
     }
 
     private fun setupValueListeners() = with(binding) {
