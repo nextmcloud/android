@@ -476,7 +476,11 @@ class FileUploadHelper {
     }
 
     fun isUploadingNow(upload: OCUpload?): Boolean {
-        val currentUploadFileOperation = FileUploadWorker.getCurrentUpload(upload?.uploadId)
+        var currentUploadFileOperation = FileUploadWorker.getCurrentUpload(upload?.uploadId)
+        // NMC Customization: to check for Files uploaded through albums
+        if (currentUploadFileOperation == null) {
+            currentUploadFileOperation = AlbumFileUploadWorker.getCurrentUpload(upload?.uploadId)
+        }
         if (currentUploadFileOperation == null || currentUploadFileOperation.user == null) return false
         if (upload == null || upload.accountName != currentUploadFileOperation.user.accountName) return false
 
