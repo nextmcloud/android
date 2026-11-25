@@ -54,6 +54,7 @@ import com.nextcloud.utils.extensions.toEntity
 import com.nextcloud.utils.extensions.toFile
 import com.nextcloud.utils.extensions.toFileEntity
 import com.nextcloud.utils.extensions.toFolderMetadataUpdate
+import com.nmc.android.marketTracking.MoEngageSdkUtils
 import com.owncloud.android.MainApp
 import com.owncloud.android.datamodel.e2e.v2.decrypted.DecryptedFolderMetadataFile
 import com.owncloud.android.db.ProviderMeta.ProviderTableMeta
@@ -1155,7 +1156,10 @@ class FileDataStorageManager private constructor(
         folderPaths.foldIndexed(root) { index, parent, path ->
             getFileByEncryptedRemotePath(path) ?: run {
                 val metadata = if (index == folderPaths.lastIndex) createdRemoteFolder else null
-                saveNewFolder(path, parent, metadata)
+                val newDir = saveNewFolder(path, parent, metadata)
+                // NMC: track create folder event
+                MoEngageSdkUtils.trackCreateFolderEvent(MainApp.getAppContext(), newDir)
+                newDir
             }
         }
     }
