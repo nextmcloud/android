@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
@@ -116,7 +117,9 @@ class AutoUploadFolderHeaderViewHolder(
     }
 
     private fun showOverflowMenu(anchor: View, item: AutoUploadFolder) {
-        PopupMenu(context, anchor).apply {
+        // NMC Customisation
+        val ctw = ContextThemeWrapper(context, R.style.CustomPopupTheme)
+        PopupMenu(ctw, anchor).apply {
             inflate(R.menu.synced_folders_adapter)
             menu.findItem(R.id.action_auto_upload_folder_toggle_visibility).isChecked = item.isHidden
             updateDeleteUploadedMenuItem(menu.findItem(R.id.action_auto_upload_folder_delete_uploaded), item)
