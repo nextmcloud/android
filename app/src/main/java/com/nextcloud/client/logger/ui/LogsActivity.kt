@@ -19,6 +19,7 @@ import com.owncloud.android.R
 import com.owncloud.android.databinding.LogsActivityBinding
 import com.owncloud.android.ui.activity.ToolbarActivity
 import com.owncloud.android.ui.navigation.model.ActionBarStyle
+import com.nmc.android.utils.ProgressBarThemeUtils
 import javax.inject.Inject
 
 class LogsActivity : ToolbarActivity() {
@@ -45,7 +46,8 @@ class LogsActivity : ToolbarActivity() {
         binding = LogsActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewThemeUtils.platform.themeHorizontalProgressBar(binding.logsLoadingProgress)
+        // NMC Customization
+        ProgressBarThemeUtils.themeHorizontalProgressBar(binding.logsLoadingProgress, resources.getColor(R.color.primary, null))
 
         logsAdapter = LogsAdapter(this)
         binding.logsList.apply {
