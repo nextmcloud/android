@@ -38,6 +38,8 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        // NMC Customization: tealium
+        maven("https://maven.tealiumiq.com/android/releases/")
         maven("https://jitpack.io")
     }
 }
