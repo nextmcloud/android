@@ -17,16 +17,15 @@
     android:paddingBottom="@dimen/standard_half_padding">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/zero"
-        android:layout_marginEnd="@dimen/standard_quarter_padding">
+        android:layout_width="@dimen/album_list_image_width"
+        android:layout_height="@dimen/album_list_image_height"
+        android:layout_marginStart="@dimen/standard_half_padding"
+        android:layout_marginEnd="@dimen/standard_half_padding">
 
         <com.elyeproj.loaderviewlibrary.LoaderImageView
             android:id="@+id/thumbnail_shimmer"
-            android:layout_width="78dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="@dimen/standard_half_padding"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:contentDescription="@null"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -35,17 +34,28 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible" />
 
-        <ImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="78dp"
-            android:layout_height="56dp"
-            android:contentDescription="@null"
-            android:src="@drawable/file_image"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/album_thumb_card"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="@dimen/album_list_image_corner_radius"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
+            app:strokeColor="@android:color/transparent"
+            app:strokeWidth="0dp">
+
+            <ImageView
+                android:id="@+id/thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/file_image"
+                tools:visibility="visible" />
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -56,9 +66,8 @@
         android:layout_weight="1"
         android:gravity="top"
         android:orientation="vertical"
-        android:paddingStart="@dimen/standard_quarter_padding"
-        android:paddingTop="@dimen/standard_half_padding"
-        android:paddingEnd="@dimen/zero">
+        android:paddingStart="@dimen/standard_half_padding"
+        android:paddingTop="@dimen/standard_half_padding">
 
         <TextView
             android:id="@+id/Filename"
@@ -77,7 +86,7 @@
             android:id="@+id/file_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/grid_container_margin"
+            android:layout_marginBottom="@dimen/alternate_margin"
             android:ellipsize="middle"
             android:gravity="center"
             android:singleLine="true"

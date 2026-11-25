@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2025 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<resources>
+    <string name="create_album">Create album</string>
+    <string name="add_more">Add more</string>
+    <string name="empty_album_detailed_view_title">All that\'s missing are your photos</string>
+    <string name="empty_album_detailed_view_message">You can add as many photos as you like. A photo can also belong to more than one album.</string>
+    <string name="add_photos">Add photos</string>
+    <string name="album_upload_from_camera_roll">Upload from cameraroll</string>
+</resources>
