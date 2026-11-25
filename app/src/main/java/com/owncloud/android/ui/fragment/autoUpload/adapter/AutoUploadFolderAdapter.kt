@@ -44,7 +44,12 @@ class AutoUploadFolderAdapter(
     private val connectivityService: ConnectivityService
 ) : SectionedRecyclerViewAdapter<SectionedViewHolder>() {
 
-    private val mediaThumbnailGenerationJob = MediaThumbnailGenerationJob(context, viewThemeUtils)
+    private val mediaThumbnailGenerationJob = MediaThumbnailGenerationJob(
+        context, viewThemeUtils,
+        // NMC: due to 512dp thumb size there was scroll lagging in auto upload
+        // so for auto upload we have to use different thumb size (NMC-2589)
+        R.dimen.auto_upload_file_thumb_size
+    )
 
     private var items: List<AutoUploadFolder> = emptyList()
     private var visibleItems: List<AutoUploadFolder> = emptyList()
