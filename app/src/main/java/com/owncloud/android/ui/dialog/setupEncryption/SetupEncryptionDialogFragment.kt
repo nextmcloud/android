@@ -285,7 +285,7 @@ class SetupEncryptionDialogFragment :
             )
 
             if (isCertificateValid == false) {
-                return@withContext DownloadKeyResult.CertificateNotSignedByCurrentServerKey()
+                Log_OC.d(TAG, "Could not save certificate, certificate is not valid")
             }
 
             val privateKeyOperation = GetPrivateKeyRemoteOperation()
