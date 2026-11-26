@@ -86,6 +86,9 @@ internal class FileItemBinder(
         sharedAvatars.boundFileId = file.fileId
         sharedAvatars.setOnClickListener { listener.onShareIconClick(file) }
         sharedAvatars.setAvatars(user, avatarShareesProvider.get(file, userId), viewThemeUtils, avatarGenerator)
+
+        // visibility gone as view not required for NMC
+        sharedAvatars.visibility = View.GONE
     }
 
     private fun bindTags(binding: ListItemBinding, tags: List<Tag>) {

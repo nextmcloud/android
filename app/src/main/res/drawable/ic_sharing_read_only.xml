@@ -1,0 +1,21 @@
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2024 Your Name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <path
+        android:fillColor="#262626"
+        android:fillType="evenOdd"
+        android:pathData="M12,4C17.8,4 21.15,8.55 23.35,11.55L23.35,11.55L23.7,12L23.35,12.45C21.15,15.45 17.8,20 12,20C6.2,20 2.85,15.45 0.65,12.45L0.65,12.45L0.3,12L0.65,11.55C2.85,8.55 6.2,4 12,4ZM12,5.5C7.5,5.5 4.75,8.5 2.2,12C4.75,15.5 7.5,18.5 12,18.5C16.5,18.5 19.25,15.5 21.8,12C19.25,8.5 16.5,5.5 12,5.5ZM12,7C14.75,7 17,9.25 17,12C17,14.75 14.75,17 12,17C9.25,17 7,14.75 7,12C7,9.25 9.25,7 12,7ZM12,8.5C10.05,8.5 8.5,10.05 8.5,12C8.5,13.95 10.05,15.5 12,15.5C13.95,15.5 15.5,13.95 15.5,12C15.5,10.05 13.95,8.5 12,8.5Z"
+        android:strokeWidth="1"
+        android:strokeColor="#00000000" />
+
+</vector>

@@ -9,6 +9,7 @@ package com.owncloud.android.ui.adapter.filelist.recommended
 
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.elyeproj.loaderviewlibrary.LoaderImageView
 import com.nextcloud.ui.component.filename.FilenameView
@@ -26,6 +27,8 @@ class RecommendedFilesViewHolder(val binding: RecommendedFileItemBinding) :
     override val favorite: ImageView = binding.favoriteAction
     override val localFileIndicator: ImageView = binding.localFileIndicator
     override val shared: ImageView = binding.sharedIcon
+    override val sharedMessage: TextView?
+        get() = null
     override val unreadComments: ImageView = binding.unreadComments
     override val filename: FilenameView = binding.filename
 
