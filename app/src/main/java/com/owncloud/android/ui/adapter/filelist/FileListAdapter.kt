@@ -136,6 +136,7 @@ class FileListAdapter(
         showMetadata = true,
         showShareAvatar = true,
         viewThemeUtils,
+        false,
         syncedFolderProvider
     )
 

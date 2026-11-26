@@ -18,8 +18,9 @@ enum class DarkMode {
     }
 
     private fun toMode(): Int = when (this) {
-        LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-        DARK -> AppCompatDelegate.MODE_NIGHT_YES
+        // NMC Customization -> Always follow system theme
+        LIGHT,
+        DARK,
         SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
     }
 }
