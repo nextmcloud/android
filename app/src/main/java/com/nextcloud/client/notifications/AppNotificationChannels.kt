@@ -64,6 +64,11 @@ object AppNotificationChannels {
             NotificationUtils.NOTIFICATION_CHANNEL_CONTENT_OBSERVER,
             R.string.notification_channel_content_observer_name_short,
             R.string.notification_channel_content_observer_description
+        ),
+        NotificationChannelSpec(
+            NotificationUtils.NOTIFICATION_CHANNEL_IMAGE_SAVE,
+            R.string.notification_channel_image_save,
+            R.string.notification_channel_image_save_description
         )
     )
 
