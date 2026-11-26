@@ -59,7 +59,8 @@ class FilenameView @JvmOverloads constructor(context: Context, attrs: AttributeS
     private fun showSplit(state: FilenameState.Split) {
         title.text = state.name
         extension.text = state.extension
-
+        // NMC Customization
+        extension.setTextColor(context.getColor(R.color.bottom_sheet_txt_color))
         // removed extension added back here.
         if (extension.parent == null) {
             addView(
