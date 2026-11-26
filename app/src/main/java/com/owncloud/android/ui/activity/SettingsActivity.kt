@@ -14,9 +14,11 @@ import androidx.activity.addCallback
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import com.nmc.android.ui.PrivacySettingsInterface
 import androidx.core.os.postDelayed
 import androidx.fragment.app.commit
 import com.nextcloud.client.di.Injectable
+import com.nmc.android.ui.PrivacySettingsInterfaceImpl
 import com.owncloud.android.R
 import com.owncloud.android.lib.common.utils.Log_OC
 import com.owncloud.android.ui.activity.settings.SettingsFragment
@@ -31,10 +33,24 @@ class SettingsActivity :
     @Inject
     lateinit var viewThemeUtils: ViewThemeUtils
 
+    /**
+     * Things to note about both the branches.
+     * 1. nmc/1921-settings branch:
+     * --> interface won't be initialised
+     * -->  calling of interface method will be done here
+     * 2. nmc/1878-privacy
+     * --> interface will be initialised
+     * --> calling of interface method won't be done here
+     */
+    private var privacySettingsInterface: PrivacySettingsInterface? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setupActionBar()
+
+        // NMC customization will be initialised in nmc/1878-privacy
+        privacySettingsInterface = PrivacySettingsInterfaceImpl()
+
         registerBackPressedCallback()
 
         if (savedInstanceState == null) {
