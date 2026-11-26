@@ -103,8 +103,8 @@ android {
     }
 
     androidResources {
-        generateLocaleConfig = true
         additionalParameters += listOf("--preferred-density", "xxxhdpi")
+        localeFilters += listOf("en", "de_DE", "de")
     }
 
     defaultConfig {
